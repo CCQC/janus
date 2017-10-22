@@ -7,7 +7,6 @@ sudo: false
 
 matrix:
   include:
-    - python: 3.5
     - python: 3.6
 
 install:
@@ -50,4 +49,4 @@ notifications:
     email: false
 
 after_success:
-  - codecov -t
+  - codecov -t 323513ae-80cb-4c43-ab5c-49c962f3e9a6
