@@ -1,25 +1,55 @@
-import os
+"""
+Testing for psi4_wrapper.py module
+"""
 import pytest
 import janus
+import psi4
+import numpy as np
 
-@pytest.mark.datafiles('tests/examples/input.dat')
-def test_input_parser(datafiles):
-    path = str(datafiles)
-    #assert (datafiles / 'input.dat').check(file=1)
-    system = janus.system.System()
-    janus.parser.parse_input(datafiles / 'input.dat', system)
-    print(system.qm_molecule)
-    assert system.qm_param['basis'] == 'STO-3G' 
-    assert system.qm_param['reference'] == 'rhf'     
-    assert system.qm_param['scf_type'] == 'pk'
-    assert system.qm_param['e_convergence'] == '1e-8'
-    assert system.qm_param['d_convergence'] == '1e-8'
-    assert system.qm_method == 'scf'
-    assert system.qm_molecule == '''
+def test_get_psi4_energy():
+    """
+    Function to test get_psi4_energy is getting energy correctly
+    """
+    
+    qm_mol = """
 0 1
 O
 H 1 R
 H 1 R 2 A
 R = 1.0
 A = 104.5
-symmetry c1'''
+symmetry c1"""
+
+    parameters = \
+    {
+        'basis' : 'STO-3G',
+        'scf_type' : 'pk',
+        'reference' : 'rhf',
+        'e_convergence' : 1e-8,
+        'd_convergence' : 1e-8
+    }
+
+    system = janus.system.System(parameters, 'scf', qm_mol)
+    janus.psi4_wrapper.get_psi4_energy(system)
+    
+    mol = psi4.geometry("""
+                        0 1
+                        O
+                        H 1 R
+                        H 1 R 2 A
+                        R = 1.0
+                        A = 104.5
+                        symmetry c1
+                        """)
+
+    psi4.set_options({'basis' : 'STO-3G',
+                      'scf_type' : 'pk',
+                      'reference' : 'rhf',
+                      'e_convergence' : 1e-8,
+                      'd_convergence' : 1e-8})
+
+    energy = psi4.energy('scf', molecule = mol)
+    
+    assert np.allclose(system.qm_energy, energy)
+    
+    
