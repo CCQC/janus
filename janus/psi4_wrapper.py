@@ -3,9 +3,10 @@ import psi4
 This module is a wrapper that calls Psi4 to obtain QM information
 """
 
+
 def get_psi4_energy(sys):
     """
-    Call Psi4 to obtain the energy and wavefunction of the QM region 
+    Calls Psi4 to obtain the energy and wavefunction of the QM region
     and store it in a system object.
 
     Parameters
@@ -15,8 +16,8 @@ def get_psi4_energy(sys):
     Returns
     -------
     none
-    
-    Examples 
+
+    Examples
     --------
     get_psi4_energy(system)
     """
