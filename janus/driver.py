@@ -1,10 +1,9 @@
+"""
+This is the driver module 
+"""
 from . import psi4_wrapper
 from . import parser
 from .system import System
-
-"""
-This module is the driver
-"""
 
 
 def qm_energy():
@@ -13,6 +12,9 @@ def qm_energy():
     stores input information with parse_input, and
     calls Psi4 to get the QM energy.
     """
-    system = System()
+    sys = System()
     parser.parse_input('input.dat', system)
-    psi4_wrapper.get_psi4_energy(system)
+    sys.qm_energy = psi4_wrapper.get_psi4_energy(sys.molecule, sys.qm_method, sys.qm_param)
+
+def mm_energy():
+    pass

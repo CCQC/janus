@@ -29,8 +29,7 @@ symmetry c1"""
         'd_convergence' : 1e-8
     }
 
-    system = janus.system.System(parameters, 'scf', qm_mol)
-    janus.psi4_wrapper.get_psi4_energy(system)
+    energy_wrapper = janus.psi4_wrapper.get_psi4_energy(qm_mol, 'scf', parameters)
     
     mol = psi4.geometry("""
                         0 1
@@ -50,6 +49,6 @@ symmetry c1"""
 
     energy = psi4.energy('scf', molecule = mol)
     
-    assert np.allclose(system.qm_energy, energy)
+    assert np.allclose(energy_wrapper, energy)
     
     
