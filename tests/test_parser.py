@@ -6,7 +6,6 @@ import janus
 
 @pytest.mark.datafiles('tests/examples/test_parser/input.dat')
 def test_input_parser(datafiles):
-    path = str(datafiles)
     #assert (datafiles / 'input.dat').check(file=1)
     system = janus.system.System()
     janus.parser.parse_input(datafiles / 'input.dat', system)

@@ -30,7 +30,6 @@ Parameters
     get_openmm_amber('input.prmtop', 'input.inpcrd', system)
     """
 
-    #print(system.getNumParticles())
     integrator = LangevinIntegrator(300*kelvin, 1/picosecond, 0.002*picoseconds)
     simulation = Simulation(pdb.topology, system, integrator)
     simulation.context.setPositions(pdb.positions)
@@ -69,7 +68,7 @@ def delete_qm_residues(model, qm_residues):
 
 def delete_qm_atoms(model, qm_atoms):
     qm_list = []
-    for atom in test.topology.atoms():
+    for atom in model.topology.atoms():
         if atom.index in qm_atoms:
             qm_list.append(atom)
     model.delete(qm_list)
@@ -78,6 +77,18 @@ def delete_qm_atoms(model, qm_atoms):
 def delete_water(model):
     model.deleteWater()
 
-#sys, pdb = create_openmm_system('input.pdb')
+#sys, pdb = create_openmm_system('../tests/examples/test_openmm/input.pdb')
 #sim = create_openmm_simulation(sys, pdb)
 #print(get_openmm_energy(sim))
+#print(system.getNumParticles())
+#pdb = PDBFile('../tests/examples/test_openmm/input.pdb')
+#mod = create_openmm_modeller(pdb)
+##delete_water(mod)
+#print(mod.topology.getNumAtoms())
+#qm_atm = [0, 1, 2, 3, 4, 5, 6, 7]
+#delete_qm_atoms(mod, qm_atm)
+##print(mod.topology.getNumResidues())
+#print(mod.topology.getNumAtoms())
+#keep_residue(mod, 'HOH')
+#print(mod.topology.getNumResidues())
+
