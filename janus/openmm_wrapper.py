@@ -1,6 +1,7 @@
 from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
+from sys import stdout
 """
 This module is a wrapper that calls OpenMM
 to obtain MM information
@@ -77,14 +78,15 @@ def delete_qm_atoms(model, qm_atoms):
 def delete_water(model):
     model.deleteWater()
 
-#sys, pdb = create_openmm_system('../tests/examples/test_openmm/input.pdb')
+#sys, pdb = create_openmm_system('input.pdb')
 #sim = create_openmm_simulation(sys, pdb)
 #a = get_openmm_energy(sim)
 #print(a._value)
 #print(system.getNumParticles())
 #pdb = PDBFile('../tests/examples/test_openmm/input.pdb')
 #mod = create_openmm_modeller(pdb)
-##delete_water(mod)
+#delete_water(mod)
+#PDBFile.writeFile(mod.topology, mod.positions, open('output.dat', 'w'))
 #print(mod.topology.getNumAtoms())
 #qm_atm = [0, 1, 2, 3, 4, 5, 6, 7]
 #delete_qm_atoms(mod, qm_atm)
