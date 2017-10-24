@@ -79,7 +79,8 @@ def delete_water(model):
 
 #sys, pdb = create_openmm_system('../tests/examples/test_openmm/input.pdb')
 #sim = create_openmm_simulation(sys, pdb)
-#print(get_openmm_energy(sim))
+#a = get_openmm_energy(sim)
+#print(a._value)
 #print(system.getNumParticles())
 #pdb = PDBFile('../tests/examples/test_openmm/input.pdb')
 #mod = create_openmm_modeller(pdb)

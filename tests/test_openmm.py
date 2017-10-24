@@ -1,5 +1,6 @@
 import pytest
 import janus
+import numpy as np
 from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
@@ -13,8 +14,13 @@ from simtk.unit import *
 #    os.path.join(FIXTURE_DIR, 'input.pdb'),
 #    )
 
-def test_get_openmm_energy():
-    pass
+@pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
+def test_get_openmm_energy(datafiles):
+    path = str(datafiles)
+    sys, pdb = janus.openmm_wrapper.create_openmm_system(os.path.join(path, 'input.pdb'))
+    sim = janus.openmm_wrapper.create_openmm_simulation(sys, pdb)
+    energy = janus.openmm_wrapper.get_openmm_energy(sim)
+    assert np.allclose(energy._value, -115080.26053680835)
 
 @pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
 def test_keep_residue(datafiles):
