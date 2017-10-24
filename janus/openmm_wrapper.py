@@ -20,7 +20,10 @@ def create_openmm_system(pdb_file, forcefield='amber99sb.xml', forcefield_water=
     forcefield_water : forcefield used for water molecules in .xml format. Default is 'tip3p.xml'
     nonbond : NonbondedMethod to compute cutoffs for intermolecular interactions. Default is PME.
     nonbond_cut : Nonbonded interaction cutoff. Default is 1*nanometer.
-    cnstrin : system constraints. Default is HBonds.
+    cnstrin : OpenMM system constraints. Default is HBonds.
+
+    Later:
+    expand forcefield to take not openmm built in but customized as well
 
     Returns
     -------
@@ -31,8 +34,8 @@ def create_openmm_system(pdb_file, forcefield='amber99sb.xml', forcefield_water=
     sys, pdb = create_openmm_system('input.pdb')
     sys, pdb = create_openmm_system('input.pdb', nonbond=NoCutoff)
 
-    To get system information, e.g., Number of particles:
-        print(system.getNumParticles())
+    To get OpenMM system information, e.g., Number of particles:
+        print(sys.getNumParticles())
     """
 
     pdb = PDBFile(pdb_file)
@@ -41,7 +44,7 @@ def create_openmm_system(pdb_file, forcefield='amber99sb.xml', forcefield_water=
     return system, pdb
 
 
-def create_openmm_simulation(system, pdb, temp=300*kelvin):
+def create_openmm_simulation(mm_system, pdb, temp=300*kelvin):
     """
     Creates a OpenMM simulation object
 
@@ -62,7 +65,7 @@ def create_openmm_simulation(system, pdb, temp=300*kelvin):
     """
 
     integrator = LangevinIntegrator(300*kelvin, 1/picosecond, 0.002*picoseconds)
-    simulation = Simulation(pdb.topology, system, integrator)
+    simulation = Simulation(pdb.topology, mm_system, integrator)
     simulation.context.setPositions(pdb.positions)
     return simulation
 
@@ -84,6 +87,8 @@ def get_openmm_energy(simulation):
     energy = get_openmm_energy(sim)
     To get the value:
     energy._value
+
+    ***need way to specify the unit
     """
 
     sim = simulation.context.getState(getEnergy=True)
@@ -92,7 +97,7 @@ def get_openmm_energy(simulation):
 
 def create_openmm_modeller(pdb):
     """
-    Creates an OpenMM Modeller object for changing the system
+    Creates an OpenMM Modeller object for changing the MM system
 
     Parameters
     ----------
@@ -113,12 +118,12 @@ def create_openmm_modeller(pdb):
 def keep_residue(model, residue_name):
     """
     Acts on a OpenMM Modeller object to keep the specified
-    residue in the system and deletes everything else
+    residue in the MM system and deletes everything else
 
     Parameters
     ----------
     model : OpenMM Modeller object
-    residue_name : str of residue to keep
+    residue_name : str of residue to keep in an OpenMM Modeller object
 
     Returns
     -------
@@ -142,7 +147,7 @@ def delete_qm_residues(model, qm_residues):
     Parameters
     ----------
     model : OpenMM Modeller object
-    qm_residues : list of qm_residue IDs (int) to delete from system
+    qm_residues : list of qm_residue IDs (int) to delete from the OpenMM Modeller object
 
     In future: expand to take residue names, other forms of id
 
@@ -168,7 +173,7 @@ def delete_qm_atoms(model, qm_atoms):
     Parameters
     ----------
     model : OpenMM Modeller object
-    qm_residues : list of qm_residue IDs (int) to delete from system
+    qm_residues : list of qm_residue IDs (int) to delete an OpenMM Modeller object 
 
     In future: expand to take atom names, other forms of id
 
@@ -189,7 +194,7 @@ def delete_qm_atoms(model, qm_atoms):
 
 def delete_water(model):
     """
-    Delete all waters from a OpenMM Modeller object
+    Delete all waters from an OpenMM Modeller object
 
     Parameters
     ----------
