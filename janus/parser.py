@@ -1,24 +1,26 @@
 import configparser
+from .system import System
 
 
-def parse_input(filename, sys):
+def parse_input(filename):
     """
-    This function is a parser that reads an input and
-    stores the information into a system object
+    This function is a parser that reads an input, 
+    instantiates an instance of the system object, and
+    stores the information into that object
 
     Parameters
     ----------
     filename: an input file
-    sys: System class object
 
     Returns
     -------
-    None
+    A System object
 
     Examples
     --------
-    parse_input('input.dat', system)
+    system = parse_input('input.dat')
     """
+    sys = System()
     config = configparser.ConfigParser()
     config.read(filename)
 
@@ -31,3 +33,5 @@ def parse_input(filename, sys):
     sys.qm_param['d_convergence'] = config['QM_PARAM']['d_convergence']
     sys.qm_method = config['QM_PARAM']['method']
     sys.qm_molecule = config['MOLECULE']['molecule']
+
+    return sys
