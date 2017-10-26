@@ -29,3 +29,6 @@ class System:
         self.qm_method = qm_method
         self.qm_molecule = qm_molecule
         self.qm_energy = None
+
+    def make_zero_energy():
+        pass

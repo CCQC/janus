@@ -39,9 +39,9 @@ def mm_energy(sys):
     This function takes a system and calls OpenMM to get MM energy.
     Need to figure out how to use default when no user defined parameters
     """
-    mm_system, pdb = create_openmm_system(sys.pdb_file)
-    sim = create_openmm_simulation(mm_system, pdb)
-    sys.mm_energy = get_openmm_energy(sim)
+    mm_system, pdb = ow.create_openmm_system(sys.pdb_file)
+    sim = ow.create_openmm_simulation(mm_system, pdb)
+    sys.mm_energy = ow.get_openmm_energy(sim)
     
     pass
 #qm_energy()

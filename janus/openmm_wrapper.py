@@ -210,4 +210,7 @@ def delete_water(model):
     """
     model.deleteWater()
 
+def openmm_units():
+    pass
+
 # PDBFile.writeFile(mod.topology, mod.positions, open('output.dat', 'w'))
