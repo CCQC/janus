@@ -8,6 +8,7 @@ from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
 
+
 def create_system(datafiles, filename):
     """
     Function for creating a Janus system with
@@ -22,13 +23,13 @@ def create_system(datafiles, filename):
     sys.mm_nonbond_method = PME
     sys.mm_nonbond_cutoff = 1*nanometer
     sys.mm_constraints = HBonds
-    sys.mm_temp =  300*kelvin
+    sys.mm_temp = 300*kelvin
     sys.qm_res = [0, 1, 2, 3, 4, 5, 6, 7]
     sys.qm_atm = [0, 1, 2, 3, 4, 5, 6, 7]
 
     janus.openmm_wrapper.create_openmm_system(sys)
     return sys
-    
+
 
 @pytest.mark.datafiles('tests/examples/test_openmm/input_protein.pdb')
 def test_get_openmm_energy(datafiles):

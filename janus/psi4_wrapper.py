@@ -22,7 +22,7 @@ def get_psi4_energy(system):
 
     Examples
     --------
-    E = get_psi4_energy(system) 
+    E = get_psi4_energy(system)
     """
     set_up_psi4(system.qm_molecule, system.qm_param)
     system.qm_energy = psi4.energy(system.qm_method)
@@ -75,7 +75,9 @@ def get_psi4_properties(system):
     get_psi4_properties(system)
     """
     set_up_psi4(system.qm_molecule, system.qm_param)
-    energy, wfn = psi4.prop(system.qm_method, properties=[system.qm_charge_method], return_wfn=True)
+    energy, wfn = psi4.prop(system.qm_method,
+                            properties=[system.qm_charge_method],
+                            return_wfn=True)
     system.qm_charges = np.asarray(wfn.atomic_point_charges())
 
 
@@ -123,14 +125,15 @@ def get_psi4_wavefunction(system):
 
     Returns
     -------
-    A Psi4 wavefunction object 
+    A Psi4 wavefunction object
 
     Examples
     --------
-    get_psi4_wavefunction(system) 
+    get_psi4_wavefunction(system)
     """
     set_up_psi4(system.qm_molecule, system.qm_param)
-    energy, wavefunction = psi4.energy(system.qm_method, return_wfn=True)
+    energy, wavefunction = psi4.energy(system.qm_method,
+                                       return_wfn=True)
     system.qm_wfn = wavefunction
 
 

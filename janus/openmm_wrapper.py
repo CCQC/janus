@@ -10,7 +10,7 @@ from sys import stdout
 
 def create_openmm_system(system):
     """
-    Calls OpenMM to create a OpenMM System object, saves 
+    Calls OpenMM to create a OpenMM System object, saves
     OpenMM System object as system.mm_system and OpenMM PDB object as
     system.mm_pdb
 
@@ -36,9 +36,9 @@ def create_openmm_system(system):
     pdb = PDBFile(system.mm_pdb_file)
     ff = ForceField(system.mm_forcefield, system.mm_forcefield_water)
     openmm_system = ff.createSystem(pdb.topology,
-                             nonbondedMethod=system.mm_nonbond_method,
-                             nonbondedCutoff=system.mm_nonbond_cutoff, 
-                             constraints=system.mm_constraints)
+                                    nonbondedMethod=system.mm_nonbond_method,
+                                    nonbondedCutoff=system.mm_nonbond_cutoff,
+                                    constraints=system.mm_constraints)
     system.mm_system = openmm_system
     system.mm_pdb = pdb
 
@@ -61,8 +61,10 @@ def create_openmm_simulation(system):
     create_open_simulation(sys)
     """
 
-    integrator = LangevinIntegrator(system.mm_temp, 1/picosecond, 0.002*picoseconds)
-    simulation = Simulation(system.mm_pdb.topology, system.mm_system, integrator)
+    integrator = LangevinIntegrator(system.mm_temp,
+                                    1/picosecond, 0.002*picoseconds)
+    simulation = Simulation(system.mm_pdb.topology,
+                            system.mm_system, integrator)
     simulation.context.setPositions(system.mm_pdb.positions)
     system.mm_sim = simulation
 
@@ -92,8 +94,8 @@ def get_openmm_energy(system):
     """
 
     state = system.mm_sim.context.getState(getEnergy=True)
-    system.mm_potential_e = state.getPotentialEnergy() 
-    system.mm_kinetic_e = state.getKineticEnergy() 
+    system.mm_potential_e = state.getPotentialEnergy()
+    system.mm_kinetic_e = state.getKineticEnergy()
 
 
 def create_openmm_modeller(system):
@@ -148,7 +150,8 @@ def delete_qm_residues(model, qm_residues):
     Parameters
     ----------
     model : OpenMM Modeller object
-    qm_residues : list of qm_residue IDs (int) to delete from the OpenMM Modeller object
+    qm_residues : list of qm_residue IDs (int) to delete from
+                  the OpenMM Modeller object
 
     In future: expand to take residue names, other forms of id
 
@@ -174,7 +177,8 @@ def delete_qm_atoms(model, qm_atoms):
     Parameters
     ----------
     model : OpenMM Modeller object
-    qm_residues : list of qm_residue IDs (int) to delete an OpenMM Modeller object 
+    qm_residues : list of qm_residue IDs (int) to delete
+                  an OpenMM Modeller object
 
     In future: expand to take atom names, other forms of id
 
@@ -211,7 +215,7 @@ def delete_water(model):
     """
     model.deleteWater()
 
+
 def openmm_units():
     pass
-
 # PDBFile.writeFile(mod.topology, mod.positions, open('output.dat', 'w'))
