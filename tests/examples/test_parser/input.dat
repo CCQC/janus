@@ -17,5 +17,15 @@ e_convergence = 1e-8
 d_convergence = 1e-8
 
 [MM_PARAM]
+pdb_file = 'input.pdb'
+forcefield = 'amber99sb.xml'
+forcefield_water = 'tip3p.xml
+nonbond_method = PME
+nonbond_cutoff = 1*nanometer 
+constraints = HBonds
+temp = 300*kelvin
+
 
 [QM_MM_PARAM]
+qm_atoms = []
+qm_residues = []
