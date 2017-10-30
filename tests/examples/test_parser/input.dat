@@ -11,8 +11,9 @@ molecule =
 [QM_PARAM]
 method = scf
 basis = STO-3G
-scf_type = pk
+scf_type = df
 reference = rhf
+guess =  sad
 e_convergence = 1e-8
 d_convergence = 1e-8
 
