@@ -22,34 +22,10 @@ def get_psi4_energy(system):
 
     Examples
     --------
-    E = get_psi4_energy(system) """
-
+    E = get_psi4_energy(system) 
+    """
     set_up_psi4(system.qm_molecule, system.qm_param)
     system.qm_energy = psi4.energy(system.qm_method)
-
-
-def get_psi4_wavefunction(system):
-    """
-    Calls Psi4 to obtain the wavefunction of the QM region
-    and saves it as a psi4 wavefunction object to the
-    passed system object as system.qm_wavefunction
-
-    Parameters
-    ----------
-    system : a system object containing molecule,
-             method, and parameter information
-
-    Returns
-    -------
-    None
-
-    Examples
-    --------
-    get_psi4_wavefunction(system) """
-
-    set_up_psi4(system.qm_molecule, system.qm_parameters)
-    energy, wavefunction = psi4.energy(system.qm_method, return_wfn=True)
-    system.qm_wavefunction = wavefunction
 
 
 def get_psi4_charge(system):
@@ -72,10 +48,11 @@ def get_psi4_charge(system):
 
     Examples
     --------
-    get_psi4_charge(system)"""
-
-    psi4.oeprop(system.qm_wavefunction, system.qm_charge_method)
-    system.qm_charges = np.asarray(qm_wavefunction.atomic_point_charges())
+    get_psi4_charge(system)
+    """
+    get_psi4_wavefunction(system)
+    psi4.oeprop(system.qm_wfn, system.qm_charge_method)
+    system.qm_charges = np.asarray(system.qm_wfn.atomic_point_charges())
 
 
 def get_psi4_properties(system):
@@ -95,8 +72,8 @@ def get_psi4_properties(system):
 
     Examples
     --------
-    get_psi4_properties(system)"""
-
+    get_psi4_properties(system)
+    """
     set_up_psi4(system.qm_molecule, system.qm_param)
     energy, wfn = psi4.prop(system.qm_method, properties=[system.qm_charge_method], return_wfn=True)
     system.qm_charges = np.asarray(wfn.atomic_point_charges())
@@ -119,8 +96,8 @@ def get_psi4_gradient(system):
 
     Examples
     --------
-    get_psi4_gradient(system) """
-
+    get_psi4_gradient(system)
+    """
     set_up_psi4(system.qm_molecule, system.qm_param)
     # G, wfn = psi4.gradient(method, return_wfn=True)
     G = psi4.gradient(system.qm_method)
@@ -133,6 +110,28 @@ def get_psi4_qmmm():
 
 def psi4_units():
     pass
+
+
+def get_psi4_wavefunction(system):
+    """
+    Calls Psi4 to obtain the wavefunction of the QM region
+
+    Parameters
+    ----------
+    system : a system object containing molecule,
+             method, and parameter information
+
+    Returns
+    -------
+    A Psi4 wavefunction object 
+
+    Examples
+    --------
+    get_psi4_wavefunction(system) 
+    """
+    set_up_psi4(system.qm_molecule, system.qm_param)
+    energy, wavefunction = psi4.energy(system.qm_method, return_wfn=True)
+    system.qm_wfn = wavefunction
 
 
 def set_up_psi4(molecule, parameters):
@@ -150,7 +149,7 @@ def set_up_psi4(molecule, parameters):
 
     Examples
     --------
-    set_up_psi4(sys.molecule, sys.parameters)"""
-
+    set_up_psi4(sys.molecule, sys.parameters)
+    """
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)
