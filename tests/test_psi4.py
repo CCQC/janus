@@ -7,6 +7,10 @@ import psi4
 import numpy as np
 
 def create_system():
+    """
+    Function for creating a Janus system with
+    qm options used for testing
+    """
     qm_mol = """
 0 1
 O

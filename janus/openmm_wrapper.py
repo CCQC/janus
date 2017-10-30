@@ -8,94 +8,95 @@ from simtk.unit import *
 from sys import stdout
 
 
-def create_openmm_system(pdb_file, forcefield='amber99sb.xml', forcefield_water='tip3p.xml', nonbond=PME, nonbond_cut=1*nanometer, cnstrin=HBonds):
+def create_openmm_system(system):
     """
-    Creates an OpeMM system. More information about the input parameters
-    can be found in the OpenMM documentation for systems
+    Calls OpenMM to create a OpenMM System object, saves 
+    OpenMM System object as system.mm_system and OpenMM PDB object as
+    system.mm_pdb
 
     Parameters
     ----------
-    pdb_file : an input .pdb file
-    forcefield : forcefield information in .xml format. Default is 'amber99sb.xml'.
-    forcefield_water : forcefield used for water molecules in .xml format. Default is 'tip3p.xml'
-    nonbond : NonbondedMethod to compute cutoffs for intermolecular interactions. Default is PME.
-    nonbond_cut : Nonbonded interaction cutoff. Default is 1*nanometer.
-    cnstrin : OpenMM system constraints. Default is HBonds.
+    system : a Janus system object
 
     Later:
     expand forcefield to take not openmm built in but customized as well
 
     Returns
     -------
-    OpenMM System object, pdb object created by PDBFile
+    None
 
     Examples
     --------
-    sys, pdb = create_openmm_system('input.pdb')
-    sys, pdb = create_openmm_system('input.pdb', nonbond=NoCutoff)
+    create_openmm_system(system)
 
     To get OpenMM system information, e.g., Number of particles:
         print(sys.getNumParticles())
     """
 
-    pdb = PDBFile(pdb_file)
-    ff = ForceField(forcefield, forcefield_water)
-    system = ff.createSystem(pdb.topology, nonbondedMethod=nonbond, nonbondedCutoff=nonbond_cut, constraints=cnstrin)
-    return system, pdb
+    pdb = PDBFile(system.mm_pdb_file)
+    ff = ForceField(system.mm_forcefield, system.mm_forcefield_water)
+    openmm_system = ff.createSystem(pdb.topology,
+                             nonbondedMethod=system.mm_nonbond_method,
+                             nonbondedCutoff=system.mm_nonbond_cutoff, 
+                             constraints=system.mm_constraints)
+    system.mm_system = openmm_system
+    system.mm_pdb = pdb
 
 
-def create_openmm_simulation(mm_system, pdb, temp=300*kelvin):
+def create_openmm_simulation(system):
     """
-    Creates a OpenMM simulation object
+    Creates an OpenMM simulation object and saves
+    it to the Janus system object as system.qm_sim
 
     Parameters
     ----------
-    system : OpenMM System object
-    pdb : OpenMM PDBFile object
-    temp : Simulation temperature. Default is 300*kelvin
+    system : Janus system object
 
     Returns
     -------
-    OpenMM Simulation object
+    None
 
     Examples
     --------
-    sim = create_open_simulation(sys, pdb)
-    sim = create_open_simulation(sys, pdb, temp=0*kelvin)
+    create_open_simulation(sys)
     """
 
-    integrator = LangevinIntegrator(300*kelvin, 1/picosecond, 0.002*picoseconds)
-    simulation = Simulation(pdb.topology, mm_system, integrator)
-    simulation.context.setPositions(pdb.positions)
-    return simulation
+    integrator = LangevinIntegrator(system.mm_temp, 1/picosecond, 0.002*picoseconds)
+    simulation = Simulation(system.mm_pdb.topology, system.mm_system, integrator)
+    simulation.context.setPositions(system.mm_pdb.positions)
+    system.mm_sim = simulation
 
 
-def get_openmm_energy(simulation):
+def get_openmm_energy(system):
     """
-    Gets the total energy of a OpenMM state
+    Gets the potential and kinetic energy of a OpenMM state
+    and save it as a OpenMM Quantity object in kcal/mol to
+    the system as system.mm_tot_energy.
 
     Parameters
     ----------
-    simulation : OpenMM Simulation object
+    system : Janus system object
 
     Returns
     -------
-    Total energy = Potential + Kinetic as a OpenMM Quantity object in kcal/mol
+    None
 
     Examples
     --------
-    energy = get_openmm_energy(sim)
+    get_openmm_energy(sys)
     To get the value:
     energy._value
+    TODO: put this in system class
 
     ***need way to specify the unit
     """
 
-    sim = simulation.context.getState(getEnergy=True)
-    return sim.getPotentialEnergy() + sim.getKineticEnergy()
+    state = system.mm_sim.context.getState(getEnergy=True)
+    system.mm_potential_e = state.getPotentialEnergy() 
+    system.mm_kinetic_e = state.getKineticEnergy() 
 
 
-def create_openmm_modeller(pdb):
+def create_openmm_modeller(system):
     """
     Creates an OpenMM Modeller object for changing the MM system
 
@@ -112,7 +113,7 @@ def create_openmm_modeller(pdb):
     model = create_openmm_modeller(pdb)
     """
 
-    return Modeller(pdb.topology, pdb.positions)
+    return Modeller(system.mm_pdb.topology, system.mm_pdb.positions)
 
 
 def keep_residue(model, residue_name):

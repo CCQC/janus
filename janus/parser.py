@@ -42,7 +42,7 @@ def parse_input(filename):
     sys.mm_forcefield_water = config['MM_PARAM']['forcefield_water']
     sys.mm_nonbond_method = config['MM_PARAM']['nonbond_method']
     sys.mm_nonbond_cutoff = config['MM_PARAM']['nonbond_cutoff']
-    sys.mm_contraints = config['MM_PARAM']['constraints']
+    sys.mm_constraints = config['MM_PARAM']['constraints']
     sys.mm_temp = config['MM_PARAM']['temp']
     
     return sys
