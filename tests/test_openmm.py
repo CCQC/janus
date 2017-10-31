@@ -44,37 +44,47 @@ def test_get_openmm_energy(datafiles):
 
 
 @pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
-def test_keep_residue(datafiles):
+def test_keep_residues(datafiles):
     """
     Function to test keep_residue function.
     """
     sys = create_system(datafiles, 'input.pdb')
     mod = janus.openmm_wrapper.create_openmm_modeller(sys)
-    janus.openmm_wrapper.keep_residue(mod, 'HOH')
+    janus.openmm_wrapper.keep_residues(mod, ['HOH'])
     res = mod.topology.getNumResidues()
     assert res == 2761
 
+@pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
+def test_keep_atoms(datafiles):
+    """
+    Function to test keep_residue function.
+    """
+    sys = create_system(datafiles, 'input.pdb')
+    mod = janus.openmm_wrapper.create_openmm_modeller(sys)
+    janus.openmm_wrapper.keep_atoms(mod, sys.qm_atm)
+    atom = mod.topology.getNumAtoms()
+    assert atom == len(sys.qm_atm)
 
 @pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
-def test_delete_qm_residues(datafiles):
+def test_delete_residues(datafiles):
     """
     Function to test delete_qm_residues function.
     """
     sys = create_system(datafiles, 'input.pdb')
     mod = janus.openmm_wrapper.create_openmm_modeller(sys)
-    janus.openmm_wrapper.delete_qm_residues(mod, sys.qm_res)
+    janus.openmm_wrapper.delete_residues(mod, sys.qm_res)
     res = mod.topology.getNumResidues()
     assert res == 2798 - len(sys.qm_res)
 
 
 @pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
-def test_delete_qm_atoms(datafiles):
+def test_delete_atoms(datafiles):
     """
     Function to test delete_qm_atoms function.
     """
     sys = create_system(datafiles, 'input.pdb')
     mod = janus.openmm_wrapper.create_openmm_modeller(sys)
-    janus.openmm_wrapper.delete_qm_atoms(mod, sys.qm_atm)
+    janus.openmm_wrapper.delete_atoms(mod, sys.qm_atm)
     atom = mod.topology.getNumAtoms()
     assert atom == 8867 - len(sys.qm_atm)
 

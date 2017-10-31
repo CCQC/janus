@@ -118,7 +118,7 @@ def create_openmm_modeller(system):
     return Modeller(system.mm_pdb.topology, system.mm_pdb.positions)
 
 
-def keep_residue(model, residue_name):
+def keep_residues(model, residues):
     """
     Acts on a OpenMM Modeller object to keep the specified
     residue in the MM system and deletes everything else
@@ -126,7 +126,7 @@ def keep_residue(model, residue_name):
     Parameters
     ----------
     model : OpenMM Modeller object
-    residue_name : str of residue to keep in an OpenMM Modeller object
+    residues : list of residues names to keep in an OpenMM Modeller object
 
     Returns
     -------
@@ -134,23 +134,48 @@ def keep_residue(model, residue_name):
 
     Examples
     --------
-    keep_residue(mod, 'HOH')
+    keep_residue(mod, ['HOH'])
     """
-    qm_list = []
+    lis = []
     for res in model.topology.residues():
-        if res.name != residue_name:
-            qm_list.append(res)
-    model.delete(qm_list)
+        if res.name not in residues:
+            lis.append(res)
+    model.delete(lis)
 
 
-def delete_qm_residues(model, qm_residues):
+def keep_atoms(model, atoms):
+    """
+    Acts on a OpenMM Modeller object to keep the specified
+    atoms in the MM system and deletes everything else
+
+    Parameters
+    ----------
+    model : OpenMM Modeller object
+    atoms : list of atoms to keep in an OpenMM Modeller object
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    keep_atom(mod, [0,1])
+    """
+    lis = []
+    for atom in model.topology.atoms():
+        if atom.index not in atoms:
+            lis.append(atom)
+    model.delete(lis)
+
+
+def delete_residues(model, residues):
     """
     Delete specified residues from a OpenMM Modeller object
 
     Parameters
     ----------
     model : OpenMM Modeller object
-    qm_residues : list of qm_residue IDs (int) to delete from
+    residues : list of residue IDs (int) to delete from
                   the OpenMM Modeller object
 
     In future: expand to take residue names, other forms of id
@@ -161,16 +186,16 @@ def delete_qm_residues(model, qm_residues):
 
     Examples
     --------
-    delete_qm_residues(model, [0, 3, 5])
+    delete_residues(model, [0, 3, 5])
     """
-    qm_list = []
+    lis = []
     for res in model.topology.residues():
-        if res.index in qm_residues:
-            qm_list.append(res)
-    model.delete(qm_list)
+        if res.index in residues:
+            lis.append(res)
+    model.delete(lis)
 
 
-def delete_qm_atoms(model, qm_atoms):
+def delete_atoms(model, atoms):
     """
     Delete specified atoms from a OpenMM Modeller object
 
@@ -188,13 +213,13 @@ def delete_qm_atoms(model, qm_atoms):
 
     Examples
     --------
-    delete_qm_atoms(model, [0, 3, 5])
+    delete_atoms(model, [0, 3, 5])
     """
-    qm_list = []
+    lis = []
     for atom in model.topology.atoms():
-        if atom.index in qm_atoms:
-            qm_list.append(atom)
-    model.delete(qm_list)
+        if atom.index in atoms:
+            lis.append(atom)
+    model.delete(lis)
 
 
 def delete_water(model):
