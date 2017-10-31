@@ -5,7 +5,7 @@ class System:
     such as geometry, and energy
     """
 
-    def __init__(self, qm_param=None, qm_method=None, qm_molecule=None
+    def __init__(self, qm_param=None, qm_method=None, qm_molecule=None,
                  qm_atoms=None, qm_residues=None, mm_pdb_file=None,
                  mm_forcefield=None, mm_forcefield_water=None,
                  mm_nonbond_method=None, mm_nonbond_cutoff=None,

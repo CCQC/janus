@@ -34,8 +34,7 @@ def qm_energy(sys):
     This function takes a system and calls Psi4 to get the QM energy.
     ***not sure if this is the best approach. Is system passing okay?
     """
-    sys.qm_energy = pw.get_psi4_energy(sys.qm_molecule,
-                                       sys.qm_method, sys.qm_param)
+    pw.get_psi4_energy(sys)
 
 
 def mm_energy(sys):
@@ -43,6 +42,6 @@ def mm_energy(sys):
     This function takes a system and calls OpenMM to get MM energy.
     Need to figure out how to use default when no user defined parameters
     """
-    mm_system, pdb = ow.create_openmm_system(sys.pdb_file)
-    sim = ow.create_openmm_simulation(mm_system, pdb)
-    sys.mm_energy = ow.get_openmm_energy(sim)
+    ow.create_openmm_system(sys)
+    ow.create_openmm_simulation(sys)
+    ow.get_openmm_energy(sys)
