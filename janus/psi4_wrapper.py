@@ -5,7 +5,7 @@ This module is a wrapper that calls Psi4 to obtain QM information
 """
 
 
-def get_psi4_energy(system):
+def get_psi4_energy(molecule, param, method):
     """
     Calls Psi4 to obtain the energy  of the QM region
     and saves it to the passed system object as
@@ -24,8 +24,8 @@ def get_psi4_energy(system):
     --------
     E = get_psi4_energy(system)
     """
-    set_up_psi4(system.qm_molecule, system.qm_param)
-    system.qm_energy = psi4.energy(system.qm_method)
+    set_up_psi4(molecule, param)
+    return psi4.energy(method)
 
 
 def get_psi4_charge(system):

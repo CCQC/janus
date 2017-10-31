@@ -31,13 +31,9 @@ symmetry c1"""
             'd_convergence': 1e-8
         }
 
-    method = 'scf'
-    charge_method = 'MULLIKEN_CHARGES'
-
     sys = janus.system.System()
     sys.qm_molecule, sys.qm_param = qm_mol, parameters
-    sys.qm_method = method
-    sys.qm_charge_method = charge_method
+
     return sys
 
 
@@ -47,9 +43,9 @@ def test_get_psi4_energy():
     """
     sys = create_system()
 
-    janus.psi4_wrapper.get_psi4_energy(sys)
+    energy = janus.psi4_wrapper.get_psi4_energy(sys.qm_molecule, sys.qm_param, sys.qm_method)
 
-    assert np.allclose(sys.qm_energy, -74.96475172187111)
+    assert np.allclose(energy, -74.96475172187111)
 
 
 def test_get_psi4_charge():

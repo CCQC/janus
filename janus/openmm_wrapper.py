@@ -7,8 +7,14 @@ from simtk.openmm import *
 from simtk.unit import *
 from sys import stdout
 
+def create_openmm_pdb(mm_pdb_file):
+    pdb = PDBFile(mm_pdb_file)
+    return pdb
 
-def create_openmm_system(system):
+def create_openmm_system(topology, forcefield='amber99sb.xml', 
+                         forcefield_water='tip3p.xml',
+                         nonbond=PME, nonbond_cutoff=1*nanometer,
+                         cnstrnts= HBonds):
     """
     Calls OpenMM to create a OpenMM System object, saves
     OpenMM System object as system.mm_system and OpenMM PDB object as
@@ -33,17 +39,17 @@ def create_openmm_system(system):
         print(sys.getNumParticles())
     """
 
-    pdb = PDBFile(system.mm_pdb_file)
-    ff = ForceField(system.mm_forcefield, system.mm_forcefield_water)
-    openmm_system = ff.createSystem(pdb.topology,
-                                    nonbondedMethod=system.mm_nonbond_method,
-                                    nonbondedCutoff=system.mm_nonbond_cutoff,
-                                    constraints=system.mm_constraints)
-    system.mm_system = openmm_system
-    system.mm_pdb = pdb
+    ff = ForceField(forcefield, forcefield_water)
+
+    openmm_system = ff.createSystem(topology,
+                                    nonbondedMethod=nonbond,
+                                    nonbondedCutoff=nonbond_cutoff,
+                                    constraints=cnstrnts)
+    return openmm_system
 
 
-def create_openmm_simulation(system):
+
+def create_openmm_simulation(openmm_system, topology, positions):
     """
     Creates an OpenMM simulation object and saves
     it to the Janus system object as system.qm_sim
@@ -60,16 +66,15 @@ def create_openmm_simulation(system):
     --------
     create_open_simulation(sys)
     """
-
-    integrator = LangevinIntegrator(system.mm_temp,
+    integrator = LangevinIntegrator(300*kelvin,
                                     1/picosecond, 0.002*picoseconds)
-    simulation = Simulation(system.mm_pdb.topology,
-                            system.mm_system, integrator)
-    simulation.context.setPositions(system.mm_pdb.positions)
-    system.mm_sim = simulation
+
+    simulation = Simulation(topology, openmm_system, integrator)
+    simulation.context.setPositions(positions)
+    return simulation
 
 
-def get_openmm_energy(system):
+def get_state_info(simulation, energy=True):
     """
     Gets the potential and kinetic energy of a OpenMM state
     and save it as a OpenMM Quantity object in kcal/mol to
@@ -92,13 +97,13 @@ def get_openmm_energy(system):
 
     ***need way to specify the unit
     """
+    state = simulation.context.getState(getEnergy=energy)
+    potential = state.getPotentialEnergy()
+    kinetic = state.getKineticEnergy()
+    return potential, kinetic 
 
-    state = system.mm_sim.context.getState(getEnergy=True)
-    system.mm_potential_e = state.getPotentialEnergy()
-    system.mm_kinetic_e = state.getKineticEnergy()
 
-
-def create_openmm_modeller(system):
+def create_openmm_modeller(pdb):
     """
     Creates an OpenMM Modeller object for changing the MM system
 
@@ -115,7 +120,7 @@ def create_openmm_modeller(system):
     model = create_openmm_modeller(pdb)
     """
 
-    return Modeller(system.mm_pdb.topology, system.mm_pdb.positions)
+    return Modeller(pdb.topology, pdb.positions)
 
 
 def keep_residues(model, residues):
