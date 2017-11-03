@@ -7,6 +7,7 @@ class System:
     input parameters, as well as system information
     such as geometry, and energy
     """
+    kjmol_to_au = 1/2625.5
 
     def __init__(self, qm_param=None, qm_method='scf', qm_molecule=None,
                  qm_charge_method='MULLIKEN_CHARGES',
@@ -77,7 +78,9 @@ class System:
                                                           self.modeller.topology,
                                                           self.modeller.positions)
 
-        self.mod_Te, self.mod_Ke = ow.get_openmm_info(self.mod_openmm_sim)
+        T, K = ow.get_state_info(self.mod_openmm_sim)
+        self.mod_Te = T._value * System.kjmol_to_au
+        self.mod_Ke = K._value * System.kjmol_to_au 
 
     def get_openmm_energy(self):
 
@@ -86,28 +89,31 @@ class System:
                                                           self.mm_pdb.topology,
                                                           self.mm_pdb.positions)
 
-        self.mm_Te, self.mm_Ke = ow.get_openmm_info(self.openmm_sim)
+        T, K = ow.get_state_info(self.openmm_sim)
+        self.mm_Te = T._value * System.kjmol_to_au
+        self.mm_Ke = K._value * System.kjmol_to_au 
+    
         self.mm_tot_energy = self.mm_Te + self.mm_Ke
 
     def get_mm_qm_energy(self): 
 
-        keep_atoms(self.modeller, self.qm_atoms)
-        get_open_energy_from_modeller()
-        self.mm_qm_energy = self.mm_qm_Te + self.mm_qm_Ke 
+        ow.keep_atoms(self.modeller, self.qm_atoms)
+        self.get_openmm_energy_from_modeller()
+        self.mm_qm_energy = self.mod_Te + self.mod_Ke 
 
     def get_qmmm_energy(self):
 
         # Get MM energy on whole system
-        get_openmm_energy()
+        self.get_openmm_energy()
 
         # Get MM energy on QM region
-        get_mm_qm_energy()
+        self.get_mm_qm_energy()
 
         # Get QM energy 
-        pw.get_psi4_energy(self.qm_molecule, self.qm_param, self.qm_method)
+        self.qm_energy = pw.get_psi4_energy(self.qm_molecule, self.qm_param, self.qm_method)
 
         # combine
-        if self.qm_charge_method == 'Mechanical':
+        if self.embedding_method == 'Mechanical':
             self.qmmm_energy = self.qm_energy + self.mm_tot_energy - self.mm_qm_energy
 
     def make_qm_molecule():
