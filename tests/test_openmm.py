@@ -22,18 +22,19 @@ def create_system(datafiles, filename):
     return openmm_sys, pdb
 
 
-@pytest.mark.datafiles('tests/examples/test_openmm/input_protein.pdb')
+@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
 def test_get_openmm_energy(datafiles):
     """
     Function to test that get_openmm_energy is getting energy correctly.
     """
-    sys, pdb = create_system(datafiles, 'input_protein.pdb')
+    sys, pdb = create_system(datafiles, 'water.pdb')
     sim = janus.openmm_wrapper.create_openmm_simulation(sys, 
                                                         pdb.topology,
                                                         pdb.positions)
     potential, kinetic = janus.openmm_wrapper.get_state_info(sim)
     energy = potential + kinetic
-    assert np.allclose(energy._value, -495.6537120883586)
+    assert np.allclose(energy._value, -27.732873913249932)
+
 
 
 @pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
