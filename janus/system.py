@@ -72,36 +72,65 @@ class System:
 
     
     def get_openmm_energy_from_modeller(self):
-
+    """
+    Get the MM energy of a modeller object created with OpenMM
+    """
+        # Create an OpenMM system from object's modeller topology 
         self.mod_openmm_sys = ow.create_openmm_system(self.modeller.topology)
+
+        # Create an OpenMM simulation from the openmm system, modeller topology and positions.
         self.mod_openmm_sim = ow.create_openmm_simulation(self.mod_openmm_sys,
                                                           self.modeller.topology,
                                                           self.modeller.positions)
 
+        # Calls openmm wrapper to get the kinetic and potential energy of the state
         T, K = ow.get_state_info(self.mod_openmm_sim)
+
+        # Converts the energy values from kj mol^-1 to au and stores in self
         self.mod_Te = T._value * System.kjmol_to_au
         self.mod_Ke = K._value * System.kjmol_to_au 
 
     def get_openmm_energy(self):
+        """
+        Get MM energy of a MM system described in a given pdb 
+        """
 
+        # Create an OpenMM system from object's pdb topology 
         self.openmm_sys = ow.create_openmm_system(self.mm_pdb.topology)
+
+        # Create an OpenMM simulation from the openmm system, pdb topology and positions.
         self.openmm_sim = ow.create_openmm_simulation(self.openmm_sys,
                                                           self.mm_pdb.topology,
                                                           self.mm_pdb.positions)
 
+        # Calls openmm wrapper to get the kinetic and potential energy of the state
         T, K = ow.get_state_info(self.openmm_sim)
+
+        # Converts the energy values from kj mol^-1 to au and stores in self
         self.mm_Te = T._value * System.kjmol_to_au
         self.mm_Ke = K._value * System.kjmol_to_au 
-    
+        
         self.mm_tot_energy = self.mm_Te + self.mm_Ke
 
     def get_mm_qm_energy(self): 
+        """
+        Get the MM energy of a user-defined QM system
+        """
 
+        # Create a modeller object of only the qm atoms
         ow.keep_atoms(self.modeller, self.qm_atoms)
+        
+        # Get the energy of the modeller system
         self.get_openmm_energy_from_modeller()
+
+        # Save the energy of the modeller object
         self.mm_qm_energy = self.mod_Te + self.mod_Ke 
 
     def get_qmmm_energy(self):
+        """
+        Gets energies of needed components and computes 
+        a qm/mm energy with a specified embedding scheme
+        """
 
         # Get MM energy on whole system
         self.get_openmm_energy()
@@ -112,7 +141,7 @@ class System:
         # Get QM energy 
         self.qm_energy = pw.get_psi4_energy(self.qm_molecule, self.qm_param, self.qm_method)
 
-        # combine
+        # Compute the total QM/MM energy based on subtractive Mechanical embedding
         if self.embedding_method == 'Mechanical':
             self.qmmm_energy = self.qm_energy + self.mm_tot_energy - self.mm_qm_energy
 
