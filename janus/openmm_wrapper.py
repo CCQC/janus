@@ -8,24 +8,33 @@ from simtk.unit import *
 from sys import stdout
 
 def create_openmm_pdb(mm_pdb_file):
-    pdb = PDBFile(mm_pdb_file)
-    return pdb
-
-def create_openmm_system(topology, forcefield='amber99sb.xml', 
-                         forcefield_water='tip3p.xml',
-                         nonbond=PME, nonbond_cutoff=1*nanometer,
-                         cnstrnts= HBonds):
     """
-    Calls OpenMM to create a OpenMM System object, saves
-    OpenMM System object as system.mm_system and OpenMM PDB object as
-    system.mm_pdb
+    Creates an OpenMM PDB object 
 
     Parameters
     ----------
-    system : a Janus system object
+    mm_pdb_file: string of pdb file name 
 
-    Later:
-    expand forcefield to take not openmm built in but customized as well
+    Returns
+    -------
+    OpenMM PDB object
+
+    Examples
+    --------
+    model = create_openmm_pdb('input.pdb')
+    """
+    
+    pdb = PDBFile(mm_pdb_file)
+    return pdb
+
+def write_pdb(mod, filename):
+    """ 
+    Write a pdb file from a OpenMM modeller
+
+    Parameters
+    ----------
+    mod : OpenMM modeller object
+    filename : string of file to write to
 
     Returns
     -------
@@ -33,17 +42,53 @@ def create_openmm_system(topology, forcefield='amber99sb.xml',
 
     Examples
     --------
-    create_openmm_system(system)
+    write_pdb(mod, 'input.pdb')
+    """
+    PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
+
+def create_openmm_system(topology, forcefield='amber99sb.xml',
+                         forcefield_water='tip3p.xml',
+                         #nonbond=NoCutoff, nonbond_cutoff=1*nanometer,
+                         cnstrnts= HBonds):
+    """
+    Calls OpenMM to create a OpenMM System object give a topology,
+    forcefield, and other paramters
+
+    Parameters
+    ----------
+    topology : a OpenMM topology 
+    forcefield : string of forcefield name to use. Default is amber99sb.xml
+    forcefield_water : string of forcefield name to use for water
+                       application for amber forcefields that do no
+                       define water. Default is tip3p.xml
+    cnstrnts : contraints on the system. Default is HBonds
+
+    TODO: need to put nonbond and nonbond_cutoff back but not doing for
+          now because need non-periodic system. Other parameters are also needed
+
+          also, expand forcefield to take not openmm built in but customized as well
+
+    Returns
+    -------
+    An OpenMM system object
+
+    Examples
+    --------
+    openmm_sys = create_openmm_system(topology)
+    openmm_sys = create_openmm_system(pdb.topology, constrnts=None)
 
     To get OpenMM system information, e.g., Number of particles:
         print(sys.getNumParticles())
+    Question - for things like this - do I need a wrapper? since I am technically still
+               using openmm -> instead of saving an "OpenMM" object - should I define my
+               own objects
     """
 
     ff = ForceField(forcefield, forcefield_water)
 
     openmm_system = ff.createSystem(topology,
-                                    nonbondedMethod=nonbond,
-                                    nonbondedCutoff=nonbond_cutoff,
+#                                    nonbondedMethod=nonbond,
+#                                    nonbondedCutoff=nonbond_cutoff,
                                     constraints=cnstrnts)
     return openmm_system
 
@@ -51,20 +96,22 @@ def create_openmm_system(topology, forcefield='amber99sb.xml',
 
 def create_openmm_simulation(openmm_system, topology, positions):
     """
-    Creates an OpenMM simulation object and saves
-    it to the Janus system object as system.qm_sim
+    Creates an OpenMM simulation object given
+    an OpenMM system, topology, and positions 
 
     Parameters
     ----------
-    system : Janus system object
+    openmm_system : OpenMM system object
+    topology : an OpenMM topology     
+    positions : OpenMM positions
 
     Returns
     -------
-    None
-
+    an OpenMM simulation object
+    
     Examples
     --------
-    create_open_simulation(sys)
+    create_open_simulation(openmm_sys, pdb.topology, pdb.positions)
     """
     integrator = LangevinIntegrator(300*kelvin,
                                     1/picosecond, 0.002*picoseconds)
@@ -76,31 +123,28 @@ def create_openmm_simulation(openmm_system, topology, positions):
 
 def get_state_info(simulation, energy=True):
     """
-    Gets the potential and kinetic energy of a OpenMM state
-    and save it as a OpenMM Quantity object in kcal/mol to
-    the system as system.mm_tot_energy.
+    Gets information like the kinetic 
+    and potential energy from an OpenMM state
 
     Parameters
     ----------
-    system : Janus system object
+    simulation : an OpenMM simulation object
+    energy : a bool for specifying whether to get the energy
+    
+    TODO: add other state information besides energy 
 
     Returns
     -------
-    None
+    OpenMM Quantity objects in kcal/mol 
 
     Examples
     --------
-    get_openmm_energy(sys)
-    To get the value:
-    energy._value
-    TODO: put this in system class
-
-    ***need way to specify the unit
+    get_openmm_energy(sim)
     """
     state = simulation.context.getState(getEnergy=energy)
     potential = state.getPotentialEnergy()
     kinetic = state.getKineticEnergy()
-    return potential, kinetic 
+    return potential, kinetic
 
 
 def create_openmm_modeller(pdb):
@@ -248,4 +292,3 @@ def delete_water(model):
 
 def openmm_units():
     pass
-# PDBFile.writeFile(mod.topology, mod.positions, open('output.dat', 'w'))
