@@ -8,21 +8,20 @@ This module is a wrapper that calls Psi4 to obtain QM information
 def get_psi4_energy(molecule, param, method):
     """
     Calls Psi4 to obtain the energy  of the QM region
-    and saves it to the passed system object as
-    system.qm_energy
 
     Parameters
     ----------
-    system : a system object containing molecule,
-             method, and parameter information
-
+    molecule : a string of molecule parameters in xyz
+    param : a dictionary of psi4 parameters
+    method : a string of the desired QM method
+    
     Returns
     -------
-    None
+    An energy
 
     Examples
     --------
-    E = get_psi4_energy(system)
+    E = get_psi4_energy(mol, qm_param, 'scf')
     """
     set_up_psi4(molecule, param)
     return psi4.energy(method)
@@ -154,5 +153,6 @@ def set_up_psi4(molecule, parameters):
     --------
     set_up_psi4(sys.molecule, sys.parameters)
     """
+    psi4.core.set_output_file('output.dat', True)
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)
