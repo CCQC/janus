@@ -23,8 +23,12 @@ def get_psi4_energy(molecule, param, method):
     --------
     E = get_psi4_energy(mol, qm_param, 'scf')
     """
+    psi4.core.clean()
     set_up_psi4(molecule, param)
-    return psi4.energy(method)
+    #energy = psi4.energy(method)
+    energy, wavefunction = psi4.energy(method,
+                                       return_wfn=True)
+    return energy
 
 
 def get_psi4_charge(system):
@@ -153,6 +157,6 @@ def set_up_psi4(molecule, parameters):
     --------
     set_up_psi4(sys.molecule, sys.parameters)
     """
-    psi4.core.set_output_file('output.dat', True)
+    #psi4.core.set_output_file('output.dat', True)
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)

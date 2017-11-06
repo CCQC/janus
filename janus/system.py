@@ -72,9 +72,9 @@ class System:
 
     
     def get_openmm_energy_from_modeller(self):
-    """
-    Get the MM energy of a modeller object created with OpenMM
-    """
+        """
+        Get the MM energy of a modeller object created with OpenMM
+        """
         # Create an OpenMM system from object's modeller topology 
         self.mod_openmm_sys = ow.create_openmm_system(self.modeller.topology)
 
