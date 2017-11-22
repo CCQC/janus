@@ -19,7 +19,9 @@ H 1 R
 H 1 R 2 A
 R = 1.0
 A = 104.5
-symmetry c1"""
+symmetry c1
+no_reorient
+no_com"""
 
     parameters = \
         {
