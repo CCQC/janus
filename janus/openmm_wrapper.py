@@ -121,7 +121,14 @@ def create_openmm_simulation(openmm_system, topology, positions):
     return simulation
 
 
-def get_state_info(simulation, energy=True):
+def get_state_info(simulation, energy=True,
+                               positions=False,
+                               velocity=False,
+                               forces=False,
+                               parameters=False,
+                               param_deriv=False,
+                               periodic_box=False,
+                               groups_included=-1):
     """
     Gets information like the kinetic 
     and potential energy from an OpenMM state
@@ -130,8 +137,17 @@ def get_state_info(simulation, energy=True):
     ----------
     simulation : an OpenMM simulation object
     energy : a bool for specifying whether to get the energy
+    positions : a bool for specifying whether to get the positions
+    velocity : a bool for specifying whether to get the velocities
+    forces : a bool for specifying whether to get the forces acting on the system
+    parameters : a bool for specifying whether to get the parameters of the state
+    param_deriv : a bool for specifying whether to get the parameter derivatives of the state
+    periodic_box : a bool for whether to translate the positions so the center of every molecule
+                   lies in the same periodic box
+    groups : a set of indices for which force groups to include when computing forces and energies.
+             default is all groups
     
-    TODO: add other state information besides energy 
+    TODO: add how to get other state information besides energy 
 
     Returns
     -------
@@ -140,11 +156,21 @@ def get_state_info(simulation, energy=True):
     Examples
     --------
     get_openmm_energy(sim)
+    get_openmm_energy(sim, groups=set{0,1,2})
     """
-    state = simulation.context.getState(getEnergy=energy)
-    potential = state.getPotentialEnergy()
-    kinetic = state.getKineticEnergy()
-    return potential, kinetic
+    state = simulation.context.getState(getEnergy=energy,
+                                        getPositions=positions,
+                                        getVelocities=velocity,
+                                        getForces=forces,
+                                        getParameters=parameters,
+                                        getParameterDerivatives=param_deriv,
+                                        enforcePeriodicBox=periodic_box,
+                                        groups=groups_included)
+    
+    if energy==True:
+        potential = state.getPotentialEnergy()
+        kinetic = state.getKineticEnergy()
+        return potential, kinetic
 
 
 def create_openmm_modeller(pdb):
@@ -175,7 +201,8 @@ def keep_residues(model, residues):
     Parameters
     ----------
     model : OpenMM Modeller object
-    residues : list of residues names to keep in an OpenMM Modeller object
+    residues : list of residues names (str) or IDs (int)
+               to keep in an OpenMM Modeller object
 
     Returns
     -------
@@ -184,11 +211,16 @@ def keep_residues(model, residues):
     Examples
     --------
     keep_residue(mod, ['HOH'])
+    keep_residue(mod, [0, 1])
     """
     lis = []
     for res in model.topology.residues():
-        if res.name not in residues:
-            lis.append(res)
+        if type(residues[0]) is int:
+            if res.index not in residues:
+                lis.append(res)
+        elif type(residues[0]) is str:
+            if res.name not in residues:
+                lis.append(res)
     model.delete(lis)
 
 
@@ -209,13 +241,18 @@ def keep_atoms(model, atoms):
     Examples
     --------
     keep_atom(mod, [0,1])
+    keep_atom(mod, ['O', 'H', 'H'])
     """
     lis = []
-    for atom in model.topology.atoms():
-        if atom.index not in atoms:
-            lis.append(atom)
-    model.delete(lis)
 
+    for atom in model.topology.atoms():
+        if type(atoms[0]) is int:
+            if atom.index not in atoms:
+                lis.append(atom)
+        elif type(atoms[0]) is str:
+            if atom.name not in atoms:
+                lis.append(atom)
+    model.delete(lis)
 
 def delete_residues(model, residues):
     """
@@ -224,10 +261,8 @@ def delete_residues(model, residues):
     Parameters
     ----------
     model : OpenMM Modeller object
-    residues : list of residue IDs (int) to delete from
-                  the OpenMM Modeller object
-
-    In future: expand to take residue names, other forms of id
+    residues : list of residue IDs (int) or residue names (str)
+               to delete from the OpenMM Modeller object
 
     Returns
     -------
@@ -236,11 +271,16 @@ def delete_residues(model, residues):
     Examples
     --------
     delete_residues(model, [0, 3, 5])
+    delete_residues(model, ['HOH'])
     """
     lis = []
     for res in model.topology.residues():
-        if res.index in residues:
-            lis.append(res)
+        if type(residues[0]) is int:
+            if res.index in residues:
+                lis.append(res)
+        elif type(residues[0]) is str:
+            if res.name in residues:
+                lis.append(res)
     model.delete(lis)
 
 
@@ -251,10 +291,8 @@ def delete_atoms(model, atoms):
     Parameters
     ----------
     model : OpenMM Modeller object
-    qm_residues : list of qm_residue IDs (int) to delete
+    atoms : list of atom IDs (int) or atom names (str) to delete
                   an OpenMM Modeller object
-
-    In future: expand to take atom names, other forms of id
 
     Returns
     -------
@@ -263,11 +301,16 @@ def delete_atoms(model, atoms):
     Examples
     --------
     delete_atoms(model, [0, 3, 5])
+    delete_atoms(model, ['Cl'])
     """
     lis = []
     for atom in model.topology.atoms():
-        if atom.index in atoms:
-            lis.append(atom)
+        if type(atoms[0]) is int:
+            if atom.index in atoms:
+                lis.append(atom)
+        elif type(atoms[0]) is str:
+            if atom.name in atoms:
+                lis.append(atom)
     model.delete(lis)
 
 
