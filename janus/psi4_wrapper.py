@@ -14,7 +14,7 @@ def get_psi4_energy(molecule, param, method):
     molecule : a string of molecule parameters in xyz
     param : a dictionary of psi4 parameters
     method : a string of the desired QM method
-    
+
     Returns
     -------
     An energy
@@ -25,7 +25,7 @@ def get_psi4_energy(molecule, param, method):
     """
     psi4.core.clean()
     set_up_psi4(molecule, param)
-    #energy = psi4.energy(method)
+    # energy = psi4.energy(method)
     energy, wavefunction = psi4.energy(method,
                                        return_wfn=True)
     return energy
@@ -157,6 +157,6 @@ def set_up_psi4(molecule, parameters):
     --------
     set_up_psi4(sys.molecule, sys.parameters)
     """
-    #psi4.core.set_output_file('output.dat', True)
+    # psi4.core.set_output_file('output.dat', True)
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)

@@ -37,64 +37,79 @@ def test_get_openmm_energy(datafiles):
 
 
 
-@pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
+@pytest.mark.datafiles('tests/examples/test_openmm/ala_water.pdb')
 def test_keep_residues(datafiles):
     """
-    Function to test keep_residue function.
+    Function to test keep_residues function.
     """
-    sys, pdb = create_system(datafiles, 'input.pdb')
-    mod = janus.openmm_wrapper.create_openmm_modeller(pdb)
-    janus.openmm_wrapper.keep_residues(mod, ['HOH'])
-    res = mod.topology.getNumResidues()
-    assert res == 2761
+    sys, pdb = create_system(datafiles, 'ala_water.pdb')
+    mod_str = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    mod_int = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    janus.openmm_wrapper.keep_residues(mod_str, ['ALA'])
+    janus.openmm_wrapper.keep_residues(mod_int, [0,1,2])
+    res_str = mod_str.topology.getNumResidues()
+    res_int = mod_int.topology.getNumResidues()
+    assert res_str == 3 
+    assert res_int == 3 
 
-@pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
+@pytest.mark.datafiles('tests/examples/test_openmm/ala_water.pdb')
 def test_keep_atoms(datafiles):
     """
-    Function to test keep_residue function.
+    Function to test keep_atoms function.
     """
-    qm_atm = [0, 1, 2, 3, 4, 5, 6, 7]
-    sys, pdb = create_system(datafiles, 'input.pdb')
-    mod = janus.openmm_wrapper.create_openmm_modeller(pdb)
-    janus.openmm_wrapper.keep_atoms(mod, qm_atm)
-    atom = mod.topology.getNumAtoms()
-    assert atom == len(qm_atm)
+    qm_atm = [0, 1, 2, 3, 4, 5, 6]
+    sys, pdb = create_system(datafiles, 'ala_water.pdb')
+    mod_str = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    mod_int = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    janus.openmm_wrapper.keep_atoms(mod_int, qm_atm)
+    janus.openmm_wrapper.keep_atoms(mod_str, ['N'])
+    atom_int = mod_int.topology.getNumAtoms()
+    atom_str = mod_str.topology.getNumAtoms()
+    assert atom_int == len(qm_atm)
+    assert atom_str == 3
 
-@pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
+@pytest.mark.datafiles('tests/examples/test_openmm/ala_water.pdb')
 def test_delete_residues(datafiles):
     """
-    Function to test delete_qm_residues function.
+    Function to test delete_residues function.
     """
-    qm_res = [0, 1, 2, 3, 4, 5, 6, 7]
-    sys, pdb = create_system(datafiles, 'input.pdb')
-    mod = janus.openmm_wrapper.create_openmm_modeller(pdb)
-    janus.openmm_wrapper.delete_residues(mod, qm_res)
-    res = mod.topology.getNumResidues()
-    assert res == 2798 - len(qm_res)
+    sys, pdb = create_system(datafiles, 'ala_water.pdb')
+    mod_str = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    mod_int = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    janus.openmm_wrapper.delete_residues(mod_str, ['ALA'])
+    janus.openmm_wrapper.delete_residues(mod_int, [0,1,2])
+    res_str = mod_str.topology.getNumResidues()
+    res_int = mod_int.topology.getNumResidues()
+    assert res_str == 28 
+    assert res_int == 28 
 
 
-@pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
+@pytest.mark.datafiles('tests/examples/test_openmm/ala_water.pdb')
 def test_delete_atoms(datafiles):
     """
-    Function to test delete_qm_atoms function.
+    Function to test delete_atoms function.
     """
-    qm_atm = [0, 1, 2, 3, 4, 5, 6, 7]
-    sys, pdb = create_system(datafiles, 'input.pdb')
-    mod = janus.openmm_wrapper.create_openmm_modeller(pdb)
-    janus.openmm_wrapper.delete_atoms(mod, qm_atm)
-    atom = mod.topology.getNumAtoms()
-    assert atom == 8867 - len(qm_atm)
+    qm_atm = [0, 1, 2, 3, 4, 5, 6]
+    sys, pdb = create_system(datafiles, 'ala_water.pdb')
+    mod_str = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    mod_int = janus.openmm_wrapper.create_openmm_modeller(pdb)
+    janus.openmm_wrapper.delete_atoms(mod_int, qm_atm)
+    janus.openmm_wrapper.delete_atoms(mod_str, ['N'])
+    atom_int = mod_int.topology.getNumAtoms()
+    atom_str = mod_str.topology.getNumAtoms()
+    assert atom_int == 117 - len(qm_atm)
+    assert atom_str == 114
 
 
-@pytest.mark.datafiles('tests/examples/test_openmm/input.pdb')
+@pytest.mark.datafiles('tests/examples/test_openmm/ala_water.pdb')
 def test_delete_water(datafiles):
     """
     Function to test delete_water function.
     """
-    sys, pdb = create_system(datafiles, 'input.pdb')
+    sys, pdb = create_system(datafiles, 'ala_water.pdb')
     mod = janus.openmm_wrapper.create_openmm_modeller(pdb)
     janus.openmm_wrapper.delete_water(mod)
     res = mod.topology.getNumResidues()
     atom = mod.topology.getNumAtoms()
-    assert res == 37
-    assert atom == 584
+    assert res == 3
+    assert atom == 33 
