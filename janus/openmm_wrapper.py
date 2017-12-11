@@ -249,7 +249,7 @@ def keep_atoms(model, atoms):
     Examples
     --------
     keep_atom(mod, [0,1])
-    keep_atom(mod, ['O', 'H', 'H'])
+    keep_atom(mod, ['O', 'H'])
     """
     lis = []
 
@@ -342,5 +342,3 @@ def delete_water(model):
     model.deleteWater()
 
 
-def openmm_units():
-    pass

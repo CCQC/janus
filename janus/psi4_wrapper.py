@@ -25,9 +25,9 @@ def get_psi4_energy(molecule, param, method):
     """
     psi4.core.clean()
     set_up_psi4(molecule, param)
-    # energy = psi4.energy(method)
-    energy, wavefunction = psi4.energy(method,
-                                       return_wfn=True)
+    energy = psi4.energy(method)
+   # energy, wavefunction = psi4.energy(method,
+   #                                    return_wfn=True)
     return energy
 
 
@@ -113,10 +113,6 @@ def get_psi4_qmmm():
     pass
 
 
-def psi4_units():
-    pass
-
-
 def get_psi4_wavefunction(system):
     """
     Calls Psi4 to obtain the wavefunction of the QM region
@@ -158,5 +154,6 @@ def set_up_psi4(molecule, parameters):
     set_up_psi4(sys.molecule, sys.parameters)
     """
     # psi4.core.set_output_file('output.dat', True)
+    psi4.core.be_quiet()
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)

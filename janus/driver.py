@@ -9,5 +9,3 @@ def energy():
     # Initialize system
     sys = parser.parse_input(input_file)
     sys.get_qmmm_energy()
- 
-
