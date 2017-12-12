@@ -31,9 +31,9 @@ def test_get_openmm_energy(datafiles):
     sim = janus.openmm_wrapper.create_openmm_simulation(sys, 
                                                         pdb.topology,
                                                         pdb.positions)
-    potential, kinetic = janus.openmm_wrapper.get_state_info(sim)
-    energy = potential + kinetic
-    assert np.allclose(energy._value, -27.732873913249932)
+    state  = janus.openmm_wrapper.get_state_info(sim)
+    energy = state['potential'] + state['kinetic']
+    assert np.allclose(energy, -27.732873913249932)
 
 
 

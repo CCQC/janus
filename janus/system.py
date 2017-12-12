@@ -90,11 +90,11 @@ class System:
 
         # Calls openmm wrapper to get the kinetic and potential
         # energy of the state
-        T, K = ow.get_state_info(self.mod_openmm_sim)
+        state = ow.get_state_info(self.mod_openmm_sim)
 
         # Converts the energy values from kj mol^-1 to au and stores in self
-        self.mod_Te = T._value * System.kjmol_to_au
-        self.mod_Ke = K._value * System.kjmol_to_au
+        self.mod_Te = state['potential'] * System.kjmol_to_au
+        self.mod_Ke = state['kinetic'] * System.kjmol_to_au
 
     def get_openmm_energy(self):
         """
@@ -112,11 +112,11 @@ class System:
 
         # Calls openmm wrapper to get the kinetic and
         # potential energy of the state
-        T, K = ow.get_state_info(self.openmm_sim)
+        state = ow.get_state_info(self.openmm_sim)
 
         # Converts the energy values from kj mol^-1 to au and stores in self
-        self.mm_Te = T._value * System.kjmol_to_au
-        self.mm_Ke = K._value * System.kjmol_to_au
+        self.mm_Te = state['potential'] * System.kjmol_to_au
+        self.mm_Ke = state['kinetic'] * System.kjmol_to_au
 
         self.mm_tot_energy = self.mm_Te + self.mm_Ke
 

@@ -163,8 +163,8 @@ def get_state_info(simulation,
 
     Examples
     --------
-    get_openmm_energy(sim)
-    get_openmm_energy(sim, groups=set{0,1,2})
+    get_state_info(sim)
+    get_state_info(sim, groups=set{0,1,2})
     """
     state = simulation.context.getState(getEnergy=energy,
                                         getPositions=positions,
@@ -175,11 +175,15 @@ def get_state_info(simulation,
                                         enforcePeriodicBox=periodic_box,
                                         groups=groups_included)
 
+    values = {}
     if energy is True:
-        potential = state.getPotentialEnergy()
-        kinetic = state.getKineticEnergy()
-        return potential, kinetic
+        values['potential'] = state.getPotentialEnergy()/kilojoule_per_mole
+        values['kinetic'] = state.getKineticEnergy()/kilojoule_per_mole
 
+    if positions is True: 
+        values['positions'] = state.getPositions(asNumpy=True)/nanometer
+
+    return values
 
 def create_openmm_modeller(pdb):
     """
