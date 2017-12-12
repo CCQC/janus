@@ -43,7 +43,6 @@ class System:
         self.qm_param = qm_param
         self.qm_method = qm_method
         self.qm_molecule = qm_molecule
-        self.qm_molecule = qm_molecule
         self.qm_atoms = qm_atoms
         self.qm_residues = qm_residues
         self.qm_charge_method = qm_charge_method
@@ -64,6 +63,7 @@ class System:
         self.mod_Te = None
         self.mod_Ke = None
         self.mm_qm_energy = None
+        self.mm_positions = None
 
         self.embedding_method = embedding_method
 
@@ -72,21 +72,11 @@ class System:
         if self.mm_pdb is not None:
             self.modeller = ow.create_openmm_modeller(self.mm_pdb)
 
-    def make_psi4_molecule(self):
-
-        get_openmm_positions()
-        for idx in self.qm_atoms:
-            for atom in self.mm_pdb.topology.atoms():
-                if atom.index == idx:
-                    x,y,z = self.mm_positions[idx][0], self.mm_positions[idx][1], self.mm_positions[idx][2]
-                    out += line.format(atom.element.symbol, x, y, z)
-        out += 'no_reorient \n '
-        out += 'no_com \n '
 
     def make_zero_energy():
         pass
 
-    def get_openmm_energy_from_modeller(self):
+    def get_modeller_state_info(self):
         """
         Get the MM energy of a modeller object created with OpenMM
         """
@@ -107,7 +97,7 @@ class System:
         self.mod_Te = state['potential'] * System.kjmol_to_au
         self.mod_Ke = state['kinetic'] * System.kjmol_to_au
 
-    def get_openmm_energy(self):
+    def get_openmm_state_info(self):
         """
         Get MM energy of a MM system described in a given pdb
         """
@@ -123,31 +113,13 @@ class System:
 
         # Calls openmm wrapper to get the kinetic and
         # potential energy of the state
-        state = ow.get_state_info(self.openmm_sim)
+        state = ow.get_state_info(self.openmm_sim, energy=True,positions=True)
 
         # Converts the energy values from kj mol^-1 to au and stores in self
         self.mm_Te = state['potential'] * System.kjmol_to_au
         self.mm_Ke = state['kinetic'] * System.kjmol_to_au
 
         self.mm_tot_energy = self.mm_Te + self.mm_Ke
-
-    def get_openmm_positions(self):
-        """
-        Get MM energy of a MM system described in a given pdb
-        """
-
-        # Create an OpenMM system from object's pdb topology
-        self.openmm_sys = ow.create_openmm_system(self.mm_pdb.topology)
-
-        # Create an OpenMM simulation from the openmm system,
-        # pdb topology and positions
-        self.openmm_sim = ow.create_openmm_simulation(self.openmm_sys,
-                                                      self.mm_pdb.topology,
-                                                      self.mm_pdb.positions)
-
-        # Calls openmm wrapper to get the kinetic and
-        # potential energy of the state
-        state = ow.get_state_info(self.openmm_sim, energy=False,positions=True)
 
         # Converts the energy values from nm to angstroms and stores in self
         self.mm_positions = state['positions'] * 10 
@@ -162,7 +134,7 @@ class System:
         ow.keep_atoms(self.modeller, self.qm_atoms)
 
         # Get the energy of the modeller system
-        self.get_openmm_energy_from_modeller()
+        self.get_modeller_state_info()
 
         # Save the energy of the modeller object
         self.mm_qm_energy = self.mod_Te + self.mod_Ke
@@ -175,7 +147,7 @@ class System:
 
         # Get MM energy on whole system
         if self.mm_tot_energy is None:
-            self.get_openmm_energy()
+            self.get_openmm_state_info()
 
         # Get MM energy on QM region
         if self.mm_qm_energy is None:
@@ -193,5 +165,18 @@ class System:
                             + self.mm_tot_energy \
                             - self.mm_qm_energy
 
-    def make_qm_molecule():
-        pass
+    def make_qm_molecule(self):
+
+        out = ""
+        line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
+        if self.mm_positions is None:
+            self.get_openmm_state_info()
+
+        for idx in self.qm_atoms:
+            for atom in self.mm_pdb.topology.atoms():
+                if atom.index == idx:
+                    x,y,z = self.mm_positions[idx][0], self.mm_positions[idx][1], self.mm_positions[idx][2]
+                    out += line.format(atom.element.symbol, x, y, z)
+        out += 'no_reorient \n '
+        out += 'no_com \n '
+        return out

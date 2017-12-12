@@ -16,16 +16,15 @@ def create_system(datafiles, filename):
     path = str(datafiles)
     pdb_file = os.path.join(path, filename)
 
-    qm_mol = """
-0 1
-O  0.123   3.593   5.841
-H -0.022   2.679   5.599
-H  0.059   3.601   6.796
-O  0.017   6.369   7.293
-H -0.561   5.928   6.669
-H  0.695   6.771   6.749
-noreorient
-nocom"""
+    qm_mol = """O     0.123   3.593   5.841 
+ H    -0.022   2.679   5.599 
+ H     0.059   3.601   6.796 
+ O     0.017   6.369   7.293 
+ H    -0.561   5.928   6.669 
+ H     0.695   6.771   6.749 
+ no_reorient 
+ no_com 
+ """
 
     parameters = \
         {
@@ -44,13 +43,13 @@ nocom"""
 
 
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_get_openmm_energy(datafiles):
+def test_get_openmm_state_info(datafiles):
     """
     Function to test get_openmm_energy function
     of systems class
     """
     sys = create_system(datafiles, 'water.pdb')
-    sys.get_openmm_energy()
+    sys.get_openmm_state_info()
     assert np.allclose(sys.mm_Te, -0.010571307078971566)
     assert np.allclose(sys.mm_Ke, 8.414710565572852e-06)
     assert np.allclose(sys.mm_tot_energy, -0.010562892368405992)
@@ -82,3 +81,14 @@ def test_get_qmmm_energy(datafiles):
     sys.get_qmmm_energy()
     assert np.allclose(sys.qm_energy, -149.92882700821423)
     assert np.allclose(sys.qmmm_energy, -149.93415345759684)
+
+@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
+def test_make_qm_molecule(datafiles):
+    """
+    Function to test get_qmmm_energy function
+    of systems class given the mm energy and the mm energy
+    of the qm region
+    """
+    sys = create_system(datafiles, 'water.pdb')
+    mol = sys.make_qm_molecule()
+    assert mol == sys.qm_molecule
