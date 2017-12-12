@@ -176,6 +176,7 @@ def get_state_info(simulation,
                                         groups=groups_included)
 
     values = {}
+    # divide by unit to give value without units
     if energy is True:
         values['potential'] = state.getPotentialEnergy()/kilojoule_per_mole
         values['kinetic'] = state.getKineticEnergy()/kilojoule_per_mole

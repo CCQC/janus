@@ -9,6 +9,7 @@ class System:
     such as geometry, and energy
     """
     kjmol_to_au = 1/2625.5
+    nm_to_angstrom = 10.0
 
     def __init__(self, qm_param=None, qm_method='scf', qm_molecule=None,
                  qm_charge_method='MULLIKEN_CHARGES',
@@ -79,6 +80,7 @@ class System:
     def get_modeller_state_info(self):
         """
         Get the MM energy of a modeller object created with OpenMM
+        *currently only gives energy 
         """
         # Create an OpenMM system from object's modeller topology
         self.mod_openmm_sys = ow.create_openmm_system(self.modeller.topology)
@@ -99,7 +101,8 @@ class System:
 
     def get_openmm_state_info(self):
         """
-        Get MM energy of a MM system described in a given pdb
+        Get state information of a MM system described in a given pdb
+        *currently only gives energy and positions
         """
 
         # Create an OpenMM system from object's pdb topology
@@ -111,8 +114,7 @@ class System:
                                                       self.mm_pdb.topology,
                                                       self.mm_pdb.positions)
 
-        # Calls openmm wrapper to get the kinetic and
-        # potential energy of the state
+        # Calls openmm wrapper to get specified info 
         state = ow.get_state_info(self.openmm_sim, energy=True,positions=True)
 
         # Converts the energy values from kj mol^-1 to au and stores in self
@@ -122,7 +124,7 @@ class System:
         self.mm_tot_energy = self.mm_Te + self.mm_Ke
 
         # Converts the energy values from nm to angstroms and stores in self
-        self.mm_positions = state['positions'] * 10 
+        self.mm_positions = state['positions'] * System.nm_to_angstrom 
 
 
     def get_mm_qm_energy(self):
