@@ -72,6 +72,17 @@ class System:
         if self.mm_pdb is not None:
             self.modeller = ow.create_openmm_modeller(self.mm_pdb)
 
+    def make_psi4_molecule(self):
+
+        get_openmm_positions()
+        for idx in self.qm_atoms:
+            for atom in self.mm_pdb.topology.atoms():
+                if atom.index == idx:
+                    x,y,z = self.mm_positions[idx][0], self.mm_positions[idx][1], self.mm_positions[idx][2]
+                    out += line.format(atom.element.symbol, x, y, z)
+        out += 'no_reorient \n '
+        out += 'no_com \n '
+
     def make_zero_energy():
         pass
 
@@ -119,6 +130,28 @@ class System:
         self.mm_Ke = state['kinetic'] * System.kjmol_to_au
 
         self.mm_tot_energy = self.mm_Te + self.mm_Ke
+
+    def get_openmm_positions(self):
+        """
+        Get MM energy of a MM system described in a given pdb
+        """
+
+        # Create an OpenMM system from object's pdb topology
+        self.openmm_sys = ow.create_openmm_system(self.mm_pdb.topology)
+
+        # Create an OpenMM simulation from the openmm system,
+        # pdb topology and positions
+        self.openmm_sim = ow.create_openmm_simulation(self.openmm_sys,
+                                                      self.mm_pdb.topology,
+                                                      self.mm_pdb.positions)
+
+        # Calls openmm wrapper to get the kinetic and
+        # potential energy of the state
+        state = ow.get_state_info(self.openmm_sim, energy=False,positions=True)
+
+        # Converts the energy values from nm to angstroms and stores in self
+        self.mm_positions = state['positions'] * 10 
+
 
     def get_mm_qm_energy(self):
         """
