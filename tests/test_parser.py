@@ -16,11 +16,3 @@ def test_input_parser(datafiles):
     assert system.qm_param['e_convergence'] == '1e-8'
     assert system.qm_param['d_convergence'] == '1e-8'
     assert system.qm_method == 'scf'
-    assert system.qm_molecule == '''
-0 1
-O
-H 1 R
-H 1 R 2 A
-R = 1.0
-A = 104.5
-symmetry c1'''

@@ -33,7 +33,7 @@ def parse_input(filename):
     sys.qm_param['d_convergence'] = config['QM_PARAM']['d_convergence']
     sys.qm_param['guess'] = config['QM_PARAM']['guess']
     sys.qm_method = config['QM_PARAM']['method']
-    sys.qm_molecule = config['MOLECULE']['molecule']
+#    sys.qm_molecule = config['MOLECULE']['molecule']
     sys.qm_atoms = config['QM_MM_PARAM']['qm_atoms']
     sys.qm_residues = config['QM_MM_PARAM']['qm_residues']
 
