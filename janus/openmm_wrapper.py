@@ -51,7 +51,8 @@ def write_pdb(mod, filename):
 
 def create_openmm_system(topology, forcefield='amber99sb.xml',
                          forcefield_water='tip3p.xml',
-                         # nonbond=NoCutoff, nonbond_cutoff=1*nanometer,
+                         nonbond=NoCutoff, nonbond_cutoff=1*nanometer,
+                         periodic=False,
                          cnstrnts=HBonds):
     """
     Calls OpenMM to create an OpenMM System object give a topology,
@@ -90,15 +91,21 @@ def create_openmm_system(topology, forcefield='amber99sb.xml',
     """
 
     ff = ForceField(forcefield, forcefield_water)
-
-    openmm_system = ff.createSystem(topology,
-                                    # nonbondedMethod=nonbond,
-                                    # nonbondedCutoff=nonbond_cutoff,
-                                    constraints=cnstrnts)
+    
+    if periodic is True:
+        openmm_system = ff.createSystem(topology,
+                                        constraints=cnstrnts)
+    else:
+        openmm_system = ff.createSystem(topology,
+                                        nonbondedMethod=nonbond,
+                                        nonbondedCutoff=nonbond_cutoff,
+                                        constraints=cnstrnts)
     return openmm_system
 
 
-def create_openmm_simulation(openmm_system, topology, positions):
+def create_openmm_simulation(openmm_system, topology, positions, 
+                             temp=300*kelvin, friction_coefficient=1/picosecond,
+                             step_size=0.002*picoseconds):
     """
     Creates an OpenMM simulation object given
     an OpenMM system, topology, and positions
@@ -117,8 +124,7 @@ def create_openmm_simulation(openmm_system, topology, positions):
     --------
     create_open_simulation(openmm_sys, pdb.topology, pdb.positions)
     """
-    integrator = LangevinIntegrator(300*kelvin,
-                                    1/picosecond, 0.002*picoseconds)
+    integrator = LangevinIntegrator(temp, friction_coefficient, step_size)
 
     simulation = Simulation(topology, openmm_system, integrator)
     simulation.context.setPositions(positions)
