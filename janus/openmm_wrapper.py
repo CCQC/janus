@@ -124,6 +124,11 @@ def create_openmm_simulation(openmm_system, topology, positions):
     simulation.context.setPositions(positions)
     return simulation
 
+def get_sys_info(openmm_sys, 
+                 charges=True):
+    
+    charge = [openmm_sys.getForce(3).getParticleParameters(i)[0]/elementary_charge for i in range(openmm_sys.getNumParticles())]
+    return charge 
 
 def get_state_info(simulation,
                    energy=True,
@@ -183,6 +188,9 @@ def get_state_info(simulation,
 
     if positions is True: 
         values['positions'] = state.getPositions(asNumpy=True)/nanometer
+
+    if forces is True: 
+        values['forces'] = state.getForces(asNumpy=True)
 
     return values
 

@@ -136,7 +136,7 @@ def get_psi4_wavefunction(system):
     system.qm_wfn = wavefunction
 
 
-def set_up_psi4(molecule, parameters):
+def set_up_psi4(molecule, parameters, qmmm=False, charges=[], positions=[]):
     """
     Sets up a psi4 computation
 
@@ -157,3 +157,10 @@ def set_up_psi4(molecule, parameters):
     psi4.core.be_quiet()
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)
+
+    if qmmm is True and len(charges)!= 0 and len(positions) != 0:
+        Chrgfield = QMMM()
+        for i in range(len(charges)):
+            Chrgfield.extern.addCharge(charges[i], positions[i][0], positions[i][1], positions[i][2])
+        psi4.set_global_option_python('EXTERN', Chrgfield.extern)
+            
