@@ -153,10 +153,13 @@ def get_state_info(simulation,
     ----------
     simulation : an OpenMM simulation object
     energy : a bool for specifying whether to get the energy
+            returns in kj/mol
     positions : a bool for specifying whether to get the positions
+                returns in nm
     velocity : a bool for specifying whether to get the velocities
     forces : a bool for specifying whether to get the forces acting
              on the system
+                returns in jk/mol/nm
     parameters : a bool for specifying whether to get the parameters
                  of the state
     param_deriv : a bool for specifying whether to get the parameter
@@ -175,7 +178,7 @@ def get_state_info(simulation,
     Examples
     --------
     get_state_info(sim)
-    get_state_info(sim, groups=set{0,1,2})
+    get_state_info(sim, groups_included=set{0,1,2})
     """
     state = simulation.context.getState(getEnergy=energy,
                                         getPositions=positions,
@@ -196,7 +199,7 @@ def get_state_info(simulation,
         values['positions'] = state.getPositions(asNumpy=True)/nanometer
 
     if forces is True: 
-        values['forces'] = state.getForces(asNumpy=True)
+        values['forces'] = state.getForces(asNumpy=True)/(kilojoule_per_mole/nanometer)
 
     return values
 

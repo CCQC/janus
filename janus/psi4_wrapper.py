@@ -5,7 +5,7 @@ This module is a wrapper that calls Psi4 to obtain QM information
 """
 
 
-def get_psi4_energy(molecule, param, method):
+def get_psi4_energy(molecule, param, method, embedding_method='Mechanical', charges=None,positions=None):
     """
     Calls Psi4 to obtain the energy  of the QM region
 
@@ -24,10 +24,15 @@ def get_psi4_energy(molecule, param, method):
     E = get_psi4_energy(mol, qm_param, 'scf')
     """
     psi4.core.clean()
-    set_up_psi4(molecule, param)
-    energy = psi4.energy(method)
+    
+    if embedding_method == 'Mechanical':
+        set_up_psi4(molecule, param)
+        energy = psi4.energy(method)
    # energy, wavefunction = psi4.energy(method,
    #                                    return_wfn=True)
+    if embedding_method == 'Electrostatic':
+        set_up_psi4(molecule, param, electrostatic, charges, positions)
+        energy = psi4.energy(method)
     return energy
 
 
@@ -109,10 +114,6 @@ def get_psi4_gradient(system):
     system.qm_gradient = np.asarray(G)
 
 
-def get_psi4_qmmm():
-    pass
-
-
 def get_psi4_wavefunction(system):
     """
     Calls Psi4 to obtain the wavefunction of the QM region
@@ -136,7 +137,7 @@ def get_psi4_wavefunction(system):
     system.qm_wfn = wavefunction
 
 
-def set_up_psi4(molecule, parameters, qmmm=False, charges=[], positions=[]):
+def set_up_psi4(molecule, parameters, electrostatic=False, charges=None, positions=None):
     """
     Sets up a psi4 computation
 
@@ -158,9 +159,9 @@ def set_up_psi4(molecule, parameters, qmmm=False, charges=[], positions=[]):
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)
 
-    if qmmm is True and len(charges)!= 0 and len(positions) != 0:
-        Chrgfield = QMMM()
+    if electrostatic is True and charges is not None and positions is not None:
+        Chrgfield = psi4.QMMM()
         for i in range(len(charges)):
             Chrgfield.extern.addCharge(charges[i], positions[i][0], positions[i][1], positions[i][2])
-        psi4.set_global_option_python('EXTERN', Chrgfield.extern)
+        psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
             
