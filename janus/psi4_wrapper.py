@@ -31,7 +31,7 @@ def get_psi4_energy(molecule, param, method, embedding_method='Mechanical', char
    # energy, wavefunction = psi4.energy(method,
    #                                    return_wfn=True)
     if embedding_method == 'Electrostatic':
-        set_up_psi4(molecule, param, electrostatic, charges, positions)
+        set_up_psi4(molecule, param, embedding_method, charges, positions)
         energy = psi4.energy(method)
     return energy
 
@@ -137,7 +137,7 @@ def get_psi4_wavefunction(system):
     system.qm_wfn = wavefunction
 
 
-def set_up_psi4(molecule, parameters, electrostatic=False, charges=None, positions=None):
+def set_up_psi4(molecule, parameters, method='Electrostatic', charges=None, positions=None):
     """
     Sets up a psi4 computation
 
@@ -159,7 +159,7 @@ def set_up_psi4(molecule, parameters, electrostatic=False, charges=None, positio
     mol = psi4.geometry(molecule)
     psi4.set_options(parameters)
 
-    if electrostatic is True and charges is not None and positions is not None:
+    if method=='Electrostatic' and charges is not None and positions is not None:
         Chrgfield = psi4.QMMM()
         for i in range(len(charges)):
             Chrgfield.extern.addCharge(charges[i], positions[i][0], positions[i][1], positions[i][2])
