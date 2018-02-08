@@ -148,9 +148,11 @@ class System:
 
         # Save the energy of the modeller object
         self.mm_qm_energy = self.mod_Te + self.mod_Ke
+    
 
     def get_qmmm_energy(self):
         # TODO: need to work on this...
+        # I don't know if having the if state about energy is None is smart...have to rethink
         """
         Gets energies of needed components and computes
         a qm/mm energy with a specified embedding scheme
@@ -174,7 +176,8 @@ class System:
                                                 self.qm_param,
                                                 self.qm_method,
                                                 'Electrostatic',
-                                                )
+                                                charges,
+                                                positions)
         # Compute the total QM/MM energy based on
         # subtractive Mechanical embedding
         if self.embedding_method == 'Mechanical':
