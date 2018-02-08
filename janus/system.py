@@ -105,6 +105,8 @@ class System:
         # forces currently in kJ/(mol nm) might need to convert to another unit later
         self.mod_forces = state['forces'] 
 
+        self.mod_charges = ow.get_sys_info(self.mod_openmm_sys)
+
         # Consider returning these values instead of saving them...
 
     def get_openmm_state_info(self):
@@ -148,9 +150,8 @@ class System:
 
         # Save the energy of the modeller object
         self.mm_qm_energy = self.mod_Te + self.mod_Ke
-    
 
-    def get_qmmm_energy(self):
+    def additive(self):
         # TODO: need to work on this...
         # I don't know if having the if state about energy is None is smart...have to rethink
         """
@@ -158,6 +159,37 @@ class System:
         a qm/mm energy with a specified embedding scheme
         """
 
+        # Get MM energy on MM region 
+         
+        # Create a modeller object of only the qm atoms
+        ow.delete_atoms(self.modeller, self.qm_atoms)
+
+        # Get the energy of the modeller system
+        self.get_modeller_state_info()
+        self.mod_energy = self.mod_Te + self.mod_Ke
+
+        # Get QM energy
+        if self.qm_energy is None and self.embedding_method == 'Mechanical':
+            self.qm_energy = pw.get_psi4_energy(self.qm_molecule,
+                                                self.qm_param,
+                                                self.qm_method)
+
+        if self.qm_energy is None and self.embedding_method == 'Electrostatic':
+            self.qm_energy = pw.get_psi4_energy(self.qm_molecule,
+                                                self.qm_param,
+                                                self.qm_method,
+                                                'Electrostatic',
+                                                self.mod_charges,
+                                                self.mod_positions)
+
+        self.qmmm_energy = self.mod_energy + self.qm_energy 
+
+
+    def subtractive(self):
+        """
+        Gets energies of needed components and computes
+        a qm/mm energy with a specified embedding scheme
+        """
         # Get MM energy on whole system
         if self.mm_tot_energy is None:
             self.get_openmm_state_info()
@@ -171,13 +203,6 @@ class System:
             self.qm_energy = pw.get_psi4_energy(self.qm_molecule,
                                                 self.qm_param,
                                                 self.qm_method)
-        if self.qm_energy is None and self.embedding_method == 'Electrostatic':
-            self.qm_energy = pw.get_psi4_energy(self.qm_molecule,
-                                                self.qm_param,
-                                                self.qm_method,
-                                                'Electrostatic',
-                                                charges,
-                                                positions)
         # Compute the total QM/MM energy based on
         # subtractive Mechanical embedding
         if self.embedding_method == 'Mechanical':

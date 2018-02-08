@@ -69,7 +69,7 @@ def test_get_mm_qm_energy(datafiles):
 
 
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_get_qmmm_energy(datafiles):
+def test_subtractive(datafiles):
     """
     Function to test get_qmmm_energy function
     of systems class given the mm energy and the mm energy
@@ -78,7 +78,7 @@ def test_get_qmmm_energy(datafiles):
     sys = create_system(datafiles, 'water.pdb')
     sys.mm_tot_energy = -0.010562892368405992
     sys.mm_qm_energy = -0.005236442985800477
-    sys.get_qmmm_energy()
+    sys.subtractive()
     assert np.allclose(sys.qm_energy, -149.92882700821423)
     assert np.allclose(sys.qmmm_energy, -149.93415345759684)
 
