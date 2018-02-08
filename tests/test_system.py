@@ -67,7 +67,6 @@ def test_get_mm_qm_energy(datafiles):
     assert np.allclose(sys.mod_Ke, 3.0368070644980085e-06)
     assert np.allclose(sys.mm_qm_energy, -0.005236442985800477)
 
-
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
 def test_subtractive(datafiles):
     """
@@ -81,6 +80,30 @@ def test_subtractive(datafiles):
     sys.subtractive()
     assert np.allclose(sys.qm_energy, -149.92882700821423)
     assert np.allclose(sys.qmmm_energy, -149.93415345759684)
+
+@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
+def test_additive_mech(datafiles):
+    """
+    Function to test get_qmmm_energy function
+    of systems class given the mm energy and the mm energy
+    of the qm region
+    """
+    sys = create_system(datafiles, 'water.pdb')
+    sys.additive()
+    assert np.allclose(sys.qmmm_energy, -149.92882700821423)
+
+@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
+def test_additive_elec(datafiles):
+    """
+    Function to test get_qmmm_energy function
+    of systems class given the mm energy and the mm energy
+    of the qm region
+    """
+    sys = create_system(datafiles, 'water.pdb')
+    sys.embedding_method = 'Electrostatic'
+    sys.additive()
+    assert np.allclose(sys.qmmm_energy, -149.9327890982534)
+
 
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
 def test_make_qm_molecule(datafiles):
