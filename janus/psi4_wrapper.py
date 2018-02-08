@@ -24,15 +24,10 @@ def get_psi4_energy(molecule, param, method, embedding_method='Mechanical', char
     E = get_psi4_energy(mol, qm_param, 'scf')
     """
     psi4.core.clean()
-    
-    if embedding_method == 'Mechanical':
-        set_up_psi4(molecule, param)
-        energy = psi4.energy(method)
+    set_up_psi4(molecule, param, embedding_method, charges, positions)
+    energy = psi4.energy(method)
    # energy, wavefunction = psi4.energy(method,
    #                                    return_wfn=True)
-    if embedding_method == 'Electrostatic':
-        set_up_psi4(molecule, param, embedding_method, charges, positions)
-        energy = psi4.energy(method)
     return energy
 
 
