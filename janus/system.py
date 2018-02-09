@@ -70,9 +70,16 @@ class System:
 
         if self.mm_pdb_file is not None:
             self.mm_pdb = ow.create_openmm_pdb(self.mm_pdb_file)
-        if self.mm_pdb is not None:
-            self.modeller = ow.create_openmm_modeller(self.mm_pdb)
 
+    def make_modeller(self, keep_qm=False):
+        if self.mm_pdb is not None:
+            modeller =  ow.create_openmm_modeller(self.mm_pdb)
+        if keep_qm is False: 
+            ow.delete_atoms(modeller, self.qm_atoms)
+        else: 
+            ow.keep_atoms(modeller, self.qm_atoms)
+
+        return modeller
 
     def make_zero_energy():
         pass
@@ -135,19 +142,19 @@ class System:
 
 
 
-    def get_mm_qm_energy(self):
-        """
-        Get the MM energy of a user-defined QM system
-        """
-
-        # Create a modeller object of only the qm atoms
-        ow.keep_atoms(self.modeller, self.qm_atoms)
-
-        # Get the energy of the modeller system
-        self.get_modeller_state_info()
-
-        # Save the energy of the modeller object
-        self.mm_qm_energy = self.mod_Te + self.mod_Ke
+#    def get_mm_qm_energy(self):
+#        """
+#        Get the MM energy of a user-defined QM system
+#        """
+#
+#        # Create a modeller object of only the qm atoms
+#        ow.keep_atoms(self.modeller, self.qm_atoms)
+#
+#        # Get the energy of the modeller system
+#        self.get_modeller_state_info()
+#
+#        # Save the energy of the modeller object
+#        self.mm_qm_energy = self.mod_Te + self.mod_Ke
 
     def additive(self):
         # TODO: need to work on this...
@@ -158,29 +165,42 @@ class System:
         """
 
         # Get MM energy on MM region 
-         
-        # Create a modeller object of only the qm atoms
-        ow.delete_atoms(self.modeller, self.qm_atoms)
-
+        # Create a modeller object of only the mm atoms
+        mm_mm = self.make_modeller()
         # Get the energy of the modeller system
-        self.get_modeller_state_info()
-        self.mod_energy = self.mod_Te + self.mod_Ke
+        mm_mm_sys, mm_mm_state = System.get_info(mm_mm, charges=True)
 
         # Get QM energy
-        if self.qm_energy is None and self.embedding_method == 'Mechanical':
+        if self.embedding_method == 'Mechanical':
             self.qm_energy = pw.get_psi4_energy(self.qm_molecule,
                                                 self.qm_param,
                                                 self.qm_method)
+            #get only nonbonded energy of whole system
+            all_nb_sys, all_nb_state = System.get_info(self.mm_pdb, forces='nonbonded') 
+        
+            #get only nonbonded energy of qm region 
+            mm_qm = self.make_modeller(keep_qm=True) 
+            qm_nb_sys, qm_nb_state = System.get_info(mm_qm, forces='nonbonded')
 
-        if self.qm_energy is None and self.embedding_method == 'Electrostatic':
+            #get only nonbonded energy of mm region 
+            mm_nb_sys, mm_nb_state = System.get_info(mm_mm, forces='nonbonded') 
+    
+            self.nb_energy = all_nb_state['energy'] - qm_nb_state['energy'] - mm_nb_state['energy']
+
+        # at somepoint put if qm_energy is None qualifier? 
+        if self.embedding_method == 'Electrostatic':
             self.qm_energy = pw.get_psi4_energy(self.qm_molecule,
                                                 self.qm_param,
                                                 self.qm_method,
                                                 'Electrostatic',
-                                                self.mod_charges,
-                                                self.mod_positions)
+                                                mm_mm_state['charge'],
+                                                mm_mm_state['positions'])
 
-        self.qmmm_energy = self.mod_energy + self.qm_energy 
+            # need to implement no LJ stuff
+            self.nb_energy = 0 
+
+
+        self.qmmm_energy = mm_mm_state['energy'] + self.qm_energy + self.nb_energy
 
 
     def subtractive(self):
@@ -189,12 +209,13 @@ class System:
         a qm/mm energy with a specified embedding scheme
         """
         # Get MM energy on whole system
-        if self.mm_tot_energy is None:
-            self.get_openmm_state_info()
+        all_sys, all_state = System.get_info(self.mm_pdb)
+        print(all_state['energy'])
 
         # Get MM energy on QM region
-        if self.mm_qm_energy is None:
-            self.get_mm_qm_energy()
+        mm_qm = self.make_modeller(keep_qm=True) 
+        mm_qm_sys, mm_qm_state = System.get_info(mm_qm)
+        print(mm_qm_state['energy'])
 
         # Get QM energy
         if self.qm_energy is None and self.embedding_method == 'Mechanical':
@@ -205,15 +226,16 @@ class System:
         # subtractive Mechanical embedding
         if self.embedding_method == 'Mechanical':
             self.qmmm_energy = self.qm_energy \
-                            + self.mm_tot_energy \
-                            - self.mm_qm_energy
+                            + all_state['energy'] \
+                            - mm_qm_state['energy']
 
     def make_qm_molecule(self):
 
         out = ""
         line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
         if self.mm_positions is None:
-            self.get_openmm_state_info()
+            sys, state = System.get_info(self.mm_pdb)
+            self.mm_positions = state['positions']
 
         for idx in self.qm_atoms:
             for atom in self.mm_pdb.topology.atoms():
@@ -224,7 +246,7 @@ class System:
         out += 'no_com \n '
         return out
 
-    def get_info(pdb, forces=None, charges=False): 
+    def get_info(pdb, forces=None, charges=False):
 
         # Create an OpenMM system from an object's topology
         system = ow.create_openmm_system(pdb.topology)
@@ -244,6 +266,7 @@ class System:
                                 energy=True, 
                                 positions=True, 
                                 forces=True)
+        state['energy'] = state['potential'] + state['kinetic']
         if charges is True:
             state['charge'] = ow.get_sys_info(system)
             
