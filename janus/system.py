@@ -77,64 +77,62 @@ class System:
     def make_zero_energy():
         pass
 
-    def get_modeller_state_info(self):
-        """
-        Get the MM energy of a modeller object created with OpenMM
-        *currently only gives energy 
-        *but can now get positions and forces if needed
-        """
-        # Create an OpenMM system from object's modeller topology
-        self.mod_openmm_sys = ow.create_openmm_system(self.modeller.topology)
+#    def get_modeller_state_info(self):
+#        """
+#        Get the MM energy of a modeller object created with OpenMM
+#        *currently only gives energy 
+#        *but can now get positions and forces if needed
+#        """
+#        # Create an OpenMM system from object's modeller topology
+#        self.mod_openmm_sys = ow.create_openmm_system(self.modeller.topology)
+#
+#        # Create an OpenMM simulation from the openmm system,
+#        # modeller topology and positions.
+#        self.mod_openmm_sim = ow.create_openmm_simulation(self.mod_openmm_sys,
+#                                                          self.modeller.topology,
+#                                                          self.modeller.positions)
+#
+#        # Calls openmm wrapper to get the kinetic and potential
+#        # energy of the state
+#        state = ow.get_state_info(self.mod_openmm_sim, energy=True, positions=True, forces=True)
+#
+## Converts the energy values from kj mol^-1 to au and stores in self
+#self.mod_Te = state['potential'] 
+#self.mod_Ke = state['kinetic'] 
+#
+#self.mod_positions = state['positions'] 
+#
+## forces currently in kJ/(mol nm) might need to convert to another unit later
+#self.mod_forces = state['forces'] 
 
-        # Create an OpenMM simulation from the openmm system,
-        # modeller topology and positions.
-        self.mod_openmm_sim = ow.create_openmm_simulation(self.mod_openmm_sys,
-                                                          self.modeller.topology,
-                                                          self.modeller.positions)
 
-        # Calls openmm wrapper to get the kinetic and potential
-        # energy of the state
-        state = ow.get_state_info(self.mod_openmm_sim, energy=True, positions=True, forces=True)
+#    def get_openmm_state_info(self):
+#        """
+#        Get state information of a MM system described in a given pdb
+#        *currently only gives energy and positions
+#        """
+#
+#        # Create an OpenMM system from object's pdb topology
+#        self.openmm_sys = ow.create_openmm_system(self.mm_pdb.topology)
+#        
+#        # Create an OpenMM simulation from the openmm system,
+#        # pdb topology and positions
+#        self.openmm_sim = ow.create_openmm_simulation(self.openmm_sys,
+#                                                      self.mm_pdb.topology,
+#                                                      self.mm_pdb.positions)
+#
+#        # Calls openmm wrapper to get specified info 
+#        state = ow.get_state_info(self.openmm_sim, energy=True,positions=True)
+#
+#        # Converts the energy values from kj mol^-1 to au and stores in self
+#        self.mm_Te = state['potential'] 
+#        self.mm_Ke = state['kinetic'] 
+#
+#        self.mm_tot_energy = self.mm_Te + self.mm_Ke
+#
+#        # Converts the energy values from nm to angstroms and stores in self
+#        self.mm_positions = state['positions'] 
 
-        # Converts the energy values from kj mol^-1 to au and stores in self
-        self.mod_Te = state['potential'] * System.kjmol_to_au
-        self.mod_Ke = state['kinetic'] * System.kjmol_to_au
-
-        self.mod_positions = state['positions'] * System.nm_to_angstrom
-
-        # forces currently in kJ/(mol nm) might need to convert to another unit later
-        self.mod_forces = state['forces'] 
-
-        self.mod_charges = ow.get_sys_info(self.mod_openmm_sys)
-
-        # Consider returning these values instead of saving them...
-
-    def get_openmm_state_info(self):
-        """
-        Get state information of a MM system described in a given pdb
-        *currently only gives energy and positions
-        """
-
-        # Create an OpenMM system from object's pdb topology
-        self.openmm_sys = ow.create_openmm_system(self.mm_pdb.topology)
-        
-        # Create an OpenMM simulation from the openmm system,
-        # pdb topology and positions
-        self.openmm_sim = ow.create_openmm_simulation(self.openmm_sys,
-                                                      self.mm_pdb.topology,
-                                                      self.mm_pdb.positions)
-
-        # Calls openmm wrapper to get specified info 
-        state = ow.get_state_info(self.openmm_sim, energy=True,positions=True)
-
-        # Converts the energy values from kj mol^-1 to au and stores in self
-        self.mm_Te = state['potential'] * System.kjmol_to_au
-        self.mm_Ke = state['kinetic'] * System.kjmol_to_au
-
-        self.mm_tot_energy = self.mm_Te + self.mm_Ke
-
-        # Converts the energy values from nm to angstroms and stores in self
-        self.mm_positions = state['positions'] * System.nm_to_angstrom 
 
 
     def get_mm_qm_energy(self):
@@ -225,3 +223,28 @@ class System:
         out += 'no_reorient \n '
         out += 'no_com \n '
         return out
+
+    def get_info(pdb, forces=None, charges=False): 
+
+        # Create an OpenMM system from an object's topology
+        system = ow.create_openmm_system(pdb.topology)
+
+        if forces=='nonbonded':
+            for i in range(3):
+                system.removeForce(0)
+
+
+        # Create an OpenMM simulation from the openmm system,
+        # topology and positions.
+        simulation = ow.create_openmm_simulation(system,
+                                                pdb.topology, pdb.positions)
+
+        # Calls openmm wrapper to get information specified
+        state = ow.get_state_info(simulation,
+                                energy=True, 
+                                positions=True, 
+                                forces=True)
+        if charges is True:
+            state['charge'] = ow.get_sys_info(system)
+            
+        return system, state

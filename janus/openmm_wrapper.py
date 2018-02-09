@@ -7,6 +7,8 @@ from simtk.openmm import *
 from simtk.unit import *
 from sys import stdout
 
+kjmol_to_au = 1/2625.5 
+nm_to_angstrom = 10.0
 
 def create_openmm_pdb(mm_pdb_file):
     """
@@ -191,12 +193,16 @@ def get_state_info(simulation,
 
     values = {}
     # divide by unit to give value without units
+    # then convert value to atomic units
     if energy is True:
         values['potential'] = state.getPotentialEnergy()/kilojoule_per_mole
+        values['potential'] *= kjmol_to_au
         values['kinetic'] = state.getKineticEnergy()/kilojoule_per_mole
+        values['kinetic'] *= kjmol_to_au
 
     if positions is True: 
         values['positions'] = state.getPositions(asNumpy=True)/nanometer
+        values['positions'] *= nm_to_angstrom
 
     if forces is True: 
         values['forces'] = state.getForces(asNumpy=True)/(kilojoule_per_mole/nanometer)
