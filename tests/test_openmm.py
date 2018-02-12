@@ -23,7 +23,7 @@ def create_system(datafiles, filename):
 
 
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_get_openmm_energy(datafiles):
+def test_get_state_info(datafiles):
     """
     Function to test that get_openmm_energy is getting energy correctly.
     """
@@ -33,7 +33,7 @@ def test_get_openmm_energy(datafiles):
                                                         pdb.positions)
     state  = janus.openmm_wrapper.get_state_info(sim)
     energy = state['potential'] + state['kinetic']
-    assert np.allclose(energy, -27.732873913249932)
+    assert np.allclose(energy, -0.01056289236)
 
 
 

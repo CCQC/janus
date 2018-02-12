@@ -43,29 +43,20 @@ def create_system(datafiles, filename):
 
 
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_get_openmm_state_info(datafiles):
+def test_get_info(datafiles):
     """
     Function to test get_openmm_energy function
     of systems class
     """
     sys = create_system(datafiles, 'water.pdb')
-    sys.get_openmm_state_info()
+    system, state = janus.system.System.get_info(sys.mm_pdb)
+    
+    sys.mm_Te = state['potential']
+    sys.mm_Ke = state['kinetic']
+    sys.mm_tot_energy = state['energy']
     assert np.allclose(sys.mm_Te, -0.010571307078971566)
     assert np.allclose(sys.mm_Ke, 8.414710565572852e-06)
     assert np.allclose(sys.mm_tot_energy, -0.010562892368405992)
-
-
-@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_get_mm_qm_energy(datafiles):
-    """
-    Function to test get_mm_qm_energy function
-    of systems class
-    """
-    sys = create_system(datafiles, 'water.pdb')
-    sys.get_mm_qm_energy()
-    assert np.allclose(sys.mod_Te, -0.005239479792864975)
-    assert np.allclose(sys.mod_Ke, 3.0368070644980085e-06)
-    assert np.allclose(sys.mm_qm_energy, -0.005236442985800477)
 
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
 def test_subtractive(datafiles):
@@ -90,7 +81,7 @@ def test_additive_mech(datafiles):
     """
     sys = create_system(datafiles, 'water.pdb')
     sys.additive()
-    assert np.allclose(sys.qmmm_energy, -149.92882700821423)
+    assert np.allclose(sys.qmmm_energy, -149.93415345759684)
 
 @pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
 def test_additive_elec(datafiles):
