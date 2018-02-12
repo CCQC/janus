@@ -134,9 +134,9 @@ class System:
             # get only nonbonded energy of mm region
             mm_nb_sys, mm_nb_state = System.get_info(mm_mm, forces='nonbonded')
 
-            self.nb_energy = all_nb_state['energy']
-                            - qm_nb_state['energy']
-                            - mm_nb_state['energy']
+            self.nb_energy = all_nb_state['energy'] \
+                             - qm_nb_state['energy'] \
+                             - mm_nb_state['energy']
 
         # at somepoint put if qm_energy is None qualifier?
         if self.embedding_method == 'Electrostatic':
@@ -150,8 +150,9 @@ class System:
             # need to implement no LJ stuff
             self.nb_energy = 0
 
-        self.qmmm_energy = mm_mm_state['energy']
-                           + self.qm_energy + self.nb_energy
+        self.qmmm_energy = mm_mm_state['energy']\
+                           + self.qm_energy\
+                           + self.nb_energy
 
     def subtractive(self):
         """
@@ -207,8 +208,8 @@ class System:
         for idx in self.qm_atoms:
             for atom in self.mm_pdb.topology.atoms():
                 if atom.index == idx:
-                    x, y, z = self.mm_positions[idx][0],
-                              self.mm_positions[idx][1],
+                    x, y, z = self.mm_positions[idx][0],\
+                              self.mm_positions[idx][1],\
                               self.mm_positions[idx][2]
                     out += line.format(atom.element.symbol, x, y, z)
         out += 'no_reorient \n '
