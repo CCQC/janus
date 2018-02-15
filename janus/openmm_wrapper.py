@@ -2,9 +2,9 @@
 This module is a wrapper that calls OpenMM
 to obtain MM information
 """
-from simtk.openmm.app import *
-from simtk.openmm import *
-from simtk.unit import *
+import simtk.openmm.app as OM_app
+import simtk.openmm as OM 
+import simtk.unit as OM_unit
 from sys import stdout
 
 kjmol_to_au = 1/2625.5 
@@ -27,7 +27,7 @@ def create_openmm_pdb(mm_pdb_file):
     model = create_openmm_pdb('input.pdb')
     """
 
-    pdb = PDBFile(mm_pdb_file)
+    pdb = OM_app.PDBFile(mm_pdb_file)
     return pdb
 
 
@@ -48,14 +48,14 @@ def write_pdb(mod, filename):
     --------
     write_pdb(mod, 'input.pdb')
     """
-    PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
+    OM.PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
 
 
 def create_openmm_system(topology, forcefield='amber99sb.xml',
                          forcefield_water='tip3p.xml',
-                         nonbond=NoCutoff, nonbond_cutoff=1*nanometer,
+                         nonbond=OM_app.NoCutoff, nonbond_cutoff=1*OM_unit.nanometer,
                          periodic=False,
-                         cnstrnts=HBonds):
+                         cnstrnts=OM_app.HBonds):
     """
     Calls OpenMM to create an OpenMM System object give a topology,
     forcefield, and other paramters
@@ -92,7 +92,7 @@ def create_openmm_system(topology, forcefield='amber99sb.xml',
                 should I define my own objects
     """
 
-    ff = ForceField(forcefield, forcefield_water)
+    ff = OM_app.ForceField(forcefield, forcefield_water)
     
     if periodic is True:
         openmm_system = ff.createSystem(topology,
@@ -106,8 +106,8 @@ def create_openmm_system(topology, forcefield='amber99sb.xml',
 
 
 def create_openmm_simulation(openmm_system, topology, positions, 
-                             temp=300*kelvin, friction_coefficient=1/picosecond,
-                             step_size=0.002*picoseconds):
+                             temp=300*OM_unit.kelvin, friction_coefficient=1/OM_unit.picosecond,
+                             step_size=0.002*OM_unit.picoseconds):
     """
     Creates an OpenMM simulation object given
     an OpenMM system, topology, and positions
@@ -126,16 +126,16 @@ def create_openmm_simulation(openmm_system, topology, positions,
     --------
     create_open_simulation(openmm_sys, pdb.topology, pdb.positions)
     """
-    integrator = LangevinIntegrator(temp, friction_coefficient, step_size)
+    integrator = OM.LangevinIntegrator(temp, friction_coefficient, step_size)
 
-    simulation = Simulation(topology, openmm_system, integrator)
+    simulation = OM_app.Simulation(topology, openmm_system, integrator)
     simulation.context.setPositions(positions)
     return simulation
 
 def get_sys_info(openmm_sys, 
                  charges=True):
     
-    charge = [openmm_sys.getForce(3).getParticleParameters(i)[0]/elementary_charge for i in range(openmm_sys.getNumParticles())]
+    charge = [openmm_sys.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(openmm_sys.getNumParticles())]
     return charge 
 
 def get_state_info(simulation,
@@ -195,17 +195,17 @@ def get_state_info(simulation,
     # divide by unit to give value without units
     # then convert value to atomic units
     if energy is True:
-        values['potential'] = state.getPotentialEnergy()/kilojoule_per_mole
+        values['potential'] = state.getPotentialEnergy()/OM_unit.kilojoule_per_mole
         values['potential'] *= kjmol_to_au
-        values['kinetic'] = state.getKineticEnergy()/kilojoule_per_mole
+        values['kinetic'] = state.getKineticEnergy()/OM_unit.kilojoule_per_mole
         values['kinetic'] *= kjmol_to_au
 
     if positions is True: 
-        values['positions'] = state.getPositions(asNumpy=True)/nanometer
+        values['positions'] = state.getPositions(asNumpy=True)/OM_unit.nanometer
         values['positions'] *= nm_to_angstrom
 
     if forces is True: 
-        values['forces'] = state.getForces(asNumpy=True)/(kilojoule_per_mole/nanometer)
+        values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
 
     return values
 
@@ -226,7 +226,7 @@ def create_openmm_modeller(pdb):
     model = create_openmm_modeller(pdb)
     """
 
-    return Modeller(pdb.topology, pdb.positions)
+    return OM_app.Modeller(pdb.topology, pdb.positions)
 
 
 def keep_residues(model, residues):
