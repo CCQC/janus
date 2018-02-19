@@ -6,12 +6,10 @@ from .system import System
 from .qm_wrapper import QM_wrapper 
 from .mm_wrapper import MM_wrapper 
 
-def energy(input_file):
-    
-    # Initialize system
-    sys = parser.parse_input(input_file)
-    sys.make_qm_molecule()
-    sys.get_qmmm_energy()
+with open('input.json') as parameter_file:
+    parameters = json.load(parameter_file)
+
+system = System(parameters['qmmm'], parameters['qm'], parameters['mm'])
 
 def additive():
     """

@@ -5,14 +5,8 @@ class System(object):
     such as geometry, and energy
     """
 
-    def __init__(self, qm_param=None, qm_method='scf', qm_molecule=None,
-                 qm_charge_method='MULLIKEN_CHARGES',
-                 qm_atoms=None, qm_residues=None, mm_pdb_file=None,
-                 mm_forcefield='amber99sb.xml',
-                 mm_forcefield_water='tip3p.xml',
-                 mm_nonbond_method=None, mm_nonbond_cutoff=None,
-                 mm_constraints=None, mm_temp=None,
-                 embedding_method='Mechanical'):
+    def __init__(self, qmmm, qm, mm):
+
         """
         Initializes system with None values for all parameters
 
@@ -35,31 +29,22 @@ class System(object):
         method = System.qm_method()
         """
 
-        self.qm_param = qm_param
-        self.qm_method = qm_method
-        self.qm_molecule = qm_molecule
-        self.qm_atoms = qm_atoms
-        self.qm_residues = qm_residues
-        self.qm_charge_method = qm_charge_method
+        self.qm_param = qm['qm_param']
+        self.qm_method = qm['qm_method']
+        self.qm_atoms = qm['qm_atoms']
+        self.qm_residues = qm['qm_residues']
+        self.qm_charge_method = qm['qm_charge_method']
 
-        self.mm_pdb_file = mm_pdb_file
-        self.mm_forcefield = mm_forcefield
-        self.mm_forcefield_water = mm_forcefield_water
-        self.mm_nonbond_method = mm_nonbond_method
-        self.mm_nonbond_cutoff = mm_nonbond_cutoff
-        self.mm_constraints = mm_constraints
-        self.mm_temp = mm_temp
+    # need to add other mm parameters 
+        self.mm_pdb_file = mm['mm_pdb_file']
+        self.mm_forcefield = mm['mm_forcefield']
+        self.mm_forcefield_water = mm['mm_forcefield_water']
+        self.mm_nonbond_method = mm['mm_nonbond_method']
+        self.mm_nonbond_cutoff = mm['mm_nonbond_cutoff']
+        self.mm_constraints = mm['mm_constraints']
+        self.mm_temp = mm['mm_temp']
 
-        self.mm_pdb = None
-        self.qm_energy = None
-        self.mm_Te = None
-        self.mm_Ke = None
-        self.mm_tot_energy = None
-        self.mod_Te = None
-        self.mod_Ke = None
-        self.mm_qm_energy = None
-        self.mm_positions = None
+        self.embedding_method = qmmm['embedding_method']
 
-        self.embedding_method = embedding_method
-
+    # need to add all the other parameters written into system e.g. energy
 
