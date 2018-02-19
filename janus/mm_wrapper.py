@@ -23,6 +23,9 @@ class MM_wrapper(object):
     def ps_ss_info(self):
         pass
 
+    def qm_positions(self):
+        pass
+
     def get_ss(self):
         """
         mm energy and gradients on ss only
@@ -54,4 +57,11 @@ class MM_wrapper(object):
         if self._ps_ss is None:
             self.ps_ss_info()
         return self._ps_ss
+
+    def get_qm_positions(self):
+        if self._system.qm_positions is None:
+            self.qm_positions()
+        return self._qm_positions
+
+
     

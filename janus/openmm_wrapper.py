@@ -5,6 +5,7 @@ to obtain MM information
 import simtk.openmm.app as OM_app
 import simtk.openmm as OM 
 import simtk.unit as OM_unit
+from . import mm_wrapper
 
 class OpenMM_wrapper(MM_wrapper):
 
@@ -39,6 +40,20 @@ class OpenMM_wrapper(MM_wrapper):
         self._ps_ss['energy'] = self._es_nb['energy'] \
                             - self.ss_nb['energy'] \
                             - self.ps_nb['energy']
+    def qm_positions(self):
+
+        out = ""
+        line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
+        if self._es is not None:
+            for idx in self._system.qm_atoms:
+                for atom in self._pdb.topology.atoms():
+                    if atom.index == idx:
+                        x, y, z = self._es['positions'][idx][0],\
+                                  self._es['positions'][idx][1],\
+                                  self._es['positions'][idx][2]
+                        out += line.format(atom.element.symbol, x, y, z)
+        self._qm_positions = out
+        
 
     def get_info(self, pdb, forces=None, charges=False):
         """
