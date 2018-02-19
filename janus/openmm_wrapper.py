@@ -5,7 +5,7 @@ to obtain MM information
 import simtk.openmm.app as OM_app
 import simtk.openmm as OM 
 import simtk.unit as OM_unit
-from . import mm_wrapper
+from .mm_wrapper import MM_wrapper
 
 class OpenMM_wrapper(MM_wrapper):
 

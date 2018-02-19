@@ -63,5 +63,7 @@ class MM_wrapper(object):
             self.qm_positions()
         return self._qm_positions
 
+    def make_zero_energy(self):
+        pass
 
     

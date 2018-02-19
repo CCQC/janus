@@ -1,6 +1,6 @@
 import psi4
 import numpy as np
-from . import qm_wrapper
+from .qm_wrapper import QM_wrapper
 """
 This module is a wrapper that calls Psi4 to obtain QM information
 """
