@@ -13,33 +13,33 @@ class OpenMM_wrapper(MM_wrapper):
         super().__init__(system, "OpenMM")
 
         self._pdb = OpenMM_wrapper.create_pdb(self._system.mm_pdb_file)
-        self._ps_modeller = None
+        self._primary_subsys_modeller = None
 
-    def es_info(self):
-        self._es_system, self._es_simulation, self._es = self.get_info(self._pdb)
+    def entire_sys_info(self):
+        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb)
         
-    def ss_info(self):
-        self._ss_modeller = self.create_modeller(keep_qm=False)
-        self._ss_system, self._ss_simulation, self._ss = self.get_info(self._ss_modeller, charges=True)
+    def second_subsys_info(self):
+        self._second_subsys_modeller = self.create_modeller(keep_qm=False)
+        self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True)
 
-    def ps_info(self):
-        self._ps_modeller = self.create_modeller(keep_qm=True)
-        self._ps_system, self._ps_simulation, self._ps = self.get_info(self._ps_modeller)
+    def primary_subsys_info(self):
+        self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
+        self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller)
 
-    def ps_ss_info(self):
+    def boundary_info(self):
         
-        self._es_nb_system, self._es_nb_simulation, self._es_nb = self.get_info(self._pdb, forces='nonbonded')
-        if self._ss_modeller is None:
-            self._ss_modeller = self.create_modeller(keep_qm=False)
-        self._ss_nb_system, self._ss_nb_simulation, self._ss_nb = self.get_info(self._ss_modeller, forces='nonbonded')
-        if self._ps_modeller is None:
-            self._ps_modeller = self.create_modeller(keep_qm=True)
-        self._ps_nb_system, self._ps_nb_simulation, self._ps_nb = self.get_info(self._ps_modeller, forces='nonbonded')
+        self._entire_sys_nb_system, self._entire_sys_nb_simulation, self._entire_sys_nb = self.get_info(self._pdb, forces='nonbonded')
+        if self._second_subsys_modeller is None:
+            self._second_subsys_modeller = self.create_modeller(keep_qm=False)
+        self._second_subsys_nb_system, self._second_subsys_nb_simulation, self._second_subsys_nb = self.get_info(self._second_subsys_modeller, forces='nonbonded')
+        if self._primary_subsys_modeller is None:
+            self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
+        self._primary_subsys_nb_system, self._primary_subsys_nb_simulation, self._primary_subsys_nb = self.get_info(self._primary_subsys_modeller, forces='nonbonded')
 
-        self._ps_ss = {}
-        self._ps_ss['energy'] = self._es_nb['energy'] \
-                            - self._ss_nb['energy'] \
-                            - self._ps_nb['energy']
+        self._boundary = {}
+        self._boundary['energy'] = self._entire_sys_nb['energy'] \
+                            - self._second_subsys_nb['energy'] \
+                            - self._primary_subsys_nb['energy']
     def qm_positions(self):
 
         positions = self._pdb.getPositions(asNumpy=True)/OM_unit.nanometer
@@ -259,8 +259,8 @@ class OpenMM_wrapper(MM_wrapper):
                     derivatives of the state
         periodic_box : a bool for whether to translate the positions so the
                     center of every molecule lies in the same periodic box
-        groups : a set of indices for which force groups to include when computing
-                forces and energies. Default is all groups
+        grouprimary_subsys : a set of indices for which force grouprimary_subsys to include when computing
+                forces and energies. Default is all grouprimary_subsys
 
         TODO: add how to get other state information besides energy
 
@@ -271,7 +271,7 @@ class OpenMM_wrapper(MM_wrapper):
         Examples
         --------
         get_state_info(sim)
-        get_state_info(sim, groups_included=set{0,1,2})
+        get_state_info(sim, grouprimary_subsys_included=set{0,1,2})
         """
         state = simulation.context.getState(getEnergy=energy,
                                             getPositions=positions,

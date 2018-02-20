@@ -21,19 +21,19 @@ def load_system(filename):
 
 def additive(system):
     """
-    Gets energies of needed components and computes
+    Gets energientire_sys of needed components and computentire_sys
     a qm/mm energy with a specified embedding method using
     an additive scheme
     """
 
     # Get MM energy on MM region
     mm_wrapper = OpenMM_wrapper(system)
-    system.ss = mm_wrapper.get_ss()
+    system.second_subsys = mm_wrapper.get_second_subsys()
 
-    print(system.ss['energy'])
+    print(system.second_subsys['energy'])
     # Get nonbonded MM energy on PS-SS interaction
-    system.ps_ss = mm_wrapper.get_ps_ss()
-    print(system.ps_ss['energy'])
+    system.boundary = mm_wrapper.get_boundary()
+    print(system.boundary['energy'])
 
     # get QM positions from pdb
     system.qm_positions = mm_wrapper.get_qm_positions() 
@@ -43,22 +43,22 @@ def additive(system):
 
     print(system.qm['energy'])
     # Compute total QM/MM energy based on additive scheme
-    system.qmmm_energy = system.ss['energy']\
-                        + system.ps_ss['energy']\
+    system.qmmm_energy = system.second_subsys['energy']\
+                        + system.boundary['energy']\
                         + system.qm['energy']
 
 def subtractive(system):
     """
-    Gets energies of needed components and computes
+    Gets energientire_sys of needed components and computentire_sys
     a qm/mm energy with a subtractive mechanical embedding scheme
     """
 
     # Get MM energy on whole system
     mm_wrapper = OpenMM_wrapper(system)
-    system.es = mm_wrapper.get_es()
+    system.entire_sys = mm_wrapper.get_entire_sys()
 
     # Get MM energy on QM region
-    system.ps = mm_wrapper.get_ps()
+    system.primary_subsys = mm_wrapper.get_primary_subsys()
 
     # get QM positions from pdb
     system.qm_positions = mm_wrapper.get_qm_positions() 
@@ -69,6 +69,6 @@ def subtractive(system):
 
     # Compute the total QM/MM energy based on
     # subtractive Mechanical embedding
-    system.qmmm_energy = system.es['energy']\
-                        - system.ps['energy']\
+    system.qmmm_energy = system.entire_sys['energy']\
+                        - system.primary_subsys['energy']\
                         + system.qm['energy']

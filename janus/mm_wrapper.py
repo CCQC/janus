@@ -1,5 +1,5 @@
 """
-MM wrapper super class
+MM wrapper super clasecond_subsys
 """
 from abc import ABC, abstractmethod
 
@@ -12,66 +12,66 @@ class MM_wrapper(ABC):
         
         self._program = program
         self._system = system
-        self._ss = None
-        self._ps = None
-        self._es = None
-        self._ps_ss = None
-        self._ps_ss = None
+        self._second_subsys = None
+        self._primary_subsys = None
+        self._entire_sys = None
+        self._boundary = None
+        self._boundary = None
         self._qm_positions = None
 
         super().__init__()
 
     @abstractmethod
-    def ss_info(self):
+    def second_subsys_info(self):
         pass
 
     @abstractmethod
-    def ps_info(self):
+    def primary_subsys_info(self):
         pass
 
     @abstractmethod
-    def es_info(self):
+    def entire_sys_info(self):
         pass
 
     @abstractmethod
-    def ps_ss_info(self):
+    def boundary_info(self):
         pass
 
     @abstractmethod
     def qm_positions(self):
         pass
 
-    def get_ss(self):
+    def get_second_subsys(self):
         """
-        mm energy and gradients on ss only
+        mm energy and gradients on second_subsys only
         """
-        if self._ss is None:
-            self.ss_info()
-        return self._ss
+        if self._second_subsys is None:
+            self.second_subsys_info()
+        return self._second_subsys
 
-    def get_ps(self):
+    def get_primary_subsys(self):
         """
-        mm energy and gradients on ps only
+        mm energy and gradients on primary_subsys only
         """
-        if self._ps is None:
-            self.ps_info()
-        return self._ps
+        if self._primary_subsys is None:
+            self.primary_subsys_info()
+        return self._primary_subsys
     
-    def get_es(self):
+    def get_entire_sys(self):
         """
-        mm energy and gradients on es 
+        mm energy and gradients on entire_sys 
         """
-        if self._es is None:
-            self.es_info()
-        return self._es
+        if self._entire_sys is None:
+            self.entire_sys_info()
+        return self._entire_sys
 
-    def get_ps_ss(self):
+    def get_boundary(self):
         """
         energy and gradients for interaction between 
         """
-        if self._ps_ss is None:
-            self.ps_ss_info()
-        return self._ps_ss
+        if self._boundary is None:
+            self.boundary_info()
+        return self._boundary
 
     def get_qm_positions(self):
         if self._qm_positions is None:
