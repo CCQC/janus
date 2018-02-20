@@ -1,28 +1,43 @@
 """
 MM wrapper super class
 """
-class MM_wrapper(object):
+from abc import ABC, abstractmethod
+
+class MM_wrapper(ABC):
 
     kjmol_to_au = 1/2625.5 
     nm_to_angstrom = 10.0
 
-    def __init__(self, system):
+    def __init__(self, system, program):
         
+        self._program = program
         self._system = system
         self._ss = None
         self._ps = None
         self._es = None
         self._ps_ss = None
-    
+        self._ps_ss = None
+        self._qm_positions = None
+
+        super().__init__()
+
+    @abstractmethod
     def ss_info(self):
         pass
+
+    @abstractmethod
     def ps_info(self):
         pass
+
+    @abstractmethod
     def es_info(self):
         pass
+
+    @abstractmethod
     def ps_ss_info(self):
         pass
 
+    @abstractmethod
     def qm_positions(self):
         pass
 
@@ -59,7 +74,7 @@ class MM_wrapper(object):
         return self._ps_ss
 
     def get_qm_positions(self):
-        if self._system.qm_positions is None:
+        if self._qm_positions is None:
             self.qm_positions()
         return self._qm_positions
 

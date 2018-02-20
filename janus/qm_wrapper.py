@@ -1,15 +1,18 @@
 """
 QM wrapper super class
 """
-class QM_wrapper(object):
+from abc import ABC, abstractmethod
+class QM_wrapper(ABC):
 
-    def __init__(self, system):
+    def __init__(self, system, program):
 
         self._system = system
+        self._program = program
         self._qm = None
     
+    @abstractmethod
     def qm_info(self):
-        pass
+        print('using qm wrapper')
 
     def get_qm(self):
         if self._qm is None:

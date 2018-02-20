@@ -94,35 +94,36 @@ class System(object):
         if 'mm_temp' in mm:
             self.mm_temp = mm['mm_temp']
         else:
-            self.mm_temp = 300
+            self.mm_temp = float(300)
         if 'mm_fric_coeff' in mm:
             self.mm_fric_coeff = mm['mm_fric_coeff']
         else:
-            self.mm_fric_coeff = 1
+            self.mm_fric_coeff = float(1)
         if 'mm_step_size' in mm:
-            self.mm_step_size = mm['step_size']
+            self.mm_step_size = mm['mm_step_size']
         else: 
-            self.mm_step_size = 0.002
+            self.mm_step_size = float(0.002)
 
-        if 'embedding method' in qmmm:
+        if 'embedding_method' in qmmm:
             self.embedding_method = qmmm['embedding_method']
         else:
             self.embedding_method = 'Mechanical'
         if 'qm_program' in qmmm:
             self.qm_program = qmmm['qm_program']
         else:
-            self.qm_program = "psi4"
+            self.qm_program = "Psi4"
         if 'mm_program' in qmmm:
             self.mm_program = qmmm['mm_program']
         else:
-            self.mm_program = "openmm"
+            self.mm_program = "OpenMM"
         # default integrator in openmm is the langevin integrator
+    
 
         self.build_qm_param()
 
     def build_qm_param(self):
         qm_param = {}
-        qm_param['basis'] = self.qm_basis
+        qm_param['basis'] = self.qm_basis_set
         qm_param['scf_type'] = self.qm_scf_type
         qm_param['guess'] = self.qm_guess
         qm_param['reference'] = self.qm_reference

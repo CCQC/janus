@@ -9,14 +9,11 @@ from .mm_wrapper import MM_wrapper
 
 class OpenMM_wrapper(MM_wrapper):
 
-    kjmol_to_au = 1/2625.5 
-    nm_to_angstrom = 10.0
-
-    def __init__():
-        Super().__init__(system, "OpenMM")
+    def __init__(self, system):
+        super().__init__(system, "OpenMM")
 
         self._pdb = OpenMM_wrapper.create_pdb(self._system.mm_pdb_file)
-        self._ps_ss = {}
+        self._ps_modeller = None
 
     def es_info(self):
         self._es_system, self._es_simulation, self._es = self.get_info(self._pdb)
@@ -32,17 +29,21 @@ class OpenMM_wrapper(MM_wrapper):
     def ps_ss_info(self):
         
         self._es_nb_system, self._es_nb_simulation, self._es_nb = self.get_info(self._pdb, forces='nonbonded')
-        if self._ss_modeller is not None:
-            self._ss_nb_system, self._ss_nb_simulation, self._ss_nb = self.get_info(self._ss_modeller, forces='nonbonded')
-        if self._ps_modeller is not None:
-            self._ps_nb_system, self._ps_nb_simulation, self._ps_nb = self.get_info(self._ps_modeller, forces='nonbonded')
+        if self._ss_modeller is None:
+            self._ss_modeller = self.create_modeller(keep_qm=False)
+        self._ss_nb_system, self._ss_nb_simulation, self._ss_nb = self.get_info(self._ss_modeller, forces='nonbonded')
+        if self._ps_modeller is None:
+            self._ps_modeller = self.create_modeller(keep_qm=True)
+        self._ps_nb_system, self._ps_nb_simulation, self._ps_nb = self.get_info(self._ps_modeller, forces='nonbonded')
 
+        self._ps_ss = {}
         self._ps_ss['energy'] = self._es_nb['energy'] \
-                            - self.ss_nb['energy'] \
-                            - self.ps_nb['energy']
+                            - self._ss_nb['energy'] \
+                            - self._ps_nb['energy']
     def qm_positions(self):
 
         positions = self._pdb.getPositions(asNumpy=True)/OM_unit.nanometer
+        positions *= MM_wrapper.nm_to_angstrom
         out = ""
         line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
         for idx in self._system.qm_atoms:
@@ -99,7 +100,7 @@ class OpenMM_wrapper(MM_wrapper):
                                 forces=True)
         state['energy'] = state['potential'] + state['kinetic']
         if charges is True:
-            state['charge'] = [system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(system.getNumParticles())]
+            state['charge'] = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
 
         return OM_system, simulation, state
 
@@ -219,9 +220,10 @@ class OpenMM_wrapper(MM_wrapper):
         create_open_simulation(openmm_sys, pdb.topology, pdb.positions)
         """
         sys = self._system
-        integrator = OM.LangevinIntegrator(sys.mm_temp*OM_unit.kelvin, 
-                                           sys.mm_fric_coeff/OM_unit.picosecond, 
-                                           sys.mm_step_size*OM_unit.picoseconds)
+        temp = 300*OM_unit.kelvin
+        fric = 1/OM_unit.picosecond
+        size = 0.002*OM_unit.picoseconds
+        integrator = OM.LangevinIntegrator(temp, fric, size)
 
         simulation = OM_app.Simulation(pdb.topology, openmm_system, integrator)
         simulation.context.setPositions(pdb.positions)
@@ -285,13 +287,13 @@ class OpenMM_wrapper(MM_wrapper):
         # then convert value to atomic units
         if energy is True:
             values['potential'] = state.getPotentialEnergy()/OM_unit.kilojoule_per_mole
-            values['potential'] *= kjmol_to_au
+            values['potential'] *= MM_wrapper.kjmol_to_au
             values['kinetic'] = state.getKineticEnergy()/OM_unit.kilojoule_per_mole
-            values['kinetic'] *= kjmol_to_au
+            values['kinetic'] *= MM_wrapper.kjmol_to_au
 
         if positions is True: 
             values['positions'] = state.getPositions(asNumpy=True)/OM_unit.nanometer
-            values['positions'] *= nm_to_angstrom
+            values['positions'] *= MM_wrapper.nm_to_angstrom
 
         if forces is True: 
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)

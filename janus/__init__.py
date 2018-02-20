@@ -1,5 +1,6 @@
 import psi4
 
+from . import qm_wrapper
 from . import psi4_wrapper
 from . import system
 from . import mm_wrapper
