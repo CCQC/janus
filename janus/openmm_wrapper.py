@@ -80,7 +80,7 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         # Create an OpenMM system from an object's topology
-        OM_system = OpenMM_wrapper.create_openmm_system(pdb.topology)
+        OM_system = self.create_openmm_system(pdb)
 
         # Remove Bond, Angle, and Torsion forces to leave only nonbonded forces
         if forces == 'nonbonded':
@@ -90,8 +90,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         # Create an OpenMM simulation from the openmm system,
         # topology and positions.
-        simulation = OpenMM_wrapper.create_openmm_simulation(OM_system,
-                                                pdb.topology, pdb.positions)
+        simulation = self.create_openmm_simulation(OM_system,pdb)
 
         # Calls openmm wrapper to get information specified
         state = OpenMM_wrapper.get_state_info(simulation,
@@ -145,6 +144,88 @@ class OpenMM_wrapper(MM_wrapper):
         else:
             OpenMM_wrapper.keep_atoms(modeller, self._system.qm_atoms)
         return modeller
+
+
+    def create_openmm_system(self, pdb, 
+                             nonbond=OM_app.NoCutoff, nonbond_cutoff=1*OM_unit.nanometer,
+                             periodic=False,
+                             cnstrnts=OM_app.HBonds):
+        """
+        Calls OpenMM to create an OpenMM System object give a topology,
+        forcefield, and other paramters
+
+        Parameters
+        ----------
+        topology : an OpenMM topology
+        forcefield : string of forcefield name to use. Default is amber99sb.xml
+        forcefield_water : string of forcefield name to use for water
+                        application for amber forcefields that do no
+                        define water. Default is tip3p.xml
+        cnstrnts : contraints on the system. Default is HBonds
+
+        TODO: need to put nonbond and nonbond_cutoff back but not doing for now
+            because need non-periodic system. Other parameters are also needed
+
+            also, expand forcefield to take not openmm built in
+                but customized as well
+
+        Returns
+        -------
+        An OpenMM system object
+
+        Examples
+        --------
+        openmm_sys = create_openmm_system(topology)
+        openmm_sys = create_openmm_system(pdb.topology, constrnts=None)
+
+        To get OpenMM system information, e.g., Number of particles:
+            print(sys.getNumParticles())
+        Question - for things like this - do I need a wrapper?
+                    since I am technically still
+                using openmm -> instead of saving an "OpenMM" object -
+                    should I define my own objects
+        """
+
+        ff = OM_app.ForceField(self._system.mm_ff, self._system.mm_ff_water)
+        
+        if periodic is True:
+            openmm_system = ff.createSystem(pdb.topology,
+                                            constraints=cnstrnts)
+        else:
+            openmm_system = ff.createSystem(pdb.topology,
+                                            nonbondedMethod=nonbond,
+                                            nonbondedCutoff=nonbond_cutoff,
+                                            constraints=cnstrnts)
+        return openmm_system
+
+
+    def create_openmm_simulation(self, openmm_system, pdb):
+        """
+        Creates an OpenMM simulation object given
+        an OpenMM system, topology, and positions
+
+        Parameters
+        ----------
+        openmm_system : OpenMM system object
+        topology : an OpenMM topology
+        positions : OpenMM positions
+
+        Returns
+        -------
+        an OpenMM simulation object
+
+        Examples
+        --------
+        create_open_simulation(openmm_sys, pdb.topology, pdb.positions)
+        """
+        sys = self._system
+        integrator = OM.LangevinIntegrator(sys.mm_temp*OM_unit.kelvin, 
+                                           sys.mm_fric_coeff/OM_unit.picosecond, 
+                                           sys.mm_step_size*OM_unit.picoseconds)
+
+        simulation = OM_app.Simulation(pdb.topology, openmm_system, integrator)
+        simulation.context.setPositions(pdb.positions)
+        return simulation
 
     def get_state_info(simulation,
                     energy=True,
@@ -216,88 +297,6 @@ class OpenMM_wrapper(MM_wrapper):
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
 
         return values
-
-    def create_openmm_system(topology, forcefield='amber99sb.xml',
-                            forcefield_water='tip3p.xml',
-                            nonbond=OM_app.NoCutoff, nonbond_cutoff=1*OM_unit.nanometer,
-                            periodic=False,
-                            cnstrnts=OM_app.HBonds):
-        """
-        Calls OpenMM to create an OpenMM System object give a topology,
-        forcefield, and other paramters
-
-        Parameters
-        ----------
-        topology : an OpenMM topology
-        forcefield : string of forcefield name to use. Default is amber99sb.xml
-        forcefield_water : string of forcefield name to use for water
-                        application for amber forcefields that do no
-                        define water. Default is tip3p.xml
-        cnstrnts : contraints on the system. Default is HBonds
-
-        TODO: need to put nonbond and nonbond_cutoff back but not doing for now
-            because need non-periodic system. Other parameters are also needed
-
-            also, expand forcefield to take not openmm built in
-                but customized as well
-
-        Returns
-        -------
-        An OpenMM system object
-
-        Examples
-        --------
-        openmm_sys = create_openmm_system(topology)
-        openmm_sys = create_openmm_system(pdb.topology, constrnts=None)
-
-        To get OpenMM system information, e.g., Number of particles:
-            print(sys.getNumParticles())
-        Question - for things like this - do I need a wrapper?
-                    since I am technically still
-                using openmm -> instead of saving an "OpenMM" object -
-                    should I define my own objects
-        """
-
-        ff = OM_app.ForceField(forcefield, forcefield_water)
-        
-        if periodic is True:
-            openmm_system = ff.createSystem(topology,
-                                            constraints=cnstrnts)
-        else:
-            openmm_system = ff.createSystem(topology,
-                                            nonbondedMethod=nonbond,
-                                            nonbondedCutoff=nonbond_cutoff,
-                                            constraints=cnstrnts)
-        return openmm_system
-
-
-    def create_openmm_simulation(openmm_system, topology, positions, 
-                                temp=300*OM_unit.kelvin, friction_coefficient=1/OM_unit.picosecond,
-                                step_size=0.002*OM_unit.picoseconds):
-        """
-        Creates an OpenMM simulation object given
-        an OpenMM system, topology, and positions
-
-        Parameters
-        ----------
-        openmm_system : OpenMM system object
-        topology : an OpenMM topology
-        positions : OpenMM positions
-
-        Returns
-        -------
-        an OpenMM simulation object
-
-        Examples
-        --------
-        create_open_simulation(openmm_sys, pdb.topology, pdb.positions)
-        """
-        integrator = OM.LangevinIntegrator(temp, friction_coefficient, step_size)
-
-        simulation = OM_app.Simulation(topology, openmm_system, integrator)
-        simulation.context.setPositions(positions)
-        return simulation
-
 
     def keep_residues(model, residues):
         """
