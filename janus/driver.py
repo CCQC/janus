@@ -19,15 +19,19 @@ def additive():
     """
 
     # Get MM energy on MM region
-    mm_wrapper = MM_wrapper(system, "OpenMM")
+    mm_wrapper = MM_wrapper(system, system.mm_program)
     system.ss = mm_wrapper.get_ss()
 
     # Get nonbonded MM energy on PS-SS interaction
     system.ps_ss = mm_wrapper.get_ps_ss()
 
+    # get QM positions from pdb
+    system.qm_positions = mm_wrapper.get_qm_positions() 
+
     # Get QM energy
-    qm_wrapper = QM_wrapper(system, "Psi4")
+    qm_wrapper = QM_wrapper(system, system.qm_program)
     system.qm = qm_wrapper.get_qm()
+
 
     # Compute total QM/MM energy based on additive scheme
     system.qmmm_energy = system.ss['energy']\
@@ -46,6 +50,9 @@ def subtractive():
 
     # Get MM energy on QM region
     system.ps = mm_wrapper.get_ps()
+
+    # get QM positions from pdb
+    system.qm_positions = mm_wrapper.get_qm_positions() 
 
     # Get QM energy
     qm_wrapper = QM_wrapper(system, "Psi4")
