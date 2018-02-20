@@ -20,19 +20,19 @@ def additive():
 
     # Get MM energy on MM region
     mm_wrapper = MM_wrapper(system, "OpenMM")
-    system._ss = mm_wrapper.get_ss()
+    system.ss = mm_wrapper.get_ss()
 
     # Get nonbonded MM energy on PS-SS interaction
-    system._ps_ss = mm_wrapper.get_ps_ss()
+    system.ps_ss = mm_wrapper.get_ps_ss()
 
     # Get QM energy
     qm_wrapper = QM_wrapper(system, "Psi4")
-    system._qm = qm_wrapper.get_qm()
+    system.qm = qm_wrapper.get_qm()
 
     # Compute total QM/MM energy based on additive scheme
-    system.qmmm_energy = system._ss['energy']\
-                        + system._ps_ss['energy']\
-                        + system._qm['energy']
+    system.qmmm_energy = system.ss['energy']\
+                        + system.ps_ss['energy']\
+                        + system.qm['energy']
 
 def subtractive():
     """
@@ -42,17 +42,17 @@ def subtractive():
 
     # Get MM energy on whole system
     mm_wrapper = MM_wrapper(system, "OpenMM")
-    system._es = mm_wrapper.get_es()
+    system.es = mm_wrapper.get_es()
 
     # Get MM energy on QM region
-    system._ps = mm_wrapper.get_ps()
+    system.ps = mm_wrapper.get_ps()
 
     # Get QM energy
     qm_wrapper = QM_wrapper(system, "Psi4")
-    system._qm = qm_wrapper.get_qm()
+    system.qm = qm_wrapper.get_qm()
 
     # Compute the total QM/MM energy based on
     # subtractive Mechanical embedding
-    system.qmmm_energy = system._es['energy']\
-                        - system._ps['energy']\
-                        + system._qm['energy']
+    system.qmmm_energy = system.es['energy']\
+                        - system.ps['energy']\
+                        + system.qm['energy']

@@ -64,7 +64,6 @@ def get_gradient(self):
     """
     psi4.core.clean()
     set_up_psi4()
-    # G, wfn = psi4.gradient(method, return_wfn=True)
     G = psi4.gradient(self._system.qm_method)
     self._qm_gradient = np.asarray(G)
     self._qm['gradient'] = self._qm_gradient
@@ -86,20 +85,20 @@ def set_up_psi4(self):
     --------
     set_up_psi4(sys.molecule, sys.parameters)
     """
-    ss = self._system._ss
+    sys = self._system
     # psi4.core.set_output_file('output.dat', True)
     psi4.core.be_quiet()
 
-    self._system.qm_positions += 'no_reorient \n '
-    self._system.qm_positions += 'no_com \n '
-    mol = psi4.geometry(self._system.qm_positions)
+    sys.qm_positions += 'no_reorient \n '
+    sys.qm_positions += 'no_com \n '
+    mol = psi4.geometry(sys.qm_positions)
 
-    psi4.set_options(self._system.qm_parameters)
+    psi4.set_options(sys.qm_param)
 
-    if self._system.embedding_method=='Electrostatic':
+    if sys.embedding_method=='Electrostatic':
         Chrgfield = psi4.QMMM()
-        for i in range(len(ss['charge'])):
-            Chrgfield.extern.addCharge(ss['charge'][i], ss['positions'][i][0], ss['positions'][i][1], ss['positions'][i][2])
+        for i in range(len(sys.ss['charge'])):
+            Chrgfield.extern.addCharge(sys.ss['charge'][i], sys.ss['positions'][i][0], sys.ss['positions'][i][1], sys.ss['positions'][i][2])
         psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
             
 def get_scf_charge(self):

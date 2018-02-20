@@ -103,6 +103,7 @@ class System(object):
             self.mm_step_size = mm['step_size']
         else: 
             self.mm_step_size = 0.002
+
         if 'embedding method' in qmmm:
             self.embedding_method = qmmm['embedding_method']
         else:
