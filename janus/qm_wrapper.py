@@ -8,13 +8,13 @@ class QM_wrapper(ABC):
 
         self._system = system
         self._program = program
-        self._qm = None
+        self._qm = {}
     
     @abstractmethod
     def qm_info(self):
-        print('using qm wrapper')
+        pass
 
     def get_qm(self):
-        if self._qm is None:
+        if not self._qm:
             self.qm_info()
         return self._qm 

@@ -100,7 +100,7 @@ class OpenMM_wrapper(MM_wrapper):
                                 forces=True)
         state['energy'] = state['potential'] + state['kinetic']
         if charges is True:
-            state['charge'] = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
+            state['charges'] = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
 
         return OM_system, simulation, state
 

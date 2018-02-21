@@ -3,9 +3,10 @@ class System(object):
     A system class that stores QM, MM, and QM/MM
     input parameters, as well as system information
     such as geometry, and energy
+    psi4_mp2._system.
     """
 
-    def __init__(self, qmmm, qm, mm):
+    def __init__(self, qmmm={}, qm={}, mm={}):
 
         """
         Initializes system with None values for all parameters
@@ -72,8 +73,6 @@ class System(object):
 
         if 'mm_pdb_file' in mm:
             self.mm_pdb_file = mm['mm_pdb_file']
-        else:
-            print("pdb file needed")
         if 'mm_forcefield' in mm:
             self.mm_ff = mm['mm_forcefield']
         else:

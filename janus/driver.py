@@ -30,18 +30,17 @@ def additive(system):
     mm_wrapper = OpenMM_wrapper(system)
     system.second_subsys = mm_wrapper.get_second_subsys()
 
-    print(system.second_subsys['energy'])
     # Get nonbonded MM energy on PS-SS interaction
     system.boundary = mm_wrapper.get_boundary()
-    print(system.boundary['energy'])
 
     # get QM positions from pdb
     system.qm_positions = mm_wrapper.get_qm_positions() 
     # Get QM energy
     qm_wrapper = Psi4_wrapper(system)
-    system.qm = qm_wrapper.get_qm()
+#    system.qm = qm_wrapper.get_qm()
+    qm_wrapper.get_energy_and_charges()
+    print(qm_wrapper._energy, qm_wrapper._charges)
 
-    print(system.qm['energy'])
     # Compute total QM/MM energy based on additive scheme
     system.qmmm_energy = system.second_subsys['energy']\
                         + system.boundary['energy']\
@@ -66,6 +65,7 @@ def subtractive(system):
     # Get QM energy
     qm_wrapper = Psi4_wrapper(system)
     system.qm = qm_wrapper.get_qm()
+    print(system.qm)
 
     # Compute the total QM/MM energy based on
     # subtractive Mechanical embedding
