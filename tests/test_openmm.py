@@ -2,10 +2,19 @@
 Testing for the openmm_wrapper module
 """
 import pytest
-import janus
+from janus import openmm_wrapper 
+from janus import system
 import numpy as np
 import os
 
+qmmm_elec = {"embedding_method" : "Electrostatic"}
+QM = {"qm_atoms" : [0,1,2]}
+
+sys_mech = system.System(qm=QM)
+sys_elec = system.System(qmmm=qmmm_elec, qm=QM)
+
+openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
+openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 
 def create_system(datafiles, filename):
     """
