@@ -7,7 +7,6 @@ import janus
 
 @pytest.mark.datafiles('tests/examples/test_parser/input.dat')
 def test_input_parser(datafiles):
-    # assert (datafiles / 'input.dat').check(file=1)
     system = janus.parser.parse_input(datafiles / 'input.dat')
     assert system.qm_param['basis'] == 'STO-3G'
     assert system.qm_param['reference'] == 'rhf'
