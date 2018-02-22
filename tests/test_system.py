@@ -1,108 +1,24 @@
-"""
-Testing for the System class
-"""
 import pytest
-import janus
-import numpy as np
-import os
+from janus import system
 
+sys1 = system.System()
+sys2 = system.System(qm={'qm_basis_set': '6-31G',
+                          'qm_scf_type' : 'pk',
+                          'qm_e_convergence' : 1e-9})
 
-def create_system(datafiles, filename):
-    """
-    Function for creating a Janus system with
-    mm options used for testing.
-    Tests on input_protein.pdb found in tests/examples/test_openmm
-    """
-    path = str(datafiles)
-    pdb_file = os.path.join(path, filename)
-
-    qm_mol = """O     0.123   3.593   5.841 
- H    -0.022   2.679   5.599 
- H     0.059   3.601   6.796 
- O     0.017   6.369   7.293 
- H    -0.561   5.928   6.669 
- H     0.695   6.771   6.749 
- no_reorient 
- no_com 
- """
-
-    parameters = \
-        {
-            'basis': 'STO-3G',
-            'scf_type': 'df',
-            'guess': 'sad',
-            'reference': 'rhf',
-            'e_convergence': 1e-8,
-            'd_convergence': 1e-8
-        }
-
-    sys = janus.system.System(qm_param=parameters, qm_method='scf',
-                              qm_molecule=qm_mol, qm_atoms=[0, 1, 2, 3, 4, 5],
-                              mm_pdb_file=pdb_file)
-    return sys
-
-
-@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_get_info(datafiles):
-    """
-    Function to test get_openmm_energy function
-    of systems class
-    """
-    sys = create_system(datafiles, 'water.pdb')
-    system, state = janus.system.System.get_info(sys.mm_pdb)
+def test_build_qm_param():
     
-    sys.mm_Te = state['potential']
-    sys.mm_Ke = state['kinetic']
-    sys.mm_tot_energy = state['energy']
-    assert np.allclose(sys.mm_Te, -0.010571307078971566)
-    assert np.allclose(sys.mm_Ke, 8.414710565572852e-06)
-    assert np.allclose(sys.mm_tot_energy, -0.010562892368405992)
+    assert sys1.qm_param['basis'] == 'STO-3G'
+    assert sys1.qm_param['scf_type'] == 'df' 
+    assert sys1.qm_param['guess'] == 'sad' 
+    assert sys1.qm_param['reference'] == 'rhf'
+    assert sys1.qm_param['e_convergence'] == 1e-8
+    assert sys1.qm_param['d_convergence'] == 1e-8 
 
-@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_subtractive(datafiles):
-    """
-    Function to test get_qmmm_energy function
-    of systems class given the mm energy and the mm energy
-    of the qm region
-    """
-    sys = create_system(datafiles, 'water.pdb')
-    sys.mm_tot_energy = -0.010562892368405992
-    sys.mm_qm_energy = -0.005236442985800477
-    sys.subtractive()
-    assert np.allclose(sys.qm_energy, -149.92882700821423)
-    assert np.allclose(sys.qmmm_energy, -149.93415345759684)
+    assert sys2.qm_param['basis'] == '6-31G'
+    assert sys2.qm_param['scf_type'] == 'pk' 
+    assert sys2.qm_param['guess'] == 'sad' 
+    assert sys2.qm_param['reference'] == 'rhf'
+    assert sys2.qm_param['e_convergence'] == 1e-9
+    assert sys2.qm_param['d_convergence'] == 1e-8 
 
-@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_additive_mech(datafiles):
-    """
-    Function to test get_qmmm_energy function
-    of systems class given the mm energy and the mm energy
-    of the qm region
-    """
-    sys = create_system(datafiles, 'water.pdb')
-    sys.additive()
-    assert np.allclose(sys.qmmm_energy, -149.93415345759684)
-
-@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_additive_elec(datafiles):
-    """
-    Function to test get_qmmm_energy function
-    of systems class given the mm energy and the mm energy
-    of the qm region
-    """
-    sys = create_system(datafiles, 'water.pdb')
-    sys.embedding_method = 'Electrostatic'
-    sys.additive()
-    assert np.allclose(sys.qmmm_energy, -149.9327890982534)
-
-
-@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
-def test_make_qm_molecule(datafiles):
-    """
-    Function to test get_qmmm_energy function
-    of systems class given the mm energy and the mm energy
-    of the qm region
-    """
-    sys = create_system(datafiles, 'water.pdb')
-    mol = sys.make_qm_molecule()
-    assert mol == sys.qm_molecule

@@ -36,6 +36,14 @@ openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #
 #
 #
+#def test_get_second_subsys():
+#def test_get_primary_subsys():
+#def test_get_entire_sys():
+#def test_get_boundary():
+
+
+
+
 def test_get_qm_positions():
     """
     Function to test get_qmmm_energy function

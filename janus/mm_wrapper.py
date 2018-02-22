@@ -41,6 +41,10 @@ class MM_wrapper(ABC):
     def qm_positions(self):
         pass
 
+#    @abstractmethod
+#    def make_zero_energy(self):
+#        pass
+
     def get_second_subsys(self):
         """
         mm energy and gradients on second_subsys only
@@ -78,7 +82,5 @@ class MM_wrapper(ABC):
             self.qm_positions()
         return self._qm_positions
 
-    def make_zero_energy(self):
-        pass
 
     
