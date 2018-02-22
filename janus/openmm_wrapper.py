@@ -104,7 +104,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         return OM_system, simulation, state
 
-    def create_modeller(self, keep_qm):
+    def create_modeller(self, keep_qm=None):
         """
         Creates an OpenMM Modeller object for changing the MM system
 
@@ -142,7 +142,7 @@ class OpenMM_wrapper(MM_wrapper):
         modeller = OM_app.Modeller(self._pdb.topology, self._pdb.positions)
         if keep_qm is False:
             OpenMM_wrapper.delete_atoms(modeller, self._system.qm_atoms)
-        else:
+        elif keep_qm is True:
             OpenMM_wrapper.keep_atoms(modeller, self._system.qm_atoms)
         return modeller
 
