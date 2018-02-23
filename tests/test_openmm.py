@@ -7,8 +7,8 @@ from janus import system
 import numpy as np
 import os
 
-ala_pdb_file = os.path.join(str('tests/examples/test_openmm/ala_water.pdb'))
-water_pdb_file = os.path.join(str('tests/examples/test_openmm/water.pdb'))
+ala_pdb_file = os.path.join(str('tests/files/test_openmm/ala_water.pdb'))
+water_pdb_file = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 qmmm_elec = {"embedding_method" : "Electrostatic"}
 

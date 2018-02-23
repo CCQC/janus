@@ -5,7 +5,7 @@ import pytest
 import janus
 
 
-@pytest.mark.datafiles('tests/examples/test_parser/input.dat')
+@pytest.mark.datafiles('tests/files/test_parser/input.dat')
 def test_input_parser(datafiles):
     system = janus.parser.parse_input(datafiles / 'input.dat')
     assert system.qm_param['basis'] == 'STO-3G'

@@ -1,0 +1,23 @@
+{
+"adaptive" : {},
+
+"qmmm" : {"embedding_method" : "Electrostatic",
+          "qm_program" : "Psi4",
+          "mm_program" : "OpenMM"},
+
+"qm" : {
+         "qm_basis_set" : "STO-3G",
+         "qm_scf_type": "pk",
+         "qm_guess": "sad",
+         "qm_reference": "rhf",
+         "qm_e_convergence": 1e-9,
+         "qm_method" : "mp2",
+         "qm_atoms" : [0,1,2],
+         "qm_residues" : [],
+         "qm_charge_method" : "MULLIKEN_CHARGES" },
+"mm" : {
+         "mm_pdb_file" : "water.pdb",
+         "mm_forcefield" :  "amber99sb.xml",
+         "mm_step_size" : 0.005} 
+}
+    

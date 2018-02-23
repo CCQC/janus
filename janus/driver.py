@@ -26,6 +26,8 @@ def additive(system):
     an additive scheme
     """
 
+    #need to add if these things are none then do the following
+
     # Get MM energy on MM region
     mm_wrapper = OpenMM_wrapper(system)
     system.second_subsys = mm_wrapper.get_second_subsys()
@@ -37,9 +39,7 @@ def additive(system):
     system.qm_positions = mm_wrapper.get_qm_positions() 
     # Get QM energy
     qm_wrapper = Psi4_wrapper(system)
-#    system.qm = qm_wrapper.get_qm()
-    qm_wrapper.get_energy_and_charges()
-    print(qm_wrapper._energy, qm_wrapper._charges)
+    system.qm = qm_wrapper.get_qm()
 
     # Compute total QM/MM energy based on additive scheme
     system.qmmm_energy = system.second_subsys['energy']\
@@ -65,7 +65,6 @@ def subtractive(system):
     # Get QM energy
     qm_wrapper = Psi4_wrapper(system)
     system.qm = qm_wrapper.get_qm()
-    print(system.qm)
 
     # Compute the total QM/MM energy based on
     # subtractive Mechanical embedding
