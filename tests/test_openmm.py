@@ -42,6 +42,7 @@ openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #def test_get_boundary():
 
 def test_get_entire_sys():
+    openmm_mech._entire_sys['energy'] = -0.010562892368405992
     info = openmm_mech.get_entire_sys()
     assert np.allclose(info['energy'], -0.010562892368405992)
 
