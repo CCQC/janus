@@ -29,17 +29,21 @@ def additive(system):
     #need to add if these things are none then do the following
 
     # Get MM energy on MM region
-    mm_wrapper = OpenMM_wrapper(system)
-    system.second_subsys = mm_wrapper.get_second_subsys()
+    if not system.second_subsys:
+        mm_wrapper = OpenMM_wrapper(system)
+        system.second_subsys = mm_wrapper.get_second_subsys()
 
     # Get nonbonded MM energy on PS-SS interaction
-    system.boundary = mm_wrapper.get_boundary()
+    if not system.boundary:
+        system.boundary = mm_wrapper.get_boundary()
 
-    # get QM positions from pdb
-    system.qm_positions = mm_wrapper.get_qm_positions() 
     # Get QM energy
-    qm_wrapper = Psi4_wrapper(system)
-    system.qm = qm_wrapper.get_qm()
+    if not system.qm:
+        # get QM positions from pdb
+        if system.qm_positions == None:
+            system.qm_positions = mm_wrapper.get_qm_positions() 
+        qm_wrapper = Psi4_wrapper(system)
+        system.qm = qm_wrapper.get_qm()
 
     # Compute total QM/MM energy based on additive scheme
     system.qmmm_energy = system.second_subsys['energy']\
@@ -53,18 +57,21 @@ def subtractive(system):
     """
 
     # Get MM energy on whole system
-    mm_wrapper = OpenMM_wrapper(system)
-    system.entire_sys = mm_wrapper.get_entire_sys()
+    if not system.entire_sys:
+        mm_wrapper = OpenMM_wrapper(system)
+        system.entire_sys = mm_wrapper.get_entire_sys()
 
     # Get MM energy on QM region
-    system.primary_subsys = mm_wrapper.get_primary_subsys()
-
-    # get QM positions from pdb
-    system.qm_positions = mm_wrapper.get_qm_positions() 
+    if not system.primary_subsys:
+        system.primary_subsys = mm_wrapper.get_primary_subsys()
 
     # Get QM energy
-    qm_wrapper = Psi4_wrapper(system)
-    system.qm = qm_wrapper.get_qm()
+    if not system.qm:
+        # get QM positions from pdb
+        if system.qm_positions == None:
+            system.qm_positions = mm_wrapper.get_qm_positions() 
+        qm_wrapper = Psi4_wrapper(system)
+        system.qm = qm_wrapper.get_qm()
 
     # Compute the total QM/MM energy based on
     # subtractive Mechanical embedding

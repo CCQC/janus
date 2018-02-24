@@ -120,6 +120,13 @@ class System(object):
 
         self.build_qm_param()
 
+        self.entire_sys = {}
+        self.primary_subsys = {}
+        self.second_subsys = {}
+        self.boundary = {}
+        self.qm = {}
+        self.qm_positions = None
+
     def build_qm_param(self):
         qm_param = {}
         qm_param['basis'] = self.qm_basis_set
