@@ -14,6 +14,10 @@ class OpenMM_wrapper(MM_wrapper):
 
         self._pdb = OpenMM_wrapper.create_pdb(self._system.mm_pdb_file)
         self._primary_subsys_modeller = None
+        self._second_subsys_modeller = None
+        self._second_subsys_nb = {}
+        self._primary_subsys_nb = {}
+        self._entire_sys_nb = {}
 
     def entire_sys_info(self):
         self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb)
@@ -27,19 +31,22 @@ class OpenMM_wrapper(MM_wrapper):
         self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller)
 
     def boundary_info(self):
-        
-        self._entire_sys_nb_system, self._entire_sys_nb_simulation, self._entire_sys_nb = self.get_info(self._pdb, forces='nonbonded')
+
+        if not self._entire_sys_nb:
+            self._entire_sys_nb_system, self._entire_sys_nb_simulation, self._entire_sys_nb = self.get_info(self._pdb, forces='nonbonded')
         if self._second_subsys_modeller is None:
             self._second_subsys_modeller = self.create_modeller(keep_qm=False)
-        self._second_subsys_nb_system, self._second_subsys_nb_simulation, self._second_subsys_nb = self.get_info(self._second_subsys_modeller, forces='nonbonded')
+        if not self._second_subsys_nb:
+            self._second_subsys_nb_system, self._second_subsys_nb_simulation, self._second_subsys_nb = self.get_info(self._second_subsys_modeller, forces='nonbonded')
         if self._primary_subsys_modeller is None:
             self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
-        self._primary_subsys_nb_system, self._primary_subsys_nb_simulation, self._primary_subsys_nb = self.get_info(self._primary_subsys_modeller, forces='nonbonded')
+        if not self._primary_subsys:
+            self._primary_subsys_nb_system, self._primary_subsys_nb_simulation, self._primary_subsys_nb = self.get_info(self._primary_subsys_modeller, forces='nonbonded')
 
-        self._boundary = {}
         self._boundary['energy'] = self._entire_sys_nb['energy'] \
                             - self._second_subsys_nb['energy'] \
                             - self._primary_subsys_nb['energy']
+
     def qm_positions(self):
 
         positions = self._pdb.getPositions(asNumpy=True)/OM_unit.nanometer

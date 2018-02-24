@@ -41,20 +41,24 @@ openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #def test_get_entire_sys():
 #def test_get_boundary():
 
+def test_get_entire_sys():
+    info = openmm_mech.get_entire_sys()
+    assert np.allclose(info['energy'], -0.010562892368405992)
+
 def test_get_second_subsys():
     info = openmm_mech.get_second_subsys()
     assert np.allclose(info['energy'], 6.873303688617918e-05)
     assert np.allclose(info['charges'], np.array([-0.834, 0.417, 0.417, -0.834, 0.417, 0.417]))
 
 def test_get_primary_subsys():
+    openmm_mech._primary_subsys['energy'] = 0.0
     info = openmm_mech.get_primary_subsys()
     assert np.allclose(info['energy'], 0.0)
 
-def test_get_entire_sys():
-    info = openmm_mech.get_entire_sys()
-    assert np.allclose(info['energy'], -0.010562892368405992)
-
 def test_get_boundary():
+    openmm_mech._primary_subsys_nb['energy'] = 0.0
+    openmm_mech._second_subsys_nb['energy'] = 6.873303688617918e-05
+    openmm_mech._entire_sys_nb['energy'] = -0.010562892368405992
     info = openmm_mech.get_boundary()
     assert np.allclose(info['energy'], -0.010631625405292172)
 

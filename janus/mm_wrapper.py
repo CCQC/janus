@@ -12,11 +12,10 @@ class MM_wrapper(ABC):
         
         self._program = program
         self._system = system
-        self._second_subsys = None
-        self._primary_subsys = None
-        self._entire_sys = None
-        self._boundary = None
-        self._boundary = None
+        self._second_subsys = {}
+        self._primary_subsys = {}
+        self._entire_sys = {}
+        self._boundary = {} 
         self._qm_positions = None
 
         super().__init__()
@@ -49,7 +48,7 @@ class MM_wrapper(ABC):
         """
         mm energy and gradients on second_subsys only
         """
-        if self._second_subsys is None:
+        if not self._second_subsys:
             self.second_subsys_info()
         return self._second_subsys
 
@@ -57,7 +56,7 @@ class MM_wrapper(ABC):
         """
         mm energy and gradients on primary_subsys only
         """
-        if self._primary_subsys is None:
+        if not self._primary_subsys:
             self.primary_subsys_info()
         return self._primary_subsys
     
@@ -65,7 +64,7 @@ class MM_wrapper(ABC):
         """
         mm energy and gradients on entire_sys 
         """
-        if self._entire_sys is None:
+        if not self._entire_sys:
             self.entire_sys_info()
         return self._entire_sys
 
@@ -73,7 +72,7 @@ class MM_wrapper(ABC):
         """
         energy and gradients for interaction between 
         """
-        if self._boundary is None:
+        if not self._boundary:
             self.boundary_info()
         return self._boundary
 
