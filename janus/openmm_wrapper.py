@@ -94,7 +94,12 @@ class OpenMM_wrapper(MM_wrapper):
         if forces == 'nonbonded':
             for i in range(3):
                 OM_system.removeForce(0)
-
+            if self._system.embedding_method=='Electrostatic':
+                force = OM_system.getForce(0)
+                for i in range(force.getNumParticles()):
+                    a = force.getParticleParameters(i)
+                    Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
+                    force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
 
         # Create an OpenMM simulation from the openmm system,
         # topology and positions.
@@ -155,6 +160,7 @@ class OpenMM_wrapper(MM_wrapper):
 
 
     def create_openmm_system(self, pdb, 
+                             nb_forces_only=False,
                              nonbond=OM_app.NoCutoff, nonbond_cutoff=1*OM_unit.nanometer,
                              periodic=False,
                              cnstrnts=OM_app.HBonds):
@@ -195,7 +201,8 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         ff = OM_app.ForceField(self._system.mm_ff, self._system.mm_ff_water)
-        
+
+
         if periodic is True:
             openmm_system = ff.createSystem(pdb.topology,
                                             constraints=cnstrnts)
@@ -204,6 +211,8 @@ class OpenMM_wrapper(MM_wrapper):
                                             nonbondedMethod=nonbond,
                                             nonbondedCutoff=nonbond_cutoff,
                                             constraints=cnstrnts)
+
+
         return openmm_system
 
 
