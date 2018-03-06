@@ -14,11 +14,11 @@ qmmm_elec = {"embedding_method" : "Electrostatic"}
 
 sys_ala = system.System(qm={"qm_atoms": [0,1,2,3,4,5,6]}, mm={'mm_pdb_file' : ala_pdb_file})
 sys_mech = system.System(qm={"qm_atoms": [0,1,2]}, mm={'mm_pdb_file' : water_pdb_file})
-#sys_elec = system.System(qmmm=qmmm_elec, qm=QM, mm=MM)
+sys_elec = system.System(qmmm=qmmm_elec,qm={"qm_atoms": [0,1,2]}, mm={'mm_pdb_file' : water_pdb_file})
 
 openmm_ala = openmm_wrapper.OpenMM_wrapper(sys_ala)
 openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
-#openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
+openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 
 
 #@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
@@ -62,6 +62,13 @@ def test_get_boundary():
     openmm_mech._entire_sys_nb['energy'] = -0.010562892368405992
     info = openmm_mech.get_boundary()
     assert np.allclose(info['energy'], -0.010631625405292172)
+
+def test_get_boundary_elec():
+    openmm_elec._primary_subsys_nb['energy'] = 0.0
+    openmm_elec._second_subsys_nb['energy'] = -1.6972570321173706e-05 
+    openmm_elec._entire_sys_nb['energy'] = -0.00015962087002150763 
+    info = openmm_elec.get_boundary()
+    assert np.allclose(info['energy'], -0.00014264829970033393)
 
 def test_get_qm_positions():
     """
