@@ -138,6 +138,15 @@ class System(object):
         
         self.qm_param = qm_param
 
+    def add_link_atom(self, qm_pos, mm_pos, link_atom, g):
+        "adds link atom between given qm and mm position"
+
+        pos = self.entire_sys['positions']
+        pos_link = pos[qm_pos] + g*(pos[mm_pos] - pos[qm_pos])
+        x, y, z = pos_link[0],pos_link[1], pos_link[2]
+        self.qm_positions += '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '.format(atom, x, y, z)
+        
+
 
         
     
