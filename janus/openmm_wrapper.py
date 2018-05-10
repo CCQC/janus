@@ -163,7 +163,8 @@ class OpenMM_wrapper(MM_wrapper):
                              nb_forces_only=False,
                              nonbond=OM_app.NoCutoff, nonbond_cutoff=1*OM_unit.nanometer,
                              periodic=False,
-                             cnstrnts=OM_app.HBonds):
+                             cnstrnts=OM_app.HBonds,
+                             residue={}):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
         forcefield, and other paramters
@@ -210,7 +211,9 @@ class OpenMM_wrapper(MM_wrapper):
             openmm_system = ff.createSystem(pdb.topology,
                                             nonbondedMethod=nonbond,
                                             nonbondedCutoff=nonbond_cutoff,
-                                            constraints=cnstrnts)
+                                            constraints=cnstrnts,
+                                            residueTemplates=residue,
+                                            ignoreExternalBonds=True)
 
 
         return openmm_system
