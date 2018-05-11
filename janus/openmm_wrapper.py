@@ -19,6 +19,8 @@ class OpenMM_wrapper(MM_wrapper):
         self._primary_subsys_nb = {}
         self._entire_sys_nb = {}
 
+        self._ff = OM_app.ForceField(self._system.mm_ff, self._system.mm_ff_water)
+
     def entire_sys_info(self):
         self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb)
         
@@ -201,22 +203,42 @@ class OpenMM_wrapper(MM_wrapper):
                     should I define my own objects
         """
 
-        ff = OM_app.ForceField(self._system.mm_ff, self._system.mm_ff_water)
-
+        # check to see if there are unmatched residues, create residue templates if there are
+        unmatched = self._ff.getUnmatchedResidues(pdb.topology)
+        if unmatched:
+            self.create_new_residue_template(pdb.topology)
 
         if periodic is True:
-            openmm_system = ff.createSystem(pdb.topology,
+            openmm_system = self._ff.createSystem(pdb.topology,
                                             constraints=cnstrnts)
         else:
-            openmm_system = ff.createSystem(pdb.topology,
+            openmm_system = self._ff.createSystem(pdb.topology,
                                             nonbondedMethod=nonbond,
                                             nonbondedCutoff=nonbond_cutoff,
                                             constraints=cnstrnts,
                                             residueTemplates=residue,
-                                            ignoreExternalBonds=True)
+                                            ignoreExternalBonds=False)
 
 
         return openmm_system
+
+    def create_new_residue_template(self, topology):
+        
+        template, unmatched_res = self._ff.generateTemplatesForUnmatchedResidues(topology)
+ 
+        # Loop through list of unmatched residues  
+        for i, res in enumerate(unmatched_res):
+            res_name = res.name                             # get the name of the original unmodifed residue
+            template[i].name = 'Modified_' + res_name       # assign new name
+ 
+        # loop through all atoms in modified template and all atoms in orignal template to assign atom type
+        for atom in template[i].atoms:
+            for atom2 in self._ff._templates[res_name].atoms:
+                if atom.name == atom2.name:
+                    atom.type = atom2.type
+ 
+        # register the new template to the forcefield object
+        self._ff.registerResidueTemplate(template[i])
 
 
     def create_openmm_simulation(self, openmm_system, pdb):
