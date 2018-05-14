@@ -140,33 +140,6 @@ class System(object):
         
         self.qm_param = qm_param
 
-    def add_link_atom(self, qm_pos, mm_pos, link_atom, g):
-        '''
-        adds link atom between given qm and mm position
-        qm_pos and mm_pos and indices of the qm and mm atoms being cut
-        link_atom is the element symbol of the link atom
-        '''
-
-
-        pos = self.entire_sys['positions']
-        pos_link = pos[qm_pos] + g*(pos[mm_pos] - pos[qm_pos])
-        x, y, z = pos_link[0],pos_link[1], pos_link[2]
-        self.qm_positions += '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '.format(link_atom, x, y, z)
-
-    def compute_scale_factor_g(self, qm, mm, link):
-        "computes scale factor g, qm, mm, and link are string element symbols" 
-        
-        # might need to define this elsewhere
-        pm_to_angstrom = 1/10
-
-        r_qm = element(qm).covalent_radius_pyykko*pm_to_angstrom
-        r_mm = element(mm).covalent_radius_pyykko*pm_to_angstrom
-        r_link = element(link).covalent_radius_pyykko*pm_to_angstrom
-
-        g = (r_qm + r_link)/(r_qm + r_mm)
-        
-        return g
- 
         
         
         

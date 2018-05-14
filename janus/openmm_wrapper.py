@@ -56,7 +56,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         out = ""
         line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
-        for idx in self._system.qm_atoms:
+        qm_atoms = self._system.qm_atoms
+    
+        for idx in qm_atoms:
             for atom in self._pdb.topology.atoms():
                 if atom.index == idx:
                     x, y, z =   self._positions[idx][0],\
@@ -64,8 +66,37 @@ class OpenMM_wrapper(MM_wrapper):
                                 self._positions[idx][2]
                     out += line.format(atom.element.symbol, x, y, z)
         self._qm_positions = out
-        
 
+        bonds = []
+        # determining if there are bonds that need to be cut
+        for bond in self._pdb.topology.bonds():
+            # find any bonds that involve the qm atoms
+            if bond.atom1.index in qm_atoms or bond.atom2.index in qm_atoms:
+                # isolate bonds that involve one in the qm atoms and one outside
+                if bond.atom1.index not in qm_atoms or bond.atom2.index not in qm_atoms:
+                    qm = {}
+                    mm = {}
+                    if bond.atom1.index in sys.qm_atoms:
+                        qm['atom'] = bond.atom1.element.symbol
+                        qm['idx'] = bond.atom1.index
+                        mm['atom'] = bond.atom2.element.symbol
+                        mm['idx'] = bond.atom2.index
+                    else:
+                        qm['atom'] = bond.atom2.element.symbol
+                        qm['idx'] = bond.atom2.index
+                        mm['atom'] = bond.atom1.element.symbol
+                        mm['idx'] = bond.atom1.index
+                    bonds.append((qm, mm))
+
+        # if there are bonds that need to be cut
+        if bonds:
+            for bond in bonds:        
+                qm = bond[0]
+                mm = bond[1]
+                # need place to define link atom identity, right now just hard coding
+                # also need way to choose boundary scheme, not just default to link atom
+                self.add_link_atom(self, qm['idx'], mm['idx'], qm['atom'], mm['atom'], 'H')
+        
     def get_info(self, pdb, forces=None, charges=False):
         """
         Gets information about a system, e.g., energy, positions, forces
@@ -522,3 +553,27 @@ class OpenMM_wrapper(MM_wrapper):
         """
         OM.PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
 
+    def add_link_atom(self, qm_idx, mm_idx, qm_atom, mm_atom,link_atom):
+        '''
+        adds link atom between given qm and mm position
+        link_atom is the element symbol of the link atom
+        '''
+        g = self.compute_scale_factor_g(qm_atom, mm_atom, link_atom)
+        pos_link = self._positions[qm_idx] + g*(self._positions[mm_idx] - self._positions[qm_idx])
+        x, y, z = pos_link[0],pos_link[1], pos_link[2]
+        self.qm_positions += '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '.format(link_atom, x, y, z)
+
+    def compute_scale_factor_g(self, qm, mm, link):
+        "computes scale factor g, qm, mm, and link are string element symbols" 
+        
+        # might need to define this elsewhere
+        pm_to_angstrom = 1/10
+
+        r_qm = element(qm).covalent_radius_pyykko*pm_to_angstrom
+        r_mm = element(mm).covalent_radius_pyykko*pm_to_angstrom
+        r_link = element(link).covalent_radius_pyykko*pm_to_angstrom
+
+        g = (r_qm + r_link)/(r_qm + r_mm)
+        
+        return g
+ 
