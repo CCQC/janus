@@ -13,6 +13,9 @@ class OpenMM_wrapper(MM_wrapper):
         super().__init__(system, "OpenMM")
 
         self._pdb = OpenMM_wrapper.create_pdb(self._system.mm_pdb_file)
+        self._positions = self._pdb.getPositions(asNumpy=True)/OM_unit.nanometer
+        self._positions *= MM_wrapper.nm_to_angstrom
+
         self._primary_subsys_modeller = None
         self._second_subsys_modeller = None
         self._second_subsys_nb = {}
@@ -51,16 +54,14 @@ class OpenMM_wrapper(MM_wrapper):
 
     def qm_positions(self):
 
-        positions = self._pdb.getPositions(asNumpy=True)/OM_unit.nanometer
-        positions *= MM_wrapper.nm_to_angstrom
         out = ""
         line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
         for idx in self._system.qm_atoms:
             for atom in self._pdb.topology.atoms():
                 if atom.index == idx:
-                    x, y, z =   positions[idx][0],\
-                                positions[idx][1],\
-                                positions[idx][2]
+                    x, y, z =   self._positions[idx][0],\
+                                self._positions[idx][1],\
+                                self._positions[idx][2]
                     out += line.format(atom.element.symbol, x, y, z)
         self._qm_positions = out
         
