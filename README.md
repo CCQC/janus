@@ -10,7 +10,7 @@ A Python library for adaptive QM/MM methods
 * Go to folder where this is downloaded and run: `bash Miniconda3-latest-OSX-x86_64.sh -b -p $HOME/miniconda`
 * To set conda path to miniconda: `echo PATH="\$HOME/miniconda/bin:\$PATH" >> ~/.bash_profile`
 * Create environment in miniconda: `conda create -n janus python=3.6 psi4 psi4-rt numpy openmm -c psi4 -c omnia`
-* To install in place: `pip install -e`
 * To activate the environment: `source activate janus`
+* To install locally: `pip install -e`
 * For reading external datafiles with pytest within the janus environment: `pip install pytest-datafiles` 
 * Adding mendeleev package: `pip install mendeleev` 
