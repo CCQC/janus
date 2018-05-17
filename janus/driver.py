@@ -81,7 +81,7 @@ def subtractive(system):
 
     # Get MM energy on QM region
     if not system.primary_subsys:
-        system.primary_subsys = mm_wrapper.get_primary_subsys()
+        system.primary_subsys = mm_wrapper.get_primary_subsys(link=True)
 
     # Get QM energy
     if not system.qm:

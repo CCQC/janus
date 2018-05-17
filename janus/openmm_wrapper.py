@@ -32,7 +32,7 @@ class OpenMM_wrapper(MM_wrapper):
         self._second_subsys_modeller = self.create_modeller(keep_qm=False)
         self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True)
 
-    def primary_subsys_info(self):
+    def primary_subsys_info(self, link=False):
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
         self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller)
 
@@ -69,6 +69,7 @@ class OpenMM_wrapper(MM_wrapper):
                     out += line.format(atom.element.symbol, x, y, z)
         self._qm_positions = out
 
+# NEED TO PUT THIS SOMEWHERE ELSE
         bonds = []
         # determining if there are bonds that need to be cut
         for bond in self._pdb.topology.bonds():
@@ -90,6 +91,7 @@ class OpenMM_wrapper(MM_wrapper):
                         mm['idx'] = bond.atom1.index
                     bonds.append((qm, mm))
 
+# NEED TO SAVE THIS TO SOMEWHERE ELSE
         # if there are bonds that need to be cut
         if bonds:
             for bond in bonds:        
@@ -203,6 +205,32 @@ class OpenMM_wrapper(MM_wrapper):
         elif keep_qm is True:
             OpenMM_wrapper.keep_atoms(modeller, self._system.qm_atoms)
         return modeller
+
+
+    def create_link_atom_system(self, mod, qm_idx, qm_res, link_position, link_atom):
+    '''
+    an simple implementation
+    need to save qm_idx,qm_res,link_position, and link_atom as parameters in self - see qm_positions
+    NEED TO MAKE SURE POSITIONS GIVEN IN NM OR CONVERT IT
+    also need to think about when multiple link atoms- list of link position and atoms
+    '''
+        link = OM_app.element.Element.getBySymbol(link_atom) 
+       # add link atom
+        mod.topology.addAtom(name='link', element=H, residue=resid)
+
+        # add bond between link atom and qm atom 
+        for atom1 in mod.topology.atoms():
+            for atom2 in mod.topology.atoms():
+                if atom1.index == qm['index'] and atom2.name == 'link':
+                    mod.topology.addBond(atom2, atom1)
+        
+        # add link atom position
+        positions = mod.getPositions()/OM_unit.nanometer
+        pos = OM.vec3.Vec3(pos[0], pos[1], pos[2]) 
+        positions.append(pos)
+        mod.positions = positions*OM_unit.nanometer
+    
+        return mod
 
 
     def create_openmm_system(self, pdb, 
@@ -574,6 +602,8 @@ class OpenMM_wrapper(MM_wrapper):
         pos_link = self._positions[qm_idx] + g*(self._positions[mm_idx] - self._positions[qm_idx])
         x, y, z = pos_link[0],pos_link[1], pos_link[2]
         self.qm_positions += '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '.format(link_atom, x, y, z)
+
+        
 
     def compute_scale_factor_g(self, qm, mm, link):
         "computes scale factor g, qm, mm, and link are string element symbols" 

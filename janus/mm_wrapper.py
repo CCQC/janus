@@ -26,7 +26,7 @@ class MM_wrapper(ABC):
         pass
 
     @abstractmethod
-    def primary_subsys_info(self):
+    def primary_subsys_info(self, link=False):
         pass
 
     @abstractmethod
@@ -53,12 +53,12 @@ class MM_wrapper(ABC):
             self.second_subsys_info()
         return self._second_subsys
 
-    def get_primary_subsys(self):
+    def get_primary_subsys(self, link=False):
         """
         mm energy and gradients on primary_subsys only
         """
         if not self._primary_subsys:
-            self.primary_subsys_info()
+            self.primary_subsys_info(link)
         return self._primary_subsys
     
     def get_entire_sys(self):
