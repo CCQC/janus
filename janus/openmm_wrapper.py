@@ -208,12 +208,12 @@ class OpenMM_wrapper(MM_wrapper):
 
 
     def create_link_atom_system(self, mod, qm_idx, qm_res, link_position, link_atom):
-    '''
-    an simple implementation
-    need to save qm_idx,qm_res,link_position, and link_atom as parameters in self - see qm_positions
-    NEED TO MAKE SURE POSITIONS GIVEN IN NM OR CONVERT IT
-    also need to think about when multiple link atoms- list of link position and atoms
-    '''
+        '''
+        an simple implementation
+        need to save qm_idx,qm_res,link_position, and link_atom as parameters in self - see qm_positions
+        NEED TO MAKE SURE POSITIONS GIVEN IN NM OR CONVERT IT
+        also need to think about when multiple link atoms- list of link position and atoms
+        '''
         link = OM_app.element.Element.getBySymbol(link_atom) 
        # add link atom
         mod.topology.addAtom(name='link', element=H, residue=resid)
