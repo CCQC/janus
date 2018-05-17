@@ -16,6 +16,7 @@ class MM_wrapper(ABC):
         self._primary_subsys = {}
         self._entire_sys = {}
         self._boundary = {} 
+        self._boundary['energy'] = None
         self._qm_positions = None
 
         super().__init__()
@@ -72,7 +73,7 @@ class MM_wrapper(ABC):
         """
         energy and gradients for interaction between 
         """
-        if not self._boundary:
+        if self._boundary['energy'] is None:
             self.boundary_info()
         return self._boundary
 

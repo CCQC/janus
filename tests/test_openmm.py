@@ -57,16 +57,16 @@ def test_get_primary_subsys():
     assert np.allclose(info['energy'], 0.0)
 
 def test_get_boundary():
-    openmm_mech._primary_subsys_nb['energy'] = 0.0
-    openmm_mech._second_subsys_nb['energy'] = 6.873303688617918e-05
-    openmm_mech._entire_sys_nb['energy'] = -0.010562892368405992
+    openmm_mech._boundary['primary_subsys']['energy'] = 0.0
+    openmm_mech._boundary['second_subsys']['energy'] = 6.873303688617918e-05
+    openmm_mech._boundary['entire_sys']['energy'] = -0.010562892368405992
     info = openmm_mech.get_boundary()
     assert np.allclose(info['energy'], -0.010631625405292172)
 
 def test_get_boundary_elec():
-    openmm_elec._primary_subsys_nb['energy'] = 0.0
-    openmm_elec._second_subsys_nb['energy'] = -1.6972570321173706e-05 
-    openmm_elec._entire_sys_nb['energy'] = -0.00015962087002150763 
+    openmm_elec._boundary['primary_subsys']['energy'] = 0.0
+    openmm_elec._boundary['second_subsys']['energy'] = -1.6972570321173706e-05 
+    openmm_elec._boundary['entire_sys']['energy'] = -0.00015962087002150763 
     info = openmm_elec.get_boundary()
     assert np.allclose(info['energy'], -0.00014264829970033393)
 

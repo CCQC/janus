@@ -18,9 +18,10 @@ class OpenMM_wrapper(MM_wrapper):
 
         self._primary_subsys_modeller = None
         self._second_subsys_modeller = None
-        self._second_subsys_nb = {}
-        self._primary_subsys_nb = {}
-        self._entire_sys_nb = {}
+
+        self._boundary['entire_sys'] = {}
+        self._boundary['second_subsys'] = {}
+        self._boundary['primary_subsys'] = {}
 
         self._ff = OM_app.ForceField(self._system.mm_ff, self._system.mm_ff_water)
 
@@ -37,20 +38,21 @@ class OpenMM_wrapper(MM_wrapper):
 
     def boundary_info(self):
 
-        if not self._entire_sys_nb:
-            self._entire_sys_nb_system, self._entire_sys_nb_simulation, self._entire_sys_nb = self.get_info(self._pdb, forces='nonbonded')
+        if not self._boundary['entire_sys']:
+            self._boundary['entire_sys'] = self.get_info(self._pdb, return_system=False, return_simulation=False)
         if self._second_subsys_modeller is None:
             self._second_subsys_modeller = self.create_modeller(keep_qm=False)
-        if not self._second_subsys_nb:
-            self._second_subsys_nb_system, self._second_subsys_nb_simulation, self._second_subsys_nb = self.get_info(self._second_subsys_modeller, forces='nonbonded')
+        if not self._boundary['second_subsys']: 
+            self._boundary['second_subsys'] = self.get_info(self._second_subsys_modeller, return_system=False, return_simulation=False)
         if self._primary_subsys_modeller is None:
             self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
-        if not self._primary_subsys:
-            self._primary_subsys_nb_system, self._primary_subsys_nb_simulation, self._primary_subsys_nb = self.get_info(self._primary_subsys_modeller, forces='nonbonded')
+        if not self._boundary['primary_subsys']:
+            self._boundary['primary_subsys'] = self.get_info(self._primary_subsys_modeller, return_system=False, return_simulation=False)
 
-        self._boundary['energy'] = self._entire_sys_nb['energy'] \
-                            - self._second_subsys_nb['energy'] \
-                            - self._primary_subsys_nb['energy']
+        self._boundary['energy'] = self._boundary['entire_sys']['energy'] \
+                                - self._boundary['second_subsys']['energy'] \
+                                - self._boundary['primary_subsys']['energy']
+
 
     def qm_positions(self):
 
@@ -97,15 +99,13 @@ class OpenMM_wrapper(MM_wrapper):
                 # also need way to choose boundary scheme, not just default to link atom
                 self.add_link_atom(self, qm['idx'], mm['idx'], qm['atom'], mm['atom'], 'H')
         
-    def get_info(self, pdb, forces=None, charges=False):
+    def get_info(self, pdb, charges=False, return_system=True, return_simulation=True):
         """
         Gets information about a system, e.g., energy, positions, forces
 
         Parameters
         ----------
         pbd : a OpenMM pdb object or OpenMM modeller object
-        forces : if forces=='nonbonded', any bonded forces are not considered
-                 Default is None
         charges : a bool to specify whether to get the charges on the
                   MM molecules. Default is false
 
@@ -125,15 +125,20 @@ class OpenMM_wrapper(MM_wrapper):
         OM_system = self.create_openmm_system(pdb)
 
         # Remove Bond, Angle, and Torsion forces to leave only nonbonded forces
-        if forces == 'nonbonded':
-            for i in range(3):
-                OM_system.removeForce(0)
-            if self._system.embedding_method=='Electrostatic':
-                force = OM_system.getForce(0)
-                for i in range(force.getNumParticles()):
-                    a = force.getParticleParameters(i)
-                    Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
-                    force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
+
+        # this part no longer needed 
+       # if forces == 'nonbonded':
+       #     for i in range(3):
+       #         OM_system.removeForce(0)
+
+        if self._system.embedding_method=='Electrostatic':
+            # get the nonbonded force
+            force = OM_system.getForce(4)
+            for i in range(force.getNumParticles()):
+                a = force.getParticleParameters(i)
+                Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
+                # set the charge to 0 so the coulomb energy is zero
+                force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
 
         # Create an OpenMM simulation from the openmm system,
         # topology and positions.
@@ -148,7 +153,14 @@ class OpenMM_wrapper(MM_wrapper):
         if charges is True:
             state['charges'] = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
 
-        return OM_system, simulation, state
+        if return_system is True and return_simulation is True:
+            return OM_system, simulation, state
+        elif return_system is True and return_simulation is False:
+            return OM_system, state
+        elif return_system is False and return_simulation is True:
+            return simulation, state
+        else:
+            return state
 
     def create_modeller(self, keep_qm=None):
         """
