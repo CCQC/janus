@@ -119,6 +119,16 @@ class System(object):
             self.mm_program = "OpenMM"
         # default integrator in openmm is the langevin integrator
     
+        if 'boundary_treatment' in qmmm:
+            self.boundary_treatment == qmmm['boundary_treatment']
+        else:
+            self.boundary_treatment = 'link_atom'
+
+        if 'link_atom' in qmmm:
+            self.link_atom == qmmm['link_atom']
+        elif self.boundary_treatment == 'link_atom':
+            self.link_atom = 'H'
+    
 
         self.build_qm_param()
 
@@ -141,7 +151,26 @@ class System(object):
         self.qm_param = qm_param
 
         
+    def get_link_atom_position(self, qm_position, mm_position, g):
+
+        return qm_position + g*(mm_position - qm_position)
+
+
+    def compute_scale_factor_g(self, qm, mm, link):
+        '''
+        computes scale factor g, qm, mm, and link are string element symbols
+        r given in pmm but don't need to convert because it is a ratio
+        need to get other ways to compute g factor
+        need functionality for different link atoms
+        '''
         
+        r_qm = element(qm).covalent_radius_pyykko
+        r_mm = element(mm).covalent_radius_pyykko
+        r_link = element(link).covalent_radius_pyykko
+
+        g = (r_qm + r_link)/(r_qm + r_mm)
+        
+        return g
         
 
 
