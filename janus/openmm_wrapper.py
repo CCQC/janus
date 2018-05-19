@@ -33,7 +33,6 @@ class OpenMM_wrapper(MM_wrapper):
                 self.prepare_link_atom() 
     
 
-
     def find_boundary_bonds(self):
 
         qm_atoms = self._system.qm_atoms
@@ -65,8 +64,18 @@ class OpenMM_wrapper(MM_wrapper):
         self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True)
 
     def primary_subsys_info(self, link=False):
+
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
-        self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller)
+
+        if link is True: 
+            if self._boundary_bonds and self._system.boundary_treatment == 'link_atom':  
+                for i, atom  in self.link_atoms:
+                    self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, atom)
+                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller_link)
+        else:
+            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller)
+
+
 
     def boundary_info(self):
 
@@ -104,7 +113,8 @@ class OpenMM_wrapper(MM_wrapper):
         if self._boundary_bonds:
             if self._system.boundary_treatment == 'link_atom':
                 for i, atom  in self.link_atoms:
-                    x, y, z = atom['link_positions'][0], atom['link_positions'][1], atom['link_positions'][2]
+                    pos = atom['link_positions']*MM_wrapper.nm_to_angstrom
+                    x, y, z = pos[0], pos[1], pos[2]
                     out += line.format(atom['link_atom'], x, y, z)
 
         self._qm_positions = out
@@ -391,7 +401,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         if positions is True: 
             values['positions'] = state.getPositions(asNumpy=True)/OM_unit.nanometer
-            values['positions'] *= MM_wrapper.nm_to_angstrom
+            #values['positions'] *= MM_wrapper.nm_to_angstrom
 
         if forces is True: 
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
@@ -579,31 +589,6 @@ class OpenMM_wrapper(MM_wrapper):
         OM.PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
 
  
-    def create_link_atom_system(self, mod, qm_idx, qm_res, link_position, link_atom):
-        '''
-        an simple implementation
-        need to save qm_idx,qm_res,link_position, and link_atom as parameters in self - see qm_positions
-        NEED TO MAKE SURE POSITIONS GIVEN IN NM OR CONVERT IT
-        also need to think about when multiple link atoms- list of link position and atoms
-        '''
-        link = OM_app.element.Element.getBySymbol(link_atom) 
-       # add link atom
-        mod.topology.addAtom(name='link', element=link, residue=qm_res)
-
-        # add bond between link atom and qm atom 
-        for atom1 in mod.topology.atoms():
-            for atom2 in mod.topology.atoms():
-                # I DON'T THINK THIS IS RIGHT WAY  FOR QM IDX
-                if atom1.index == qm_idx and atom2.name == 'link':
-                    mod.topology.addBond(atom2, atom1)
-        
-        # add link atom position
-        positions = mod.getPositions()/OM_unit.nanometer
-        pos = OM.vec3.Vec3(pos[0], pos[1], pos[2]) 
-        positions.append(pos)
-        mod.positions = positions*OM_unit.nanometer
-    
-        return mod
 
     def prepare_link_atom(self):
 
@@ -617,11 +602,14 @@ class OpenMM_wrapper(MM_wrapper):
             ## this is in nm
             #self.link_atoms[i]['qm_positions'] = self._positions[qm.index] 
 
+            # saving id because id does not change between sys and modeller
+            self.link_atoms[i]['qm_id'] = qm.id
+
             #self.link_atoms[i]['mm_atom'] = mm.element.symbol
             #self.link_atoms[i]['mm_index'] = mm.index 
             ## this is in nm
             #self.link_atoms[i]['mm_positions'] = self._positions[mm.index] 
-            
+            self.link_atoms[i]['mm_id'] = mm.id
             
             self.link_atoms[i]['link_atom'] = self._system.link_atom
             g = self._system.compute_scale_factor_g(qm.element.symbol, mm.element.symbol, self._system.link_atom)
@@ -630,3 +618,32 @@ class OpenMM_wrapper(MM_wrapper):
             self.link_atoms[i]['link_positions'] = self._system.get_link_atom_position(self._positions[qm.index], self._positions[mm.index], g) 
 
 
+    def create_link_atom_modeller(self, mod, atom):
+        '''
+        mod is modeller of primary system without link atom added
+        atom is link_atom dictionary 
+        '''
+        # get element object
+        link = OM_app.element.Element.getBySymbol(atom['link_atom']) 
+
+        # get residue where qm atom is
+        for atom in mod.topology.atoms():
+            if atom.id == atom['qm_id']:
+                qm_res = atom.residue
+            
+       # add link atom
+        mod.topology.addAtom(name='link', element=link, residue=qm_res)
+
+        # add bond between link atom and qm atom 
+        for atom1 in mod.topology.atoms():
+            for atom2 in mod.topology.atoms():
+                if atom1.id == atom['qm_id'] and atom2.name == 'link':
+                    mod.topology.addBond(atom2, atom1)
+        
+        # add link atom position
+        positions = mod.getPositions()/OM_unit.nanometer
+        pos = OM.vec3.Vec3(atom['link_positions'][0], atom['link_positions'][1], atom['link_positions'][2]) 
+        positions.append(pos)
+        mod.positions = positions*OM_unit.nanometer
+    
+        return mod
