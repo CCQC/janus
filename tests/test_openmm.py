@@ -7,18 +7,21 @@ from janus import system
 import numpy as np
 import os
 
-ala_pdb_file = os.path.join(str('tests/files/test_openmm/ala_water.pdb'))
+ala_water_pdb_file = os.path.join(str('tests/files/test_openmm/ala_water.pdb'))
 water_pdb_file = os.path.join(str('tests/files/test_openmm/water.pdb'))
+ala_pdb_file = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 
 qmmm_elec = {"embedding_method" : "Electrostatic"}
 
-sys_ala = system.System(qm={"qm_atoms": [0,1,2,3,4,5,6]}, mm={'mm_pdb_file' : ala_pdb_file})
+sys_ala = system.System(qm={"qm_atoms": [0,1,2,3,4,5,6]}, mm={'mm_pdb_file' : ala_water_pdb_file})
 sys_mech = system.System(qm={"qm_atoms": [0,1,2]}, mm={'mm_pdb_file' : water_pdb_file})
 sys_elec = system.System(qmmm=qmmm_elec,qm={"qm_atoms": [0,1,2]}, mm={'mm_pdb_file' : water_pdb_file})
+sys_ala_link = system.System(qm={"qm_atoms": [0, 1, 2, 3]}, mm={'mm_pdb_file' : ala_pdb_file})
 
 openmm_ala = openmm_wrapper.OpenMM_wrapper(sys_ala)
 openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
+openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
 
 
 #@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
@@ -40,6 +43,26 @@ openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 #def test_get_primary_subsys():
 #def test_get_entire_sys():
 #def test_get_boundary():
+
+def test_find_boundary_bonds():
+
+    bonds1 = openmm_ala_link.find_boundary_bonds(qm_atoms=[])
+    bonds2 = openmm_ala_link.find_boundary_bonds(qm_atoms=[x for x in range(12,20)])
+
+    assert len(openmm_ala_link._boundary_bonds) == 1
+    assert len(bonds1) == 0
+    assert len(bonds2) == 2
+    assert len(openmm_ala._boundary_bonds) == 4
+    assert len(openmm_mech._boundary_bonds) == 0
+
+def test_prepare_link_atom():
+
+    assert openmm_ala_link.link_atoms[0]['qm_id'] == '1'
+    assert openmm_ala_link.link_atoms[0]['mm_id'] == '5' 
+    assert openmm_ala_link.link_atoms[0]['link_atom'] == 'H'
+    assert openmm_ala_link.link_atoms[0]['g_factor'] == 0.7054794520547946 
+    assert np.allclose(openmm_ala_link.link_atoms[0]['link_positions'], np.array([0.08868014, 0.02342192, 0.04189384]))
+    
 
 def test_get_entire_sys():
     openmm_mech._entire_sys['energy'] = -0.010562892368405992

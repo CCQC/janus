@@ -33,9 +33,10 @@ class OpenMM_wrapper(MM_wrapper):
                 self.prepare_link_atom() 
     
 
-    def find_boundary_bonds(self):
+    def find_boundary_bonds(self, qm_atoms=None):
 
-        qm_atoms = self._system.qm_atoms
+        if qm_atoms is None:
+            qm_atoms = self._system.qm_atoms
         bonds = []
         # determining if there are bonds that need to be cut
         for bond in self._pdb.topology.bonds():
