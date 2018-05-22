@@ -70,8 +70,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         if link is True: 
             if self._boundary_bonds and self._system.boundary_treatment == 'link_atom':  
-                for i, atom  in self.link_atoms:
-                    self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, atom)
+                # this structure only working for adding one link atom for now
+                for atom in self.link_atoms:
+                    self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, self.link_atoms[atom])
                     self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller_link)
         else:
             self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller)
@@ -297,6 +298,8 @@ class OpenMM_wrapper(MM_wrapper):
         # Loop through list of unmatched residues  
         for i, res in enumerate(unmatched_res):
             res_name = res.name                             # get the name of the original unmodifed residue
+            n_res_name = 'N' + res.name                     # get the name of the N-terminus form of original residue
+            c_res_name = 'C' + res.name                     # get the name of the C-terminus form of original residue
             template[i].name = 'Modified_' + res_name       # assign new name
  
         # loop through all atoms in modified template and all atoms in orignal template to assign atom type
@@ -304,7 +307,16 @@ class OpenMM_wrapper(MM_wrapper):
             for atom2 in self._ff._templates[res_name].atoms:
                 if atom.name == atom2.name:
                     atom.type = atom2.type
- 
+            # the following is for when there is a unmatched name, chech the N and C terminus residues
+            if atom.type == None:
+                for atom3 in self._ff._templates[n_res_name].atoms:
+                    if atom.name == atom3.name:
+                        atom.type = atom3.type
+            if atom.type == None:
+                for atom4 in self._ff._templates[c_res_name].atoms:
+                    if atom.name == atom4.name:
+                        atom.type = atom4.type
+
         # register the new template to the forcefield object
         self._ff.registerResidueTemplate(template[i])
 
@@ -628,17 +640,18 @@ class OpenMM_wrapper(MM_wrapper):
         link = OM_app.element.Element.getBySymbol(atom['link_atom']) 
 
         # get residue where qm atom is
-        for atom in mod.topology.atoms():
-            if atom.id == atom['qm_id']:
-                qm_res = atom.residue
+        for atm in mod.topology.atoms():
+            if atm.id == atom['qm_id']:
+                qm_res = atm.residue
             
        # add link atom
-        mod.topology.addAtom(name='link', element=link, residue=qm_res)
+       # this is a VERY specific case with H1 - need to determine what type of H in the future
+        mod.topology.addAtom(name='H1', element=link, residue=qm_res, id='link')
 
         # add bond between link atom and qm atom 
         for atom1 in mod.topology.atoms():
             for atom2 in mod.topology.atoms():
-                if atom1.id == atom['qm_id'] and atom2.name == 'link':
+                if atom1.id == atom['qm_id'] and atom2.id == 'link':
                     mod.topology.addBond(atom2, atom1)
         
         # add link atom position
