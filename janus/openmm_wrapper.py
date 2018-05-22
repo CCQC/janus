@@ -113,10 +113,10 @@ class OpenMM_wrapper(MM_wrapper):
         # if there are bonds that need to be cut
         if self._boundary_bonds:
             if self._system.boundary_treatment == 'link_atom':
-                for i, atom  in self.link_atoms:
-                    pos = atom['link_positions']*MM_wrapper.nm_to_angstrom
+                for atom in self.link_atoms:
+                    pos = self.link_atoms[atom]['link_positions']*MM_wrapper.nm_to_angstrom
                     x, y, z = pos[0], pos[1], pos[2]
-                    out += line.format(atom['link_atom'], x, y, z)
+                    out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
 
         self._qm_positions = out
 

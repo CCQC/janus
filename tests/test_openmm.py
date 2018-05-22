@@ -103,10 +103,19 @@ def test_get_qm_positions():
  H    -0.022   2.679   5.599 
  H     0.059   3.601   6.796 
  """
+
+    qm_link_mol = """N     0.024  -0.103  -0.101 
+ H     0.027  -1.132  -0.239 
+ H    -0.805   0.163   0.471 
+ H    -0.059   0.384  -1.019 
+ H     0.887   0.234   0.419 
+ """
     
     pos = openmm_mech.get_qm_positions()
+    pos_link = openmm_ala_link.get_qm_positions()
 
     assert pos == qm_mol
+    assert pos_link == qm_link_mol
 
 def test_keep_residues():
     """
