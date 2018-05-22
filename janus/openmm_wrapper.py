@@ -300,7 +300,8 @@ class OpenMM_wrapper(MM_wrapper):
             res_name = res.name                             # get the name of the original unmodifed residue
             n_res_name = 'N' + res.name                     # get the name of the N-terminus form of original residue
             c_res_name = 'C' + res.name                     # get the name of the C-terminus form of original residue
-            template[i].name = 'Modified_' + res_name       # assign new name
+            name = 'Modified_' + res_name       # assign new name
+            template[i].name = name
  
         # loop through all atoms in modified template and all atoms in orignal template to assign atom type
         for atom in template[i].atoms:
@@ -317,6 +318,10 @@ class OpenMM_wrapper(MM_wrapper):
                     if atom.name == atom4.name:
                         atom.type = atom4.type
 
+        # override existing modified residues with same name
+        if name in self._ff._templates: 
+            template[i].overrideLevel = self._ff._templates[name].overrideLevel + 1
+        
         # register the new template to the forcefield object
         self._ff.registerResidueTemplate(template[i])
 

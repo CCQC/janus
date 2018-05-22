@@ -43,6 +43,8 @@ openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
 #def test_get_entire_sys():
 #def test_get_boundary():
 
+
+
 def test_find_boundary_bonds():
 
     bonds1 = openmm_ala_link.find_boundary_bonds(qm_atoms=[])
@@ -98,6 +100,11 @@ def test_primary_subsys_info():
     assert np.allclose(openmm_ala_link._primary_subsys['positions'], positions) 
     assert np.allclose(openmm_ala_link._primary_subsys['forces'], forces) 
     
+def test_create_new_residue_template():
+    mm = openmm_ala_link.create_modeller(keep_qm = False)
+    openmm_ala_link.create_new_residue_template(mm.topology)
+    
+    assert  openmm_ala_link._ff._templates['Modified_ALA'].name == 'Modified_ALA'
 
 def test_get_boundary():
     openmm_mech._boundary['primary_subsys']['energy'] = 0.0
