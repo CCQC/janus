@@ -18,6 +18,7 @@ class MM_wrapper(ABC):
         self._boundary = {} 
         self._boundary['energy'] = None
         self._qm_positions = None
+        self.link_atoms = {}
 
         super().__init__()
 
@@ -81,6 +82,10 @@ class MM_wrapper(ABC):
         if self._qm_positions is None:
             self.qm_positions()
         return self._qm_positions
+
+    def get_boundary_info(self):
+        if self.link_atoms:
+            return self.link_atoms
 
 
     

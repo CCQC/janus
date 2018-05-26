@@ -55,6 +55,10 @@ def additive(system):
     if not system.boundary:
         system.boundary = mm_wrapper.get_boundary()
 
+    # Get any link atom information
+    if not system.boundary_info:
+        system.boundary_info = mm_wrapper.get_boundary_info()
+
     # Get QM energy
     if not system.qm:
         # get QM positions from pdb
@@ -83,6 +87,10 @@ def subtractive(system):
     if not system.primary_subsys:
         system.primary_subsys = mm_wrapper.get_primary_subsys(link=True)
 
+    # Get any link atom information
+    if not system.boundary_info:
+        system.boundary_info = mm_wrapper.get_boundary_info()
+
     # Get QM energy
     if not system.qm:
         # get QM positions from pdb
@@ -95,3 +103,9 @@ def subtractive(system):
     system.qmmm_energy = system.entire_sys['energy']\
                         - system.primary_subsys['energy']\
                         + system.qm['energy']
+
+
+
+
+
+

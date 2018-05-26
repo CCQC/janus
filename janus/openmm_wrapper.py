@@ -28,13 +28,11 @@ class OpenMM_wrapper(MM_wrapper):
         self._boundary_bonds = self.find_boundary_bonds()
 
         if self._boundary_bonds:
-            self.link_atoms = {}
             if self._system.boundary_treatment == 'link_atom':
                 self.prepare_link_atom() 
             if self._system.boundary_treatment == 'RC' or self._system.boundary_treatment == 'RCD':
                 self.prepare_link_atom(RC=True)
                 
-    
 
     def find_boundary_bonds(self, qm_atoms=None):
 
