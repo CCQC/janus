@@ -28,9 +28,12 @@ class OpenMM_wrapper(MM_wrapper):
         self._boundary_bonds = self.find_boundary_bonds()
 
         if self._boundary_bonds:
+            self.link_atoms = {}
             if self._system.boundary_treatment == 'link_atom':
-                self.link_atoms = {}
                 self.prepare_link_atom() 
+            if self._system.boundary_treatment == 'RC' or self._system.boundary_treatment == 'RCD':
+                self.prepare_link_atom(RC=True)
+                
     
 
     def find_boundary_bonds(self, qm_atoms=None):
@@ -608,7 +611,7 @@ class OpenMM_wrapper(MM_wrapper):
 
  
 
-    def prepare_link_atom(self):
+    def prepare_link_atom(self, RC=False):
 
         for i, bond in enumerate(self._boundary_bonds):
             qm = bond[0]
@@ -628,12 +631,25 @@ class OpenMM_wrapper(MM_wrapper):
             ## this is in nm
             #self.link_atoms[i]['mm_positions'] = self._positions[mm.index] 
             self.link_atoms[i]['mm_id'] = mm.id
+            self.link_atoms[i]['mm_index'] = mm.index
             
             self.link_atoms[i]['link_atom'] = self._system.link_atom
             g = self._system.compute_scale_factor_g(qm.element.symbol, mm.element.symbol, self._system.link_atom)
             self.link_atoms[i]['g_factor'] = g 
             # this is in nm
             self.link_atoms[i]['link_positions'] = self._system.get_link_atom_position(self._positions[qm.index], self._positions[mm.index], g) 
+
+            if RC is True:
+                bonds = []
+                # find index of atoms bonded to mm atom
+                for bond in self._pdb.topology.bonds(): 
+                    if bond.atom1.id == mm.id or bond.atom2.id == mm.id:
+                        if bond.atom1.id != qm.id and bond.atom2.id != qm.id: 
+                            if bond.atom1.id != mm.id: 
+                                bonds.append(bond.atom1.index) 
+                            elif bond.atom2.id != mm.id:  
+                                bonds.append(bond.atom2.index) 
+                self.link_atoms[i]['bonds_to_mm'] = bonds
 
 
     def create_link_atom_modeller(self, mod, atom):
