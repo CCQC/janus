@@ -58,7 +58,7 @@ class OpenMM_wrapper(MM_wrapper):
 
 
     def entire_sys_info(self):
-        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb)
+        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb, charges=True)
         
     def second_subsys_info(self):
         self._second_subsys_modeller = self.create_modeller(keep_qm=False)

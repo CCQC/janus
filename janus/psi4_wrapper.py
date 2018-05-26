@@ -97,16 +97,76 @@ class Psi4_wrapper(QM_wrapper):
         if 'no_com' not in sys.qm_positions:
             sys.qm_positions += 'no_com \n '
 
+        # make sure this is in nm
         mol = psi4.geometry(sys.qm_positions)
 
         psi4.set_options(sys.qm_param)
 
         if sys.embedding_method=='Electrostatic':
-            ss = self._system.second_subsys
+            if sys.boundary_treatment == 'link_atom': 
+                charges = self.get_external_charges(link=True)
+            if sys.boundary_treatment == 'RC': 
+                charges = self.get_external_charges(RC=True)
+            if sys.boundary_treatment == 'RCD': 
+                charges = self.get_external_charges(RCD=True)
             Chrgfield = psi4.QMMM()
-            for i in range(len(ss['charges'])):
-                Chrgfield.extern.addCharge(ss['charges'][i], ss['positions'][i][0], ss['positions'][i][1], ss['positions'][i][2])
+            for charge in charges:
+                Chrgfield.extern.addCharge(charge[0], charge[1], charge[2], charge[3])
             psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
+
+
+    def get_external_charges(self, link=False, RC=False, RCD=False):
+            # check to make sure positions are in angstroms
+        charges = []
+
+        if link is True:
+            ss = self._system.second_subsys
+            for i, chrg in enumerate(ss['charges']): 
+                charges.append([chrg, ss['positions'][i][0], ss['positions'][i][1], ss['positions'][i][2]])
+        
+        else:
+
+            es = self._system.entire_sys
+            mm_index = self._system.boundary_info['mm_index']
+            bonds = self._system.boundary_info['bonds_to_mm']
+            
+            # get q0
+            q0 = es['charges'][mm_index] / len(bonds)
+            # get positions
+            positions = self.get_redistributed_positions(es['positions'], bonds, mm_index)
+
+            if RC is True:
+                for i, chrg in enumerate(es['charges']):
+                    if i not in self._system.qm_atoms and i != mm_index:
+                            charges.append([chrg, es['positions'][i][0], es['positions'][i][1], es['positions'][i][2]])
+                for pos in positions:
+                    charges.append([q0, pos[0], pos[1], pos[2]])
+
+            elif RCD is True:
+                q0_RCD = q0 * 2
+
+                for i, chrg in enumerate(es['charges']):
+                    if i not in self._system.qm_atoms and i != mm_index:
+                        if i in bonds:
+                            charges.append([chrg - q0, es['positions'][i][0], es['positions'][i][1], es['positions'][i][2]])
+                        else:
+                            charges.append([chrg, es['positions'][i][0], es['positions'][i][1], es['positions'][i][2]])
+
+                for pos in positions:
+                    charges.append([q0_RCD, pos[0], pos[1], pos[2]])
+                
+        return charges
+
+    def get_redistributed_positions(positions, bonds, mm):
+        
+        pos = []
+    
+        for bond in bonds:
+            new_pos = (positions[bond] + positions[mm]) / 2
+            pos.append(new_pos)
+        
+        return pos
+            
                 
     def get_scf_charges(self):
         """

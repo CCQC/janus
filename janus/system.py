@@ -138,6 +138,7 @@ class System(object):
         self.boundary = {}
         self.qm = {}
         self.qm_positions = None
+        self.boundary_info = {}
 
     def build_qm_param(self):
         qm_param = {}
