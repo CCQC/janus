@@ -420,7 +420,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         if positions is True: 
             values['positions'] = state.getPositions(asNumpy=True)/OM_unit.nanometer
-            #values['positions'] *= MM_wrapper.nm_to_angstrom
+            values['positions'] *= MM_wrapper.nm_to_angstrom
 
         if forces is True: 
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
