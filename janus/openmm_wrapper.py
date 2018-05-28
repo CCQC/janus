@@ -58,14 +58,14 @@ class OpenMM_wrapper(MM_wrapper):
         return bonds
 
 
-    def entire_sys_info(self):
-        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb, charges=True)
+    def entire_sys_info(self, coulomb):
+        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb, charges=True, get_coulomb=coulomb)
         
-    def second_subsys_info(self):
+    def second_subsys_info(self, coulomb):
         self._second_subsys_modeller = self.create_modeller(keep_qm=False)
-        self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True)
+        self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True, get_coulomb=coulomb)
 
-    def primary_subsys_info(self, link=False):
+    def primary_subsys_info(self, link, coulomb):
 
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
 
@@ -74,24 +74,23 @@ class OpenMM_wrapper(MM_wrapper):
                 # this structure only working for adding one link atom for now
                 for atom in self.link_atoms:
                     self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, self.link_atoms[atom])
-                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller_link)
+                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller_link,get_coulomb=coulomb)
         else:
-            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller)
+            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller,get_coulomb=coulomb)
 
 
-
-    def boundary_info(self):
+    def boundary_info(self, coulomb):
 
         if not self._boundary['entire_sys']:
-            self._boundary['entire_sys'] = self.get_info(self._pdb, return_system=False, return_simulation=False)
+            self._boundary['entire_sys'] = self.get_info(self._pdb, return_system=False, return_simulation=False,get_coulomb=coulomb)
         if self._second_subsys_modeller is None:
             self._second_subsys_modeller = self.create_modeller(keep_qm=False)
         if not self._boundary['second_subsys']: 
-            self._boundary['second_subsys'] = self.get_info(self._second_subsys_modeller, return_system=False, return_simulation=False)
+            self._boundary['second_subsys'] = self.get_info(self._second_subsys_modeller, return_system=False, return_simulation=False,get_coulomb=coulomb)
         if self._primary_subsys_modeller is None:
             self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
         if not self._boundary['primary_subsys']:
-            self._boundary['primary_subsys'] = self.get_info(self._primary_subsys_modeller, return_system=False, return_simulation=False)
+            self._boundary['primary_subsys'] = self.get_info(self._primary_subsys_modeller, return_system=False, return_simulation=False, get_coulomb=coulomb)
 
         self._boundary['energy'] = self._boundary['entire_sys']['energy'] \
                                 - self._boundary['second_subsys']['energy'] \
@@ -123,7 +122,7 @@ class OpenMM_wrapper(MM_wrapper):
         self._qm_positions = out
 
         
-    def get_info(self, pdb, charges=False, return_system=True, return_simulation=True):
+    def get_info(self, pdb, charges=False, return_system=True, return_simulation=True, get_coulomb=True):
         """
         Gets information about a system, e.g., energy, positions, forces
 
@@ -155,7 +154,7 @@ class OpenMM_wrapper(MM_wrapper):
        #     for i in range(3):
        #         OM_system.removeForce(0)
 
-        if self._system.embedding_method=='Electrostatic':
+        if self._system.embedding_method=='Electrostatic' and get_coulomb is False:
             # get the nonbonded force
             force = OM_system.getForce(4)
             for i in range(force.getNumParticles()):

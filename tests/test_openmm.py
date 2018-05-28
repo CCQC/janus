@@ -94,7 +94,7 @@ def test_primary_subsys_info():
                        [ -51.83508301, -112.75787354,  -22.68826294],
                        [ 138.75039673,  -31.39888   ,  -29.20209503],
                        [ 120.31186676,  -84.05026245, -145.13619995]])
-    openmm_ala_link.primary_subsys_info(link=True)
+    openmm_ala_link.primary_subsys_info(link=True, coulomb=True)
 
     assert openmm_ala_link._primary_subsys['energy'] == 0.021096653017314577
     assert np.allclose(openmm_ala_link._primary_subsys['positions'], positions * 10)

@@ -51,9 +51,9 @@ def additive(system):
     if not system.second_subsys:
         system.second_subsys = mm_wrapper.get_second_subsys()
 
-    # Get nonbonded MM energy on PS-SS interaction
+    # Get non coulomb MM energy on PS-SS interaction
     if not system.boundary:
-        system.boundary = mm_wrapper.get_boundary()
+        system.boundary = mm_wrapper.get_boundary(coulomb=False)
 
     # Get any link atom information
     if not system.boundary_info:

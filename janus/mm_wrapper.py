@@ -46,36 +46,37 @@ class MM_wrapper(ABC):
 #    def make_zero_energy(self):
 #        pass
 
-    def get_second_subsys(self):
+    def get_second_subsys(self, coulomb=True):
         """
         mm energy and gradients on second_subsys only
         """
         if not self._second_subsys:
-            self.second_subsys_info()
+            self.second_subsys_info(coulomb)
         return self._second_subsys
 
-    def get_primary_subsys(self, link=False):
+# this additional options might need to be openmm specific, we'll see
+    def get_primary_subsys(self, link=False, coulomb=True):
         """
         mm energy and gradients on primary_subsys only
         """
         if not self._primary_subsys:
-            self.primary_subsys_info(link)
+            self.primary_subsys_info(link, coulomb)
         return self._primary_subsys
     
-    def get_entire_sys(self):
+    def get_entire_sys(self, coulomb=True):
         """
         mm energy and gradients on entire_sys 
         """
         if not self._entire_sys:
-            self.entire_sys_info()
+            self.entire_sys_info(coulomb)
         return self._entire_sys
 
-    def get_boundary(self):
+    def get_boundary(self, coulomb=True):
         """
         energy and gradients for interaction between 
         """
         if self._boundary['energy'] is None:
-            self.boundary_info()
+            self.boundary_info(coulomb)
         return self._boundary
 
     def get_qm_positions(self):
