@@ -71,12 +71,12 @@ class OpenMM_wrapper(MM_wrapper):
 
         if link is True: 
             if self._boundary_bonds and self._system.boundary_treatment == 'link_atom':  
-                # this structure only working for adding one link atom for now
+                # this structure only working for adding one link atom for now. NOT FUNCTIONAL FOR more than 1 link atom!!!!!!!!
                 for atom in self.link_atoms:
                     self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, self.link_atoms[atom])
-                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller_link,get_coulomb=coulomb)
+                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
         else:
-            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller,get_coulomb=coulomb)
+            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller, get_coulomb=coulomb)
 
 
     def boundary_info(self, coulomb):
@@ -122,7 +122,7 @@ class OpenMM_wrapper(MM_wrapper):
         self._qm_positions = out
 
         
-    def get_info(self, pdb, charges=False, return_system=True, return_simulation=True, get_coulomb=True):
+    def get_info(self, pdb, charges=False, return_system=True, return_simulation=True, get_coulomb=True, set_link_charge=False):
         """
         Gets information about a system, e.g., energy, positions, forces
 
@@ -156,12 +156,22 @@ class OpenMM_wrapper(MM_wrapper):
 
         if self._system.embedding_method=='Electrostatic' and get_coulomb is False:
             # get the nonbonded force
-            force = OM_system.getForce(4)
+            force = OM_system.getForce(3)
             for i in range(force.getNumParticles()):
                 a = force.getParticleParameters(i)
                 Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
                 # set the charge to 0 so the coulomb energy is zero
                 force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
+
+        if self._system.embedding_method=='Mechanical' and set_link_charge is True:
+
+            # set charge of link atom to be zero: assumes link atom is last
+            force = OM_system.getForce(3)
+            idx = OM_system.getNumParticles() - 1
+            a = force.getParticleParameters(idx)
+            Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
+            # set the charge to 0 so the coulomb energy is zero
+            force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
 
         # Create an OpenMM simulation from the openmm system,
         # topology and positions.
