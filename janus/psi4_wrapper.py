@@ -103,7 +103,7 @@ class Psi4_wrapper(QM_wrapper):
         psi4.set_options(sys.qm_param)
 
         if sys.embedding_method=='Electrostatic':
-            if sys.boundary_treatment == 'link_atom': 
+            if sys.boundary_treatment == 'link_atom' or None: 
                 charges = self.get_external_charges(link=True)
             if sys.boundary_treatment == 'RC': 
                 charges = self.get_external_charges(RC=True)
@@ -132,11 +132,16 @@ class Psi4_wrapper(QM_wrapper):
             
             # get q0
             q0 = es['charges'][mm_index] / len(bonds)
+            print(q0)
+            print(es['charges'][mm_index])
+            print(len(bonds))
+            print(bonds)
             # get positions
             positions = self.get_redistributed_positions(es['positions'], bonds, mm_index)
 
             if RC is True:
                 for i, chrg in enumerate(es['charges']):
+                    # add every atom not in qm system or the M1 atom 
                     if i not in self._system.qm_atoms and i != mm_index:
                             charges.append([chrg, es['positions'][i][0], es['positions'][i][1], es['positions'][i][2]])
                 for pos in positions:
@@ -146,8 +151,10 @@ class Psi4_wrapper(QM_wrapper):
                 q0_RCD = q0 * 2
 
                 for i, chrg in enumerate(es['charges']):
+                    # add every atom not in qm system or the M1 atom 
                     if i not in self._system.qm_atoms and i != mm_index:
                         if i in bonds:
+                        # modified M2 charges in RCD scheme
                             charges.append([chrg - q0, es['positions'][i][0], es['positions'][i][1], es['positions'][i][2]])
                         else:
                             charges.append([chrg, es['positions'][i][0], es['positions'][i][1], es['positions'][i][2]])
