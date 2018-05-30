@@ -68,6 +68,7 @@ def test_get_gradient():
     assert np.allclose(psi4_mech._gradient, gradient_mech)
     assert np.allclose(psi4_elec._gradient, gradient_elec)
 
+
 def test_get_qm():
 
     mech = psi4_mech.get_qm()
@@ -97,4 +98,26 @@ def test_get_energy_and_charges():
 
     assert np.allclose(psi4_mp2._charges, charge_mp2)
     assert np.allclose(psi4_mp2._energy,  -149.9997933859008)
+
+def test_get_external_charge():
+    pass
+
+def test_get_redistributed_positions():
+
+    bonds = [1, 2, 3]
+    mm = 0  
+    pos = np.array([[ 1.24700002, 0.37500001,  0.63600004],
+                   [ 1.95600003, 1.57900006,  0.036     ],
+                   [ 2.05699995,-0.77200003,  1.28900006],
+                   [ 0.814,      0.86099997,  1.49499997]]) 
+
+    new_pos = np.array([[ 1.60150003,  0.97700004,  0.33600002],
+                       [ 1.65199999, -0.19850001,  0.96250005],
+                       [ 1.03050001,  0.61799999,  1.06550001]])
+
+    position = psi4_elec.get_redistributed_positions(pos, bonds, mm)
+    
+    assert np.allclose(position, new_pos)
+
+    
 

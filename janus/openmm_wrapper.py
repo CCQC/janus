@@ -58,14 +58,14 @@ class OpenMM_wrapper(MM_wrapper):
         return bonds
 
 
-    def entire_sys_info(self, coulomb):
+    def entire_sys_info(self, coulomb=True):
         self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb, charges=True, get_coulomb=coulomb)
         
-    def second_subsys_info(self, coulomb):
+    def second_subsys_info(self, coulomb=True):
         self._second_subsys_modeller = self.create_modeller(keep_qm=False)
         self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True, get_coulomb=coulomb)
 
-    def primary_subsys_info(self, link, coulomb):
+    def primary_subsys_info(self, link, coulomb=True):
 
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
 

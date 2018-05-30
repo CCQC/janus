@@ -157,7 +157,7 @@ class Psi4_wrapper(QM_wrapper):
                 
         return charges
 
-    def get_redistributed_positions(positions, bonds, mm):
+    def get_redistributed_positions(self, positions, bonds, mm):
         
         pos = []
     
