@@ -1,20 +1,23 @@
+import simtk.openmm.app as OM_app
+import simtk.openmm as OM
+import simtk.unit as OM_unit
+from .mm_wrapper import MM_wrapper
+
 """
 This module is a wrapper that calls OpenMM
 to obtain MM information
 """
-import simtk.openmm.app as OM_app
-import simtk.openmm as OM 
-import simtk.unit as OM_unit
-from .mm_wrapper import MM_wrapper
 
 class OpenMM_wrapper(MM_wrapper):
 
     def __init__(self, system):
+
+        # OpenMM_wrapper class inherits from MM_wrapper super class
         super().__init__(system, "OpenMM")
 
         self._pdb = OpenMM_wrapper.create_pdb(self._system.mm_pdb_file)
         self._positions = self._pdb.getPositions(asNumpy=True)/OM_unit.nanometer
-#        self._positions *= MM_wrapper.nm_to_angstrom
+        # self._positions *= MM_wrapper.nm_to_angstrom
 
         self._primary_subsys_modeller = None
         self._second_subsys_modeller = None
@@ -23,18 +26,41 @@ class OpenMM_wrapper(MM_wrapper):
         self._boundary['second_subsys'] = {}
         self._boundary['primary_subsys'] = {}
 
+        # save forcefield object
         self._ff = OM_app.ForceField(self._system.mm_ff, self._system.mm_ff_water)
 
+        # find if there are any bonds that are cut across the QM/MM boundary
         self._boundary_bonds = self.find_boundary_bonds()
 
         if self._boundary_bonds:
+            # Get info for adding link atom to primary subsystem
             if self._system.boundary_treatment == 'link_atom':
-                self.prepare_link_atom() 
+                self.prepare_link_atom()
+            # Get info for adding link atom according to RC or RCD scheme
             if self._system.boundary_treatment == 'RC' or self._system.boundary_treatment == 'RCD':
                 self.prepare_link_atom(RC=True)
-                
+
 
     def find_boundary_bonds(self, qm_atoms=None):
+        """
+        Identified any covalent bonds that the QM/MM boundary cuts across
+
+        Parameters
+        ----------
+        qm_atoms: A list of atom indicies corresponding to the atoms in
+                  the primary subsystem. Default list is taken from qm_atoms
+                  stored in the System object
+
+        Returns
+        -------
+        A list of tuples corresponding to the qm and mm atoms (as OpenMM atom object) involved in every bond
+        that need to be cut.
+
+        Examples
+        --------
+        bonds = find_boundary_bonds()
+        bonds = find_boundary_bonds(qm_atoms=[0,1,2,3])
+        """
 
         if qm_atoms is None:
             qm_atoms = self._system.qm_atoms
@@ -59,33 +85,116 @@ class OpenMM_wrapper(MM_wrapper):
 
 
     def entire_sys_info(self, coulomb=True):
-        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys = self.get_info(self._pdb, charges=True, get_coulomb=coulomb)
-        
+        """
+        Gets the information for an entire system and saves the OpenMM system object,
+        OpenMM simulation object, and a dictionary of relevant information to self
+
+        Parameters
+        ----------
+        coulomb: Whether to include coulombic interactions in MM computation.
+                 Default is True.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        entire_sys_info()
+        entire_sys_info(coulomb=False)
+        """
+        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys =\
+        self.get_info(self._pdb, charges=True, get_coulomb=coulomb)
+
     def second_subsys_info(self, coulomb=True):
+        """
+        Gets the information for the secondary subsystem (anything to be treated with MM)
+        and saves the OpenMM system object, OpenMM simulation object, and a dictionary of
+        relevant information to self
+
+        Parameters
+        ----------
+        coulomb: Whether to include coulombic interactions in MM computation.
+                 Default is True.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        second_subsys_info()
+        second_subsys_info(coulomb=False)
+        """
         self._second_subsys_modeller = self.create_modeller(keep_qm=False)
-        self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True, get_coulomb=coulomb)
+        self._second_subsys_system, self._second_subsys_simulation, self._second_subsys =\
+        self.get_info(self._second_subsys_modeller, charges=True, get_coulomb=coulomb)
 
     def primary_subsys_info(self, link=False, coulomb=True):
+        """
+        Gets the information for the primary subsystem (anything to be treated with QM)
+        and saves the OpenMM system object, OpenMM simulation object, and a dictionary of
+        relevant information to self
+        Note: This function currently only works systems with one link atom!
+
+        Parameters
+        ----------
+        link: Whether to include a link atom in the MM computation. 
+        coulomb: Whether to include coulombic interactions in MM computation.
+                 Default is True.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        primary_subsys_info(link=True)
+        primary_subsys_info(coulomb=False)
+        """
 
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
 
-        if link is True: 
-            if self._boundary_bonds and self._system.boundary_treatment == 'link_atom':  
-                # this structure only working for adding one link atom for now. NOT FUNCTIONAL FOR more than 1 link atom!!!!!!!!
+        if link is True:
+            if self._boundary_bonds and self._system.boundary_treatment == 'link_atom':
+                # this structure only working for adding one link atom for now. 
+                # NOT FUNCTIONAL FOR more than 1 link atom!!!!!!!!
                 for atom in self.link_atoms:
                     self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, self.link_atoms[atom])
-                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
+                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
+                    self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
         else:
-            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys = self.get_info(self._primary_subsys_modeller, get_coulomb=coulomb)
+            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
+            self.get_info(self._primary_subsys_modeller, get_coulomb=coulomb)
 
 
-    def boundary_info(self, coulomb):
+    def boundary_info(self, coulomb=True):
+        """
+        Gets the information for the interaction energy between the primary and secondary subsystem (QM-MM)
+        and saves the OpenMM system object, OpenMM simulation object, and a dictionary of
+        relevant information to self. Current implemented by subtracting the energy of the second subsystem
+        and primary subsystem from the energy of the entire system.
+
+        Parameters
+        ----------
+        coulomb: Whether to include coulombic interactions in MM computation.
+                 Default is True.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        boundary_info()
+        boundary_info(coulomb=False)
+        """
 
         if not self._boundary['entire_sys']:
             self._boundary['entire_sys'] = self.get_info(self._pdb, return_system=False, return_simulation=False,get_coulomb=coulomb)
         if self._second_subsys_modeller is None:
             self._second_subsys_modeller = self.create_modeller(keep_qm=False)
-        if not self._boundary['second_subsys']: 
+        if not self._boundary['second_subsys']:
             self._boundary['second_subsys'] = self.get_info(self._second_subsys_modeller, return_system=False, return_simulation=False,get_coulomb=coulomb)
         if self._primary_subsys_modeller is None:
             self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
@@ -98,11 +207,29 @@ class OpenMM_wrapper(MM_wrapper):
 
 
     def qm_positions(self):
+        """
+        Grabs the positions of the atoms in the primary subsystem from self._positions
+        and makes a string with the element and xyz geometry coordinates. Adds the link atom positions
+        when link atoms are needed.
+        Note: In a MD time step, does the position update or not? Need to make sure this updates
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        qm_positions()
+        """
 
         out = ""
         line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
         qm_atoms = self._system.qm_atoms
-    
+
         for idx in qm_atoms:
             for atom in self._pdb.topology.atoms():
                 if atom.index == idx:
@@ -113,47 +240,51 @@ class OpenMM_wrapper(MM_wrapper):
 
         # if there are bonds that need to be cut
         if self._boundary_bonds:
-            if self._system.boundary_treatment == 'link_atom':
-                for atom in self.link_atoms:
-                    pos = self.link_atoms[atom]['link_positions']*MM_wrapper.nm_to_angstrom
-                    x, y, z = pos[0], pos[1], pos[2]
-                    out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
+            # Need to add if statement for any treatments that don't need link atoms
+            #if self._system.boundary_treatment !=
+            for atom in self.link_atoms:
+                pos = self.link_atoms[atom]['link_positions']*MM_wrapper.nm_to_angstrom
+                x, y, z = pos[0], pos[1], pos[2]
+                out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
 
         self._qm_positions = out
 
-        
+
     def get_info(self, pdb, charges=False, return_system=True, return_simulation=True, get_coulomb=True, set_link_charge=False):
         """
-        Gets information about a system, e.g., energy, positions, forces
+        Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
         Parameters
         ----------
-        pbd : a OpenMM pdb object or OpenMM modeller object
-        charges : a bool to specify whether to get the charges on the
-                  MM molecules. Default is false
+        pbd : a OpenMM pdb object or OpenMM modeller object that contains the relevant system
+        charges : a bool to specify whether to get the charges on the MM molecules. 
+                  Default is False.
+        return_system: a bool to specify whether to return the OpenMM system object. 
+                       Default is True. 
+        return_simulation: a bool to specify whether to return the OpenMM simulation object.
+                       Default is True. 
+        get_coulomb: Whether to include coulomic interactions in the MM computation, default is true
+        set_link_charge: a bool to specify whether to set the charge of the link atom to zero.
+                         Default is False.
 
         Returns
         -------
-        A OpenMM system object, a dictionary containing information
-        for the system
+        system, simulation, state
+        state: A dictionary with state information
+        system: OpenMM system object returned unless return_system=False
+        simulation: OpenMM simulation object returned unless return_simulation=False
 
 
         Examples
         --------
-        system, state = System.get_info(mm_pdb)
-        system, state = System.get_info(mm_pdb, force='nonbonded', charge=True)
+        system, simulation, state = System.get_info(mm_pdb)
+        state = System.get_info(mm_pdb, charges=True, return_simulation=False, return_system=False)
         """
 
         # Create an OpenMM system from an object's topology
         OM_system = self.create_openmm_system(pdb)
 
-        # Remove Bond, Angle, and Torsion forces to leave only nonbonded forces
-
-        # this part no longer needed 
-       # if forces == 'nonbonded':
-       #     for i in range(3):
-       #         OM_system.removeForce(0)
-
+        # If in electrostatic embedding scheme need to get a system without coulombic interactions
         if self._system.embedding_method=='Electrostatic' and get_coulomb is False:
             # get the nonbonded force
             force = OM_system.getForce(3)
@@ -163,9 +294,9 @@ class OpenMM_wrapper(MM_wrapper):
                 # set the charge to 0 so the coulomb energy is zero
                 force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
 
+        # Why is this only Mechanical - need to check!
         if self._system.embedding_method=='Mechanical' and set_link_charge is True:
-
-            # set charge of link atom to be zero: assumes link atom is last
+            # set charge of link atom to be zero, assumes link atom is last
             force = OM_system.getForce(3)
             idx = OM_system.getNumParticles() - 1
             a = force.getParticleParameters(idx)
@@ -173,16 +304,17 @@ class OpenMM_wrapper(MM_wrapper):
             # set the charge to 0 so the coulomb energy is zero
             force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
 
-        # Create an OpenMM simulation from the openmm system,
-        # topology and positions.
+        # Create an OpenMM simulation from the openmm system, topology, and positions.
         simulation = self.create_openmm_simulation(OM_system,pdb)
 
         # Calls openmm wrapper to get information specified
         state = OpenMM_wrapper.get_state_info(simulation,
-                                energy=True,
-                                positions=True,
-                                forces=True)
+                                              energy=True,
+                                              positions=True,
+                                              forces=True)
+
         state['energy'] = state['potential'] + state['kinetic']
+
         if charges is True:
             state['charges'] = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
 
@@ -195,22 +327,8 @@ class OpenMM_wrapper(MM_wrapper):
         else:
             return state
 
+
     def create_modeller(self, keep_qm=None):
-        """
-        Creates an OpenMM Modeller object for changing the MM system
-
-        Parameters
-        ----------
-        pdb: OpenMM PDBFile object
-
-        Returns
-        -------
-        OpenMM Modeller object
-
-        Examples
-        --------
-        model = create_openmm_modeller(pdb)
-        """
         """
         Makes a OpenMM modeller object based on given geometry
 
@@ -238,11 +356,9 @@ class OpenMM_wrapper(MM_wrapper):
         return modeller
 
 
-
-
-    def create_openmm_system(self, pdb, 
-                             nb_forces_only=False,
-                             nonbond=OM_app.NoCutoff, nonbond_cutoff=1*OM_unit.nanometer,
+    def create_openmm_system(self, pdb,
+                             nonbond=OM_app.NoCutoff, 
+                             nonbond_cutoff=1*OM_unit.nanometer,
                              periodic=False,
                              cnstrnts=OM_app.HBonds,
                              residue={}):
@@ -252,16 +368,15 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        topology : an OpenMM topology
-        forcefield : string of forcefield name to use. Default is amber99sb.xml
-        forcefield_water : string of forcefield name to use for water
-                        application for amber forcefields that do no
-                        define water. Default is tip3p.xml
+        pdb: a pdb object 
+        nonbond: What kind of long range interactions to include. 
+        nonbond_cutoff: The cutoff for including long range interactions. Default is 1 nm.
+        periodic: A bool to specify whether the system is periodic. Default is False.
         cnstrnts : contraints on the system. Default is HBonds
+        residue: a dictionary with any custom residue templates. Default is empty.
 
         TODO: need to put nonbond and nonbond_cutoff back but not doing for now
             because need non-periodic system. Other parameters are also needed
-
             also, expand forcefield to take not openmm built in
                 but customized as well
 
@@ -276,13 +391,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         To get OpenMM system information, e.g., Number of particles:
             print(sys.getNumParticles())
-        Question - for things like this - do I need a wrapper?
-                    since I am technically still
-                using openmm -> instead of saving an "OpenMM" object -
-                    should I define my own objects
         """
 
-        # check to see if there are unmatched residues, create residue templates if there are
+        # check to see if there are unmatched residues in pdb, create residue templates if there are
         unmatched = self._ff.getUnmatchedResidues(pdb.topology)
         if unmatched:
             self.create_new_residue_template(pdb.topology)
@@ -302,23 +413,41 @@ class OpenMM_wrapper(MM_wrapper):
         return openmm_system
 
     def create_new_residue_template(self, topology):
-        
+
+        """
+        Create a new OpeMM residue template when there is no matching residue and registers it into self._ff
+        forcefield object.
+        Note: currently, if there is unmatched name, currently only checks original unmodified
+              residue, N-terminus form, and C-terminus form. This may not be robust.
+
+        Parameters
+        ----------
+        topology: an OpenMM topology object
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        create_new_residue_template(topology)
+        """
         template, unmatched_res = self._ff.generateTemplatesForUnmatchedResidues(topology)
- 
-        # Loop through list of unmatched residues  
+
+        # Loop through list of unmatched residues
         for i, res in enumerate(unmatched_res):
             res_name = res.name                             # get the name of the original unmodifed residue
             n_res_name = 'N' + res.name                     # get the name of the N-terminus form of original residue
             c_res_name = 'C' + res.name                     # get the name of the C-terminus form of original residue
-            name = 'Modified_' + res_name       # assign new name
+            name = 'Modified_' + res_name                   # assign new name
             template[i].name = name
- 
+
         # loop through all atoms in modified template and all atoms in orignal template to assign atom type
         for atom in template[i].atoms:
             for atom2 in self._ff._templates[res_name].atoms:
                 if atom.name == atom2.name:
                     atom.type = atom2.type
-            # the following is for when there is a unmatched name, chech the N and C terminus residues
+            # the following is for when there is a unmatched name, check the N and C terminus residues
             if atom.type == None:
                 for atom3 in self._ff._templates[n_res_name].atoms:
                     if atom.name == atom3.name:
@@ -329,9 +458,9 @@ class OpenMM_wrapper(MM_wrapper):
                         atom.type = atom4.type
 
         # override existing modified residues with same name
-        if name in self._ff._templates: 
+        if name in self._ff._templates:
             template[i].overrideLevel = self._ff._templates[name].overrideLevel + 1
-        
+
         # register the new template to the forcefield object
         self._ff.registerResidueTemplate(template[i])
 
@@ -339,13 +468,13 @@ class OpenMM_wrapper(MM_wrapper):
     def create_openmm_simulation(self, openmm_system, pdb):
         """
         Creates an OpenMM simulation object given
-        an OpenMM system, topology, and positions
+        an OpenMM system and pdb
+        Note: currently options are all default, need way to specify 
 
         Parameters
         ----------
         openmm_system : OpenMM system object
-        topology : an OpenMM topology
-        positions : OpenMM positions
+        pdb: An OpenMM pdb object containing topology and positions
 
         Returns
         -------
@@ -353,61 +482,60 @@ class OpenMM_wrapper(MM_wrapper):
 
         Examples
         --------
-        create_open_simulation(openmm_sys, pdb.topology, pdb.positions)
+        create_open_simulation(openmm_sys, pdb)
         """
-        sys = self._system
+
+        # The following need to be set as writable options 
         temp = 300*OM_unit.kelvin
         fric = 1/OM_unit.picosecond
         size = 0.002*OM_unit.picoseconds
-        integrator = OM.LangevinIntegrator(temp, fric, size)
 
+        integrator = OM.LangevinIntegrator(temp, fric, size)
         simulation = OM_app.Simulation(pdb.topology, openmm_system, integrator)
         simulation.context.setPositions(pdb.positions)
+
         return simulation
 
     def get_state_info(simulation,
-                    energy=True,
-                    positions=False,
-                    velocity=False,
-                    forces=False,
-                    parameters=False,
-                    param_deriv=False,
-                    periodic_box=False,
-                    groups_included=-1):
+                       energy=True,
+                       positions=True,
+                       velocity=False,
+                       forces=True,
+                       parameters=False,
+                       param_deriv=False,
+                       periodic_box=False,
+                       groups_included=-1):
         """
-        Gets information like the kinetic
-        and potential energy from an OpenMM state
+        Gets information like the kinetic and potential energy from an OpenMM state
 
         Parameters
         ----------
         simulation : an OpenMM simulation object
-        energy : a bool for specifying whether to get the energy
-                returns in kj/mol
-        positions : a bool for specifying whether to get the positions
-                    returns in nm
-        velocity : a bool for specifying whether to get the velocities
+        energy : a bool for specifying whether to get the energy,
+                 returns in hartrees, default is true.
+        positions : a bool for specifying whether to get the positions,
+                    returns in angstroms, default is true
+        velocity : a bool for specifying whether to get the velocities, default is false
         forces : a bool for specifying whether to get the forces acting
-                on the system
-                    returns in jk/mol/nm
+                on the system, returns as numpy array in jk/mol/nm, default is true
         parameters : a bool for specifying whether to get the parameters
-                    of the state
+                    of the state, default is false.
         param_deriv : a bool for specifying whether to get the parameter
-                    derivatives of the state
+                    derivatives of the state, default is false
         periodic_box : a bool for whether to translate the positions so the
-                    center of every molecule lies in the same periodic box
-        grouprimary_subsys : a set of indices for which force grouprimary_subsys to include when computing
-                forces and energies. Default is all grouprimary_subsys
-
-        TODO: add how to get other state information besides energy
+                    center of every molecule lies in the same periodic box, default is false
+        groups : a set of indices for which force groups to include when computing
+                forces and energies. Default is all groups
 
         Returns
         -------
-        OpenMM Quantity objects in kcal/mol
+        A dictionary with information specified by parameters
 
         Examples
         --------
         get_state_info(sim)
-        get_state_info(sim, grouprimary_subsys_included=set{0,1,2})
+        get_state_info(sim, groups_included=set{0,1,2})
+        get_state_info(sim, positions=True, forces=True)
         """
         state = simulation.context.getState(getEnergy=energy,
                                             getPositions=positions,
@@ -419,19 +547,18 @@ class OpenMM_wrapper(MM_wrapper):
                                             groups=groups_included)
 
         values = {}
-        # divide by unit to give value without units
-        # then convert value to atomic units
+        # divide by unit to give value without units, then convert value to atomic units
         if energy is True:
             values['potential'] = state.getPotentialEnergy()/OM_unit.kilojoule_per_mole
             values['potential'] *= MM_wrapper.kjmol_to_au
             values['kinetic'] = state.getKineticEnergy()/OM_unit.kilojoule_per_mole
             values['kinetic'] *= MM_wrapper.kjmol_to_au
 
-        if positions is True: 
+        if positions is True:
             values['positions'] = state.getPositions(asNumpy=True)/OM_unit.nanometer
             values['positions'] *= MM_wrapper.nm_to_angstrom
 
-        if forces is True: 
+        if forces is True:
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
 
         return values
@@ -616,76 +743,99 @@ class OpenMM_wrapper(MM_wrapper):
         """
         OM.PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
 
- 
+
 
     def prepare_link_atom(self, RC=False):
+        """
+        Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary
+        and computes the g scaling factor for the link atom.
+
+        Parameters
+        ----------
+        RC: a bool specifying whether to find the indices of the atoms bonded to mm atom of 
+            bond being cut. Default is false
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        prepare_link_atom(RC=True)
+        """
 
         for i, bond in enumerate(self._boundary_bonds):
+
             qm = bond[0]
             mm = bond[1]
 
-            self.link_atoms[i] = {} 
-            #self.link_atoms[i]['qm_atom'] = qm.element.symbol
-            #self.link_atoms[i]['qm_index'] = qm.index 
-            ## this is in nm
-            #self.link_atoms[i]['qm_positions'] = self._positions[qm.index] 
+            self.link_atoms[i] = {}
 
             # saving id because id does not change between sys and modeller
             self.link_atoms[i]['qm_id'] = qm.id
 
-            #self.link_atoms[i]['mm_atom'] = mm.element.symbol
-            #self.link_atoms[i]['mm_index'] = mm.index 
-            ## this is in nm
-            #self.link_atoms[i]['mm_positions'] = self._positions[mm.index] 
             self.link_atoms[i]['mm_id'] = mm.id
             self.link_atoms[i]['mm_index'] = mm.index
-            
+
             self.link_atoms[i]['link_atom'] = self._system.link_atom
             g = self._system.compute_scale_factor_g(qm.element.symbol, mm.element.symbol, self._system.link_atom)
-            self.link_atoms[i]['g_factor'] = g 
+            self.link_atoms[i]['g_factor'] = g
             # this is in nm
-            self.link_atoms[i]['link_positions'] = self._system.get_link_atom_position(self._positions[qm.index], self._positions[mm.index], g) 
+            self.link_atoms[i]['link_positions'] = self._system.get_link_atom_position(self._positions[qm.index], self._positions[mm.index], g)
 
             if RC is True:
                 bonds = []
                 # find index of atoms bonded to mm atom
-                for bond in self._pdb.topology.bonds(): 
+                for bond in self._pdb.topology.bonds():
                     if bond.atom1.id == mm.id or bond.atom2.id == mm.id:
-                        if bond.atom1.id != qm.id and bond.atom2.id != qm.id: 
-                            if bond.atom1.id != mm.id: 
-                                bonds.append(bond.atom1.index) 
-                            elif bond.atom2.id != mm.id:  
-                                bonds.append(bond.atom2.index) 
+                        if bond.atom1.id != qm.id and bond.atom2.id != qm.id:
+                            if bond.atom1.id != mm.id:
+                                bonds.append(bond.atom1.index)
+                            elif bond.atom2.id != mm.id:
+                                bonds.append(bond.atom2.index)
                 self.link_atoms[i]['bonds_to_mm'] = bonds
 
 
     def create_link_atom_modeller(self, mod, atom):
         '''
-        mod is modeller of primary system without link atom added
-        atom is link_atom dictionary 
+        Creates an OpenMM modeller object that includes any link atoms.
+        Note: Currently adds a very specfic link atom, need to expand 
+
+        Parameters
+        ----------
+        mod: modeller object of primary system without link atom added
+        atom: dictionary containing information for the link atom 
+
+        Returns
+        -------
+        A OpenMM modeller object
+
+        Examples
+        --------
+        create_link_atom_modeller(mod=modeller, atom=link)
         '''
         # get element object
-        link = OM_app.element.Element.getBySymbol(atom['link_atom']) 
+        link = OM_app.element.Element.getBySymbol(atom['link_atom'])
 
         # get residue where qm atom is
         for atm in mod.topology.atoms():
             if atm.id == atom['qm_id']:
                 qm_res = atm.residue
-            
+
        # add link atom
        # this is a VERY specific case with H1 - need to determine what type of H in the future
         mod.topology.addAtom(name='H1', element=link, residue=qm_res, id='link')
 
-        # add bond between link atom and qm atom 
+        # add bond between link atom and qm atom
         for atom1 in mod.topology.atoms():
             for atom2 in mod.topology.atoms():
                 if atom1.id == atom['qm_id'] and atom2.id == 'link':
                     mod.topology.addBond(atom2, atom1)
-        
+
         # add link atom position
         positions = mod.getPositions()/OM_unit.nanometer
-        pos = OM.vec3.Vec3(atom['link_positions'][0], atom['link_positions'][1], atom['link_positions'][2]) 
+        pos = OM.vec3.Vec3(atom['link_positions'][0], atom['link_positions'][1], atom['link_positions'][2])
         positions.append(pos)
         mod.positions = positions*OM_unit.nanometer
-    
+
         return mod
