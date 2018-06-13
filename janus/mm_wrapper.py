@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 class MM_wrapper(ABC):
 
     kjmol_to_au = 1/2625.5002 
-    nm_to_angstrom = 10.0
+    nm_to_angstrom = 10.0000000
     nm_to_bohr = 0.052917999999 
     kj_mol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
 

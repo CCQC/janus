@@ -1,5 +1,5 @@
 """
-This is the driver module
+This is the qmmm driver module
 """
 import json
 from . import parser
