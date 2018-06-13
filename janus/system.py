@@ -141,6 +141,9 @@ class System(object):
         self.boundary_info = {}
 
     def build_qm_param(self):
+        '''
+        Builds a dictionary of QM parmeters from input options
+        '''
         qm_param = {}
         qm_param['basis'] = self.qm_basis_set
         qm_param['scf_type'] = self.qm_scf_type
@@ -159,10 +162,25 @@ class System(object):
 
     def compute_scale_factor_g(self, qm, mm, link):
         '''
-        computes scale factor g, qm, mm, and link are string element symbols
-        r given in pmm but don't need to convert because it is a ratio
-        need to get other ways to compute g factor
-        need functionality for different link atoms
+        Computes scale factor g for link atom, RC, and RCD schemes. 
+        Note: r given in pmm but don't need to convert because it is a ratio
+              need to get other ways to compute g factor
+              need functionality for different link atoms
+
+        Parameters
+        ----------
+        qm: string of element symbol of the QM atom involved in broken bond 
+        mm: string of element symbol of the MM atom involved in broken bond 
+        link: string of element symbol for link atom
+
+        Returns
+        -------
+        g, the scaling factor
+
+        Examples
+        --------
+        compute_scale_factor(qm='C', mm='C', link='H')
+        """
         '''
         
         r_qm = element(qm).covalent_radius_pyykko
@@ -173,10 +191,5 @@ class System(object):
         
         return g
         
-
-
-        
-    
-
     # need to add all the other parameters written into system e.g. energy
 

@@ -24,38 +24,34 @@ class Psi4_wrapper(QM_wrapper):
 
     def get_energy(self):
         """
-        Calls Psi4 to obtain the energy  of the QM region
+        Calls Psi4 to obtain the energy and Psi4 wavefunction object of the QM region
 
         Parameters
         ----------
-        molecule : a string of molecule parameters in xyz
-        param : a dictionary of psi4 parameters
-        method : a string of the desired QM method
+        None
 
         Returns
         -------
-        An energy
+        Energy, wavefunction
 
         Examples
         --------
-        E = get_psi4_energy(mol, qm_param, 'scf')
+        E = get_psi4_energy()
         """
         psi4.core.clean()
         psi4.core.clean_options()
         self.set_up_psi4()
         self._energy, self._wavefunction = psi4.energy(self._system.qm_method,
-                                                        return_wfn=True)
+                                                       return_wfn=True)
 
     def get_gradient(self):
         """
         Calls Psi4 to obtain the energy  of the QM region
-        and saves it as a numpy array to the passed
-        system object as system.qm_gradient
+        and saves it as a numpy array self._gradient
 
         Parameters
         ----------
-        system : a system object containing molecule,
-                method, and parameter information
+        None
 
         Returns
         -------
@@ -63,7 +59,7 @@ class Psi4_wrapper(QM_wrapper):
 
         Examples
         --------
-        get_psi4_gradient(system)
+        get_gradient()
         """
         psi4.core.clean()
         psi4.core.clean_options()
@@ -77,8 +73,7 @@ class Psi4_wrapper(QM_wrapper):
 
         Parameters
         ----------
-        molecule : a str of molecule parameters
-        parameters : A dictionary of psi4 parameters
+        None
 
         Returns
         -------
@@ -86,10 +81,12 @@ class Psi4_wrapper(QM_wrapper):
 
         Examples
         --------
-        set_up_psi4(sys.molecule, sys.parameters)
+        set_up_psi4()
         """
         sys = self._system
         # psi4.core.set_output_file('output.dat', True)
+        
+        # Supress print out
         psi4.core.be_quiet()
 
         if 'no_reorient' not in sys.qm_positions:
@@ -97,7 +94,7 @@ class Psi4_wrapper(QM_wrapper):
         if 'no_com' not in sys.qm_positions:
             sys.qm_positions += 'no_com \n '
 
-        # make sure this is in nm
+        # make sure this is in angstroms
         mol = psi4.geometry(sys.qm_positions)
 
         psi4.set_options(sys.qm_param)
@@ -116,7 +113,29 @@ class Psi4_wrapper(QM_wrapper):
 
 
     def get_external_charges(self, link=False, RC=False, RCD=False):
-            # check to make sure positions are in angstroms
+        """
+        Gets the point charges of atoms from secondary subsystem for electrostatic embedding 
+
+        Note: check to make sure positions are in angstroms
+
+        Parameters
+        ----------
+        link: a bool specifying whether the link atom scheme is used for determining point charges. 
+              default is False.
+        RC: a bool specifying whether the RC scheme is used for determining point charges. 
+              default is False.
+        RCD: a bool specifying whether the RCD scheme is used for determining point charges. 
+              default is False.
+
+        Returns
+        -------
+        A list of charges and cooresponding positions as  xyz coordinates
+
+        Examples
+        --------
+        get_external_charge(link=True)
+        get_external_charge(RC=True)
+        """
         charges = []
 
         if link is True:
@@ -124,6 +143,7 @@ class Psi4_wrapper(QM_wrapper):
             for i, chrg in enumerate(ss['charges']): 
                 charges.append([chrg, ss['positions'][i][0], ss['positions'][i][1], ss['positions'][i][2]])
         
+        # This is for the RC and RCD schemes
         else:
 
             es = self._system.entire_sys
@@ -132,10 +152,7 @@ class Psi4_wrapper(QM_wrapper):
             
             # get q0
             q0 = es['charges'][mm_index] / len(bonds)
-            print(q0)
-            print(es['charges'][mm_index])
-            print(len(bonds))
-            print(bonds)
+
             # get positions
             positions = self.get_redistributed_positions(es['positions'], bonds, mm_index)
 
@@ -165,6 +182,23 @@ class Psi4_wrapper(QM_wrapper):
         return charges
 
     def get_redistributed_positions(self, positions, bonds, mm):
+        """
+        Gets the positions for the redistributed point charges in the RC and RCD schemes
+
+        Parameters
+        ----------
+        positions: a list of the positions
+        bonds: a list of indices of all atoms (in secondary subsystem) bonded to M1  
+        mm: the index of M1
+
+        Returns
+        -------
+        List of positions for the redistributed charges
+
+        Examples
+        --------
+        get_redistributed_positions(positions=pos, bonds=bond, mm=mm_index)
+        """
         
         pos = []
     
@@ -177,17 +211,13 @@ class Psi4_wrapper(QM_wrapper):
                 
     def get_scf_charges(self):
         """
-        Calls Psi4 to obtain the charges on each atom given
-        and saves it as a numpy array to the passed system
-        object as system.qm_charges.
-        This method works well for SCF wavefunctions. For
-        correlated levels of theory, it is advised that
-        get_psi4_properties() be used instead.
+        Calls Psi4 to obtain the charges on each atom given and saves it as a numpy array.
+        This method works well for SCF wavefunctions. For correlated levels of theory (e.g., MP2),
+        it is advised that get_psi4_properties() be used instead.
 
         Parameters
         ----------
-        system : a system object containing molecule,
-                method, and parameter information
+        None
 
         Returns
         -------
@@ -195,7 +225,7 @@ class Psi4_wrapper(QM_wrapper):
 
         Examples
         --------
-        get_psi4_charge(system)
+        get_scf_charge()
         """
         if self._wavefunction is not None:
             psi4.oeprop(self._wavefunction, self._system.qm_charge_method)
@@ -205,14 +235,13 @@ class Psi4_wrapper(QM_wrapper):
 
     def get_energy_and_charges(self):
         """
-        Calls Psi4 to obtain the charges on each atom using the
-        property() function and saves it as a numpy array to
-        the system as system.qm_charges.
+        Calls Psi4 to obtain the energy, wavefunction, and charges on each atom.
+        This method for correlated methods.
+        Note: think about passing in wavefunction instead of calling for energy and wavefunction
 
         Parameters
         ----------
-        system : a system object containing molecule,
-                method, and parameter information
+        None
 
         Returns
         -------
@@ -220,7 +249,7 @@ class Psi4_wrapper(QM_wrapper):
 
         Examples
         --------
-        get_psi4_properties(system)
+        get_energy_and_charges(system)
         """
         psi4.core.clean()
         psi4.core.clean_options()

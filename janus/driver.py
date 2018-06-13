@@ -20,6 +20,9 @@ def load_system(filename):
     return system
 
 def initialize_wrappers(system):
+    """
+    Initializes the programs to use for computations
+    """
 
     # create qm_wrapper object
     if system.qm_program == "Psi4":
@@ -39,7 +42,7 @@ def initialize_wrappers(system):
 
 def additive(system):
     """
-    Gets energientire_sys of needed components and computentire_sys
+    Gets energies of needed components and computes
     a qm/mm energy with a specified embedding method using
     an additive scheme
     """
@@ -73,7 +76,7 @@ def additive(system):
 
 def subtractive(system):
     """
-    Gets energientire_sys of needed components and computentire_sys
+    Gets energies of needed components and computes
     a qm/mm energy with a subtractive mechanical embedding scheme
     """
 

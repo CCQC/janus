@@ -15,6 +15,17 @@ class QM_wrapper(ABC):
         pass
 
     def get_qm(self):
+        """
+        Gets the energy and gradient from a QM computation of the primary subsystem 
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        A dictionary with energy and gradient information
+        """
         if not self._qm:
             self.qm_info()
         return self._qm 
