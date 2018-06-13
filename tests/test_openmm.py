@@ -22,6 +22,7 @@ openmm_ala = openmm_wrapper.OpenMM_wrapper(sys_ala)
 openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
+openmm_ala_link_2 = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
 
 
 #@pytest.mark.datafiles('tests/examples/test_openmm/water.pdb')
@@ -89,16 +90,17 @@ def test_primary_subsys_info():
                           [-0.0805    ,  0.0163    ,  0.0471    ],
                           [-0.0059    ,  0.0384    , -0.1019    ],
                           [ 0.08868014,  0.02342192,  0.04189384]])
+
     forces = np.array([[-276.02642822,  229.31265259,  187.28659058],
                        [  68.79919434,   -1.10565948,    9.73997498],
                        [ -51.83508301, -112.75787354,  -22.68826294],
                        [ 138.75039673,  -31.39888   ,  -29.20209503],
                        [ 120.31186676,  -84.05026245, -145.13619995]])
-    openmm_ala_link.primary_subsys_info(link=True, coulomb=True)
+    openmm_ala_link_2.primary_subsys_info(link=True, coulomb=True)
 
-    assert np.allclose(openmm_ala_link._primary_subsys['energy'], 0.021096651)
-    assert np.allclose(openmm_ala_link._primary_subsys['positions'], positions * 10)
-    assert np.allclose(openmm_ala_link._primary_subsys['forces'], forces) 
+    assert np.allclose(openmm_ala_link_2._primary_subsys['energy'], 0.021096651)
+    assert np.allclose(openmm_ala_link_2._primary_subsys['positions'], positions * 10)
+    assert np.allclose(openmm_ala_link_2._primary_subsys['forces'], forces) 
     
 def test_create_new_residue_template():
     mm = openmm_ala_link.create_modeller(keep_qm = False)
