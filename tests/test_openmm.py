@@ -84,21 +84,20 @@ def test_get_primary_subsys():
 
 def test_primary_subsys_info():
 
-    # only testing link=True for now
+    # only testing link=False for now
     positions = np.array([[ 0.0024    , -0.0103    , -0.0101    ],
                           [ 0.0027    , -0.1132    , -0.0239    ],
                           [-0.0805    ,  0.0163    ,  0.0471    ],
-                          [-0.0059    ,  0.0384    , -0.1019    ],
-                          [ 0.08868014,  0.02342192,  0.04189384]])
+                          [-0.0059    ,  0.0384    , -0.1019    ]])
 
-    forces = np.array([[-276.02642822,  229.31265259,  187.28659058],
-                       [  68.79919434,   -1.10565948,    9.73997498],
-                       [ -51.83508301, -112.75787354,  -22.68826294],
-                       [ 138.75039673,  -31.39888   ,  -29.20209503],
-                       [ 120.31186676,  -84.05026245, -145.13619995]])
-    openmm_ala_link_2.primary_subsys_info(link=True, coulomb=True)
+    forces = np.array([[-1478.41748047, -367.96447754, -777.9967041 ],
+                       [  528.53955078,  -31.95013428,  249.72685242],
+                       [  374.38952637,  175.23849487,  461.11102295],
+                       [  575.48840332,  224.6761322 ,   67.1587677 ]])
 
-    assert np.allclose(openmm_ala_link_2._primary_subsys['energy'], 0.021096651)
+    openmm_ala_link_2.primary_subsys_info(link=False, coulomb=True)
+
+    assert np.allclose(openmm_ala_link_2._primary_subsys['energy'], 0.008915438339083044)
     assert np.allclose(openmm_ala_link_2._primary_subsys['positions'], positions * 10)
     assert np.allclose(openmm_ala_link_2._primary_subsys['forces'], forces) 
     

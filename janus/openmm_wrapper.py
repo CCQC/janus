@@ -65,7 +65,7 @@ class OpenMM_wrapper(MM_wrapper):
         self._second_subsys_modeller = self.create_modeller(keep_qm=False)
         self._second_subsys_system, self._second_subsys_simulation, self._second_subsys = self.get_info(self._second_subsys_modeller, charges=True, get_coulomb=coulomb)
 
-    def primary_subsys_info(self, link, coulomb=True):
+    def primary_subsys_info(self, link=False, coulomb=True):
 
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
 
