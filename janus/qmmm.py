@@ -93,17 +93,27 @@ class QMMM(object):
             all_mm_grad, ps_mm_grad, qm_grad = self.system.entire_sys['gradients'], self.system.primary_subsys['gradients'], self.system.qm['gradients']
             qmmm_grad = deepcopy(all_mm_grad)
                 
+            # iterate over list of qm atoms
             for i, atom in enumerate(self.system.qm_atoms):
 
+                # compute the qmmm gradient for the qm atoms: 
+                # mm_entire - mm_primary - qm
                 qmmm_grad[atom] += - ps_mm_grad[i] + qm_grad[i]
                 
                 if self.system.boundary_info:
-                    if self.system.boundary_treatment == 'link_atom':
-                        qm = int(self.system.boundary_info[0]['qm_id']) - 1
-                        mm = int(self.system.boundary_info[0]['mm_id']) - 1
-                        if atom == qm:
-                            qmmm_grad[atom] += -(1 - link['g_factor']) * ps_mm_grad[-1] + (1 - link['g_factor']) * qm_grad[-1]
-                            qmmm_grad[mm] += -link['g_factor'] * ps_mm_grad[-1] + link['g_factor'] * qm_grad[-1]
+                    q1 = int(self.system.boundary_info[0]['qm_id']) - 1
+                    m1 = int(self.system.boundary_info[0]['mm_id']) - 1
+                    g = self.system.boundary_info[0]['g_factor']
+                    if atom == q1:
+                        if self.system.boundary_treatment == 'link_atom':
+                            # Project forces of link atoms onto the mm and qm atoms of the link atom bond
+                            qmmm_grad[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
+                            qmmm_grad[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+
+                        if self.system.boundary_treatment == 'RC' or self.system.boundary_treatment == 'RCD':
+                            qmmm_grad[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
+                            qmmm_grad[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+
             
         if scheme == 'additive':
             pass
