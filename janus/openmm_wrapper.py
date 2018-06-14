@@ -156,15 +156,19 @@ class OpenMM_wrapper(MM_wrapper):
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
 
         if link is True and self._boundary_bonds:
+            #print('link is true')
             if self._system.boundary_treatment == 'link_atom':
                 # this structure only working for adding one link atom for now. 
                 # NOT FUNCTIONAL FOR more than 1 link atom!!!!!!!!
                 for atom in self.link_atoms:
+                    #print('getting link modeller')
                     self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, self.link_atoms[atom])
+                    #print('getting  modeller info')
                     self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
                     self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
             
         else:
+            #print('not doing link')
             self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
             self.get_info(self._primary_subsys_modeller, get_coulomb=coulomb)
 
@@ -436,6 +440,7 @@ class OpenMM_wrapper(MM_wrapper):
         template, unmatched_res = self._ff.generateTemplatesForUnmatchedResidues(topology)
 
         # Loop through list of unmatched residues
+        print('Loop through list of unmatched residues')
         for i, res in enumerate(unmatched_res):
             res_name = res.name                             # get the name of the original unmodifed residue
             n_res_name = 'N' + res.name                     # get the name of the N-terminus form of original residue
@@ -444,25 +449,31 @@ class OpenMM_wrapper(MM_wrapper):
             template[i].name = name
 
         # loop through all atoms in modified template and all atoms in orignal template to assign atom type
+        print('loop through all atoms in modified template and all atoms in orignal template to assign atom type')
         for atom in template[i].atoms:
             for atom2 in self._ff._templates[res_name].atoms:
                 if atom.name == atom2.name:
                     atom.type = atom2.type
             # the following is for when there is a unmatched name, check the N and C terminus residues
             if atom.type == None:
+                print('check n')
                 for atom3 in self._ff._templates[n_res_name].atoms:
                     if atom.name == atom3.name:
                         atom.type = atom3.type
             if atom.type == None:
+                print('check c')
                 for atom4 in self._ff._templates[c_res_name].atoms:
                     if atom.name == atom4.name:
                         atom.type = atom4.type
 
         # override existing modified residues with same name
+        print(name)
         if name in self._ff._templates:
+            print('override existing modified residues with same name')
             template[i].overrideLevel = self._ff._templates[name].overrideLevel + 1
 
         # register the new template to the forcefield object
+        print('register the new template to the forcefield object')
         self._ff.registerResidueTemplate(template[i])
 
 

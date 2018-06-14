@@ -20,7 +20,7 @@ class Psi4_wrapper(QM_wrapper):
         if self._gradient is None:
             self.get_gradient()
         self._qm['energy'] = self._energy
-        self._qm['gradient'] = self._gradient
+        self._qm['gradients'] = self._gradient
 
     def get_energy(self):
         """

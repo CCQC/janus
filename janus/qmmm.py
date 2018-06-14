@@ -90,21 +90,20 @@ class QMMM(object):
 
         if scheme == 'subtractive':
 
-            self.system.entire_sys['gradient'], self.system.primary_subsys['gradient'], self.system.qm['gradient'] = all_mm_grad, ps_mm_grad, qm_grad
-            # only 1 link atom
-            self.system.boundary_info[0] = link
+            all_mm_grad, ps_mm_grad, qm_grad = self.system.entire_sys['gradients'], self.system.primary_subsys['gradients'], self.system.qm['gradients']
             qmmm_grad = deepcopy(all_mm_grad)
                 
-            i = 0
-            for atom in self.system.qm_atoms:
+            for i, atom in enumerate(self.system.qm_atoms):
 
-                qmmm_grad[atom] - ps_mm_grad[i] + qm_grad[i]
+                qmmm_grad[atom] += - ps_mm_grad[i] + qm_grad[i]
                 
-                if self.system.boundary_treatment == 'link_atom':
-                    if atom == (link['qm_id'] - 1):
-                        qmmm_grad[atom] - (1 - link['g_factor']) * ps_mm_grad[-1] + (1 - link['g_factor']) * qm_grad[-1]
-                        qmmm_grad[link['mm_id'] - 1] - link['g_factor'] * ps_mm_grad[-1] + link['g_factor'] * qm_grad[-1]
-                i += 1
+                if self.system.boundary_info:
+                    if self.system.boundary_treatment == 'link_atom':
+                        qm = int(self.system.boundary_info[0]['qm_id']) - 1
+                        mm = int(self.system.boundary_info[0]['mm_id']) - 1
+                        if atom == qm:
+                            qmmm_grad[atom] += -(1 - link['g_factor']) * ps_mm_grad[-1] + (1 - link['g_factor']) * qm_grad[-1]
+                            qmmm_grad[mm] += -link['g_factor'] * ps_mm_grad[-1] + link['g_factor'] * qm_grad[-1]
             
         if scheme == 'additive':
             pass

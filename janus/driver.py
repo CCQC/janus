@@ -83,14 +83,17 @@ def subtractive(system):
     mm_wrapper, qm_wrapper = initialize_wrappers(system)
 
     # Get MM energy on whole system
+    print('Get MM energy on whole system')
     if not system.entire_sys:
         system.entire_sys = mm_wrapper.get_entire_sys()
 
     # Get MM energy on QM region
+    print('Get MM energy on QM region')
     if not system.primary_subsys:
         system.primary_subsys = mm_wrapper.get_primary_subsys(link=True)
 
     # Get any link atom information
+    print('Get any link atom information')
     if not system.boundary_info:
         system.boundary_info = mm_wrapper.get_boundary_info()
 
@@ -99,6 +102,7 @@ def subtractive(system):
         # get QM positions from pdb
         if system.qm_positions == None:
             system.qm_positions = mm_wrapper.get_qm_positions() 
+            print(system.qm_positions)
         system.qm = qm_wrapper.get_qm()
 
     # Compute the total QM/MM energy based on
