@@ -99,9 +99,9 @@ def test_get_qm():
     elec = psi4_elec.get_qm()
 
     assert np.allclose(mech['energy'], psi4_mech._energy)
-    assert np.allclose(mech['gradient'], psi4_mech._gradient)
+    assert np.allclose(mech['gradients'], psi4_mech._gradient)
     assert np.allclose(elec['energy'],   psi4_elec._energy)
-    assert np.allclose(elec['gradient'], psi4_elec._gradient)
+    assert np.allclose(elec['gradients'], psi4_elec._gradient)
 
 def test_get_scf_charges():
 
