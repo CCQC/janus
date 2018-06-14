@@ -155,14 +155,15 @@ class OpenMM_wrapper(MM_wrapper):
 
         self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
 
-        if link is True:
-            if self._boundary_bonds and self._system.boundary_treatment == 'link_atom':
+        if link is True and self._boundary_bonds:
+            if self._system.boundary_treatment == 'link_atom':
                 # this structure only working for adding one link atom for now. 
                 # NOT FUNCTIONAL FOR more than 1 link atom!!!!!!!!
                 for atom in self.link_atoms:
                     self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, self.link_atoms[atom])
                     self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
                     self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
+            
         else:
             self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
             self.get_info(self._primary_subsys_modeller, get_coulomb=coulomb)
