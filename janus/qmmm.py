@@ -83,7 +83,7 @@ class QMMM(object):
                             + system.qm['energy']
 
         # Compute QM/MM gradients 
-        self.compute_gradients(scheme='subtractive')
+        system.qmmm_gradients = self.compute_gradients(scheme='subtractive')
 
 
     def compute_gradients(self, scheme = 'subtractive'):
@@ -108,12 +108,11 @@ class QMMM(object):
             
         if scheme == 'additive':
             pass
+
+        return qmmm_grad
         
 
     def get_system(self):
 
         return self.system
 
-
-
-    
