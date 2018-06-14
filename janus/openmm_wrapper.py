@@ -560,7 +560,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         if forces is True:
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
-            values['gradients'] = value['forces'] * MM_wrapper.kj_mol_nm_to_au_bohr   
+            values['gradients'] = values['forces'] * MM_wrapper.kj_mol_nm_to_au_bohr   
 
         return values
 
