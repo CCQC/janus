@@ -51,18 +51,22 @@ def additive(system):
     #need to add if these things are none then do the following
 
     # Get MM energy on MM region
+    print('Get MM energy on MM region')
     if not system.second_subsys:
         system.second_subsys = mm_wrapper.get_second_subsys()
 
     # Get non coulomb MM energy on PS-SS interaction
+    print('Get non coulomb MM energy on PS-SS interaction')
     if not system.boundary:
         system.boundary = mm_wrapper.get_boundary(coulomb=False)
 
     # Get any link atom information
+    print('Get any link atom information')
     if not system.boundary_info:
         system.boundary_info = mm_wrapper.get_boundary_info()
 
     # Get QM energy
+    print('Get QM energy')
     if not system.qm:
         # get QM positions from pdb
         if system.qm_positions == None:
