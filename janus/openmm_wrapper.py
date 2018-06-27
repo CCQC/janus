@@ -796,6 +796,7 @@ class OpenMM_wrapper(MM_wrapper):
             # this is in nm
             self.link_atoms[i]['link_positions'] = self._system.get_link_atom_position(self._positions[qm.index], self._positions[mm.index], g)
 
+            # MAYBE CAN USE MDTRAJ FIND NEIGHBORS FOR THIS!!!!!!!!
             if RC is True:
                 bonds = []
                 # find index of atoms bonded to mm atom
