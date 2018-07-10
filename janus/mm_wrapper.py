@@ -44,6 +44,11 @@ class MM_wrapper(ABC):
     def qm_positions(self):
         pass
 
+    @abtractmethod
+    def integration(self, get_forces, take_forces, take_step, force):
+        pass
+
+
 #    @abstractmethod
 #    def make_zero_energy(self):
 #        pass

@@ -125,3 +125,8 @@ class QMMM(object):
 
         return self.system
 
+
+    def compute_force(self, scheme):
+        
+        pass
+
