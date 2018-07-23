@@ -45,7 +45,7 @@ class MM_wrapper(ABC):
         pass
 
     # need to implement in openmm wrapper
-    @abtractmethod
+    @abstractmethod
     def initialize_system(self):
         pass
 

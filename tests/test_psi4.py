@@ -95,8 +95,8 @@ def test_get_gradient():
 
 def test_get_qm():
 
-    mech = psi4_mech.get_qm()
-    elec = psi4_elec.get_qm()
+    mech = psi4_mech.get_qm(qm_positions=None)
+    elec = psi4_elec.get_qm(qm_positions=None)
 
     assert np.allclose(mech['energy'], psi4_mech._energy)
     assert np.allclose(mech['gradients'], psi4_mech._gradient)

@@ -16,7 +16,7 @@ def load_system(filename):
     with open(filename) as parameter_file:
         parameters = json.load(parameter_file)
 
-    system = System(parameters['qmmm'], parameters['qm'], parameters['mm'])
+    system = System(parameters['aqmmm'], parameters['qmmm'], parameters['qm'], parameters['mm'])
     
     return system
 
@@ -66,8 +66,8 @@ def run_adaptive(filename):
         # get the partitions for each qmmm computation
         paritions = aqmmm.partition(entire_sys, system.aqmmm_partition_scheme)
         for partition in partitions:
-            qmmm = qmmm.get_info(scheme=system.qmmm_scheme, entire_sys, partition)
-            aqmmm.save(partition.ID, qmmm.forces, qmmm.energy)
+            qmmm_info = qmmm.get_info(scheme=system.qmmm_scheme, system=entire_sys, partitition=partition)
+            aqmmm.save(partition.ID, qmmm_info.forces, qmmm_info.energy)
             
         # get aqmmm forces 
         forces = adaptive.get_info(scheme=system.aqmmm_scheme)
@@ -96,10 +96,10 @@ def run_qmmm():
         # get MM information for entire system
         entire_sys = mm_wrapper.get_entire_sys()
 
-        qmmm = qmmm.get_info(scheme=system.qmmm_scheme, entire_sys)
+        qmmm_info = qmmm.get_info(scheme=system.qmmm_scheme, system=entire_sys, partitition=partition)
             
-        # get aqmmm forces 
-        forces = adaptive.get_info(scheme=system.aqmmm_scheme)
+        # get qmmm forces 
+        forces = qmmm_info.forces 
     
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 

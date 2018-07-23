@@ -41,6 +41,12 @@ class OpenMM_wrapper(MM_wrapper):
                 self.prepare_link_atom(RC=True)
 
 
+    def initialize_system(self):
+        pass
+
+    def take_step(self, force):
+        pass
+
     def find_boundary_bonds(self, qm_atoms=None):
         """
         Identified any covalent bonds that the QM/MM boundary cuts across
