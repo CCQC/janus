@@ -8,7 +8,7 @@ class System(object):
     psi4_mp2._system.
     """
 
-    def __init__(self, qmmm={}, qm={}, mm={}):
+    def __init__(self, aqmmm = {}, qmmm={}, qm={}, mm={}):
 
         """
         Initializes system with None values for all parameters
@@ -105,6 +105,11 @@ class System(object):
         else: 
             self.mm_step_size = float(0.002)
 
+        if 'scheme' in qmmm:
+            self.qmmm_scheme = qmmm['scheme']
+        else: 
+            self.qmmm_scheme = 'subtractive'
+
         if 'embedding_method' in qmmm:
             self.embedding_method = qmmm['embedding_method']
         else:
@@ -128,6 +133,16 @@ class System(object):
             self.link_atom == qmmm['link_atom']
         elif self.boundary_treatment == 'link_atom':
             self.link_atom = 'H'
+
+        if 'aqmmm_scheme' in aqmmm:
+            self.aqmmm_scheme = aqmmm['aqmmm_scheme']
+        else: 
+            self.aqmmm_scheme = 'ONIOM-XS'
+
+        if 'aqmmm_partition_scheme' in aqmmm:
+            self.aqmmm_partition_scheme = aqmmm['aqmmm_partition_scheme']
+        else:
+            self.aqmmm_partition_scheme = 'distance'
     
 
         self.build_qm_param()
