@@ -14,7 +14,8 @@ class Psi4_wrapper(QM_wrapper):
         self._wavefunction = None
         self._gradient = None
 
-    def qm_info(self):
+    def qm_info(self, qm_positions):
+        self._system.qm_positions = qm_positions
         if self._energy is None:
             self.get_energy() 
         if self._gradient is None:
@@ -95,7 +96,7 @@ class Psi4_wrapper(QM_wrapper):
             sys.qm_positions += 'no_com \n '
 
         # make sure this is in angstroms
-        mol = psi4.geometry(sys.qm_positions)
+        mol = psi4.geometry(self.qm_positions)
 
         psi4.set_options(sys.qm_param)
 

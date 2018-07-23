@@ -56,6 +56,7 @@ def run_adaptive(filename):
     mm_wrapper.initialize_system()
 
     aqmmm = AQMMM()
+    qmmm = QMMM(qm_wrapper, mm_wrapper)
 
     for step in range(system.steps):
 

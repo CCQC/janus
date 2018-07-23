@@ -1,5 +1,5 @@
 """
-MM wrapper super clasecond_subsys
+MM wrapper super class
 """
 from abc import ABC, abstractmethod
 
@@ -44,8 +44,14 @@ class MM_wrapper(ABC):
     def qm_positions(self):
         pass
 
+    # need to implement in openmm wrapper
     @abtractmethod
-    def integration(self, get_forces, take_forces, take_step, force):
+    def initialize_system(self):
+        pass
+
+    # need to implement in openmm wrapper
+    @abstractmethod
+    def take_step(self, force):
         pass
 
 

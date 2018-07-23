@@ -11,10 +11,10 @@ class QM_wrapper(ABC):
         self._qm = {}
     
     @abstractmethod
-    def qm_info(self):
+    def qm_info(self, qm_positions):
         pass
 
-    def get_qm(self):
+    def get_qm(self, qm_positions):
         """
         Gets the energy and gradient from a QM computation of the primary subsystem 
 
@@ -27,5 +27,5 @@ class QM_wrapper(ABC):
         A dictionary with energy and gradient information
         """
         if not self._qm:
-            self.qm_info()
+            self.qm_info(qm_positions)
         return self._qm 
