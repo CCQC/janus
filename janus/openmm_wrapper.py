@@ -42,10 +42,24 @@ class OpenMM_wrapper(MM_wrapper):
 
 
     def initialize_system(self):
-        pass
+
+        self.main_OM_system, self.main_simulation, self.main_info =\
+        self.get_info(self._pdb, initialize=True, charges=True, get_coulomb=coulomb)
+
 
     def take_step(self, force):
-        pass
+
+        for f in force:
+            # need to figure out if the first 2 parameters always the same or not
+            self.qmmm_force.setParticleParameters(f['idx'], f['idx'], f['force'])
+
+        self.qmmm_force.updateParametersInContext(self.main_simulation.context)
+        self.main_simulation.step(1)
+
+    def get_main_info(self):
+        
+        return self.get_state_info(self.main_simulation)
+        
 
     def find_boundary_bonds(self, qm_atoms=None):
         """
@@ -261,7 +275,7 @@ class OpenMM_wrapper(MM_wrapper):
         self._qm_positions = out
 
 
-    def get_info(self, pdb, charges=False, return_system=True, return_simulation=True, get_coulomb=True, set_link_charge=False):
+    def get_info(self, pdb, initialize=False, charges=False, return_system=True, return_simulation=True, get_coulomb=True, set_link_charge=False):
         """
         Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
@@ -293,7 +307,12 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         # Create an OpenMM system from an object's topology
-        OM_system = self.create_openmm_system(pdb)
+
+        if initialize is True:
+            OM_system = self.create_openmm_system(pdb, initialize=True)
+        else:
+            OM_system = self.create_openmm_system(pdb)
+
 
         # If in electrostatic embedding scheme need to get a system without coulombic interactions
         if self._system.embedding_method=='Electrostatic' and get_coulomb is False:
@@ -314,6 +333,8 @@ class OpenMM_wrapper(MM_wrapper):
             Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
             # set the charge to 0 so the coulomb energy is zero
             force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
+
+
 
         # Create an OpenMM simulation from the openmm system, topology, and positions.
         simulation = self.create_openmm_simulation(OM_system,pdb)
@@ -367,7 +388,7 @@ class OpenMM_wrapper(MM_wrapper):
         return modeller
 
 
-    def create_openmm_system(self, pdb,
+    def create_openmm_system(self, pdb, initialize=False,
                              nonbond=OM_app.NoCutoff, 
                              nonbond_cutoff=1*OM_unit.nanometer,
                              periodic=False,
@@ -419,6 +440,21 @@ class OpenMM_wrapper(MM_wrapper):
                                             constraints=cnstrnts,
                                             residueTemplates=residue,
                                             ignoreExternalBonds=False)
+
+
+
+        if initialize is True:
+            # this is for the initialization of the entire system
+            # define a custom force for adding qmmm gradients
+            self.qmmm_force = OM.CustomExternalForce("-x*fx-y*fy-z*fz")
+            self.qmmm_force.addPerParticleParameter('fx')
+            self.qmmm_force.addPerParticleParameter('fy')
+            self.qmmm_force.addPerParticleParameter('fz')
+            
+            for i in range(openmm_system.getNumParticles()):
+                self.qmmm_force.addParticle(i, np.array([0.0, 0.0, 0.0]))
+            
+            openmm_system.addForce(self.qmmm_force)
 
 
         return openmm_system

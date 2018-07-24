@@ -44,14 +44,16 @@ class MM_wrapper(ABC):
     def qm_positions(self):
         pass
 
-    # need to implement in openmm wrapper
     @abstractmethod
     def initialize_system(self):
         pass
 
-    # need to implement in openmm wrapper
     @abstractmethod
     def take_step(self, force):
+        pass
+
+    @abstractmethod
+    def get_main_info(self):
         pass
 
 

@@ -61,12 +61,12 @@ def run_adaptive(filename):
     for step in range(system.steps):
 
         # get MM information for entire system
-        entire_sys = mm_wrapper.get_entire_sys()
+        main_info = mm_wrapper.get_main_info()
 
         # get the partitions for each qmmm computation
         paritions = aqmmm.partition(entire_sys, system.aqmmm_partition_scheme)
         for partition in partitions:
-            qmmm_info = qmmm.get_info(scheme=system.qmmm_scheme, system=entire_sys, partitition=partition)
+            qmmm_info = qmmm.get_info(scheme=system.qmmm_scheme, system=main_info, partitition=partition)
             aqmmm.save(partition.ID, qmmm_info.forces, qmmm_info.energy)
             
         # get aqmmm forces 
@@ -94,9 +94,9 @@ def run_qmmm():
     for step in range(system.steps):
 
         # get MM information for entire system
-        entire_sys = mm_wrapper.get_entire_sys()
+        main_info = mm_wrapper.get_main_info()
 
-        qmmm_info = qmmm.get_info(scheme=system.qmmm_scheme, system=entire_sys, partitition=partition)
+        qmmm_info = qmmm.get_info(scheme=system.qmmm_scheme, system=main_info, partitition=partition)
             
         # get qmmm forces 
         forces = qmmm_info.forces 
