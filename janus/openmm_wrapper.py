@@ -55,6 +55,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         self.qmmm_force.updateParametersInContext(self.main_simulation.context)
         self.main_simulation.step(1)
+        self.main_info = self.get_main_info()
+        self._positions = self.main_info['positions']
+    
 
     def get_main_info(self):
         
@@ -380,7 +383,7 @@ class OpenMM_wrapper(MM_wrapper):
         modeller = self.make_modeller(keep_qm=True)
         """
 
-        modeller = OM_app.Modeller(self._pdb.topology, self._pdb.positions)
+        modeller = OM_app.Modeller(self._pdb.topology, self._positions)
         if keep_qm is False:
             OpenMM_wrapper.delete_atoms(modeller, self._system.qm_atoms)
         elif keep_qm is True:
@@ -610,11 +613,11 @@ class OpenMM_wrapper(MM_wrapper):
 
         if positions is True:
             values['positions'] = state.getPositions(asNumpy=True)/OM_unit.nanometer
-            values['positions'] *= MM_wrapper.nm_to_angstrom
+            #values['positions'] *= MM_wrapper.nm_to_angstrom
 
         if forces is True:
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
-            values['gradients'] = values['forces'] * MM_wrapper.kj_mol_nm_to_au_bohr   
+            values['gradients'] = (-1) * values['forces'] * MM_wrapper.kj_mol_nm_to_au_bohr   
 
         return values
 

@@ -98,7 +98,7 @@ def test_primary_subsys_info():
     openmm_ala_link_2.primary_subsys_info(link=False, coulomb=True)
 
     assert np.allclose(openmm_ala_link_2._primary_subsys['energy'], 0.008915438339083044)
-    assert np.allclose(openmm_ala_link_2._primary_subsys['positions'], positions * 10)
+    assert np.allclose(openmm_ala_link_2._primary_subsys['positions'], positions)
     assert np.allclose(openmm_ala_link_2._primary_subsys['forces'], forces) 
     
 def test_create_new_residue_template():

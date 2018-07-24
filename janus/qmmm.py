@@ -4,14 +4,13 @@ QMMM class for QMMM computations
 """
 class QMMM(object):
 
-    def __init__(self, mm_wrapper, qm_wrapper):
+    def __init__(self, qm_wrapper):
         
-        self.mm_wrapper = mm_wrapper
         self.qm_wrapper = qm_wrapper
-        self.qm_atoms = mm_wrapper._system.qm_atoms
-        self.boundary_treatment = mm_wrapper._system.boundary_treatment
+        self.qm_atoms = qm_wrapper._system.qm_atoms
+        self.boundary_treatment = qm_wrapper._system.boundary_treatment
         
-    def additive(self):
+    def additive(self, mm_wrapper):
         """
         Gets energies of needed components and computes
         a qm/mm energy with a specified embedding method using
@@ -44,15 +43,14 @@ class QMMM(object):
         # Compute QM/MM gradients 
         qmmm_gradients = self.compute_gradients(scheme='additive')
 
-    def subtractive(system, entire_sys=None):
+    def subtractive(self, mm_wrapper):
         """
         Gets energies of needed components and computes
         a qm/mm energy with a subtractive mechanical embedding scheme
         """
 
         # Get MM energy on whole system
-        if not entire_sys:
-            self.entire_sys = mm_wrapper.get_entire_sys()
+        self.entire_sys = mm_wrapper.main_info
 
         # Get MM energy on QM region
         self.primary_subsys = mm_wrapper.get_primary_subsys(link=True)
@@ -72,16 +70,15 @@ class QMMM(object):
                       - self.primary_subsys['energy']\
                       + self.qm['energy']
 
-        # Compute QM/MM gradients 
-        self.qmmm_gradients = self.compute_gradients(scheme='subtractive')
 
-
-    def compute_gradients(self, scheme = 'subtractive'):
+    def compute_gradients(self, scheme='subtractive'):
+        # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
+        # NEED TO MAKE SURE UNITS CONSISTENT
 
         if scheme == 'subtractive':
 
             all_mm_grad, ps_mm_grad, qm_grad = self.entire_sys['gradients'], self.primary_subsys['gradients'], self.qm['gradients']
-            qmmm_grad = deepcopy(all_mm_grad)
+            qmmm_grad = np.zeros((len(all_mm_grad),3))
                 
             # iterate over list of qm atoms
             for i, atom in enumerate(self.qm_atoms):
@@ -105,13 +102,16 @@ class QMMM(object):
                             qmmm_grad[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
                             qmmm_grad[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
+            self.qmmm_forces = -1 * qmmm_grad
+        
+    def get_info(self, scheme, mm_wrapper, partition=None):
+
+        if scheme =='subtractive':
+
+            self.subtractive(mm_wrapper)
+            self.compute_gradients(scheme='subtractive')
             
         if scheme == 'additive':
-            print("Gradients for additive scheme not available yet") 
-
-        return qmmm_grad
-        
-    def get_info(self, scheme, system, partition=None):
-        pass
+            print("Additive scheme needs some work and is not available yet") 
 
 
