@@ -55,7 +55,7 @@ def run_adaptive(filename):
     # one for computing forces and one for time step integration
     mm_wrapper.initialize_system()
 
-    aqmmm = AQMMM()
+    aqmmm = AQMMM(system.aqmmm_scheme, system.aqmmm_partition_scheme)
     qmmm = QMMM(qm_wrapper, mm_wrapper)
 
     for step in range(system.steps):
@@ -64,13 +64,13 @@ def run_adaptive(filename):
         # main_info = mm_wrapper.get_main_info()
 
         # get the partitions for each qmmm computation
-        paritions = aqmmm.partition(entire_sys, system.aqmmm_partition_scheme)
+        paritions = aqmmm.partition(entire_sys)
         for partition in partitions:
-            qmmm_info = qmmm.get_info(scheme=system.qmmm_scheme, system=main_info, partitition=partition)
-            aqmmm.save(partition.ID, qmmm_info.forces, qmmm_info.energy)
+            qmmm.get_info(system.qmmm_scheme, mm_wrapper, partitition=partition)
+            aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
             
         # get aqmmm forces 
-        forces = adaptive.get_info(scheme=system.aqmmm_scheme)
+        forces = adaptive.get_info()
     
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 
@@ -98,7 +98,7 @@ def run_qmmm():
         # get MM information for entire system
         # main_info = mm_wrapper.get_main_info()
 
-        qmmm.get_info(system.qmmm_scheme, mm_wrapper, partitition=partition)
+        qmmm.get_info(system.qmmm_scheme, mm_wrapper)
             
         # get qmmm forces 
         forces = qmmm.qmmm_forces 
