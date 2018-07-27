@@ -53,9 +53,10 @@ def run_adaptive(filename):
     # with openmm wrapper,
     # this creates 2 openmm objects containing entire system
     # one for computing forces and one for time step integration
-    mm_wrapper.initialize_system()
+    # each individual mm_wrapper gets initial trajectory
+    trajectory = mm_wrapper.initialize_system()
 
-    aqmmm = AQMMM(system.aqmmm_scheme, system.aqmmm_partition_scheme)
+    aqmmm = AQMMM(system, trajectory)
     qmmm = QMMM(qm_wrapper, mm_wrapper)
 
     for step in range(system.steps):
@@ -64,6 +65,7 @@ def run_adaptive(filename):
         # main_info = mm_wrapper.get_main_info()
 
         # get the partitions for each qmmm computation
+        # the thing passed in will have positions for the trajectory to be updated
         paritions = aqmmm.partition(entire_sys)
         for partition in partitions:
             qmmm.get_info(system.qmmm_scheme, mm_wrapper, partitition=partition)
