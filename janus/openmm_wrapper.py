@@ -2,6 +2,7 @@ import simtk.openmm.app as OM_app
 import simtk.openmm as OM
 import simtk.unit as OM_unit
 from .mm_wrapper import MM_wrapper
+import mdtraj as md
 
 """
 This module is a wrapper that calls OpenMM
@@ -45,6 +46,11 @@ class OpenMM_wrapper(MM_wrapper):
 
         self.main_OM_system, self.main_simulation, self.main_info =\
         self.get_info(self._pdb, initialize=True, charges=True, get_coulomb=coulomb)
+
+        # return a MDtraj trajectory object
+        # I don't know if putting these positions and topology is okay or wait until minimize system- 
+        # should I always minimize or always not minimize?
+        return md.Trajectory(self._positions, self._pdb.topology)
 
 
     def take_step(self, force):

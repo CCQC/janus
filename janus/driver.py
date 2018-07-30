@@ -88,12 +88,13 @@ def run_qmmm():
     # initialize wrappers
     mm_wrapper, qm_wrapper = initialize_wrappers(system)
 
-    qmmm = QMMM(qm_wrapper)
 
     # with openmm wrapper,
     # this creates 2 openmm objects containing entire system
     # one for computing forces and one for time step integration
-    mm_wrapper.initialize_system()
+    trajectory = mm_wrapper.initialize_system()
+
+    qmmm = QMMM(qm_wrapper)
 
     for step in range(system.steps):
 
