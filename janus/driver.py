@@ -77,7 +77,7 @@ def run_adaptive(filename):
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 
         # getting it on the correct one
-        mm.wrapper.take_step(force=forces)
+        mm_wrapper.take_step(force=forces)
 
 def run_qmmm():
 # have this as part of run_adaptive?
