@@ -65,7 +65,12 @@ class AQMMM(object):
     def oniom_xs(partition=False, get_info=False):
         
         if partition is True:
-            pass
+            self.paritions = {}
+            partitions['qm'] = self.rmin_atoms
+            partitions['qm_bz'] = self.rmin_atoms
+            for key, value in self.buffer_groups.items():
+                for idx in value:
+                    partitions['qm_bz'].append(idx)
 
         if get_info is True:
             pass
