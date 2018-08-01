@@ -45,7 +45,22 @@ class AQMMM(object):
             self.rmin_atoms = md.compute_neighbors(self.traj, self.Rmin, self.qm_center)
             self.rmax_atoms = md.compute_neighbors(self.traj, self.Rmax, self.qm_center)
             self.buffer_atoms = np.setdiff1d(self.rmax_atoms, self.rmin_atoms)
-            
+
+        # for adding identifying water buffer groups
+        groups = {}
+        top = self.traj.topology
+
+        for i in self.buffer_atoms:
+            if top.atom(i).residue.is_water:
+                idx = top.atom(i).residue.index
+                if idx not in groups.keys():
+                    groups[idx] = []
+                    for a in top.residue(idx).atoms:
+                        if a.index not in groups[idx]:
+                            group[idx].append(a.index)
+
+        self.buffer_groups = groups
+
 
     def oniom_xs(partition=False, get_info=False):
         
