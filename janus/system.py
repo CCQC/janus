@@ -208,3 +208,11 @@ class System(object):
         
     # need to add all the other parameters written into system e.g. energy
 
+
+class Partition(object):
+    def __init__(self, indices, ID):
+        self.qm_atoms = indices
+        self.ID = ID
+        self.qm_positions = None
+        self.forces = None
+        self.energy = None
