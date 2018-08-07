@@ -65,15 +65,32 @@ class AQMMM(object):
     def oniom_xs(partition=False, get_info=False):
         
         if partition is True:
-            self.paritions = {}
-            partitions['qm'] = self.rmin_atoms
-            partitions['qm_bz'] = self.rmin_atoms
+            qm = Partition(indices=self.rmin_atoms, ID=1)
+            qm_bz = Partition(indices=self.rmin_atoms, ID=1)
             for key, value in self.buffer_groups.items():
                 for idx in value:
-                    partitions['qm_bz'].append(idx)
+                    qm_bz.indicies.append(idx)
+        
+            qm.positions = self.get_qm_positions(qm.indicies)
+            qm_bz.positions = self.get_qm_positions(qm_bz.indicies)
+
+            self.partitions = [qm, qm_bz]
+
+            return self.partitions
 
         if get_info is True:
             pass
+
+    def get_qm_positions(self):
+        """
+        TODO:
+        1. need to phase out getting qm_positions in the openmm wrapper
+        2. need to phase out getting link atom stuff through the openmm wrapper
+        - MDtraj can do ALL - just need to convert to openmm trajectory
+        - this way would be more general and robust - the only thing is to make sure the qmmm 
+         only things still work - not just with aqmmm
+        """
+        pass
 
 
     def get_Rmin(self):
@@ -87,4 +104,17 @@ class AQMMM(object):
 
     def set_Rmax(self, Rmax):
         self.Rmax = Rmax
+    
+
+
+class Partition(object):
+    def __init__(self, indices, ID):
+        self.indices = indices
+        self.ID = ID
+        self.qm_positions = None
+
+
+
+
+
 
