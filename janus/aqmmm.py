@@ -4,6 +4,7 @@ AQMMM class for adaptive QMMM computations
 """
 class AQMMM(object):
 
+    nm_to_angstrom = 10.0000000
     def __init__(self, system, trajectory=None):
 
         self.scheme = system.aqmmm_scheme
@@ -81,7 +82,7 @@ class AQMMM(object):
         if get_info is True:
             pass
 
-    def get_qm_positions(self):
+    def get_qm_positions(self, qm_atoms):
         """
         TODO:
         1. need to phase out getting qm_positions in the openmm wrapper
@@ -90,7 +91,27 @@ class AQMMM(object):
         - this way would be more general and robust - the only thing is to make sure the qmmm 
          only things still work - not just with aqmmm
         """
-        pass
+        out = ""
+        line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
+
+        for idx in qm_atoms:
+            for atom in self.traj.topology.atoms():
+                if atom.index == idx:
+                    x, y, z =   self.traj.xyz[0][idx][0]*AQMMM.nm_to_angstrom,\
+                                self.traj.xyz[0][idx][1]*AQMMM.nm_to_angstrom,\
+                                self.traj.xyz[0][idx][2]*AQMMM.nm_to_angstrom
+                    out += line.format(atom.element.symbol, x, y, z)
+
+        ## if there are bonds that need to be cut
+        #if self._boundary_bonds:
+        #    # Need to add if statement for any treatments that don't need link atoms
+        #    #if self._system.boundary_treatment !=
+        #    for atom in self.link_atoms:
+        #        pos = self.link_atoms[atom]['link_positions']*MM_wrapper.nm_to_angstrom
+        #        x, y, z = pos[0], pos[1], pos[2]
+        #        out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
+        return out
+
 
 
     def get_Rmin(self):
