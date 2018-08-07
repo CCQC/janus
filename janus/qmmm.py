@@ -9,6 +9,7 @@ class QMMM(object):
         self.qm_wrapper = qm_wrapper
         self.qm_atoms = qm_wrapper._system.qm_atoms
         self.boundary_treatment = qm_wrapper._system.boundary_treatment
+        self.qm_positions
         
     def additive(self, mm_wrapper):
         """
@@ -106,12 +107,27 @@ class QMMM(object):
         
     def get_info(self, scheme, mm_wrapper, partition=None):
 
-        if scheme =='subtractive':
+        if not partition:
+            if scheme =='subtractive':
 
-            self.subtractive(mm_wrapper)
-            self.compute_gradients(scheme='subtractive')
+                self.subtractive(mm_wrapper)
+                self.compute_gradients(scheme='subtractive')
+                
+            if scheme == 'additive':
+                print("Additive scheme needs some work and is not available yet") 
+
+        if partition:
+            self.qm_positions = partition.qm_positions
+            mm_wrapper._system.qm_atoms = partition.indices 
+
+            if scheme =='subtractive':
+
+                self.subtractive(mm_wrapper)
+                self.compute_gradients(scheme='subtractive')
+                
+            if scheme == 'additive':
+                print("Additive scheme needs some work and is not available yet") 
             
-        if scheme == 'additive':
-            print("Additive scheme needs some work and is not available yet") 
+            
 
 
