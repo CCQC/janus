@@ -118,7 +118,7 @@ class QMMM(object):
 
         if partition:
             self.qm_positions = partition.qm_positions
-            mm_wrapper._system.qm_atoms = partition.indices 
+            mm_wrapper._system.qm_atoms = partition.qm_atoms
 
             if scheme =='subtractive':
 

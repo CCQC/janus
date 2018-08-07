@@ -8,4 +8,6 @@ from . import openmm_wrapper
 from . import parser
 from . import driver
 from . import qmmm
+from . import aqmmm
+from . import oniom_xs
 

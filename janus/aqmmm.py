@@ -1,14 +1,16 @@
+from abc import ABC, abstractmethod
+from .system import Partition
 import mdtraj as md
 """
 AQMMM class for adaptive QMMM computations
 """
-class AQMMM(object):
+class AQMMM(ABC):
 
     nm_to_angstrom = 10.0000000
-    def __init__(self, system, trajectory=None):
 
-        self.scheme = system.aqmmm_scheme
-        self.partition_scheme = system.aqmmm_partition_scheme
+    def __init__(self, partition_scheme, trajectory=None):
+
+        self.partition_scheme = partition_scheme
         if self.partition_scheme == 'distance':
             self.Rmin = 0.5 # in nm
             self.Rmax = 0.6 # in nm
@@ -20,29 +22,18 @@ class AQMMM(object):
 
         # for now, need to define later
         self.qm_center = None
+        self.partitions = {}
 
-    def partition(self, info):
+    def save(self, ID, qmmm_forces, qmmm_energy)
+        # find the appropriate partition object to save to
+        self.partitions[ID].forces = qmmm_forces
+        self.partitions[ID].energy = qmmm_energy
 
-        self.define_buffer_zone(position)
 
-        # make this into class structure?
-        if self.scheme == 'ONIOM-XS':
-            self.oniom_xs(partition=True)
-
-    def save(self):
-        pass
-
-    def get_info(self):
-
-        if self.scheme == 'ONIOM-XS':
-            self.oniom_xs(get_info=True)
-        
-        return self.info
-
-    def define_buffer_zone(self, positions):
+    def define_buffer_zone(self):
 
         if self.partition_scheme == 'distance': 
-            self.traj.xyz = positions
+#            self.traj.xyz = positions
             self.rmin_atoms = md.compute_neighbors(self.traj, self.Rmin, self.qm_center)
             self.rmax_atoms = md.compute_neighbors(self.traj, self.Rmax, self.qm_center)
             self.buffer_atoms = np.setdiff1d(self.rmax_atoms, self.rmin_atoms)
@@ -62,25 +53,6 @@ class AQMMM(object):
 
         self.buffer_groups = groups
 
-
-    def oniom_xs(partition=False, get_info=False):
-        
-        if partition is True:
-            qm = Partition(indices=self.rmin_atoms, ID=1)
-            qm_bz = Partition(indices=self.rmin_atoms, ID=1)
-            for key, value in self.buffer_groups.items():
-                for idx in value:
-                    qm_bz.indicies.append(idx)
-        
-            qm.positions = self.get_qm_positions(qm.indicies)
-            qm_bz.positions = self.get_qm_positions(qm_bz.indicies)
-
-            self.partitions = [qm, qm_bz]
-
-            return self.partitions
-
-        if get_info is True:
-            pass
 
     def get_qm_positions(self, qm_atoms):
         """
@@ -125,14 +97,17 @@ class AQMMM(object):
 
     def set_Rmax(self, Rmax):
         self.Rmax = Rmax
+
+
+    @abstractmethod
+    def partition(self, info):
+        pass
+
+    @abtractmethod
+    def get_info(self):
+        pass
     
 
-
-class Partition(object):
-    def __init__(self, indices, ID):
-        self.indices = indices
-        self.ID = ID
-        self.qm_positions = None
 
 
 

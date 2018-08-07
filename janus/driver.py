@@ -56,7 +56,11 @@ def run_adaptive(filename):
     # each individual mm_wrapper gets initial trajectory
     trajectory = mm_wrapper.initialize_system()
 
-    aqmmm = AQMMM(system, trajectory)
+    if system.aqmmm_scheme == 'ONIOM_XS':
+        aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, trajectory)
+    else:
+        print("Only ONIOM_XS currently implemented")
+
     qmmm = QMMM(qm_wrapper, mm_wrapper)
 
     for step in range(system.steps):
@@ -72,7 +76,7 @@ def run_adaptive(filename):
             aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
             
         # get aqmmm forces 
-        forces = adaptive.get_info()
+        forces = aqmmm.get_info()
     
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 
