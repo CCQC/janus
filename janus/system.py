@@ -1,3 +1,4 @@
+import numpy as np
 from mendeleev import element
 
 class System(object):
@@ -210,9 +211,39 @@ class System(object):
 
 
 class Partition(object):
+
     def __init__(self, indices, ID):
+
         self.qm_atoms = indices
         self.ID = ID
         self.qm_positions = None
         self.forces = None
         self.energy = None
+        self.buffer_groups = None
+        self.switching_functions = []
+
+
+    def compute_COM(self, positions):
+    
+        xyz = np.zeros(3)
+        M = 0
+
+        for pos in positions:
+            m = element(pos[0]).atomic_weight
+            M += m
+            xyz += m * np.array(pos[1])
+
+        xyz *= 1/M
+        
+        return xyz
+
+
+
+            
+        
+
+
+
+
+
+        
