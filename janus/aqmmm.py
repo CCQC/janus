@@ -12,8 +12,9 @@ class AQMMM(ABC):
 
         self.partition_scheme = partition_scheme
         if self.partition_scheme == 'distance':
-            self.Rmin = 0.5 # in nm
-            self.Rmax = 0.6 # in nm
+            # these values taken from original ONIOM-XS paper
+            self.Rmin = 0.38 # in nm
+            self.Rmax = 0.4 # in nm
 
         if trajectory is None:
             self.traj = md.load(system.mm_pdb_file)
@@ -22,9 +23,11 @@ class AQMMM(ABC):
 
         # for now, need to define later
         self.qm_center = None
+        # this needs to be np.array
+        self.qm_center_xyz = None
         self.partitions = {}
 
-    def save(self, ID, qmmm_forces, qmmm_energy)
+    def save(self, ID, qmmm_forces, qmmm_energy):
         # find the appropriate partition object to save to
         self.partitions[ID].forces = qmmm_forces
         self.partitions[ID].energy = qmmm_energy
@@ -54,7 +57,7 @@ class AQMMM(ABC):
         self.buffer_groups = groups
 
 
-    def get_qm_positions(self, qm_atoms):
+    def get_qm_positions(self, qm_atoms, as_string=True):
         """
         TODO:
         1. need to phase out getting qm_positions in the openmm wrapper
@@ -63,16 +66,25 @@ class AQMMM(ABC):
         - this way would be more general and robust - the only thing is to make sure the qmmm 
          only things still work - not just with aqmmm
         """
-        out = ""
+
+        if as_string is True:
+            out = ""
+        if as_string is True:
+            out = []
         line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
 
         for idx in qm_atoms:
-            for atom in self.traj.topology.atoms():
-                if atom.index == idx:
-                    x, y, z =   self.traj.xyz[0][idx][0]*AQMMM.nm_to_angstrom,\
-                                self.traj.xyz[0][idx][1]*AQMMM.nm_to_angstrom,\
-                                self.traj.xyz[0][idx][2]*AQMMM.nm_to_angstrom
-                    out += line.format(atom.element.symbol, x, y, z)
+            x, y, z =   self.traj.xyz[0][idx][0]*AQMMM.nm_to_angstrom,\
+                        self.traj.xyz[0][idx][1]*AQMMM.nm_to_angstrom,\
+                        self.traj.xyz[0][idx][2]*AQMMM.nm_to_angstrom
+
+            symbol = self.traj.topology.atom(idx).element.symbol
+            
+            if as_string is True:
+                out += line.format(symbol, x, y, z)
+            else:
+                out.append([symbol, [x, y, z]])
+            
 
         ## if there are bonds that need to be cut
         #if self._boundary_bonds:
@@ -103,7 +115,7 @@ class AQMMM(ABC):
     def partition(self, info):
         pass
 
-    @abtractmethod
+    @abstractmethod
     def get_info(self):
         pass
     

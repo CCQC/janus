@@ -265,6 +265,8 @@ class OpenMM_wrapper(MM_wrapper):
         qm_atoms = self._system.qm_atoms
 
         for idx in qm_atoms:
+            # when I phase function out won't need the for and if statements following this
+            # see implementation in AQMMM
             for atom in self._pdb.topology.atoms():
                 if atom.index == idx:
                     x, y, z =   self._positions[idx][0]*MM_wrapper.nm_to_angstrom,\
