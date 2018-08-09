@@ -57,6 +57,8 @@ class HOT_SPOT(AQMMM):
                     self.forces[idx] += (1 - switching_functions[i])*qm.forces[idx]
                 i += 1
 
+        return self.forces
+
     def get_switching_function(self, partition):
 
         for key, value in self.buffer_groups.items():

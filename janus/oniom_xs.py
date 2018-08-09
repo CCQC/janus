@@ -8,6 +8,7 @@ class ONIOM_XS(AQMMM):
 
     def partition(self, info): 
     
+        # need to first update everything with info!
         self.define_buffer_zone()
 
         qm = Partition(indices=self.rmin_atoms, ID='qm')
@@ -41,14 +42,17 @@ class ONIOM_XS(AQMMM):
 
         else:
             qm_bz = self.partitions['qm_bz'] 
-            s, d_s = self.get_switching_function(qm_bz)
-            self.energy = s*qm.energy + (1-s)*qm_bz.energy
-            self.forces = s*qm.forces + (1-s)*qm.forces + d_s*(qm.energy - qm_bz.energy)
+            lamda, d_lamda = self.get_switching_function(qm_bz)
+            self.energy = lamda*qm.energy + (1-lamda)*qm_bz.energy
+            # needs work!
+            #self.forces = lamda*qm.forces + (1-lamda)*qm.forces + d_lamda*(qm.energy - qm_bz.energy)
+
+        return self.forces
 
     def get_switching_function(self, partition):
 
         s = 0.0
-        d_s = 0.0
+        #d_s = 0.0
         for key, value in self.buffer_groups.items():
             positions = self.get_qm_positions(value, as_string=False)
             COM = partition.compute_COM(positions)
@@ -57,20 +61,20 @@ class ONIOM_XS(AQMMM):
             s_i, d_s_i = self.compute_s_i(r_i)
             partition.switching_functions.append(s_i)
             s += s_i
-            d_s += d_s_i
+            #d_s += d_s_i
             
         s *= 1/len(partition.switching_functions)
-        d_s *= 1/len(partition.switching_functions)
-        return s, d_s
+        #d_s *= 1/len(partition.switching_functions)
+        return s #, d_s
             
 
     def compute_s_i(self, r_i):
 
         x_i = (r_i - self.Rmin) / (self.Rmax - self.Rmin)
         
-        s_i = 6*(x_i - 1/2)**5 - 5(x_i - 1/2)**3 + (15/8)*(x_i - 1/2) + 1/2
+        lamda_i = 6*(x_i - 1/2)**5 - 5(x_i - 1/2)**3 + (15/8)*(x_i - 1/2) + 1/2
         
-        d_s_i = 30*(x_i - 1/2)**4 - 15(x_i - 1/2)**2 + 15/8
+        d_lamda_i = 30*(x_i - 1/2)**4 - 15(x_i - 1/2)**2 + 15/8
 
         return s_i, d_s_i
         
