@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 from mendeleev import element
 
 class System(object):
@@ -214,7 +215,7 @@ class Partition(object):
 
     def __init__(self, indices, ID):
 
-        self.qm_atoms = indices
+        self.qm_atoms = deepcopy(indices)
         self.ID = ID
         self.qm_positions = None
         self.forces = None

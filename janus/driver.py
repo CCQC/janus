@@ -57,9 +57,9 @@ def run_adaptive(filename):
     trajectory = mm_wrapper.initialize_system()
 
     if system.aqmmm_scheme == 'ONIOM_XS':
-        aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, trajectory)
+        aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, filename)
     if system.aqmmm_scheme == 'ONIOM_XS':
-        aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, trajectory)
+        aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, filename)
     else:
         print("Only ONIOM_XS currently implemented")
 
