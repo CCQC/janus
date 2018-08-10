@@ -14,4 +14,4 @@ A Python library for adaptive QM/MM methods
 * To install locally: `pip install -e .`
 * For reading external datafiles with pytest within the janus environment: `pip install pytest-datafiles` 
 * Adding mendeleev package: `pip install mendeleev` 
-* To add MDtraj: conda install -c conda-forge mdtraj (for travis I am doing `pip install mdtraj`)
+* To add MDtraj: conda install -c conda-forge mdtraj 
