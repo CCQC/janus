@@ -44,11 +44,20 @@ class AQMMM(ABC):
             self.qm_atoms = rmin_atoms[0].tolist()
             self.qm_atoms.append(qm_center[0])
             self.qm_atoms.sort()
+        
+        top = self.traj.topology
+        # remove any hydrogens that have oxygen outside of qm region from qm region
+        # if oxygen in buffer zone, it will be added back in
+        for i in self.qm_atoms:
+            if (top.atom(i).residue.is_water and top.atom(i).element.symbol == 'H'):
+                idx = top.atom(i).residue.index
+                for a in top.residue(idx).atoms:
+                    if (a.element.symbol =='O' and a.index not in self.qm_atoms):
+                        self.qm_atoms.remove(top.atom(i).index)
             
 
         # for adding identifying water buffer groups
         groups = {}
-        top = self.traj.topology
 
         for i in self.buffer_atoms:
             # since if a hydrogen is in buffer zone with link atoms the qm would be the same as qm_bz, and the center 
@@ -61,9 +70,10 @@ class AQMMM(ABC):
                     for a in top.residue(idx).atoms:
                         if a.index not in groups[idx]:
                             groups[idx].append(a.index)
-                        # if oxygen in buffer zone remove any hydrogens in qm area from definition of qm atoms
-                        if a.index in self.qm_atoms:
-                            self.qm_atoms.remove(a.index)
+                       # # if oxygen in buffer zone remove any hydrogens in qm area from definition of qm atoms
+                      # convered by previous
+                       # if a.index in self.qm_atoms:
+                       #     self.qm_atoms.remove(a.index)
 
         self.buffer_groups = groups
 
