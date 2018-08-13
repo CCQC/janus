@@ -3,6 +3,8 @@ import simtk.openmm as OM
 import simtk.unit as OM_unit
 from .mm_wrapper import MM_wrapper
 import mdtraj as md
+import numpy as np
+from copy import deepcopy
 
 """
 This module is a wrapper that calls OpenMM
@@ -45,7 +47,7 @@ class OpenMM_wrapper(MM_wrapper):
     def initialize_system(self):
 
         self.main_OM_system, self.main_simulation, self.main_info =\
-        self.get_info(self._pdb, initialize=True, charges=True, get_coulomb=coulomb)
+        self.get_info(self._pdb, initialize=True, charges=True, get_coulomb=True)
 
        # # return a MDtraj trajectory object
        # # I don't know if putting these positions and topology is okay or wait until minimize system- 
@@ -55,9 +57,9 @@ class OpenMM_wrapper(MM_wrapper):
 
     def take_step(self, force):
 
-        for f in force:
+        for f, coord in force.items():
             # need to figure out if the first 2 parameters always the same or not
-            self.qmmm_force.setParticleParameters(f['idx'], f['idx'], f['force'])
+            self.qmmm_force.setParticleParameters(f, f, coord)
 
         self.qmmm_force.updateParametersInContext(self.main_simulation.context)
         self.main_simulation.step(1)
@@ -67,7 +69,7 @@ class OpenMM_wrapper(MM_wrapper):
 
     def get_main_info(self):
         
-        return self.get_state_info(self.main_simulation)
+        return OpenMM_wrapper.get_state_info(self.main_simulation)
         
 
     def find_boundary_bonds(self, qm_atoms=None):
@@ -352,9 +354,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         # Calls openmm wrapper to get information specified
         state = OpenMM_wrapper.get_state_info(simulation,
-                                              energy=True,
-                                              positions=True,
-                                              forces=True)
+                                      energy=True,
+                                      positions=True,
+                                      forces=True)
 
         state['energy'] = state['potential'] + state['kinetic']
 
@@ -562,6 +564,7 @@ class OpenMM_wrapper(MM_wrapper):
         return simulation
 
     def get_state_info(simulation,
+                       main = False,
                        energy=True,
                        positions=True,
                        velocity=False,
@@ -602,6 +605,7 @@ class OpenMM_wrapper(MM_wrapper):
         get_state_info(sim, groups_included=set{0,1,2})
         get_state_info(sim, positions=True, forces=True)
         """
+
         state = simulation.context.getState(getEnergy=energy,
                                             getPositions=positions,
                                             getVelocities=velocity,

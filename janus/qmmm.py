@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 """
 QMMM class for QMMM computations
 """
@@ -9,7 +10,7 @@ class QMMM(object):
         self.qm_wrapper = qm_wrapper
         self.qm_atoms = qm_wrapper._system.qm_atoms
         self.boundary_treatment = qm_wrapper._system.boundary_treatment
-        self.qm_positions
+        self.qm_positions = None
         
     def additive(self, mm_wrapper):
         """
@@ -32,9 +33,9 @@ class QMMM(object):
 
         # Get QM energy
         # get QM positions from pdb
-        if qm_positions == None:
-            qm_positions = mm_wrapper.get_qm_positions() 
-        self.qm = qm_wrapper.get_qm(qm_positions)
+        if self.qm_positions is None:
+            self.qm_positions = mm_wrapper.get_qm_positions() 
+        self.qm = self.qm_wrapper.get_qm(self.qm_positions)
 
         # Compute total QM/MM energy based on additive scheme
         self.qmmm_energy = self.second_subsys['energy']\
@@ -61,9 +62,9 @@ class QMMM(object):
 
         # Get QM energy
         # get QM positions from pdb
-        if qm_positions == None:
-            qm_positions = mm_wrapper.get_qm_positions() 
-        self.qm = qm_wrapper.get_qm(qm_positions)
+        if self.qm_positions is None:
+            self.qm_positions = mm_wrapper.get_qm_positions() 
+        self.qm = self.qm_wrapper.get_qm(self.qm_positions)
 
         # Compute the total QM/MM energy based on
         # subtractive Mechanical embedding
@@ -78,16 +79,20 @@ class QMMM(object):
 
         if scheme == 'subtractive':
 
-            all_mm_grad, ps_mm_grad, qm_grad = self.entire_sys['gradients'], self.primary_subsys['gradients'], self.qm['gradients']
-            qmmm_grad = np.zeros((len(all_mm_grad),3))
+            ps_mm_grad, qm_grad = self.primary_subsys['gradients'], self.qm['gradients']
+            #qmmm_grad = np.zeros((len(all_mm_grad),3))
+            qmmm_force = {}
                 
             # iterate over list of qm atoms
             for i, atom in enumerate(self.qm_atoms):
 
                 # compute the qmmm gradient for the qm atoms: 
                 # mm_entire - mm_primary - qm
-                qmmm_grad[atom] += - ps_mm_grad[i] + qm_grad[i]
+                qmmm_force[atom] = np.zeros(3)
+                # assume these are gradients not forces
+                qmmm_force[atom] += -1 * (- ps_mm_grad[i] + qm_grad[i])
                 
+                # treating gradients for link atoms
                 if self.boundary_info:
                     q1 = int(self.boundary_info[0]['qm_id']) - 1
                     m1 = int(self.boundary_info[0]['mm_id']) - 1
@@ -95,15 +100,15 @@ class QMMM(object):
                     if atom == q1:
                         if self.boundary_treatment == 'link_atom':
                             # Project forces of link atoms onto the mm and qm atoms of the link atom bond
-                            qmmm_grad[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
-                            qmmm_grad[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+                            qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
+                            qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
                             
                         # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
                         if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
-                            qmmm_grad[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
-                            qmmm_grad[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+                            qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
+                            qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
-            self.qmmm_forces = -1 * qmmm_grad
+            self.qmmm_forces = qmmm_force
         
     def get_info(self, scheme, mm_wrapper, partition=None):
 

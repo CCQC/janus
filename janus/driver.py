@@ -20,48 +20,49 @@ def load_system(filename):
     
     return system
 
-def initialize_wrappers(system):
+def initialize_wrappers(system, aqmmm=False):
     """
     Initializes the programs to use for computations
     """
 
-    # create qm_wrapper object
-    if system.qm_program == "Psi4":
-        qm_wrapper = Psi4_wrapper(system)
-    else:
-    # add other options for qm program here
-        pass
+    if aqmmm is False:
+        # create qm_wrapper object
+        if system.qm_program == "Psi4":
+            qm_wrapper = Psi4_wrapper(system)
+        else:
+        # add other options for qm program here
+            print("Only Psi4 currently available")
 
-    # create mm_wrapper object
-    if system.mm_program == "OpenMM":
-        mm_wrapper = OpenMM_wrapper(system)
-    else:
-    # add other options for mm program here
-        pass
-    
-    return mm_wrapper, qm_wrapper
+        # create mm_wrapper object
+        if system.mm_program == "OpenMM":
+            mm_wrapper = OpenMM_wrapper(system)
+        else:
+        # add other options for mm program here
+            print("Only OpenMM currently available")
+
+        return mm_wrapper, qm_wrapper
+
+    if aqmmm is True:
+        if system.aqmmm_scheme == 'ONIOM_XS':
+            aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, system.mm_pdb_file)
+        else:
+            print("Only ONIOM_XS currently implemented")
+        
+        return aqmmm
 
 
-def run_adaptive(filename):
-   
-    # initialize system 
-    system = load_system(filename)
+def run_adaptive(system):
 
     # initialize wrappers
     mm_wrapper, qm_wrapper = initialize_wrappers(system)
+
+    aqmm = initialize_wrappers(system, aqmmm=True)
 
     # with openmm wrapper,
     # this creates 2 openmm objects containing entire system
     # one for computing forces and one for time step integration
     # each individual mm_wrapper gets initial trajectory
-    trajectory = mm_wrapper.initialize_system()
 
-    if system.aqmmm_scheme == 'ONIOM_XS':
-        aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, filename)
-    if system.aqmmm_scheme == 'ONIOM_XS':
-        aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, filename)
-    else:
-        print("Only ONIOM_XS currently implemented")
 
     qmmm = QMMM(qm_wrapper, mm_wrapper)
 
@@ -85,11 +86,8 @@ def run_adaptive(filename):
         # getting it on the correct one
         mm_wrapper.take_step(force=forces)
 
-def run_qmmm():
+def run_qmmm(system):
 # have this as part of run_adaptive?
-
-    # initialize system 
-    system = load_system(filename)
 
     # initialize wrappers
     mm_wrapper, qm_wrapper = initialize_wrappers(system)
@@ -115,5 +113,5 @@ def run_qmmm():
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 
         # getting it on the correct one
-        mm.wrapper.take_step(force=forces)
+        mm_wrapper.take_step(force=forces)
 

@@ -10,7 +10,7 @@ class System(object):
     psi4_mp2._system.
     """
 
-    def __init__(self, aqmmm = {}, qmmm={}, qm={}, mm={}):
+    def __init__(self, aqmmm = {}, qmmm={}, qm={}, mm={}, simulation = {}):
 
         """
         Initializes system with None values for all parameters
@@ -145,6 +145,11 @@ class System(object):
             self.aqmmm_partition_scheme = aqmmm['aqmmm_partition_scheme']
         else:
             self.aqmmm_partition_scheme = 'distance'
+
+        if 'steps' in simulation:
+            self.steps = simulation['steps']
+        else:
+            self.steps = 1
     
 
         self.build_qm_param()
