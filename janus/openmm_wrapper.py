@@ -71,7 +71,7 @@ class OpenMM_wrapper(MM_wrapper):
 
     def get_main_info(self):
         
-        return OpenMM_wrapper.get_state_info(self.main_simulation)
+        return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
         
 
     def find_boundary_bonds(self, qm_atoms=None):
@@ -566,6 +566,7 @@ class OpenMM_wrapper(MM_wrapper):
         return simulation
 
     def get_state_info(simulation,
+                       main_info=False,
                        energy=True,
                        positions=True,
                        velocity=False,
@@ -632,6 +633,9 @@ class OpenMM_wrapper(MM_wrapper):
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
             values['gradients'] = (-1) * values['forces'] * MM_wrapper.kj_mol_nm_to_au_bohr   
 
+        if main_info is True:
+            # need to check if the topology actually updates 
+            values['topology'] = simulation.topology
         return values
 
     def keep_residues(model, residues):

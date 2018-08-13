@@ -62,7 +62,6 @@ class QMMM(object):
         self.boundary_info = mm_wrapper.get_boundary_info()
 
         # Get QM energy
-        # get QM positions from pdb
         if self.qm_positions is None:
             self.qm_positions = mm_wrapper.get_qm_positions() 
         self.qm = self.qm_wrapper.get_qm(self.qm_positions)
@@ -123,6 +122,7 @@ class QMMM(object):
                 print("Additive scheme needs some work and is not available yet") 
 
         if partition:
+            # update relevant info for each partition
             self.qm_positions = partition.qm_positions
             mm_wrapper._system.qm_atoms = partition.qm_atoms
 

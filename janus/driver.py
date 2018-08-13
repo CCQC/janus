@@ -9,6 +9,8 @@ from .psi4_wrapper import Psi4_wrapper
 from .mm_wrapper import MM_wrapper 
 from .openmm_wrapper import OpenMM_wrapper 
 from .qmmm import QMMM
+from .aqmmm import AQMMM
+from .oniom_xs import ONIOM_XS
 
 
 def load_system(filename):
@@ -43,8 +45,8 @@ def initialize_wrappers(system, aqmmm=False):
         return mm_wrapper, qm_wrapper
 
     if aqmmm is True:
-        if system.aqmmm_scheme == 'ONIOM_XS':
-            aqmmm = ONIOM_XS(system.aqmmm_partition_scheme, system.mm_pdb_file)
+        if system.aqmmm_scheme == 'ONIOM-XS':
+            aqmmm = ONIOM_XS(system.aqmmm, system.mm_pdb_file)
         else:
             print("Only ONIOM_XS currently implemented")
         
@@ -56,24 +58,20 @@ def run_adaptive(system):
     # initialize wrappers
     mm_wrapper, qm_wrapper = initialize_wrappers(system)
 
-    aqmm = initialize_wrappers(system, aqmmm=True)
+    aqmmm = initialize_wrappers(system, aqmmm=True)
 
-    # with openmm wrapper,
-    # this creates 2 openmm objects containing entire system
-    # one for computing forces and one for time step integration
-    # each individual mm_wrapper gets initial trajectory
+    qmmm = QMMM(qm_wrapper)
 
-
-    qmmm = QMMM(qm_wrapper, mm_wrapper)
+    # initialize mm_wrapper with information about initial system
+    mm_wrapper.initialize_system()
 
     for step in range(system.steps):
 
-        # get MM information for entire system
-        # main_info = mm_wrapper.get_main_info()
+        #get MM information for entire system
+        main_info = mm_wrapper.get_main_info()
 
-        # get the partitions for each qmmm computation
-        # the thing passed in will have positions for the trajectory to be updated
-        paritions = aqmmm.partition(entire_sys)
+        # main info will have positions and topology to update trajectory
+        paritions = aqmmm.partition(info=main_info)
         for partition in partitions:
             qmmm.get_info(system.qmmm_scheme, mm_wrapper, partitition=partition)
             aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
@@ -92,18 +90,12 @@ def run_qmmm(system):
     # initialize wrappers
     mm_wrapper, qm_wrapper = initialize_wrappers(system)
 
-
-    # with openmm wrapper,
-    # this creates 2 openmm objects containing entire system
-    # one for computing forces and one for time step integration
-    trajectory = mm_wrapper.initialize_system()
-
     qmmm = QMMM(qm_wrapper)
 
-    for step in range(system.steps):
+    # initialize mm_wrapper with information about initial system
+    mm_wrapper.initialize_system()
 
-        # get MM information for entire system
-        # main_info = mm_wrapper.get_main_info()
+    for step in range(system.steps):
 
         qmmm.get_info(system.qmmm_scheme, mm_wrapper)
             

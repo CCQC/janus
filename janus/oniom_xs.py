@@ -8,11 +8,14 @@ class ONIOM_XS(AQMMM):
         
         super().__init__(partition_scheme, trajectory, 'ONIOM-XS')
 
-    def partition(self, qm_center, info=None): 
+    def partition(self, qm_center=None, info=None): 
     
         # need to first update everything with info!
         if info is not None:
-            self.traj = info.traj
+            self.traj = self.update_traj(info['positions'], info['topology'])
+
+        if qm_center is None:
+            qm_center = self.qm_center
 
         self.define_buffer_zone(qm_center)
 

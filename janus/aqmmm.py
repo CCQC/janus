@@ -10,20 +10,43 @@ class AQMMM(ABC):
 
     nm_to_angstrom = 10.0000000
 
-    def __init__(self, partition_scheme, trajectory, scheme=None):
+    def __init__(self, parameters, pdb, scheme=None):
 
-        self.partition_scheme = partition_scheme
-        if self.partition_scheme == 'distance':
-            # from oniom-xs paper values are 0.38 and 0.4
-            self.Rmin = 0.38 # in nm
-            self.Rmax = 0.45 # in nm
-
-        self.traj = md.load(trajectory)
+        self.traj = md.load(pdb)
 
         # for now, need to define later
         #self.qm_center = None
         # this needs to be np.array
         self.partitions = {}
+
+        if 'aqmmm_scheme' in parameters:
+            self.aqmmm_scheme = parameters['aqmmm_scheme']
+        else: 
+            self.aqmmm_scheme = 'ONIOM-XS'
+
+        if 'aqmmm_partition_scheme' in parameters:
+            self.partition_scheme = parameters['aqmmm_partition_scheme']
+        else:
+            self.partition_scheme = 'distance'
+
+        if (self.partition_scheme == 'distance' and 'Rmin' in parameters):
+            # from oniom-xs paper values are 0.38 and 0.4
+            self.Rmin = parameters['Rmin']
+        else:
+            self.Rmin = 0.38 # in nm
+
+        if (self.partition_scheme == 'distance' and 'Rmax' in parameters):
+            # from oniom-xs paper values are 0.38 and 0.4
+            self.Rmax = parameters['Rmax']
+        else:
+            self.Rmax = 0.45 
+        
+        if 'qm_center' in parameters:
+            self.qm_center = parameters['qm_center']
+        else:
+        # this does not include options of computing the qm center with the program - 
+        # might need this functionality later
+            self.qm_center = [0]
 
     def save(self, ID, qmmm_forces, qmmm_energy):
         # find the appropriate partition object to save to
@@ -34,7 +57,7 @@ class AQMMM(ABC):
     def define_buffer_zone(self, qm_center):
         # qm_center needs to be in list form
         self.qm_center = qm_center
-        self.qm_center_xyz = self.traj.xyz[0][qm_center[0]]
+        self.qm_center_xyz = self.traj.xyz[0][qm_center]
 
         if self.partition_scheme == 'distance': 
 #            self.traj.xyz = positions
@@ -119,6 +142,13 @@ class AQMMM(ABC):
         #        out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
         return out
 
+    def update_traj(position, topology):
+        
+        # later can think about saving instead of making new instance
+    
+        # convert openmm topology to mdtraj topology
+        top = md.Topology.from_openmm(topology)
+        return md.Trajectory(position, topology)
 
     def get_Rmin(self):
         return self.Rmin

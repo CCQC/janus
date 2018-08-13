@@ -127,30 +127,26 @@ class System(object):
         # default integrator in openmm is the langevin integrator
     
         if 'boundary_treatment' in qmmm:
-            self.boundary_treatment == qmmm['boundary_treatment']
+            self.boundary_treatment = qmmm['boundary_treatment']
         else:
             self.boundary_treatment = 'link_atom'
 
         if 'link_atom' in qmmm:
-            self.link_atom == qmmm['link_atom']
+            self.link_atom = qmmm['link_atom']
         elif self.boundary_treatment == 'link_atom':
             self.link_atom = 'H'
 
-        if 'aqmmm_scheme' in aqmmm:
+        if 'aqmmm_scheme' is aqmmm:
             self.aqmmm_scheme = aqmmm['aqmmm_scheme']
-        else: 
-            self.aqmmm_scheme = 'ONIOM-XS'
-
-        if 'aqmmm_partition_scheme' in aqmmm:
-            self.aqmmm_partition_scheme = aqmmm['aqmmm_partition_scheme']
         else:
-            self.aqmmm_partition_scheme = 'distance'
+            self.aqmmm_scheme = 'ONIOM-XS'
 
         if 'steps' in simulation:
             self.steps = simulation['steps']
         else:
             self.steps = 1
-    
+        
+        self.aqmmm = aqmmm
 
         self.build_qm_param()
 
