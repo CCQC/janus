@@ -52,6 +52,7 @@ class QMMM(object):
         """
 
         # Get MM energy on whole system
+        # should be updating as we go
         self.entire_sys = mm_wrapper.main_info
 
         # Get MM energy on QM region
@@ -89,7 +90,7 @@ class QMMM(object):
                 # compute the qmmm gradient for the qm atoms: 
                 # mm_entire - mm_primary - qm
                 qmmm_force[atom] = np.zeros(3)
-                # assume these are gradients not forces
+                # these are in units of au_bohr, convert to openmm units in openmm wrapper
                 qmmm_force[atom] += -1 * (- ps_mm_grad[i] + qm_grad[i])
                 
                 # treating gradients for link atoms

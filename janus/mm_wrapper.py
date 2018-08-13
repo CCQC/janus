@@ -9,6 +9,7 @@ class MM_wrapper(ABC):
     nm_to_angstrom = 10.0000000
     nm_to_bohr = 0.052917999999 
     kj_mol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
+    au_bohr_to_kj_mol_nm = 1/kj_mol_nm_to_au_bohr
 
     def __init__(self, system, program):
         
