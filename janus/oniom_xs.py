@@ -20,7 +20,7 @@ class ONIOM_XS(AQMMM):
         self.define_buffer_zone(qm_center)
 
         qm = Partition(indices=self.qm_atoms, ID='qm')
-        qm.positions = self.get_qm_positions(qm.qm_atoms)
+        qm.qm_positions = self.get_qm_positions(qm.qm_atoms)
         self.partitions[qm.ID] = qm 
 
         # the following only runs if there are groups in the buffer zone
@@ -28,11 +28,10 @@ class ONIOM_XS(AQMMM):
             qm_bz = Partition(indices=self.qm_atoms, ID='qm_bz')
             for key, value in self.buffer_groups.items():
                 for idx in value:
-                    if idx not in qm_bz.qm_atoms:
-                        qm_bz.qm_atoms.append(idx)
+                    qm_bz.qm_atoms.append(idx)
 
                 
-            qm_bz.positions = self.get_qm_positions(qm_bz.qm_atoms)
+            qm_bz.qm_positions = self.get_qm_positions(qm_bz.qm_atoms)
             # each partition has a copy of its buffer groups - 
             # good for later when there are multiple partitions with all different
             # buffer groups
@@ -40,7 +39,6 @@ class ONIOM_XS(AQMMM):
 
             self.partitions[qm_bz.ID] = qm_bz
 
-        print(self.partitions)
         return self.partitions
 
     def get_info(self):
@@ -53,47 +51,45 @@ class ONIOM_XS(AQMMM):
 
         else:
             qm_bz = self.partitions['qm_bz'] 
-            print('qm_bz', qm_bz)
-            lamda = self.get_switching_function(qm_bz)
-            print('qm_energy', qm.energy)
-            print('qm_energy', qm_bz.energy)
-            print('lamda', lamda)
+            lamda, d_lamda = self.get_switching_function(qm_bz)
             self.energy = lamda*qm.energy + (1-lamda)*qm_bz.energy
+
+            print('qm forces', qm.forces)
+            print('qm_bz forces', qm_bz.forces)
             # needs work!
-            #self.forces = lamda*qm.forces + (1-lamda)*qm.forces + d_lamda*(qm.energy - qm_bz.energy)
-            self.forces = None
-        print(self.energy)
+            print('need to add in d_lamda term for forces')
+            self.forces = {}
+            for f, coord in qm_bz.forces.items():
+                if f in qm.forces:
+                    self.forces[f] = (1-lamda)*coord + lamda*qm.forces[f] 
+                else: 
+                    self.forces[f] = (1-lamda)*coord
+        
+        
 
         return self.forces
 
     def get_switching_function(self, partition):
 
         s = 0.0
-        #d_s = 0.0
+        d_s = 0.0
         partition.switching_functions = []
         if partition.buffer_groups:
             for key, value in partition.buffer_groups.items():
-                print('value', value)
                 positions = self.get_qm_positions(value, as_string=False)
                 COM = partition.compute_COM(positions)
-                print('com', COM)
-                print('center_xyz', self.qm_center_xyz)
 
                 r_i = np.linalg.norm(COM - self.qm_center_xyz)
-                print('r_i', r_i)
                 s_i, d_s_i = self.compute_lamda_i(r_i)
                 partition.switching_functions.append(s_i)
                 s += s_i
                 #d_s += d_s_i
                 
-                print("current s",s)
             #print(" s",s)
             s *= 1/len(partition.switching_functions)
-            print('len', len(partition.switching_functions))
             print(partition.switching_functions)
-            print("final s", s)
         #d_s *= 1/len(partition.switching_functions)
-        return s #, d_s
+        return s, d_s
             
 
     def compute_lamda_i(self, r_i):

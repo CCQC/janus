@@ -80,6 +80,8 @@ class QMMM(object):
         if scheme == 'subtractive':
 
             ps_mm_grad, qm_grad = self.primary_subsys['gradients'], self.qm['gradients']
+            print('mm gradients', ps_mm_grad)
+            print('qm gradients', qm_grad)
             #qmmm_grad = np.zeros((len(all_mm_grad),3))
             qmmm_force = {}
                 
@@ -125,6 +127,7 @@ class QMMM(object):
             # update relevant info for each partition
             self.qm_positions = partition.qm_positions
             mm_wrapper._system.qm_atoms = partition.qm_atoms
+            self.qm_atoms = partition.qm_atoms
 
             if scheme =='subtractive':
 

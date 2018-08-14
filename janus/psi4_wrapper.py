@@ -15,12 +15,11 @@ class Psi4_wrapper(QM_wrapper):
         self._gradient = None
 
     def qm_info(self, qm_positions):
-        if not self._system.qm_positions:
+        if qm_positions:
             self._system.qm_positions = qm_positions
-        if self._energy is None:
-            self.get_energy() 
-        if self._gradient is None:
-            self.get_gradient()
+
+        self.get_energy() 
+        self.get_gradient()
         self._qm['energy'] = self._energy
         self._qm['gradients'] = self._gradient
 

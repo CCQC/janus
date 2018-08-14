@@ -3,27 +3,33 @@ from copy import deepcopy
 
 class HOT_SPOT(AQMMM):
 
-    def __init__(self):
+    def __init__(self, partition_scheme, trajectory):
         
-        super().__init__(partition_scheme, trajectory=None)
+        super().__init__(partition_scheme, trajectory, 'Hot-Spot')
 
-    def partition(self, info): 
-
-        # need to first update everything with info!
+    def partition(self, qm_center=None, info=None): 
     
-        self.define_buffer_zone()
+        # need to first update everything with info!
+        if info is not None:
+            self.update_traj(info['positions'], info['topology'])
 
-        qm = Partition(indices=self.rmin_atoms, ID='qm')
+        if qm_center is None:
+            qm_center = self.qm_center
+
+        self.define_buffer_zone(qm_center)
+
+        qm = Partition(indices=self.qm_atoms, ID='qm')
         qm.positions = self.get_qm_positions(qm.qm_atoms)
         self.partitions[qm.ID] = qm 
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
-            qm_bz = Partition(indices=self.rmin_atoms, ID='qm_bz')
+            qm_bz = Partition(indices=self.qm_atoms, ID='qm_bz')
             for key, value in self.buffer_groups.items():
                 for idx in value:
                     qm_bz.qm_atoms.append(idx)
-        
+
+                
             qm_bz.positions = self.get_qm_positions(qm_bz.qm_atoms)
             # each partition has a copy of its buffer groups - 
             # good for later when there are multiple partitions with all different

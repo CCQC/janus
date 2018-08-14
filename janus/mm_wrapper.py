@@ -95,9 +95,8 @@ class MM_wrapper(ABC):
         -------
         Dictionary with relevant information
         """
+        self.primary_subsys_info(link, coulomb)
 
-        if not self._primary_subsys:
-            self.primary_subsys_info(link, coulomb)
         return self._primary_subsys
     
     def get_entire_sys(self, coulomb=True):

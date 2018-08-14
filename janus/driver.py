@@ -74,8 +74,8 @@ def run_adaptive(system):
         partitions = aqmmm.partition(info=main_info)
 
         for i, partition in partitions.items():
-            print(partition.qm_atoms)
             qmmm.get_info(system.qmmm_scheme, mm_wrapper, partition=partition)
+            print('the saved forces', qmmm.qmmm_forces)
             aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
             
         # get aqmmm forces 
@@ -84,6 +84,7 @@ def run_adaptive(system):
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 
         # getting it on the correct one
+        print(forces)
         mm_wrapper.take_step(force=forces)
 
 def run_qmmm(system):

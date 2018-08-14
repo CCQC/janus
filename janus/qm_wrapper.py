@@ -26,6 +26,5 @@ class QM_wrapper(ABC):
         -------
         A dictionary with energy and gradient information
         """
-        if not self._qm:
-            self.qm_info(qm_positions)
+        self.qm_info(qm_positions)
         return self._qm 
