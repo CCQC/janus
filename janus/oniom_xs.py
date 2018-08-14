@@ -12,7 +12,7 @@ class ONIOM_XS(AQMMM):
     
         # need to first update everything with info!
         if info is not None:
-            self.traj = self.update_traj(info['positions'], info['topology'])
+            self.update_traj(info['positions'], info['topology'])
 
         if qm_center is None:
             qm_center = self.qm_center
@@ -22,7 +22,6 @@ class ONIOM_XS(AQMMM):
         qm = Partition(indices=self.qm_atoms, ID='qm')
         qm.positions = self.get_qm_positions(qm.qm_atoms)
         self.partitions[qm.ID] = qm 
-        #print(qm.qm_atoms)
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
@@ -32,8 +31,6 @@ class ONIOM_XS(AQMMM):
                     if idx not in qm_bz.qm_atoms:
                         qm_bz.qm_atoms.append(idx)
 
-            #print(qm.qm_atoms)
-            #print(qm_bz.qm_atoms)
                 
             qm_bz.positions = self.get_qm_positions(qm_bz.qm_atoms)
             # each partition has a copy of its buffer groups - 
@@ -43,6 +40,7 @@ class ONIOM_XS(AQMMM):
 
             self.partitions[qm_bz.ID] = qm_bz
 
+        print(self.partitions)
         return self.partitions
 
     def get_info(self):

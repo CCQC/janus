@@ -60,7 +60,7 @@ class OpenMM_wrapper(MM_wrapper):
         for f, coord in force.items():
             # need to figure out if the first 2 parameters always the same or not
             # convert this back to openmm units
-            coord *= MM_wrapper.au_bohr_to_jk_mol_nm
+            coord *= MM_wrapper.au_bohr_to_kj_mol_nm
             self.qmmm_force.setParticleParameters(f, f, coord)
 
         self.qmmm_force.updateParametersInContext(self.main_simulation.context)

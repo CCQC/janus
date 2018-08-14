@@ -66,19 +66,27 @@ class AQMMM(ABC):
             self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
             self.qm_atoms = rmin_atoms[0].tolist()
             self.qm_atoms.append(qm_center[0])
-            self.qm_atoms.sort()
         
         top = self.traj.topology
-        # remove any hydrogens that have oxygen outside of qm region from qm region
-        # if oxygen in buffer zone, it will be added back in
+        residues = [] 
         for i in self.qm_atoms:
-            if (top.atom(i).residue.is_water and top.atom(i).element.symbol == 'H'):
-                idx = top.atom(i).residue.index
-                for a in top.residue(idx).atoms:
-                    if (a.element.symbol =='O' and a.index not in self.qm_atoms):
-                        self.qm_atoms.remove(top.atom(i).index)
-            
+            idx = top.atom(i).residue.index
+            if idx not in residues:
+                residues.append(idx)
+                res = top.residue(idx)
+            ## remove any hydrogens that have oxygen outside of qm region from qm region
+                if res.is_water:
+                    if top.atom(i).element.symbol == 'O':
+                        for a in res.atoms:
+                            if (a.element.symbol =='H' and a.index not in self.qm_atoms):
+                                self.qm_atoms.append(a.index)
+                    elif top.atom(i).element.symbol == 'H':
+                        for a in res.atoms:
+                            if (a.element.symbol =='O' and a.index not in self.qm_atoms):
+                                self.qm_atoms.remove(i)
 
+        self.qm_atoms.sort()
+            
         # for adding identifying water buffer groups
         groups = {}
 
@@ -142,13 +150,12 @@ class AQMMM(ABC):
         #        out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
         return out
 
-    def update_traj(position, topology):
+    def update_traj(self, position, topology):
         
         # later can think about saving instead of making new instance
-    
         # convert openmm topology to mdtraj topology
         top = md.Topology.from_openmm(topology)
-        return md.Trajectory(position, topology)
+        self.traj = md.Trajectory(position, top)
 
     def get_Rmin(self):
         return self.Rmin

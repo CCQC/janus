@@ -71,9 +71,11 @@ def run_adaptive(system):
         main_info = mm_wrapper.get_main_info()
 
         # main info will have positions and topology to update trajectory
-        paritions = aqmmm.partition(info=main_info)
-        for partition in partitions:
-            qmmm.get_info(system.qmmm_scheme, mm_wrapper, partitition=partition)
+        partitions = aqmmm.partition(info=main_info)
+
+        for i, partition in partitions.items():
+            print(partition.qm_atoms)
+            qmmm.get_info(system.qmmm_scheme, mm_wrapper, partition=partition)
             aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
             
         # get aqmmm forces 

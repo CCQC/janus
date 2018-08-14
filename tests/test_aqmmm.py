@@ -49,7 +49,7 @@ def test_partition():
     oxs_1.partition([0])
     oxs_2.partition([0])
 
-    assert np.allclose(oxs.partitions['qm'].qm_atoms, np.array([0, 1, 2, 3, 4, 5, 6, 7]))
+    assert np.allclose(oxs.partitions['qm'].qm_atoms, np.array([0, 1, 2, 3, 4, 5, 6, 7,8]))
     assert np.allclose(oxs_0.partitions['qm'].qm_atoms, np.array([0, 1, 2]))
     assert np.allclose(oxs_1.partitions['qm'].qm_atoms, np.array([0, 1, 2]))
     assert np.allclose(oxs_1.partitions['qm_bz'].qm_atoms, np.array([0, 1, 2, 3, 4, 5]))
