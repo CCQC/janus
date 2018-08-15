@@ -1,7 +1,9 @@
 from .aqmmm import AQMMM
+from .system import Partition
+import numpy as np
 from copy import deepcopy
 
-class HOT_SPOT(AQMMM):
+class HotSpot(AQMMM):
 
     def __init__(self, partition_scheme, trajectory):
         
@@ -19,24 +21,18 @@ class HOT_SPOT(AQMMM):
         self.define_buffer_zone(qm_center)
 
         qm = Partition(indices=self.qm_atoms, ID='qm')
-        qm.positions = self.get_qm_positions(qm.qm_atoms)
-        self.partitions[qm.ID] = qm 
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
-            qm_bz = Partition(indices=self.qm_atoms, ID='qm_bz')
+
+            qm.buffer_groups = self.buffer_groups
+
             for key, value in self.buffer_groups.items():
                 for idx in value:
-                    qm_bz.qm_atoms.append(idx)
-
+                    qm.qm_atoms.append(idx)
                 
-            qm_bz.positions = self.get_qm_positions(qm_bz.qm_atoms)
-            # each partition has a copy of its buffer groups - 
-            # good for later when there are multiple partitions with all different
-            # buffer groups
-            qm_bz.buffer_groups = self.buffer_groups
-
-            self.partitions[qm_bz.ID] = qm_bz
+        qm.positions = self.get_qm_positions(qm.qm_atoms)
+        self.partitions[qm.ID] = qm 
 
         return self.partitions
 
@@ -50,30 +46,31 @@ class HOT_SPOT(AQMMM):
             self.forces = qm.forces
 
         else:
-            qm_bz = self.partitions['qm_bz'] 
-            self.get_switching_function(qm_bz)
+            self.get_switching_function(qm)
             
             # make sure this is deepcopied
-            self.forces = deepcopy(qm_bz.forces)
+            self.forces = deepcopy(qm.forces)
+            print(self.forces)
             # counter for keeping track of lamda_i
             i = 0
             for key, value in self.buffer_groups.items():
                 for idx in value: 
-                    self.forces[idx] *= switching_functions[i]
-                    self.forces[idx] += (1 - switching_functions[i])*qm.forces[idx]
+                    self.forces[idx] *= qm.switching_functions[i]
                 i += 1
 
         return self.forces
 
     def get_switching_function(self, partition):
 
-        for key, value in self.buffer_groups.items():
-            positions = self.get_qm_positions(value, as_string=False)
-            COM = partition.compute_COM(positions)
+        partition.switching_functions = []
+        if partition.buffer_groups:
+            for key, value in self.buffer_groups.items():
+                positions = self.get_qm_positions(value, as_string=False)
+                COM = partition.compute_COM(positions)
 
-            r_i = COM - self.qm_center_xyz
-            lamda_i = self.compute_lamda_i(r_i)
-            partition.switching_functions.append(lamda_i)
+                r_i = np.linalg.norm(COM - self.qm_center_xyz)
+                lamda_i = self.compute_lamda_i(r_i)
+                partition.switching_functions.append(lamda_i)
             
 
     def compute_lamda_i(self, r_i):

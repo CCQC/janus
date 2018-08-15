@@ -64,8 +64,6 @@ class ONIOM_XS(AQMMM):
                     self.forces[f] = (1-lamda)*coord + lamda*qm.forces[f] 
                 else: 
                     self.forces[f] = (1-lamda)*coord
-        
-        
 
         return self.forces
 
