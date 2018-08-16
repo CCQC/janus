@@ -35,37 +35,6 @@ class System(object):
         """
 
 
-        if 'mm_pdb_file' in mm:
-            self.mm_pdb_file = mm['mm_pdb_file']
-        if 'mm_forcefield' in mm:
-            self.mm_ff = mm['mm_forcefield']
-        else:
-            self.mm_ff = 'amber99sb.xml' 
-        if 'mm_forcefield_water' in mm:
-            self.mm_ff_water = mm['mm_forcefield_water']
-        else:
-            self.mm_ff_water = 'tip3p.xml'
-
-        #need to tinker with these and figure out if specific to openmm
-        if 'mm_nonbond_method' in mm:
-            self.mm_nonbond_method = mm['mm_nonbond_method']
-        if 'mm_nonbond_cutoff' in mm:
-            self.mm_nonbond_cutoff = mm['mm_nonbond_cutoff']
-        if 'mm_constraints' in mm:
-            self.mm_constraints = mm['mm_constraints']
-
-        if 'mm_temp' in mm:
-            self.mm_temp = mm['mm_temp']
-        else:
-            self.mm_temp = float(300)
-        if 'mm_fric_coeff' in mm:
-            self.mm_fric_coeff = mm['mm_fric_coeff']
-        else:
-            self.mm_fric_coeff = float(1)
-        if 'mm_step_size' in mm:
-            self.mm_step_size = mm['mm_step_size']
-        else: 
-            self.mm_step_size = float(0.002)
 
         if 'scheme' in qmmm:
             self.qmmm_scheme = qmmm['scheme']

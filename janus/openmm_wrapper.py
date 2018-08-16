@@ -2,9 +2,15 @@ import simtk.openmm.app as OM_app
 import simtk.openmm as OM
 import simtk.unit as OM_unit
 from .mm_wrapper import MM_wrapper
-import mdtraj as md
 import numpy as np
 from copy import deepcopy
+        '''
+        MOVE FIND BOUNDARY BONDS TO QMMM
+        PREPARE LINK_ATOM TO QMMM
+        THINK ABOUT HOW REDO PRIMARY SUBSYS INFO- determine link atom in qmmm
+        RENAME
+        MOVE QM positions to QMMM
+        '''
 
 """
 This module is a wrapper that calls OpenMM
@@ -13,46 +19,83 @@ to obtain MM information
 
 class OpenMM_wrapper(MM_wrapper):
 
-    def __init__(self, system):
+    def __init__(self, config):
 
         # OpenMM_wrapper class inherits from MM_wrapper super class
-        super().__init__(system, "OpenMM")
+        super().__init__(config, "OpenMM")
 
-        self._pdb = OpenMM_wrapper.create_pdb(self._system.mm_pdb_file)
-        self._positions = self._pdb.getPositions(asNumpy=True)/OM_unit.nanometer
+        if 'mm_forcefield' in config:
+            self.ff = config['mm_forcefield']
+        else:
+            self.ff = 'amber99sb.xml' 
+
+        if 'mm_forcefield_water' in config:
+            self.ff_water = config['mm_forcefield_water']
+        else:
+            self.ff_water = 'tip3p.xml'
+
+        #need to tinker with these and figure out if specific to openmm
+        if 'mm_nonbond_method' in config:
+            self.nonbond_method = config['mm_nonbond_method']
+        else:
+            self.nonbond_method=OM_app.NoCutoff
+            
+        if 'mm_nonbond_cutoff' in config:
+            self.nonbond_cutoff = config['mm_nonbond_cutoff']
+        else:
+            self.nonbond_cutoff = 1*OM_unit.nanometer
+
+        if 'mm_constraints' in config:
+            self.constraints = config['mm_constraints']
+        else:
+            self.constraints = OM_app.HBonds
+
+        if 'is_periodic' in config:
+            self.is_periodic = config['is_periodic']
+        else:
+            self.is_periodic is False
+
+
+        if 'mm_fric_coeff' in config:
+            self.fric_coeff = config['mm_fric_coeff']
+        else:
+            self.fric_coeff = 1/OM_unit.picosecond
+
+        self.temp*OM_unit.kelvin
+        self.step_size*OM_unit.picoseconds
+
+
+        self.pdb = OpenMM_wrapper.create_pdb(self.pdb_file)
+        self.positions = self.pdb.getPositions(asNumpy=True)/OM_unit.nanometer
         # self._positions *= MM_wrapper.nm_to_angstrom
 
-        self._primary_subsys_modeller = None
-        self._second_subsys_modeller = None
+        self.primary_subsys_modeller = None
+        self.second_subsys_modeller = None
 
-        self._boundary['entire_sys'] = {}
-        self._boundary['second_subsys'] = {}
-        self._boundary['primary_subsys'] = {}
+        self.boundary['entire_sys'] = {}
+        self.boundary['second_subsys'] = {}
+        self.boundary['primary_subsys'] = {}
 
         # save forcefield object
-        self._ff = OM_app.ForceField(self._system.mm_ff, self._system.mm_ff_water)
+        self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
 
         # find if there are any bonds that are cut across the QM/MM boundary
-        self._boundary_bonds = self.find_boundary_bonds()
 
-        if self._boundary_bonds:
-            # Get info for adding link atom to primary subsystem
-            if self._system.boundary_treatment == 'link_atom':
-                self.prepare_link_atom()
-            # Get info for adding link atom according to RC or RCD scheme
-            if self._system.boundary_treatment == 'RC' or self._system.boundary_treatment == 'RCD':
-                self.prepare_link_atom(RC=True)
+        #self._boundary_bonds = self.find_boundary_bonds()
+
+        #if self._boundary_bonds:
+        #    # Get info for adding link atom to primary subsystem
+        #    if self._system.boundary_treatment == 'link_atom':
+        #        self.prepare_link_atom()
+        #    # Get info for adding link atom according to RC or RCD scheme
+        #    if self._system.boundary_treatment == 'RC' or self._system.boundary_treatment == 'RCD':
+        #        self.prepare_link_atom(RC=True)
 
 
     def initialize_system(self):
 
         self.main_OM_system, self.main_simulation, self.main_info =\
-        self.get_info(self._pdb, initialize=True, charges=True, get_coulomb=True)
-
-       # # return a MDtraj trajectory object
-       # # I don't know if putting these positions and topology is okay or wait until minimize system- 
-       # # should I always minimize or always not minimize?
-       # return md.Trajectory(self._positions, self._pdb.topology)
+        self.get_info(self.pdb, initialize=True, charges=True, get_coulomb=True)
 
 
     def take_step(self, force):
@@ -66,7 +109,7 @@ class OpenMM_wrapper(MM_wrapper):
         self.qmmm_force.updateParametersInContext(self.main_simulation.context)
         self.main_simulation.step(1)
         self.main_info = self.get_main_info()
-        self._positions = self.main_info['positions']
+        self.positions = self.main_info['positions']
     
 
     def get_main_info(self):
@@ -136,8 +179,8 @@ class OpenMM_wrapper(MM_wrapper):
         entire_sys_info()
         entire_sys_info(coulomb=False)
         """
-        self._entire_sys_system, self._entire_sys_simulation, self._entire_sys =\
-        self.get_info(self._pdb, charges=True, get_coulomb=coulomb)
+        self.entire_sys_system, self.entire_sys_simulation, self.entire_sys =\
+        self.get_info(self.pdb, charges=True, get_coulomb=coulomb)
 
     def second_subsys_info(self, coulomb=True):
         """
@@ -159,9 +202,9 @@ class OpenMM_wrapper(MM_wrapper):
         second_subsys_info()
         second_subsys_info(coulomb=False)
         """
-        self._second_subsys_modeller = self.create_modeller(keep_qm=False)
-        self._second_subsys_system, self._second_subsys_simulation, self._second_subsys =\
-        self.get_info(self._second_subsys_modeller, charges=True, get_coulomb=coulomb)
+        self.second_subsys_modeller = self.create_modeller(keep_qm=False)
+        self.second_subsys_system, self.second_subsys_simulation, self.second_subsys =\
+        self.get_info(self.second_subsys_modeller, charges=True, get_coulomb=coulomb)
 
     def primary_subsys_info(self, link=False, coulomb=True):
         """
@@ -186,10 +229,9 @@ class OpenMM_wrapper(MM_wrapper):
         primary_subsys_info(coulomb=False)
         """
 
-        self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
+        self.primary_subsys_modeller = self.create_modeller(keep_qm=True)
 
         if link is True and self._boundary_bonds:
-            #print('link is true')
             if self._system.boundary_treatment == 'link_atom':
                 # this structure only working for adding one link atom for now. 
                 # NOT FUNCTIONAL FOR more than 1 link atom!!!!!!!!
@@ -329,6 +371,9 @@ class OpenMM_wrapper(MM_wrapper):
             OM_system = self.create_openmm_system(pdb)
 
 
+        '''
+        NEED OUTER LAYER FOR THIS
+        '''
         # If in electrostatic embedding scheme need to get a system without coulombic interactions
         if self._system.embedding_method=='Electrostatic' and get_coulomb is False:
             # get the nonbonded force
@@ -404,10 +449,6 @@ class OpenMM_wrapper(MM_wrapper):
 
 
     def create_openmm_system(self, pdb, initialize=False,
-                             nonbond=OM_app.NoCutoff, 
-                             nonbond_cutoff=1*OM_unit.nanometer,
-                             periodic=False,
-                             cnstrnts=OM_app.HBonds,
                              residue={}):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
@@ -441,18 +482,18 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         # check to see if there are unmatched residues in pdb, create residue templates if there are
-        unmatched = self._ff.getUnmatchedResidues(pdb.topology)
+        unmatched = self.forcefield.getUnmatchedResidues(pdb.topology)
         if unmatched:
             self.create_new_residue_template(pdb.topology)
 
-        if periodic is True:
-            openmm_system = self._ff.createSystem(pdb.topology,
-                                            constraints=cnstrnts)
+        if self.is_periodic is True:
+            openmm_system = self.forcefieldcreateSystem(pdb.topology,
+                                            constraints=self.constraints)
         else:
-            openmm_system = self._ff.createSystem(pdb.topology,
-                                            nonbondedMethod=nonbond,
-                                            nonbondedCutoff=nonbond_cutoff,
-                                            constraints=cnstrnts,
+            openmm_system = self.forcefield.createSystem(pdb.topology,
+                                            nonbondedMethod=self.nonbond_method,
+                                            nonbondedCutoff=self.nonbond_cutoff,
+                                            constraints=self.contraints,
                                             residueTemplates=residue,
                                             ignoreExternalBonds=False)
 
@@ -555,11 +596,8 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         # The following need to be set as writable options 
-        temp = 300*OM_unit.kelvin
-        fric = 1/OM_unit.picosecond
-        size = 0.002*OM_unit.picoseconds
 
-        integrator = OM.LangevinIntegrator(temp, fric, size)
+        integrator = OM.LangevinIntegrator(self.temp, self.fric_coefficient, self.step_size)
         simulation = OM_app.Simulation(pdb.topology, openmm_system, integrator)
         simulation.context.setPositions(pdb.positions)
 

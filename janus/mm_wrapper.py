@@ -8,19 +8,29 @@ class MM_wrapper(ABC):
     kjmol_to_au = 1/2625.5002 
     nm_to_angstrom = 10.0000000
     nm_to_bohr = 0.052917999999 
-    kj_mol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
-    au_bohr_to_kj_mol_nm = 1/kj_mol_nm_to_au_bohr
+    kjmol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
+    au_bohr_to_kjmol_nm = 1/kjmol_nm_to_au_bohr
 
-    def __init__(self, system, program):
+    def __init__(self, config, program):
+
+        self.pdb_file = config['mm_pdb_file']
+
+        if 'mm_temp' in config:
+            self.temp = config['mm_temp']
+        else:
+            self.temp = float(300)
+
+        if 'mm_step_size' in config:
+            self.step_size = config['mm_step_size']
+        else: 
+            self.step_size = float(0.002)
         
-        self._program = program
-        self._system = system
-        self._second_subsys = {}
-        self._primary_subsys = {}
-        self._entire_sys = {}
-        self._boundary = {} 
-        self._boundary['energy'] = None
-        self._qm_positions = None
+        self.program = program
+        self.second_subsys = {}
+        self.primary_subsys = {}
+        self.entire_sys = {}
+        self.boundary = {} 
+        self.boundary['energy'] = None
         self.link_atoms = {}
 
         super().__init__()
@@ -62,6 +72,9 @@ class MM_wrapper(ABC):
 #    def make_zero_energy(self):
 #        pass
 
+'''
+NEED TO RENAME ALL
+'''
     def get_second_subsys(self, coulomb=True):
         """
         Gets the information (energy, position, forces) for the secondary subsystem only.
