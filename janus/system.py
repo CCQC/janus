@@ -34,46 +34,6 @@ class System(object):
         method = System.qm_method()
         """
 
-        if 'qm_basis_set' in qm:
-            self.qm_basis_set = qm['qm_basis_set']
-        else: 
-            self.qm_basis_set = 'STO-3G'
-        if 'qm_scf_type' in qm:
-            self.qm_scf_type = qm['qm_scf_type']
-        else:
-            self.qm_scf_type = 'df'
-        if 'qm_guess' in qm:
-            self.qm_guess = qm['qm_guess']
-        else:
-            self.qm_guess = 'sad'
-        if 'qm_reference' in qm:
-            self.qm_reference = qm['qm_reference']
-        else: 
-            self.qm_reference = 'rhf'
-        if 'qm_e_convergence' in qm: 
-            self.qm_e_convergence = qm['qm_e_convergence']
-        else:
-            self.qm_e_convergence = 1e-8
-        if 'qm_d_convergence' in qm: 
-            self.qm_d_convergence = qm['qm_d_convergence']
-        else:
-            self.qm_d_convergence = 1e-8
-        if 'qm_method' in qm:
-            self.qm_method = qm['qm_method']
-        else:
-            self.qm_method = 'scf'
-        if 'qm_atoms' in qm:
-            self.qm_atoms = qm['qm_atoms']
-        else:
-            self.qm_atoms = []
-        if 'qm_residues' in qm:
-            self.qm_residues = qm['qm_residues']
-        else:
-            self.qm_residues = []
-        if 'qm_charge_method' in qm:
-            self.qm_charge_method = qm['qm_charge_method']
-        else: 
-            self.qm_charge_method = 'MULLIKEN_CHARGES'
 
         if 'mm_pdb_file' in mm:
             self.mm_pdb_file = mm['mm_pdb_file']
@@ -158,19 +118,6 @@ class System(object):
         self.qm_positions = None
         self.boundary_info = {}
 
-    def build_qm_param(self):
-        '''
-        Builds a dictionary of QM parmeters from input options
-        '''
-        qm_param = {}
-        qm_param['basis'] = self.qm_basis_set
-        qm_param['scf_type'] = self.qm_scf_type
-        qm_param['guess'] = self.qm_guess
-        qm_param['reference'] = self.qm_reference
-        qm_param['e_convergence'] = self.qm_e_convergence
-        qm_param['d_convergence'] = self.qm_d_convergence
-        
-        self.qm_param = qm_param
 
         
     def get_link_atom_position(self, qm_position, mm_position, g):
