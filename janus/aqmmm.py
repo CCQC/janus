@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import mdtraj as md
 import numpy as np
+from .qmmm import QMMM
 
 """
 AQMMM class for adaptive QMMM computations
 """
-class AQMMM(ABC):
+class AQMMM(ABC, QMMM):
 
     nm_to_angstrom = 10.0000000
 
