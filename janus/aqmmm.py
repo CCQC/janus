@@ -12,7 +12,7 @@ class AQMMM(ABC, QMMM):
     nm_to_angstrom = 10.0000000
 
     def __init__(self, config, qm_wrapper, scheme=None):
-        QMMM.__init__(config, qm_wrapper)
+        super().__init__(config, qm_wrapper)
 
 
         # for now, need to define later
@@ -48,6 +48,15 @@ class AQMMM(ABC, QMMM):
         # this does not include options of computing the qm center with the program - 
         # might need this functionality later
             self.qm_center = [0]
+
+    def run_qmmm():
+        # main info will have positions and topology to update trajectory
+        #put partitions internally!!!
+       # partitions = qmmm.partition(info=main_info)
+
+       # for i, partition in partitions.items():
+       # super.run_qmmm(system.qmmm_scheme, mm_wrapper, partition=partition)
+       #     aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
 
     def save(self, ID, qmmm_forces, qmmm_energy):
         # find the appropriate partition object to save to

@@ -42,6 +42,32 @@ class QMMM(object):
         else:
             self.link_atom_element = 'H'
 
+    def run_qmmm():
+       # def get_info(self, scheme, mm_wrapper, partition=None):
+
+       #     if not partition:
+       #         if scheme =='subtractive':
+
+       #             self.subtractive(mm_wrapper)
+       #             self.compute_gradients(scheme='subtractive')
+       #             
+       #         if scheme == 'additive':
+       #             print("Additive scheme needs some work and is not available yet") 
+
+       #     if partition:
+       #         # update relevant info for each partition
+       #         self.qm_positions = partition.qm_positions
+       #         mm_wrapper._system.qm_atoms = partition.qm_atoms
+       #         self.qm_atoms = partition.qm_atoms
+
+       #         if scheme =='subtractive':
+
+       #             self.subtractive(mm_wrapper)
+       #             self.compute_gradients(scheme='subtractive')
+       #             
+       #         if scheme == 'additive':
+       #             print("Additive scheme needs some work and is not available yet") 
+            
         
     def additive(self, mm_wrapper):
         """
@@ -142,31 +168,6 @@ class QMMM(object):
 
             self.qmmm_forces = qmmm_force
         
-    def get_info(self, scheme, mm_wrapper, partition=None):
-
-        if not partition:
-            if scheme =='subtractive':
-
-                self.subtractive(mm_wrapper)
-                self.compute_gradients(scheme='subtractive')
-                
-            if scheme == 'additive':
-                print("Additive scheme needs some work and is not available yet") 
-
-        if partition:
-            # update relevant info for each partition
-            self.qm_positions = partition.qm_positions
-            mm_wrapper._system.qm_atoms = partition.qm_atoms
-            self.qm_atoms = partition.qm_atoms
-
-            if scheme =='subtractive':
-
-                self.subtractive(mm_wrapper)
-                self.compute_gradients(scheme='subtractive')
-                
-            if scheme == 'additive':
-                print("Additive scheme needs some work and is not available yet") 
-            
 
     def get_qm_geometry(self, qm_traj):
         """
