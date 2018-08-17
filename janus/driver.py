@@ -58,7 +58,7 @@ def run_janus(config):
     # initialize mm_wrapper with information about initial system
     mm_wrapper.initialize_system()
 
-    for step in range(system.steps):
+    for step in range(config['steps']):
 
         #get MM information for entire system
         main_info = mm_wrapper.get_main_info()

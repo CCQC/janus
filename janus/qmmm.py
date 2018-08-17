@@ -323,7 +323,8 @@ class QMMM(object):
             g = self.system.compute_scale_factor_g(qm.element.symbol, mm.element.symbol, self.link_atom_element)
             self.link_atoms[i]['scale_factor'] = g 
             # this is in nm
-            self.link_atoms[i]['link_positions'] = self.get_link_atom_position(self.positions[qm.index], self.positions[mm.index], g)
+            self.link_atoms[i]['link_positions'] = self.positions[qm.index] + g*self.positions[mm.index]
+
 
             # MAYBE CAN USE MDTRAJ FIND NEIGHBORS FOR THIS!!!!!!!!
             if RC is True:
