@@ -41,23 +41,19 @@ def initialize_wrappers(config):
         print("Only OpenMM currently available")
 
 
-    if system.aqmmm_scheme == 'ONIOM-XS':
-        aqmmm = ONIOM_XS(system.aqmmm, system.mm_pdb_file)
+    if config['aqmmm_scheme'] is None:
+        qmmm = QMMM(config, qm_wrapper)
+    elif config['aqmmm_scheme'] == 'ONIOM-XS'
+        qmmm = ONIOM_XS(config, qm_wrapper)
     else:
         print("Only ONIOM_XS currently implemented")
     
-    return aqmmm
-    return mm_wrapper, qm_wrapper
+    return mm_wrapper, qmmm
 
-
-def run_adaptive(system):
+def run_janus(config):
 
     # initialize wrappers
-    mm_wrapper, qm_wrapper = initialize_wrappers(system)
-
-    aqmmm = initialize_wrappers(system, aqmmm=True)
-
-    qmmm = QMMM(qm_wrapper)
+    mm_wrapper, qmmm = initialize_wrappers(config)
 
     # initialize mm_wrapper with information about initial system
     mm_wrapper.initialize_system()
@@ -67,40 +63,17 @@ def run_adaptive(system):
         #get MM information for entire system
         main_info = mm_wrapper.get_main_info()
 
+        qmmm.run_qmmm()
+        
         # main info will have positions and topology to update trajectory
-        partitions = aqmmm.partition(info=main_info)
+        #put partitions internally!!!
+       # partitions = qmmm.partition(info=main_info)
 
-        for i, partition in partitions.items():
-            qmmm.get_info(system.qmmm_scheme, mm_wrapper, partition=partition)
-            print('the saved forces', qmmm.qmmm_forces)
-            aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
-            
+       # for i, partition in partitions.items():
+       #     qmmm.get_info(system.qmmm_scheme, mm_wrapper, partition=partition)
+       #     aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
         # get aqmmm forces 
-        forces = aqmmm.get_info()
-    
-        # feed forces into md simulation and take a step
-        # make sure positions are updated so that when i get information on entire system 
-        # getting it on the correct one
-        print(forces)
-        mm_wrapper.take_step(force=forces)
-
-def run_qmmm(system):
-# have this as part of run_adaptive?
-
-    # initialize wrappers
-    mm_wrapper, qm_wrapper = initialize_wrappers(system)
-
-    qmmm = QMMM(qm_wrapper)
-
-    # initialize mm_wrapper with information about initial system
-    mm_wrapper.initialize_system()
-
-    for step in range(system.steps):
-
-        qmmm.get_info(system.qmmm_scheme, mm_wrapper)
-            
-        # get qmmm forces 
-        forces = qmmm.qmmm_forces 
+        forces = qmmm.get_forces()
     
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 

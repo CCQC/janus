@@ -402,3 +402,7 @@ class QMMM(object):
 
             positions = np.append(positions[0], [link['link_positions']], axis=0)
 
+
+    def get_forces(self):
+
+        return self.forces
