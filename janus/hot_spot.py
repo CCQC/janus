@@ -1,5 +1,5 @@
 from .aqmmm import AQMMM
-from .system import Partition
+from .system import System
 import numpy as np
 from copy import deepcopy
 
@@ -20,7 +20,7 @@ class HotSpot(AQMMM):
 
         self.define_buffer_zone(qm_center)
 
-        qm = Partition(indices=self.qm_atoms, ID='qm')
+        qm = System(indices=self.qm_atoms, ID='qm')
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:

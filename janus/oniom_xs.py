@@ -1,5 +1,5 @@
 from .aqmmm import AQMMM
-from .system import Partition
+from .system import System
 import numpy as np
 
 class ONIOM_XS(AQMMM):
@@ -19,7 +19,7 @@ class ONIOM_XS(AQMMM):
 
         self.define_buffer_zone(qm_center)
 
-        qm = Partition(indices=self.qm_atoms, ID='qm')
+        qm = System(indices=self.qm_atoms, ID='qm')
         qm.qm_positions = self.get_qm_positions(qm.qm_atoms)
         self.partitions[qm.ID] = qm 
 
