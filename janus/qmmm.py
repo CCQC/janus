@@ -168,7 +168,7 @@ class QMMM(object):
                 print("Additive scheme needs some work and is not available yet") 
             
 
-    def get_qm_geometry(self, qm_atoms=None, as_string=True):
+    def get_qm_geometry(self, qm_traj):
         """
         TODO:
         1. need to phase out getting qm_positions in the openmm wrapper
@@ -195,37 +195,21 @@ class QMMM(object):
         --------
         qm_positions()
         """
-        if qm_atoms is None:
-            qm_atoms = self.qm_atoms
+        if qm_traj is None:
+            qm_traj = self.qm_trajectory
+
+        out = ""
+        line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
+
+        for i in range(qm_traj.n_atoms):
+            x, y, z =   qm_traj.xyz[0][i][0],\
+                        qm_traj.xyz[0][i][1],\
+                        qm_traj.xyz[0][i][2]
+
+            symbol = qm_traj.topology.atom(i).element.symbol
             
+            out += line.format(symbol, x*10, y*10, z*10)
 
-        if as_string is True:
-            out = ""
-            line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
-        if as_string is False:
-            out = []
-
-        for idx in qm_atoms:
-            x, y, z =   self.traj.xyz[0][idx][0],\
-                        self.traj.xyz[0][idx][1],\
-                        self.traj.xyz[0][idx][2]
-
-            symbol = self.traj.topology.atom(idx).element.symbol
-            
-            if as_string is True:
-                # convert to angstroms
-                out += line.format(symbol, x*10, y*10, z*10)
-
-            else:
-                out.append([symbol, [x, y, z]])
-        ## if there are bonds that need to be cut
-        #if self._boundary_bonds:
-        #    # Need to add if statement for any treatments that don't need link atoms
-        #    #if self._system.boundary_treatment !=
-        #    for atom in self.link_atoms:
-        #        pos = self.link_atoms[atom]['link_positions']*MM_wrapper.nm_to_angstrom
-        #        x, y, z = pos[0], pos[1], pos[2]
-        #        out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
         return out
 
 
@@ -399,9 +383,9 @@ class QMMM(object):
                             if atom2.serial == 'link':
                                 traj.topology.add_bond(atom2, atom)
 
+            traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
 
-            positions = np.append(positions[0], [link['link_positions']], axis=0)
-
+        self.primary_subsys_trajectory = traj
 
     def get_forces(self):
 

@@ -5,11 +5,7 @@ from .mm_wrapper import MM_wrapper
 import numpy as np
 from copy import deepcopy
         '''
-        MOVE FIND BOUNDARY BONDS TO QMMM
-        PREPARE LINK_ATOM TO QMMM
-        THINK ABOUT HOW REDO PRIMARY SUBSYS INFO- determine link atom in qmmm
         RENAME
-        MOVE QM positions to QMMM
         '''
 
 """
@@ -78,19 +74,6 @@ class OpenMM_wrapper(MM_wrapper):
 
         # save forcefield object
         self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
-
-        # find if there are any bonds that are cut across the QM/MM boundary
-
-        #self._boundary_bonds = self.find_boundary_bonds()
-
-        #if self._boundary_bonds:
-        #    # Get info for adding link atom to primary subsystem
-        #    if self._system.boundary_treatment == 'link_atom':
-        #        self.prepare_link_atom()
-        #    # Get info for adding link atom according to RC or RCD scheme
-        #    if self._system.boundary_treatment == 'RC' or self._system.boundary_treatment == 'RCD':
-        #        self.prepare_link_atom(RC=True)
-
 
     def initialize_system(self):
 
@@ -188,24 +171,9 @@ class OpenMM_wrapper(MM_wrapper):
         primary_subsys_info(coulomb=False)
         """
 
-        self.primary_subsys_modeller = self.create_modeller(keep_qm=True)
-
-        if link is True and self._boundary_bonds:
-            if self._system.boundary_treatment == 'link_atom':
-                # this structure only working for adding one link atom for now. 
-                # NOT FUNCTIONAL FOR more than 1 link atom!!!!!!!!
-                for atom in self.link_atoms:
-                    #print('getting link modeller')
-                    self._primary_subsys_modeller_link = self.create_link_atom_modeller(self._primary_subsys_modeller, self.link_atoms[atom])
-                    #print('getting  modeller info')
-                    self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
-                    self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
+        self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
+        self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
             
-        else:
-            #print('not doing link')
-            self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
-            self.get_info(self._primary_subsys_modeller, get_coulomb=coulomb)
-
 
     def boundary_info(self, coulomb=True):
         """
