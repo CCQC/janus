@@ -16,41 +16,38 @@ from .oniom_xs import ONIOM_XS
 def load_system(filename):
 
     with open(filename) as parameter_file:
-        parameters = json.load(parameter_file)
-
-    system = System(parameters['aqmmm'], parameters['qmmm'], parameters['qm'], parameters['mm'])
+        config = json.load(parameter_file)
     
-    return system
+    return config
 
-def initialize_wrappers(system, aqmmm=False):
+
+def initialize_wrappers(config):
     """
     Initializes the programs to use for computations
     """
 
-    if aqmmm is False:
-        # create qm_wrapper object
-        if system.qm_program == "Psi4":
-            qm_wrapper = Psi4_wrapper(system)
-        else:
-        # add other options for qm program here
-            print("Only Psi4 currently available")
+    # create qm_wrapper object
+    if config['qm_program'] == "Psi4":
+        qm_wrapper = Psi4_wrapper(config)
+    else:
+    # add other options for qm program here
+        print("Only Psi4 currently available")
 
-        # create mm_wrapper object
-        if system.mm_program == "OpenMM":
-            mm_wrapper = OpenMM_wrapper(system)
-        else:
-        # add other options for mm program here
-            print("Only OpenMM currently available")
+    # create mm_wrapper object
+    if config['mm_program'] == "OpenMM":
+        mm_wrapper = OpenMM_wrapper(config)
+    else:
+    # add other options for mm program here
+        print("Only OpenMM currently available")
 
-        return mm_wrapper, qm_wrapper
 
-    if aqmmm is True:
-        if system.aqmmm_scheme == 'ONIOM-XS':
-            aqmmm = ONIOM_XS(system.aqmmm, system.mm_pdb_file)
-        else:
-            print("Only ONIOM_XS currently implemented")
-        
-        return aqmmm
+    if system.aqmmm_scheme == 'ONIOM-XS':
+        aqmmm = ONIOM_XS(system.aqmmm, system.mm_pdb_file)
+    else:
+        print("Only ONIOM_XS currently implemented")
+    
+    return aqmmm
+    return mm_wrapper, qm_wrapper
 
 
 def run_adaptive(system):

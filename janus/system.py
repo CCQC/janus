@@ -34,17 +34,6 @@ class System(object):
         method = System.qm_method()
         """
 
-
-
-        if 'scheme' in qmmm:
-            self.qmmm_scheme = qmmm['scheme']
-        else: 
-            self.qmmm_scheme = 'subtractive'
-
-        if 'embedding_method' in qmmm:
-            self.embedding_method = qmmm['embedding_method']
-        else:
-            self.embedding_method = 'Mechanical'
         if 'qm_program' in qmmm:
             self.qm_program = qmmm['qm_program']
         else:
@@ -55,15 +44,6 @@ class System(object):
             self.mm_program = "OpenMM"
         # default integrator in openmm is the langevin integrator
     
-        if 'boundary_treatment' in qmmm:
-            self.boundary_treatment = qmmm['boundary_treatment']
-        else:
-            self.boundary_treatment = 'link_atom'
-
-        if 'link_atom' in qmmm:
-            self.link_atom = qmmm['link_atom']
-        elif self.boundary_treatment == 'link_atom':
-            self.link_atom = 'H'
 
         if 'aqmmm_scheme' is aqmmm:
             self.aqmmm_scheme = aqmmm['aqmmm_scheme']
@@ -75,9 +55,6 @@ class System(object):
         else:
             self.steps = 1
         
-        self.aqmmm = aqmmm
-
-        self.build_qm_param()
 
         self.entire_sys = {}
         self.primary_subsys = {}

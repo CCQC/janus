@@ -103,7 +103,7 @@ class OpenMM_wrapper(MM_wrapper):
         for f, coord in force.items():
             # need to figure out if the first 2 parameters always the same or not
             # convert this back to openmm units
-            coord *= MM_wrapper.au_bohr_to_kj_mol_nm
+            coord *= MM_wrapper.au_bohr_to_kjmol_nm
             self.qmmm_force.setParticleParameters(f, f, coord)
 
         self.qmmm_force.updateParametersInContext(self.main_simulation.context)
@@ -117,47 +117,6 @@ class OpenMM_wrapper(MM_wrapper):
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
         
 
-    def find_boundary_bonds(self, qm_atoms=None):
-        """
-        Identified any covalent bonds that the QM/MM boundary cuts across
-
-        Parameters
-        ----------
-        qm_atoms: A list of atom indicies corresponding to the atoms in
-                  the primary subsystem. Default list is taken from qm_atoms
-                  stored in the System object
-
-        Returns
-        -------
-        A list of tuples corresponding to the qm and mm atoms (as OpenMM atom object) involved in every bond
-        that need to be cut.
-
-        Examples
-        --------
-        bonds = find_boundary_bonds()
-        bonds = find_boundary_bonds(qm_atoms=[0,1,2,3])
-        """
-
-        if qm_atoms is None:
-            qm_atoms = self._system.qm_atoms
-        bonds = []
-        # determining if there are bonds that need to be cut
-        for bond in self._pdb.topology.bonds():
-            # find any bonds that involve the qm atoms
-            if bond.atom1.index in qm_atoms or bond.atom2.index in qm_atoms:
-                # isolate bonds that involve one in the qm atoms and one outside
-                if bond.atom1.index not in qm_atoms or bond.atom2.index not in qm_atoms:
-                    qm = {}
-                    mm = {}
-                    if bond.atom1.index in qm_atoms:
-                        qm = bond.atom1
-                        mm = bond.atom2
-                    else:
-                        qm = bond.atom2
-                        mm = bond.atom1
-
-                    bonds.append((qm, mm))
-        return bonds
 
 
     def entire_sys_info(self, coulomb=True):
@@ -285,51 +244,6 @@ class OpenMM_wrapper(MM_wrapper):
                                 - self._boundary['second_subsys']['energy'] \
                                 - self._boundary['primary_subsys']['energy']
 
-
-    def qm_positions(self):
-        """
-        Grabs the positions of the atoms in the primary subsystem from self._positions
-        and makes a string with the element and xyz geometry coordinates. Adds the link atom positions
-        when link atoms are needed.
-        Note: In a MD time step, does the position update or not? Need to make sure this updates
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        qm_positions()
-        """
-
-        out = ""
-        line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
-        qm_atoms = self._system.qm_atoms
-
-        for idx in qm_atoms:
-            # when I phase function out won't need the for and if statements following this
-            # see implementation in AQMMM
-            for atom in self._pdb.topology.atoms():
-                if atom.index == idx:
-                    x, y, z =   self._positions[idx][0]*MM_wrapper.nm_to_angstrom,\
-                                self._positions[idx][1]*MM_wrapper.nm_to_angstrom,\
-                                self._positions[idx][2]*MM_wrapper.nm_to_angstrom
-                    out += line.format(atom.element.symbol, x, y, z)
-
-        # if there are bonds that need to be cut
-        if self._boundary_bonds:
-            # Need to add if statement for any treatments that don't need link atoms
-            #if self._system.boundary_treatment !=
-            for atom in self.link_atoms:
-                pos = self.link_atoms[atom]['link_positions']*MM_wrapper.nm_to_angstrom
-                x, y, z = pos[0], pos[1], pos[2]
-                out += line.format(self.link_atoms[atom]['link_atom'], x, y, z)
-
-        self._qm_positions = out
 
 
     def get_info(self, pdb, initialize=False, charges=False, return_system=True, return_simulation=True, get_coulomb=True, set_link_charge=False):
@@ -858,98 +772,3 @@ class OpenMM_wrapper(MM_wrapper):
 
 
 
-    def prepare_link_atom(self, RC=False):
-        """
-        Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary
-        and computes the g scaling factor for the link atom.
-
-        Parameters
-        ----------
-        RC: a bool specifying whether to find the indices of the atoms bonded to mm atom of 
-            bond being cut. Default is false
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        prepare_link_atom(RC=True)
-        """
-
-        for i, bond in enumerate(self._boundary_bonds):
-
-            qm = bond[0]
-            mm = bond[1]
-
-            self.link_atoms[i] = {}
-
-            # saving id because id does not change between sys and modeller
-            self.link_atoms[i]['qm_id'] = qm.id
-
-            self.link_atoms[i]['mm_id'] = mm.id
-            self.link_atoms[i]['mm_index'] = mm.index
-
-            self.link_atoms[i]['link_atom'] = self._system.link_atom
-            g = self._system.compute_scale_factor_g(qm.element.symbol, mm.element.symbol, self._system.link_atom)
-            self.link_atoms[i]['g_factor'] = g
-            # this is in nm
-            self.link_atoms[i]['link_positions'] = self._system.get_link_atom_position(self._positions[qm.index], self._positions[mm.index], g)
-
-            # MAYBE CAN USE MDTRAJ FIND NEIGHBORS FOR THIS!!!!!!!!
-            if RC is True:
-                bonds = []
-                # find index of atoms bonded to mm atom
-                for bond in self._pdb.topology.bonds():
-                    if bond.atom1.id == mm.id or bond.atom2.id == mm.id:
-                        if bond.atom1.id != qm.id and bond.atom2.id != qm.id:
-                            if bond.atom1.id != mm.id:
-                                bonds.append(bond.atom1.index)
-                            elif bond.atom2.id != mm.id:
-                                bonds.append(bond.atom2.index)
-                self.link_atoms[i]['bonds_to_mm'] = bonds
-
-
-    def create_link_atom_modeller(self, mod, atom):
-        '''
-        Creates an OpenMM modeller object that includes any link atoms.
-        Note: Currently adds a very specfic link atom, need to expand 
-
-        Parameters
-        ----------
-        mod: modeller object of primary system without link atom added
-        atom: dictionary containing information for the link atom 
-
-        Returns
-        -------
-        A OpenMM modeller object
-
-        Examples
-        --------
-        create_link_atom_modeller(mod=modeller, atom=link)
-        '''
-        # get element object
-        link = OM_app.element.Element.getBySymbol(atom['link_atom'])
-
-        # get residue where qm atom is
-        for atm in mod.topology.atoms():
-            if atm.id == atom['qm_id']:
-                qm_res = atm.residue
-
-       # add link atom
-       # this is a VERY specific case with H1 - need to determine what type of H in the future
-        mod.topology.addAtom(name='H1', element=link, residue=qm_res, id='link')
-
-        # add bond between link atom and qm atom
-        for atom1 in mod.topology.atoms():
-            for atom2 in mod.topology.atoms():
-                if atom1.id == atom['qm_id'] and atom2.id == 'link':
-                    mod.topology.addBond(atom2, atom1)
-
-        # add link atom position
-        positions = mod.getPositions()/OM_unit.nanometer
-        pos = OM.vec3.Vec3(atom['link_positions'][0], atom['link_positions'][1], atom['link_positions'][2])
-        positions.append(pos)
-        mod.positions = positions*OM_unit.nanometer
-
-        return mod

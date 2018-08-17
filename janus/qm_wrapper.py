@@ -37,10 +37,6 @@ class QM_wrapper(ABC):
             self.method = config['qm_method']
         else:
             self.method = 'scf'
-        if 'qm_atoms' in config:
-            self.qm_atoms = config['qm_atoms']
-        else:
-            self.qm_atoms = []
         if 'qm_residues' in config:
             self.qm_residues = config['qm_residues']
         else:

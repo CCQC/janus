@@ -4,9 +4,9 @@ import numpy as np
 
 class ONIOM_XS(AQMMM):
 
-    def __init__(self, partition_scheme, trajectory):
+    def __init__(self, config, qm_wrapper):
         
-        super().__init__(partition_scheme, trajectory, 'ONIOM-XS')
+        super().__init__(config, qm_wrapper, 'ONIOM-XS')
 
     def partition(self, qm_center=None, info=None): 
     
