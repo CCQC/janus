@@ -68,7 +68,7 @@ class QM_wrapper(ABC):
         A dictionary with energy and gradient information
         """
         self.build_qm_param()
-        self.qm_info()
+        self.compute_qm()
         return self.energy, self.gradient
 
     def set_qm_geometry(self, qm_geometry):
