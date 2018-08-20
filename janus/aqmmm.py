@@ -129,9 +129,3 @@ class AQMMM(ABC, QMMM):
         pass
     
 
-
-
-
-
-
-

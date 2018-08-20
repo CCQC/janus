@@ -112,10 +112,15 @@ class QMMM(object):
         system.entire_sys = deepcopy(main_info)
 
         # Get MM energy on QM region
-        traj = self.make_primary_subsys_trajectory()
-        system.primary_subsys['trajectory'] = traj
+        traj_ps = self.make_primary_subsys_trajectory()
+        system.primary_subsys['trajectory'] = traj_ps
+        system.primary_subsys_mm = mm_wrapper.compute_mm(traj_ps, include_coulomb=None)
 
-        system.primary_subsys_mm = mm_wrapper.compute_mm(traj, include_coulomb=None)
+
+        # Get MM coulomb energy on 
+        traj_ss = self.make_second_subsys_trajectory()
+        system.second_subsys['trajectory'] = traj_ss
+        system.second_subsys_mm = mm_wrapper.compute_mm(traj_ss, include_coulomb='only')
 
         # Get QM energy
         self.qm_geometry = self.get_qm_positions(traj)
@@ -126,7 +131,8 @@ class QMMM(object):
         # Compute the total QM/MM energy based on
         # subtractive Mechanical embedding
         self.qmmm_energy = system.entire_sys['energy']\
-                      - system.primary_subsys['energy']\
+                      - system.primary_subsys_mm['energy']\
+                      + system.second_subsys_mm['energy']\
                       + system.qm_info['energy']
 
         self.compute_gradients(system)
