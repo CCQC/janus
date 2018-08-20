@@ -63,7 +63,7 @@ def run_janus(config):
         #get MM information for entire system
         main_info = mm_wrapper.get_main_info()
 
-        qmmm.run_qmmm()
+        qmmm.run_qmmm(main_info)
         
         # get aqmmm forces 
         forces = qmmm.get_forces()

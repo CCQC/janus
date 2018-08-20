@@ -41,7 +41,7 @@ class ONIOM_XS(AQMMM):
 
         return self.partitions
 
-    def get_info(self):
+    def run_aqmmm(self):
         
         qm = self.partitions['qm'] 
 

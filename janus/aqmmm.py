@@ -58,6 +58,11 @@ class AQMMM(ABC, QMMM):
        # super.run_qmmm(system.qmmm_scheme, mm_wrapper, partition=partition)
        #     aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
 
+          #  if partition:
+          #      # update relevant info for each partition
+          #      self.qm_positions = partition.qm_positions
+          #      mm_wrapper._system.qm_atoms = partition.qm_atoms
+          #      self.qm_atoms = partition.qm_atoms
     def save(self, ID, qmmm_forces, qmmm_energy):
         # find the appropriate partition object to save to
         self.partitions[ID].forces = qmmm_forces
@@ -101,12 +106,6 @@ class AQMMM(ABC, QMMM):
         self.buffer_groups = groups
 
 
-    def update_traj(self, position, topology):
-        
-        # later can think about saving instead of making new instance
-        # convert openmm topology to mdtraj topology
-        top = md.Topology.from_openmm(topology)
-        self.traj = md.Trajectory(position, top)
 
     def get_Rmin(self):
         return self.Rmin
@@ -126,7 +125,7 @@ class AQMMM(ABC, QMMM):
         pass
 
     @abstractmethod
-    def get_info(self):
+    def run_aqmmm(self):
         pass
     
 

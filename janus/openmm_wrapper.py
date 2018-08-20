@@ -4,9 +4,6 @@ import simtk.unit as OM_unit
 from .mm_wrapper import MM_wrapper
 import numpy as np
 from copy import deepcopy
-        '''
-        RENAME
-        '''
 
 """
 This module is a wrapper that calls OpenMM
@@ -51,11 +48,15 @@ class OpenMM_wrapper(MM_wrapper):
         else:
             self.is_periodic is False
 
-
         if 'mm_fric_coeff' in config:
             self.fric_coeff = config['mm_fric_coeff']
         else:
             self.fric_coeff = 1/OM_unit.picosecond
+
+        if 'embedding_method' in config:
+            self.embedding_method = config['embedding_method']
+        else:
+            self.embedding_method = 'Mechanical'
 
         self.temp*OM_unit.kelvin
         self.step_size*OM_unit.picoseconds
@@ -77,8 +78,8 @@ class OpenMM_wrapper(MM_wrapper):
 
     def initialize_system(self):
 
-        self.main_OM_system, self.main_simulation, self.main_info =\
-        self.get_info(self.pdb, initialize=True, charges=True, get_coulomb=True)
+        self.main_simulation, self.main_info =\
+        self.compute_mm(self.pdb, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
 
 
     def take_step(self, force):
@@ -98,123 +99,8 @@ class OpenMM_wrapper(MM_wrapper):
     def get_main_info(self):
         
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
-        
 
-
-
-    def entire_sys_info(self, coulomb=True):
-        """
-        Gets the information for an entire system and saves the OpenMM system object,
-        OpenMM simulation object, and a dictionary of relevant information to self
-
-        Parameters
-        ----------
-        coulomb: Whether to include coulombic interactions in MM computation.
-                 Default is True.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        entire_sys_info()
-        entire_sys_info(coulomb=False)
-        """
-        self.entire_sys_system, self.entire_sys_simulation, self.entire_sys =\
-        self.get_info(self.pdb, charges=True, get_coulomb=coulomb)
-
-    def second_subsys_info(self, coulomb=True):
-        """
-        Gets the information for the secondary subsystem (anything to be treated with MM)
-        and saves the OpenMM system object, OpenMM simulation object, and a dictionary of
-        relevant information to self
-
-        Parameters
-        ----------
-        coulomb: Whether to include coulombic interactions in MM computation.
-                 Default is True.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        second_subsys_info()
-        second_subsys_info(coulomb=False)
-        """
-        self.second_subsys_modeller = self.create_modeller(keep_qm=False)
-        self.second_subsys_system, self.second_subsys_simulation, self.second_subsys =\
-        self.get_info(self.second_subsys_modeller, charges=True, get_coulomb=coulomb)
-
-    def primary_subsys_info(self, link=False, coulomb=True):
-        """
-        Gets the information for the primary subsystem (anything to be treated with QM)
-        and saves the OpenMM system object, OpenMM simulation object, and a dictionary of
-        relevant information to self
-        Note: This function currently only works systems with one link atom!
-
-        Parameters
-        ----------
-        link: Whether to include a link atom in the MM computation. 
-        coulomb: Whether to include coulombic interactions in MM computation.
-                 Default is True.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        primary_subsys_info(link=True)
-        primary_subsys_info(coulomb=False)
-        """
-
-        self._primary_subsys_system, self._primary_subsys_simulation, self._primary_subsys =\
-        self.get_info(self._primary_subsys_modeller_link, get_coulomb=coulomb, set_link_charge=True)
-            
-
-    def boundary_info(self, coulomb=True):
-        """
-        Gets the information for the interaction energy between the primary and secondary subsystem (QM-MM)
-        and saves the OpenMM system object, OpenMM simulation object, and a dictionary of
-        relevant information to self. Current implemented by subtracting the energy of the second subsystem
-        and primary subsystem from the energy of the entire system.
-
-        Parameters
-        ----------
-        coulomb: Whether to include coulombic interactions in MM computation.
-                 Default is True.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        boundary_info()
-        boundary_info(coulomb=False)
-        """
-
-        if not self._boundary['entire_sys']:
-            self._boundary['entire_sys'] = self.get_info(self._pdb, return_system=False, return_simulation=False,get_coulomb=coulomb)
-        if self._second_subsys_modeller is None:
-            self._second_subsys_modeller = self.create_modeller(keep_qm=False)
-        if not self._boundary['second_subsys']:
-            self._boundary['second_subsys'] = self.get_info(self._second_subsys_modeller, return_system=False, return_simulation=False,get_coulomb=coulomb)
-        if self._primary_subsys_modeller is None:
-            self._primary_subsys_modeller = self.create_modeller(keep_qm=True)
-        if not self._boundary['primary_subsys']:
-            self._boundary['primary_subsys'] = self.get_info(self._primary_subsys_modeller, return_system=False, return_simulation=False, get_coulomb=coulomb)
-
-        self._boundary['energy'] = self._boundary['entire_sys']['energy'] \
-                                - self._boundary['second_subsys']['energy'] \
-                                - self._boundary['primary_subsys']['energy']
-
-
-
-    def get_info(self, pdb, initialize=False, charges=False, return_system=True, return_simulation=True, get_coulomb=True, set_link_charge=False):
+    def compute_mm(self, pdb, initialize=False, return_system=False, return_simulation=False, set_link_charge=False):
         """
         Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
@@ -249,6 +135,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         if initialize is True:
             OM_system = self.create_openmm_system(pdb, initialize=True)
+            self.main_charges = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
         else:
             OM_system = self.create_openmm_system(pdb)
 
@@ -256,27 +143,6 @@ class OpenMM_wrapper(MM_wrapper):
         '''
         NEED OUTER LAYER FOR THIS
         '''
-        # If in electrostatic embedding scheme need to get a system without coulombic interactions
-        if self._system.embedding_method=='Electrostatic' and get_coulomb is False:
-            # get the nonbonded force
-            force = OM_system.getForce(3)
-            for i in range(force.getNumParticles()):
-                a = force.getParticleParameters(i)
-                Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
-                # set the charge to 0 so the coulomb energy is zero
-                force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
-
-        # Why is this only Mechanical - need to check!
-        if self._system.embedding_method=='Mechanical' and set_link_charge is True:
-            # set charge of link atom to be zero, assumes link atom is last
-            force = OM_system.getForce(3)
-            idx = OM_system.getNumParticles() - 1
-            a = force.getParticleParameters(idx)
-            Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
-            # set the charge to 0 so the coulomb energy is zero
-            force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
-
-
 
         # Create an OpenMM simulation from the openmm system, topology, and positions.
         simulation = self.create_openmm_simulation(OM_system,pdb)
@@ -287,11 +153,6 @@ class OpenMM_wrapper(MM_wrapper):
                                       positions=True,
                                       forces=True)
 
-        state['energy'] = state['potential'] + state['kinetic']
-
-        if charges is True:
-            state['charges'] = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
-
         if return_system is True and return_simulation is True:
             return OM_system, simulation, state
         elif return_system is True and return_simulation is False:
@@ -300,34 +161,6 @@ class OpenMM_wrapper(MM_wrapper):
             return simulation, state
         else:
             return state
-
-
-    def create_modeller(self, keep_qm=None):
-        """
-        Makes a OpenMM modeller object based on given geometry
-
-        Parameters
-        ----------
-        keep_qm : a bool of whether to keep the qm atoms in the
-                  modeller or delete them.
-                  The default is to make a modeller without the qm atoms
-
-        Returns
-        -------
-        A OpenMM modeller object
-
-        Examples
-        --------
-        modeller = self.make_modeller()
-        modeller = self.make_modeller(keep_qm=True)
-        """
-
-        modeller = OM_app.Modeller(self._pdb.topology, self._positions)
-        if keep_qm is False:
-            OpenMM_wrapper.delete_atoms(modeller, self._system.qm_atoms)
-        elif keep_qm is True:
-            OpenMM_wrapper.keep_atoms(modeller, self._system.qm_atoms)
-        return modeller
 
 
     def create_openmm_system(self, pdb, initialize=False,
@@ -394,8 +227,55 @@ class OpenMM_wrapper(MM_wrapper):
             
             openmm_system.addForce(self.qmmm_force)
 
+        # If in electrostatic embedding scheme need to get a system without coulombic interactions
+        if self.embedding_method=='Electrostatic' and include_coulomb is False:
+            # get the nonbonded force
+            force = OM_system.getForce(3)
+            for i in range(force.getNumParticles()):
+                a = force.getParticleParameters(i)
+                Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
+                # set the charge to 0 so the coulomb energy is zero
+                force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
+
+        # Why is this only Mechanical - need to check!
+        if self.embedding_method=='Mechanical' and set_link_charge is True:
+            # set charge of link atom to be zero, assumes link atom is last
+            force = OM_system.getForce(3)
+            idx = OM_system.getNumParticles() - 1
+            a = force.getParticleParameters(idx)
+            Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
+            # set the charge to 0 so the coulomb energy is zero
+            force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
+
 
         return openmm_system
+
+    def create_modeller(self, keep_qm=None):
+        """
+        Makes a OpenMM modeller object based on given geometry
+
+        Parameters
+        ----------
+        keep_qm : a bool of whether to keep the qm atoms in the
+                  modeller or delete them.
+                  The default is to make a modeller without the qm atoms
+
+        Returns
+        -------
+        A OpenMM modeller object
+
+        Examples
+        --------
+        modeller = self.make_modeller()
+        modeller = self.make_modeller(keep_qm=True)
+        """
+
+        modeller = OM_app.Modeller(self._pdb.topology, self._positions)
+        if keep_qm is False:
+            OpenMM_wrapper.delete_atoms(modeller, self._system.qm_atoms)
+        elif keep_qm is True:
+            OpenMM_wrapper.keep_atoms(modeller, self._system.qm_atoms)
+        return modeller
 
     def create_new_residue_template(self, topology):
 
@@ -417,7 +297,7 @@ class OpenMM_wrapper(MM_wrapper):
         --------
         create_new_residue_template(topology)
         """
-        template, unmatched_res = self._ff.generateTemplatesForUnmatchedResidues(topology)
+        template, unmatched_res = self.ff.generateTemplatesForUnmatchedResidues(topology)
 
         # Loop through list of unmatched residues
         print('Loop through list of unmatched residues')
@@ -448,13 +328,13 @@ class OpenMM_wrapper(MM_wrapper):
 
         # override existing modified residues with same name
         print(name)
-        if name in self._ff._templates:
+        if name in self.ff._templates:
             print('override existing modified residues with same name')
-            template[i].overrideLevel = self._ff._templates[name].overrideLevel + 1
+            template[i].overrideLevel = self.ff._templates[name].overrideLevel + 1
 
         # register the new template to the forcefield object
         print('register the new template to the forcefield object')
-        self._ff.registerResidueTemplate(template[i])
+        self.ff.registerResidueTemplate(template[i])
 
 
     def create_openmm_simulation(self, openmm_system, pdb):
@@ -556,6 +436,10 @@ class OpenMM_wrapper(MM_wrapper):
         if main_info is True:
             # need to check if the topology actually updates 
             values['topology'] = simulation.topology
+
+
+        values['energy'] = values['potential'] + values['kinetic']
+
         return values
 
     def keep_residues(model, residues):
