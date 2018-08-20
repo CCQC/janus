@@ -24,6 +24,11 @@ class MM_wrapper(ABC):
             self.step_size = config['mm_step_size']
         else: 
             self.step_size = float(0.002)
+
+        if 'embedding_method' in config:
+            self.embedding_method = config['embedding_method']
+        else:
+            self.embedding_method = 'Mechanical'
         
         self.program = program
         self.second_subsys = {}
@@ -37,7 +42,7 @@ class MM_wrapper(ABC):
 
 
     @abstractmethod
-    def initialize_system(self):
+    def initialize(self):
         pass
 
     @abstractmethod
@@ -51,3 +56,9 @@ class MM_wrapper(ABC):
     @abstractmethod
     def compute_mm(self):
         pass
+
+    @abstractmethod
+    def convert_trajectory(self):
+        pass
+
+    

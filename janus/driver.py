@@ -42,11 +42,14 @@ def initialize_wrappers(config):
 
 
     if config['aqmmm_scheme'] is None:
-        qmmm = QMMM(config, qm_wrapper)
+        qmmm = QMMM(config, qm_wrapper, mm_wrapper)
     elif config['aqmmm_scheme'] == 'ONIOM-XS'
-        qmmm = ONIOM_XS(config, qm_wrapper)
+        qmmm = ONIOM_XS(config, qm_wrapper, mm_wrapper)
     else:
         print("Only ONIOM_XS currently implemented")
+
+    # initialize mm_wrapper with information about initial system
+    mm_wrapper.initialize()
     
     return mm_wrapper, qmmm
 
@@ -55,8 +58,6 @@ def run_janus(config):
     # initialize wrappers
     mm_wrapper, qmmm = initialize_wrappers(config)
 
-    # initialize mm_wrapper with information about initial system
-    mm_wrapper.initialize_system()
 
     for step in range(config['steps']):
 

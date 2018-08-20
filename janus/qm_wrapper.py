@@ -45,7 +45,7 @@ class QM_wrapper(ABC):
             self.charge_method = config['qm_charge_method']
         else: 
             self.charge_method = 'MULLIKEN_CHARGES'
-    
+
     @abstractmethod
     def compute_qm(self):
         pass
