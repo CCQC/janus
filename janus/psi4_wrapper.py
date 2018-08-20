@@ -95,17 +95,11 @@ class Psi4_wrapper(QM_wrapper):
 
         psi4.set_options(self.qm_param)
 
-#        if sys.embedding_method=='Electrostatic':
-#            if sys.boundary_treatment == 'link_atom' or None: 
-#                charges = self.get_external_charges(link=True)
-#            if sys.boundary_treatment == 'RC': 
-#                charges = self.get_external_charges(RC=True)
-#            if sys.boundary_treatment == 'RCD': 
-#                charges = self.get_external_charges(RCD=True)
-#            Chrgfield = psi4.QMMM()
-#            for charge in charges:
-#                Chrgfield.extern.addCharge(charge[0], charge[1], charge[2], charge[3])
-#            psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
+        if self.charges:
+            Chrgfield = psi4.QMMM()
+            for charge in self.charges:
+                Chrgfield.extern.addCharge(charge[0], charge[1], charge[2], charge[3])
+            psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
 
             
                 

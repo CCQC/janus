@@ -7,11 +7,12 @@ QMMM class for QMMM computations
 """
 class QMMM(object):
 
-    def __init__(self, config, qm_wrapper):
+    def __init__(self, config, qm_wrapper, mm_wrapper):
         
-        self.system = System()
         self.qm_wrapper = qm_wrapper
+        self.mm_wrapper = mm_wrapper
         self.qm_geometry = None
+        self.system_ID = 0
 
         self.traj = md.load(config['mm_pdb_file'])
         self.topology = self.traj.topology
@@ -42,32 +43,30 @@ class QMMM(object):
         else:
             self.link_atom_element = 'H'
 
-    def run_qmmm():
-       # def get_info(self, scheme, mm_wrapper, partition=None):
+    def run_qmmm(main_info):
 
-       #     if not partition:
-       #         if scheme =='subtractive':
+        self.update_traj(main_info['positions'], main_info['pdb'])
 
-       #             self.subtractive(mm_wrapper)
-       #             self.compute_gradients(scheme='subtractive')
-       #             
-       #         if scheme == 'additive':
-       #             print("Additive scheme needs some work and is not available yet") 
+        system = System(self.qm_atoms, self.system_ID)
 
-       #     if partition:
-       #         # update relevant info for each partition
-       #         self.qm_positions = partition.qm_positions
-       #         mm_wrapper._system.qm_atoms = partition.qm_atoms
-       #         self.qm_atoms = partition.qm_atoms
-
-       #         if scheme =='subtractive':
-
-       #             self.subtractive(mm_wrapper)
-       #             self.compute_gradients(scheme='subtractive')
-       #             
-       #         if scheme == 'additive':
-       #             print("Additive scheme needs some work and is not available yet") 
+        if self.qmmm_scheme =='subtractive':
+            self.subtractive(system, main_info)
             
+        if self.qmmm_scheme == 'additive':
+            print("Additive scheme needs some work and is not available yet") 
+
+        self.systems.append(system)
+        self.system_ID += 1
+
+
+    def update_traj(self, position, topology):
+        
+        # later can think about saving instead of making new instance
+        # convert openmm topology to mdtraj topology
+        if mm_wrapper.program == 'OpenMM':
+            top = md.Topology.from_openmm(topology)
+        self.traj = md.Trajectory(position, top)
+
         
     def additive(self, mm_wrapper):
         """
@@ -76,68 +75,70 @@ class QMMM(object):
         an additive scheme
         """
 
-        #need to add if these things are none then do the following?
-        # maybe not because already checks in mm_wrapper functions
+        print('additive scheme not available')
+       # #need to add if these things are none then do the following?
+       # # maybe not because already checks in mm_wrapper functions
 
-        # Get MM energy on MM region
-        self.second_subsys = mm_wrapper.get_second_subsys()
+       # # Get MM energy on MM region
+       # self.second_subsys = mm_wrapper.get_second_subsys()
 
-        # Get non coulomb MM energy on PS-SS interaction
-        self.boundary = mm_wrapper.get_boundary(coulomb=False)
+       # # Get non coulomb MM energy on PS-SS interaction
+       # self.boundary = mm_wrapper.get_boundary(coulomb=False)
 
-        # Get any link atom information
-        self.boundary_info = mm_wrapper.get_boundary_info()
+       # # Get any link atom information
+       # self.boundary_info = mm_wrapper.get_boundary_info()
 
-        # Get QM energy
-        # get QM positions from pdb
-        if self.qm_positions is None:
-            self.qm_positions = mm_wrapper.get_qm_positions() 
-        self.qm = self.qm_wrapper.get_qm(self.qm_positions)
+       # # Get QM energy
+       # # get QM positions from pdb
+       # if self.qm_positions is None:
+       #     self.qm_positions = mm_wrapper.get_qm_positions() 
+       # self.qm = self.qm_wrapper.get_qm(self.qm_positions)
 
-        # Compute total QM/MM energy based on additive scheme
-        self.qmmm_energy = self.second_subsys['energy']\
-                      + self.boundary['energy']\
-                      + self.qm['energy']
+       # # Compute total QM/MM energy based on additive scheme
+       # self.qmmm_energy = self.second_subsys['energy']\
+       #               + self.boundary['energy']\
+       #               + self.qm['energy']
 
-        # Compute QM/MM gradients 
-        qmmm_gradients = self.compute_gradients(scheme='additive')
+       # # Compute QM/MM gradients 
+       # qmmm_gradients = self.compute_gradients(scheme='additive')
 
-    def subtractive(self, mm_wrapper):
+    def subtractive(self, system, main_info):
         """
         Gets energies of needed components and computes
         a qm/mm energy with a subtractive mechanical embedding scheme
         """
 
         # Get MM energy on whole system
-        # should be updating as we go
-        self.entire_sys = mm_wrapper.main_info
+        system.entire_sys = deepcopy(main_info)
 
         # Get MM energy on QM region
-        self.primary_subsys = mm_wrapper.get_primary_subsys(link=True)
+        traj = self.make_primary_subsys_trajectory()
+        system.primary_subsys['trajectory'] = traj
 
-        # Get position and identity of link atom for QM computation if relevant
-        self.boundary_info = mm_wrapper.get_boundary_info()
+        system.primary_subsys_mm = mm_wrapper.compute_mm(traj, include_coulomb=None)
 
         # Get QM energy
-        self.qm_geometry = self.get_qm_positions() 
-        self.qm = self.qm_wrapper.get_qm(self.qm_positions)
+        self.qm_geometry = self.get_qm_positions(traj)
+        charges = self.get_external_charges(system)
+        self.qm_wrapper.set_external_charges(charges)
+        system.qm_info = self.qm_wrapper.get_qm(self.qm_geometry)
 
         # Compute the total QM/MM energy based on
         # subtractive Mechanical embedding
-        self.qmmm_energy = self.entire_sys['energy']\
-                      - self.primary_subsys['energy']\
-                      + self.qm['energy']
+        self.qmmm_energy = system.entire_sys['energy']\
+                      - system.primary_subsys['energy']\
+                      + system.qm_info['energy']
+
+        self.compute_gradients(system)
 
 
-    def compute_gradients(self, scheme='subtractive'):
+    def compute_gradients(self, system, scheme='subtractive'):
         # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
         # NEED TO MAKE SURE UNITS CONSISTENT
 
         if scheme == 'subtractive':
 
-            ps_mm_grad, qm_grad = self.primary_subsys['gradients'], self.qm['gradients']
-            print('mm gradients', ps_mm_grad)
-            print('qm gradients', qm_grad)
+            ps_mm_grad, qm_grad = system.primary_subsys['gradients'], self.qm['gradients']
             #qmmm_grad = np.zeros((len(all_mm_grad),3))
             qmmm_force = {}
                 
@@ -326,8 +327,6 @@ class QMMM(object):
             # this is in nm
             self.link_atoms[i]['link_positions'] = self.positions[qm.index] + g*self.positions[mm.index]
 
-
-            # MAYBE CAN USE MDTRAJ FIND NEIGHBORS FOR THIS!!!!!!!!
             if RC is True:
                 bonds = []
                 # find index of atoms bonded to mm atom
@@ -342,7 +341,7 @@ class QMMM(object):
                 self.link_atoms[i]['bonds_to_mm'] = bonds
 
 
-    def create_primary_subsys_trajectory(self, qm_atoms=None):
+    def make_primary_subsys_trajectory(self, qm_atoms=None):
         '''
         Creates an OpenMM modeller object that includes any link atoms.
         Note: Currently adds a very specfic link atom, need to expand 
@@ -368,7 +367,7 @@ class QMMM(object):
 
         traj = self.trajectory.atom_slice(qm_atoms)
 
-        traj.find_boundary_bonds(qm_atoms):
+        traj.find_boundary_bonds(qm_atoms)
 
         if self.qmmm_boundary_bonds():
             self.prepare_link_atoms()
@@ -386,9 +385,120 @@ class QMMM(object):
                                 traj.topology.add_bond(atom2, atom)
 
             traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
+        
+        pdb = self.convert_pdb(traj)
 
-        self.primary_subsys_trajectory = traj
+        return traj
+
+
 
     def get_forces(self):
 
         return self.forces
+
+
+'''
+PUT THIS IN QMMM
+'''
+    def get_external_charges(self, system):
+        """
+        Gets the point charges of atoms from secondary subsystem for electrostatic embedding 
+
+        Note: check to make sure positions are in angstroms
+
+        Parameters
+        ----------
+        link: a bool specifying whether the link atom scheme is used for determining point charges. 
+              default is False.
+        RC: a bool specifying whether the RC scheme is used for determining point charges. 
+              default is False.
+        RCD: a bool specifying whether the RCD scheme is used for determining point charges. 
+              default is False.
+
+        Returns
+        -------
+        A list of charges and cooresponding positions as  xyz coordinates
+
+        Examples
+        --------
+        get_external_charge(link=True)
+        get_external_charge(RC=True)
+        """
+
+        if self.embedding_method == 'Mechanical':
+            return None
+        
+        charges = []
+        es = system.entire_sys
+
+        elif self.boundary_treatment == 'link':
+            for i, chrg in enumerate(es['charges']):
+                # add every atom not in qm system 
+                if i not in self.qm_atoms:
+                    charges.append([chrg, es['positions'][i][0], es['positions'][i][1], es['positions'][i][2]])
+        
+        # This is for the RC and RCD schemes
+        else: 
+            for i, atom in self.link_atoms.items():
+                mm_index = atom['mm_atom'].index
+                bonds = atom['bonds_to_mm']
+
+                # get q0
+                q0 = es['charges'][mm_index] / len(bonds)
+
+                # get positions
+                positions = self.get_redistributed_positions(es['positions'], bonds, mm_index)
+
+                if RC is True:
+                    for j, chrg in enumerate(es['charges']):
+                        # add every atom not in qm system or the M1 atom 
+                        if j not in self.qm_atoms and j != mm_index:
+                                charges.append([chrg, es['positions'][j][0], es['positions'][j][1], es['positions'][j][2]])
+                    for pos in positions:
+                        charges.append([q0, pos[0], pos[1], pos[2]])
+
+                elif RCD is True:
+
+                    q0_RCD = q0 * 2
+                    for j, chrg in enumerate(es['charges']):
+                        # add every atom not in qm system or the M1 atom 
+                        if j not in self.qm_atoms and j != mm_index:
+                            if j in bonds:
+                            # modified M2 charges in RCD scheme
+                                charges.append([chrg - q0, es['positions'][j][0], es['positions'][j][1], es['positions'][j][2]])
+                            else:
+                                charges.append([chrg, es['positions'][j][0], es['positions'][j][1], es['positions'][j][2]])
+                    for pos in positions:
+                        charges.append([q0_RCD, pos[0], pos[1], pos[2]])
+                
+        return charges
+
+'''
+PUT THE FOLLOWING IN QMMM!!
+'''
+    def get_redistributed_positions(self, positions, bonds, mm):
+        """
+        Gets the positions for the redistributed point charges in the RC and RCD schemes
+
+        Parameters
+        ----------
+        positions: a list of the positions
+        bonds: a list of indices of all atoms (in secondary subsystem) bonded to M1  
+        mm: the index of M1
+
+        Returns
+        -------
+        List of positions for the redistributed charges
+
+        Examples
+        --------
+        get_redistributed_positions(positions=pos, bonds=bond, mm=mm_index)
+        """
+        
+        pos = []
+    
+        for bond in bonds:
+            new_pos = (positions[bond] + positions[mm]) / 2
+            pos.append(new_pos)
+        
+        return pos

@@ -53,10 +53,6 @@ class OpenMM_wrapper(MM_wrapper):
         else:
             self.fric_coeff = 1/OM_unit.picosecond
 
-        if 'embedding_method' in config:
-            self.embedding_method = config['embedding_method']
-        else:
-            self.embedding_method = 'Mechanical'
 
         self.temp*OM_unit.kelvin
         self.step_size*OM_unit.picoseconds
@@ -76,7 +72,7 @@ class OpenMM_wrapper(MM_wrapper):
         # save forcefield object
         self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
 
-    def initialize_system(self):
+    def initialize(self):
 
         self.main_simulation, self.main_info =\
         self.compute_mm(self.pdb, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
@@ -100,7 +96,7 @@ class OpenMM_wrapper(MM_wrapper):
         
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
 
-    def compute_mm(self, pdb, initialize=False, return_system=False, return_simulation=False, set_link_charge=False):
+    def compute_mm(self, pdb, include_coulomb='All', initialize=False, return_system=False, return_simulation=False, set_link_charge=False):
         """
         Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
@@ -134,10 +130,10 @@ class OpenMM_wrapper(MM_wrapper):
         # Create an OpenMM system from an object's topology
 
         if initialize is True:
-            OM_system = self.create_openmm_system(pdb, initialize=True)
+            OM_system = self.create_openmm_system(pdb, include_coulomb, initialize=True)
             self.main_charges = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
         else:
-            OM_system = self.create_openmm_system(pdb)
+            OM_system = self.create_openmm_system(pdb, include_coulomb)
 
 
         '''
@@ -163,7 +159,7 @@ class OpenMM_wrapper(MM_wrapper):
             return state
 
 
-    def create_openmm_system(self, pdb, initialize=False,
+    def create_openmm_system(self, pdb, include_coulomb, initialize=False,
                              residue={}):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
@@ -213,7 +209,6 @@ class OpenMM_wrapper(MM_wrapper):
                                             ignoreExternalBonds=False)
 
 
-
         if initialize is True:
             # this is for the initialization of the entire system
             # define a custom force for adding qmmm gradients
@@ -228,7 +223,7 @@ class OpenMM_wrapper(MM_wrapper):
             openmm_system.addForce(self.qmmm_force)
 
         # If in electrostatic embedding scheme need to get a system without coulombic interactions
-        if self.embedding_method=='Electrostatic' and include_coulomb is False:
+        if include_coulomb is None:
             # get the nonbonded force
             force = OM_system.getForce(3)
             for i in range(force.getNumParticles()):
@@ -237,15 +232,23 @@ class OpenMM_wrapper(MM_wrapper):
                 # set the charge to 0 so the coulomb energy is zero
                 force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
 
-        # Why is this only Mechanical - need to check!
-        if self.embedding_method=='Mechanical' and set_link_charge is True:
-            # set charge of link atom to be zero, assumes link atom is last
+        if include_coulomb == 'secondary_subsys':
             force = OM_system.getForce(3)
-            idx = OM_system.getNumParticles() - 1
-            a = force.getParticleParameters(idx)
-            Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
-            # set the charge to 0 so the coulomb energy is zero
-            force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
+            for i in qm_atoms:
+                a = force.getParticleParameters(i)
+                Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
+                # set the charge to 0 so the coulomb energy is zero
+                force.setParticleParameters(i, charge=0, sigma=Sig, epsilon = Eps)
+
+        ## Why is this only Mechanical - need to check!
+        #if self.embedding_method=='Mechanical' and set_link_charge is True:
+        #    # set charge of link atom to be zero, assumes link atom is last
+        #    force = OM_system.getForce(3)
+        #    idx = OM_system.getNumParticles() - 1
+        #    a = force.getParticleParameters(idx)
+        #    Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
+        #    # set the charge to 0 so the coulomb energy is zero
+        #    force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
 
 
         return openmm_system
