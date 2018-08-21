@@ -96,7 +96,7 @@ class QMMM(object):
                         - system.primary_subsys_mm['energy']\
                         + system.qm_info['energy']
 
-            self.compute_mechanical_gradients(system)
+            self.compute_gradients(system)
         else:
             print('only a subtractive scheme is implemented at this time')
 
@@ -134,12 +134,12 @@ class QMMM(object):
                         + system.second_subsys_mm['energy']\
                         + system.qm_info['energy']
 
-            self.compute_electrostatic_gradients(system)
+            self.compute_gradients(system)
 
         else:
             print('only a subtractive scheme is implemented at this time')
 
-    def compute_mechanical_gradients(self, system):
+    def compute_gradients(self, system):
         # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
         # NEED TO MAKE SURE UNITS CONSISTENT
 
@@ -175,46 +175,11 @@ class QMMM(object):
                         #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
                         #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
-            self.qmmm_forces = qmmm_force
 
-    def compute_electrostatic_gradients(self, system):
-        # NEED TO MAKE SURE UNITS CONSISTENT
-        if scheme == 'subtractive':
-
-            ps_mm_grad, ss_mm_grad, qm_grad =\
-            system.primary_subsys['gradients'], system.second_subsys['gradients'], self.qm['gradients']
-            qmmm_force = {}
-                
-            # iterate over list of qm atoms
-            for i, atom in enumerate(self.qm_atoms):
-
-                # compute the qmmm gradient for the qm atoms: 
-                # mm_entire - mm_primary - qm 
-                qmmm_force[atom] = np.zeros(3)
-                # these are in units of au_bohr, convert to openmm units in openmm wrapper
-                qmmm_force[atom] += -1 * (- ps_mm_grad[i] + qm_grad[i])
-                
-                # treating gradients for link atoms
-                if self.boundary_info:
-                    for j, link in self.link_atoms.items():
-                        q1 = link['qm_atom'].index
-                        m1 = link['mm_atom'].index
-                        link_index = link['link_atom_index']
-                        g = link['scale_factor'] 
-                        if atom == q1:
-                            if self.boundary_treatment == 'link_atom':
-                                # Project forces of link atoms onto the mm and qm atoms of the link atom bond
-                                qmmm_force[q1] += -(1 - g) * ps_mm_grad[link_index] + (1 - g) * qm_grad[link_index]
-                                qmmm_force[m1] += -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
-                                
-                        # # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
-                        # if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
-                        #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
-                        #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
-
-            # iterate over list of mm atoms
-            for i, atom in enumerate(self.mm_atoms):
-                qmmm_force[atom] = -1 * ss_mm_grad[i]
+            if system.second_subsys['gradients']:
+                # iterate over list of mm atoms
+                for i, atom in enumerate(self.mm_atoms):
+                    qmmm_force[atom] = -1 * system.second_subsys['gradients'][i]
 
             self.qmmm_forces = qmmm_force
         
