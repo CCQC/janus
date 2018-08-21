@@ -117,7 +117,7 @@ class QMMM(object):
         system.primary_subsys_mm = mm_wrapper.compute_mm(traj_ps, include_coulomb=None)
 
 
-        # Get MM coulomb energy on 
+        # Get MM coulomb energy on secondary subsystem
         traj_ss = self.make_second_subsys_trajectory()
         system.second_subsys['trajectory'] = traj_ss
         system.second_subsys_mm = mm_wrapper.compute_mm(traj_ss, include_coulomb='only')
@@ -159,19 +159,21 @@ class QMMM(object):
                 
                 # treating gradients for link atoms
                 if self.boundary_info:
-                    q1 = int(self.boundary_info[0]['qm_id']) - 1
-                    m1 = int(self.boundary_info[0]['mm_id']) - 1
-                    g = self.boundary_info[0]['g_factor']
-                    if atom == q1:
-                        if self.boundary_treatment == 'link_atom':
-                            # Project forces of link atoms onto the mm and qm atoms of the link atom bond
-                            qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
-                            qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
-                            
-                        # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
-                        if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
-                            qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
-                            qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+                    for j, link in self.link_atoms.items():
+                        q1 = link['qm_atom'].index
+                        m1 = link['mm_atom'].index
+                        link_index = link['link_atom_index']
+                        g = link['scale_factor'] 
+                        if atom == q1:
+                            if self.boundary_treatment == 'link_atom':
+                                # Project forces of link atoms onto the mm and qm atoms of the link atom bond
+                                qmmm_force[q1] += -(1 - g) * ps_mm_grad[link_index] + (1 - g) * qm_grad[link_index]
+                                qmmm_force[m1] += -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
+                                
+                        # # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
+                        # if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
+                        #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
+                        #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
             self.qmmm_forces = qmmm_force
         
@@ -383,16 +385,16 @@ class QMMM(object):
                 link_element = md.element.Element.getBySymbol(link['link_atom'])
 
                 for atom in traj.topology.atoms:
-                    if atom.serial == link['qm'].serial:
-                        traj.topology.add_atom(name='H', element=link, residue=atom.residue, serial='link')
+                    if atom.serial == link['qm_atom'].serial:
+                        traj.topology.add_atom(name='H', element=link_element, residue=atom.residue, serial='link')
 
                         for atom2 in traj.topology.atoms:
                             if atom2.serial == 'link':
                                 traj.topology.add_bond(atom2, atom)
+                                link['link_atom_idex'] = atom2.index
 
-            traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
+                traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
         
-        pdb = self.convert_pdb(traj)
 
         return traj
 
