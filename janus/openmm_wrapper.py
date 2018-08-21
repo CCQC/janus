@@ -70,12 +70,15 @@ class OpenMM_wrapper(MM_wrapper):
 
     def initialize(self):
 
-        self.main_simulation, self.main_info =\
-        self.compute_mm(self.pdb, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
+        if self.embedding_method == 'Mechanical':
+            self.main_simulation, self.main_info =\
+            self.compute_mm(self.pdb, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
 
-        if self.embedding_method == 'Electrostatic':
+        elif self.embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
             self.compute_mm(self.pdb, include_coulomb=None, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
+        else:
+            print('only mechanical and electrostatic embedding schemes implemented at this time')
 
     def take_step(self, force):
 

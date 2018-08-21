@@ -49,12 +49,13 @@ class QMMM(object):
 
         system = System(self.qm_atoms, self.system_ID)
 
-        if self.qmmm_scheme =='subtractive':
-            self.subtractive(system, main_info)
+        if self.embedding_method =='Mechanical':
+            self.mechanical(system, main_info)
+        elif self.embedding_method =='Electrostatic':
+            self.electrostatic(system, main_info)
+        else:
+            print('only mechanical and electrostatic embedding schemes implemented at this time')
             
-        if self.qmmm_scheme == 'additive':
-            print("Additive scheme needs some work and is not available yet") 
-
         self.systems.append(system)
         self.system_ID += 1
 
@@ -68,84 +69,83 @@ class QMMM(object):
         self.traj = md.Trajectory(position, top)
 
         
-    def additive(self, mm_wrapper):
-        """
-        Gets energies of needed components and computes
-        a qm/mm energy with a specified embedding method using
-        an additive scheme
-        """
 
-        print('additive scheme not available')
-       # #need to add if these things are none then do the following?
-       # # maybe not because already checks in mm_wrapper functions
-
-       # # Get MM energy on MM region
-       # self.second_subsys = mm_wrapper.get_second_subsys()
-
-       # # Get non coulomb MM energy on PS-SS interaction
-       # self.boundary = mm_wrapper.get_boundary(coulomb=False)
-
-       # # Get any link atom information
-       # self.boundary_info = mm_wrapper.get_boundary_info()
-
-       # # Get QM energy
-       # # get QM positions from pdb
-       # if self.qm_positions is None:
-       #     self.qm_positions = mm_wrapper.get_qm_positions() 
-       # self.qm = self.qm_wrapper.get_qm(self.qm_positions)
-
-       # # Compute total QM/MM energy based on additive scheme
-       # self.qmmm_energy = self.second_subsys['energy']\
-       #               + self.boundary['energy']\
-       #               + self.qm['energy']
-
-       # # Compute QM/MM gradients 
-       # qmmm_gradients = self.compute_gradients(scheme='additive')
-
-    def subtractive(self, system, main_info):
+    def mechanical(self, system, main_info):
         """
         Gets energies of needed components and computes
         a qm/mm energy with a subtractive mechanical embedding scheme
         """
+        if self.qmmm_scheme == 'subtractive':
+            # Get MM energy on whole system
+            system.entire_sys = deepcopy(main_info)
 
-        # Get MM energy on whole system
-        system.entire_sys = deepcopy(main_info)
+            # Get MM energy on QM region
+            traj_ps = self.make_primary_subsys_trajectory()
+            system.primary_subsys['trajectory'] = traj_ps
+            system.primary_subsys_mm = mm_wrapper.compute_mm(traj_ps, include_coulomb=None)
 
-        # Get MM energy on QM region
-        traj_ps = self.make_primary_subsys_trajectory()
-        system.primary_subsys['trajectory'] = traj_ps
-        system.primary_subsys_mm = mm_wrapper.compute_mm(traj_ps, include_coulomb=None)
+            # Get QM energy
+            self.qm_geometry = self.get_qm_positions(traj)
+            charges = self.get_external_charges(system)
+            self.qm_wrapper.set_external_charges(charges)
+            system.qm_info = self.qm_wrapper.get_qm(self.qm_geometry)
+
+            # Compute the total QM/MM energy based on
+            # subtractive Mechanical embedding
+            self.qmmm_energy = system.entire_sys['energy']\
+                        - system.primary_subsys_mm['energy']\
+                        + system.qm_info['energy']
+
+            self.compute_mechanical_gradients(system)
+        else:
+            print('only a subtractive scheme is implemented at this time')
+
+    def electrostatic(self, system, main_info):
+        """
+        Gets energies of needed components and computes
+        a qm/mm energy with a subtractive mechanical embedding scheme
+        """
+        if self.qmmm_scheme == 'subtractive':
+
+            # Get MM energy on whole system
+            system.entire_sys = deepcopy(main_info)
+
+            # Get MM energy on QM region
+            traj_ps = self.make_primary_subsys_trajectory()
+            system.primary_subsys['trajectory'] = traj_ps
+            system.primary_subsys_mm = mm_wrapper.compute_mm(traj_ps, include_coulomb=None)
 
 
-        # Get MM coulomb energy on secondary subsystem
-        traj_ss = self.make_second_subsys_trajectory()
-        system.second_subsys['trajectory'] = traj_ss
-        system.second_subsys_mm = mm_wrapper.compute_mm(traj_ss, include_coulomb='only')
+            # Get MM coulomb energy on secondary subsystem
+            traj_ss = self.make_second_subsys_trajectory()
+            system.second_subsys['trajectory'] = traj_ss
+            system.second_subsys_mm = mm_wrapper.compute_mm(traj_ss, include_coulomb='only')
 
-        # Get QM energy
-        self.qm_geometry = self.get_qm_positions(traj)
-        charges = self.get_external_charges(system)
-        self.qm_wrapper.set_external_charges(charges)
-        system.qm_info = self.qm_wrapper.get_qm(self.qm_geometry)
+            # Get QM energy
+            self.qm_geometry = self.get_qm_positions(traj)
+            charges = self.get_external_charges(system)
+            self.qm_wrapper.set_external_charges(charges)
+            system.qm_info = self.qm_wrapper.get_qm(self.qm_geometry)
 
-        # Compute the total QM/MM energy based on
-        # subtractive Mechanical embedding
-        self.qmmm_energy = system.entire_sys['energy']\
-                      - system.primary_subsys_mm['energy']\
-                      + system.second_subsys_mm['energy']\
-                      + system.qm_info['energy']
+            # Compute the total QM/MM energy based on
+            # subtractive Mechanical embedding
+            self.qmmm_energy = system.entire_sys['energy']\
+                        - system.primary_subsys_mm['energy']\
+                        + system.second_subsys_mm['energy']\
+                        + system.qm_info['energy']
 
-        self.compute_gradients(system)
+            self.compute_electrostatic_gradients(system)
 
+        else:
+            print('only a subtractive scheme is implemented at this time')
 
-    def compute_gradients(self, system, scheme='subtractive'):
+    def compute_mechanical_gradients(self, system):
         # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
         # NEED TO MAKE SURE UNITS CONSISTENT
 
         if scheme == 'subtractive':
 
             ps_mm_grad, qm_grad = system.primary_subsys['gradients'], self.qm['gradients']
-            #qmmm_grad = np.zeros((len(all_mm_grad),3))
             qmmm_force = {}
                 
             # iterate over list of qm atoms
@@ -174,6 +174,47 @@ class QMMM(object):
                         # if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
                         #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
                         #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+
+            self.qmmm_forces = qmmm_force
+
+    def compute_electrostatic_gradients(self, system):
+        # NEED TO MAKE SURE UNITS CONSISTENT
+        if scheme == 'subtractive':
+
+            ps_mm_grad, ss_mm_grad, qm_grad =\
+            system.primary_subsys['gradients'], system.second_subsys['gradients'], self.qm['gradients']
+            qmmm_force = {}
+                
+            # iterate over list of qm atoms
+            for i, atom in enumerate(self.qm_atoms):
+
+                # compute the qmmm gradient for the qm atoms: 
+                # mm_entire - mm_primary - qm 
+                qmmm_force[atom] = np.zeros(3)
+                # these are in units of au_bohr, convert to openmm units in openmm wrapper
+                qmmm_force[atom] += -1 * (- ps_mm_grad[i] + qm_grad[i])
+                
+                # treating gradients for link atoms
+                if self.boundary_info:
+                    for j, link in self.link_atoms.items():
+                        q1 = link['qm_atom'].index
+                        m1 = link['mm_atom'].index
+                        link_index = link['link_atom_index']
+                        g = link['scale_factor'] 
+                        if atom == q1:
+                            if self.boundary_treatment == 'link_atom':
+                                # Project forces of link atoms onto the mm and qm atoms of the link atom bond
+                                qmmm_force[q1] += -(1 - g) * ps_mm_grad[link_index] + (1 - g) * qm_grad[link_index]
+                                qmmm_force[m1] += -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
+                                
+                        # # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
+                        # if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
+                        #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
+                        #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+
+            # iterate over list of mm atoms
+            for i, atom in enumerate(self.mm_atoms):
+                qmmm_force[atom] = -1 * ss_mm_grad[i]
 
             self.qmmm_forces = qmmm_force
         
@@ -293,8 +334,6 @@ class QMMM(object):
                                 qm_atoms.remove(i)
 
         qm_atoms.sort()
-        return qm_atoms
-
 
     def prepare_link_atom(self, RC=False):
         """
@@ -371,11 +410,8 @@ class QMMM(object):
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
 
-        qm_atoms = self.edit_qm_atoms(qm_atoms)
-
+        self.find_boundary_bonds(qm_atoms)
         traj = self.trajectory.atom_slice(qm_atoms)
-
-        traj.find_boundary_bonds(qm_atoms)
 
         if self.qmmm_boundary_bonds():
             self.prepare_link_atoms()
@@ -391,13 +427,40 @@ class QMMM(object):
                         for atom2 in traj.topology.atoms:
                             if atom2.serial == 'link':
                                 traj.topology.add_bond(atom2, atom)
-                                link['link_atom_idex'] = atom2.index
+                                link['link_atom_index'] = atom2.index
 
                 traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
         
 
         return traj
 
+    def make_second_subsys_trajectory(self, qm_atoms=None):
+        '''
+        Creates an OpenMM modeller object that includes any link atoms.
+        Note: Currently adds a very specfic link atom, need to expand 
+
+        Parameters
+        ----------
+        mod: modeller object of primary system without link atom added
+        atom: dictionary containing information for the link atom 
+
+        Returns
+        -------
+        A OpenMM modeller object
+
+        Examples
+        --------
+        create_link_atom_modeller(mod=modeller, atom=link)
+        '''
+
+        if qm_atoms is None:
+            qm_atoms = self.qm_atoms
+    
+        self.mm_atoms = [i for i in range(self.traj.n_atoms) if i not in qm_atoms]
+
+        traj = self.trajectory.atom_slice(mm_atoms)
+
+        return traj
 
 
     def get_forces(self):
