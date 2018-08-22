@@ -54,7 +54,7 @@ class QM_wrapper(ABC):
     def build_qm_param(self):
         pass
 
-    def get_qm(self):
+    def get_qm(self, geometry):
         """
         Gets the energy and gradient from a QM computation of the primary subsystem 
         NEED TO RENAME
@@ -67,9 +67,15 @@ class QM_wrapper(ABC):
         -------
         A dictionary with energy and gradient information
         """
+        self.qm_geometry = geometry
         self.build_qm_param()
         self.compute_qm()
-        return self.energy, self.gradient
+
+        self.info = {}
+        self.info['energy'] = self.energy
+        self.info['gradient'] = self.energy
+        
+        return self.info
 
     def set_qm_geometry(self, qm_geometry):
 

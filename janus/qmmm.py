@@ -400,7 +400,6 @@ class QMMM(object):
 
                 traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
         
-
         return traj
 
     def make_second_subsys_trajectory(self, qm_atoms=None):
@@ -513,9 +512,6 @@ PUT THIS IN QMMM
                 
         return charges
 
-'''
-PUT THE FOLLOWING IN QMMM!!
-'''
     def get_redistributed_positions(self, positions, bonds, mm):
         """
         Gets the positions for the redistributed point charges in the RC and RCD schemes

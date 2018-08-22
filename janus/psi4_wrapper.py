@@ -16,8 +16,8 @@ class Psi4_wrapper(QM_wrapper):
 
     def compute_qm(self):
 
-        self.get_energy() 
-        self.get_gradient()
+        self.compute_energy() 
+        self.compute_gradient()
 
     def compute_energy(self):
         """
@@ -102,7 +102,6 @@ class Psi4_wrapper(QM_wrapper):
             psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
 
             
-                
     def compute_scf_charges(self):
         """
         Calls Psi4 to obtain the charges on each atom given and saves it as a numpy array.
