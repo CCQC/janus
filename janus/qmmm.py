@@ -12,7 +12,7 @@ class QMMM(object):
         self.qm_wrapper = qm_wrapper
         self.mm_wrapper = mm_wrapper
         self.qm_geometry = None
-        self.system_ID = 0
+        self.run_ID = 0
 
         self.traj = md.load(config['mm_pdb_file'])
         self.topology = self.traj.topology
@@ -43,11 +43,13 @@ class QMMM(object):
         else:
             self.link_atom_element = 'H'
 
+        self.systems = {}
+
     def run_qmmm(main_info):
 
         self.update_traj(main_info['positions'], main_info['pdb'])
 
-        system = System(self.qm_atoms, self.system_ID)
+        system = System(self.qm_atoms, self.run_ID)
 
         if self.embedding_method =='Mechanical':
             self.mechanical(system, main_info)
@@ -56,8 +58,11 @@ class QMMM(object):
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
             
-        self.systems.append(system)
-        self.system_ID += 1
+        self.systems.[self.run_ID] = {}
+        self.systems[self.run_ID][system.partition_ID] = system
+        self.systems[self.run_ID]['qmmm_forces'] = system.qmmm_forces
+        self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy
+        self.run_ID += 1
 
 
     def update_traj(self, position, topology):
@@ -68,7 +73,6 @@ class QMMM(object):
             top = md.Topology.from_openmm(topology)
         self.traj = md.Trajectory(position, top)
 
-        
 
     def mechanical(self, system, main_info):
         """
@@ -92,7 +96,7 @@ class QMMM(object):
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
-            self.qmmm_energy = system.entire_sys['energy']\
+            system.qmmm_energy = system.entire_sys['energy']\
                         - system.primary_subsys_mm['energy']\
                         + system.qm_info['energy']
 
@@ -129,7 +133,7 @@ class QMMM(object):
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
-            self.qmmm_energy = system.entire_sys['energy']\
+            system.qmmm_energy = system.entire_sys['energy']\
                         - system.primary_subsys_mm['energy']\
                         + system.second_subsys_mm['energy']\
                         + system.qm_info['energy']
@@ -181,7 +185,7 @@ class QMMM(object):
                 for i, atom in enumerate(self.mm_atoms):
                     qmmm_force[atom] = -1 * system.second_subsys['gradients'][i]
 
-            self.qmmm_forces = qmmm_force
+            system.qmmm_forces = qmmm_force
         
 
     def get_qm_geometry(self, qm_traj):
@@ -430,7 +434,7 @@ class QMMM(object):
 
     def get_forces(self):
 
-        return self.forces
+        return self.systems[self.run_ID - 1]['qmmm_forces']
 
 
 '''

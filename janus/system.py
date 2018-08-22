@@ -10,7 +10,7 @@ class System(object):
     psi4_mp2._system.
     """
 
-    def __init__(self, qm_indices, ID):
+    def __init__(self, qm_indices, run_ID, partition_ID='qm'):
 
         """
         Initializes system with None values for all parameters
@@ -31,7 +31,8 @@ class System(object):
         method = System.qm_method()
         """
         self.qm_atoms = deepcopy(qm_indices)
-        self.ID = ID
+        self.run_ID = run_ID
+        self.partition_ID = partition_ID
         self.qm_positions = None
         self.buffer_groups = None
         self.switching_functions = []

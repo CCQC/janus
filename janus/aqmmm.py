@@ -49,25 +49,25 @@ class AQMMM(ABC, QMMM):
         # might need this functionality later
             self.qm_center = [0]
 
-    def run_qmmm():
-        # main info will have positions and topology to update trajectory
+    def run_qmmm(main_info):
         #put partitions internally!!!
-       # partitions = qmmm.partition(info=main_info)
 
-       # for i, partition in partitions.items():
-       # super.run_qmmm(system.qmmm_scheme, mm_wrapper, partition=partition)
-       #     aqmmm.save(partition.ID, qmmm.qmmm_forces, qmmm.qmmm_energy)
+        self.update_traj(main_info['positions'], main_info['pdb'])
+        self.partition()
+            
+        for i, system in self.systems[self.run_ID].items()
 
-          #  if partition:
-          #      # update relevant info for each partition
-          #      self.qm_positions = partition.qm_positions
-          #      mm_wrapper._system.qm_atoms = partition.qm_atoms
-          #      self.qm_atoms = partition.qm_atoms
-    def save(self, ID, qmmm_forces, qmmm_energy):
-        # find the appropriate partition object to save to
-        self.partitions[ID].forces = qmmm_forces
-        self.partitions[ID].energy = qmmm_energy
+            self.qm_atoms = deepcopy(system.qm_atoms)
 
+            if self.embedding_method =='Mechanical':
+                self.mechanical(system, main_info)
+            elif self.embedding_method =='Electrostatic':
+                self.electrostatic(system, main_info)
+            else:
+                print('only mechanical and electrostatic embedding schemes implemented at this time')
+
+        self.run_aqmmm()
+        self.run_ID += 1
 
     def define_buffer_zone(self, qm_center):
         # qm_center needs to be in list form

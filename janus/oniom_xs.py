@@ -10,62 +10,56 @@ class ONIOM_XS(AQMMM):
 
     def partition(self, qm_center=None, info=None): 
     
-        # need to first update everything with info!
-        if info is not None:
-            self.update_traj(info['positions'], info['topology'])
-
         if qm_center is None:
             qm_center = self.qm_center
 
         self.define_buffer_zone(qm_center)
 
-        qm = System(indices=self.qm_atoms, ID='qm')
-        qm.qm_positions = self.get_qm_positions(qm.qm_atoms)
-        self.partitions[qm.ID] = qm 
+        qm = System(indices=self.qm_atoms, self.run_ID, partition_ID='qm')
+
+        self.systems[self.run_ID] = {}
+        self.systems[self.run_ID][qm.partition_ID] = qm
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
-            qm_bz = Partition(indices=self.qm_atoms, ID='qm_bz')
+            qm_bz = Partition(indices=self.qm_atoms, partition_ID='qm_bz')
             for key, value in self.buffer_groups.items():
                 for idx in value:
                     qm_bz.qm_atoms.append(idx)
 
-                
-            qm_bz.qm_positions = self.get_qm_positions(qm_bz.qm_atoms)
             # each partition has a copy of its buffer groups - 
             # good for later when there are multiple partitions with all different
             # buffer groups
             qm_bz.buffer_groups = self.buffer_groups
 
-            self.partitions[qm_bz.ID] = qm_bz
-
-        return self.partitions
+            self.systems[self.run_ID][qm_bz.partition_ID] = qm_bz
 
     def run_aqmmm(self):
         
-        qm = self.partitions['qm'] 
+        qm = self.systems[self.run_ID]['qm']
 
         if not self.buffer_groups:
-            self.energy = qm.energy
-            self.forces = qm.forces
+            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_energy
+            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_forces
 
         else:
-            qm_bz = self.partitions['qm_bz'] 
+            qm_bz = self.systems[self.run_ID]['qm_bz']
             lamda, d_lamda = self.get_switching_function(qm_bz)
-            self.energy = lamda*qm.energy + (1-lamda)*qm_bz.energy
 
-            print('qm forces', qm.forces)
-            print('qm_bz forces', qm_bz.forces)
+            self.systems[self.run_ID]['qmmm_energy'] = \
+            lamda*qm.qmmm_energy + (1-lamda)*qm_bz.qmmm_energy
+
             # needs work!
             print('need to add in d_lamda term for forces')
-            self.forces = {}
-            for f, coord in qm_bz.forces.items():
-                if f in qm.forces:
-                    self.forces[f] = (1-lamda)*coord + lamda*qm.forces[f] 
+            forces = {}
+            for f, coord in qm_bz.qmmm_forces.items():
+                if f in qm.qmmm_forces:
+                    forces[f] = (1-lamda)*coord + lamda*qm.qmmm_forces[f] 
                 else: 
-                    self.forces[f] = (1-lamda)*coord
+                    forces[f] = (1-lamda)*coord
 
-        return self.forces
+            self.systems[self.run_ID]['qmmm_forces'] = forces
+
 
     def get_switching_function(self, partition):
 
