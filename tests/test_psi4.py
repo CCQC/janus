@@ -56,7 +56,7 @@ psi4_mp2 = deepcopy(psi4_mech)
 psi4_mp2._system.qm_method = 'mp2'
 
 
-def test_get_energy():
+def test_compute_energy():
     """
     Function to test get_psi4_energy is getting energy correctly
     """
@@ -67,7 +67,7 @@ def test_get_energy():
     assert np.allclose(psi4_mech._energy, -149.9288270081589)
     assert np.allclose(psi4_elec._energy, -149.93278909825366)
 
-def test_get_gradient():
+def test_compute_gradient():
     """
     Function to test get_psi4_gradient is getting the gradient correctly
     """
@@ -93,7 +93,7 @@ def test_get_gradient():
     assert np.allclose(psi4_elec._gradient, gradient_elec)
 
 
-def test_get_qm():
+def test_run_qm():
 
     mech = psi4_mech.get_qm(qm_positions=None)
     elec = psi4_elec.get_qm(qm_positions=None)
@@ -103,7 +103,7 @@ def test_get_qm():
     assert np.allclose(elec['energy'],   psi4_elec._energy)
     assert np.allclose(elec['gradients'], psi4_elec._gradient)
 
-def test_get_scf_charges():
+def test_compute_scf_charges():
 
     psi4_mech.get_scf_charges()
     psi4_elec.get_scf_charges()
@@ -114,7 +114,7 @@ def test_get_scf_charges():
     assert np.allclose(psi4_mech._charges, charge_mech)
     assert np.allclose(psi4_elec._charges, charge_elec)
     
-def test_get_energy_and_charges():
+def test_compute_energy_and_charges():
 
     psi4_mp2.get_energy_and_charges()
 
@@ -124,62 +124,18 @@ def test_get_energy_and_charges():
     assert np.allclose(psi4_mp2._energy,  -149.9997933859008)
 
 
-def test_get_external_charge():
-
-    # test link atom
-    charge = psi4_elec.get_external_charges(link=True)
-    crg = np.array([[-0.834, 0.115 ,  0.31300001 , 6.14799976],
-                        [0.417, 0.12  ,  0.241      , 5.19299984],
-                        [0.417, 0.66  , -0.41499998 , 6.44599974]])
-
-    # test RC 
-    charge_rc = psi4_rc.get_external_charges(RC=True)
-
-    crg_rc = np.array([[0.0823, 0.81399999558925629, 0.86099997162818909, 1.4949999749660492],
-                        [-0.1825, 2.0569999516010284, -0.7720000296831131, 1.2890000641345978], 
-                        [0.0603, 3.1360000371932983, -0.75199998915195465, 1.0320000350475311],
-                        [0.0603, 1.9900000095367432, -0.64099997282028198, 2.3950000107288361],
-                        [0.0603, 1.656000018119812, -1.7820000648498535, 1.062999963760376],
-                        [0.5973, 1.956000030040741, 1.5790000557899475, 0.03599999938160181],
-                        [-0.5679, 1.2189999967813492, 2.5249999761581421, -0.20099999383091927],
-                        [0.011233333333333333, 1.60150003, 0.97700004, 0.33600002],
-                        [0.011233333333333333, 1.65199999, -0.19850001, 0.96250005],
-                        [0.011233333333333333, 1.03050001, 0.61799999, 1.06550001]])
-
-    # test RC 
-    charge_rcd = psi4_rc.get_external_charges(RCD=True)
-    crg_rcd = np.array([[0.07106666666666667, 0.81399999999999995, 0.86099996999999995, 1.4949999700000001],
-                        [-0.19373333333333334, 2.0569999499999998, -0.77200002999999995, 1.28900006],
-                        [0.0603, 3.1360000399999999, -0.75199998999999995, 1.03200004],
-                        [0.0603, 1.9900000099999999, -0.64099996999999997, 2.39500001],
-                        [0.0603, 1.65600002, -1.7820000600000001, 1.06299996],
-                        [0.5860666666666667, 1.95600003, 1.57900006, 0.035999999999999997],
-                        [-0.5679, 1.2190000000000001, 2.52499998, -0.20099998999999999],
-                        [0.022466666666666666, 1.601500025, 0.97700003499999999, 0.33600002000000001],
-                        [0.022466666666666666, 1.6519999849999998, -0.19850000999999998, 0.96250005000000005],
-                        [0.022466666666666666, 1.0305000099999999, 0.61799998999999994, 1.0655000050000001]])
-
-    assert np.allclose(np.array(charge), crg)
-    assert np.allclose(np.array(charge_rc), crg_rc)
-    assert np.allclose(np.array(charge_rcd), crg_rcd)
-
-
-
-
-def test_get_redistributed_positions():
-
-    bonds = psi4_rc._system.boundary_info['bonds_to_mm']
-    mm = psi4_rc._system.boundary_info['mm_index']
-    pos = psi4_rc._system.entire_sys['positions']
-
-    new_pos = np.array([[ 1.60150003,  0.97700004,  0.33600002],
-                       [ 1.65199999, -0.19850001,  0.96250005],
-                       [ 1.03050001,  0.61799999,  1.06550001]])
-
-    position = psi4_elec.get_redistributed_positions(pos, bonds, mm)
+def test_build_qm_param():
     
-    assert np.allclose(position, new_pos)
+    assert sys1.qm_param['basis'] == 'STO-3G'
+    assert sys1.qm_param['scf_type'] == 'df' 
+    assert sys1.qm_param['guess'] == 'sad' 
+    assert sys1.qm_param['reference'] == 'rhf'
+    assert sys1.qm_param['e_convergence'] == 1e-8
+    assert sys1.qm_param['d_convergence'] == 1e-8 
 
-
-    
-
+    assert sys2.qm_param['basis'] == '6-31G'
+    assert sys2.qm_param['scf_type'] == 'pk' 
+    assert sys2.qm_param['guess'] == 'sad' 
+    assert sys2.qm_param['reference'] == 'rhf'
+    assert sys2.qm_param['e_convergence'] == 1e-9
+    assert sys2.qm_param['d_convergence'] == 1e-8 

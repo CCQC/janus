@@ -258,33 +258,6 @@ class OpenMM_wrapper(MM_wrapper):
             # set the charge to 0 so the coulomb energy is zero
             force.setParticleParameters(i, charge=0, sigma=Sig, epsilon=Eps)
 
-    def create_modeller(self, keep_qm=None):
-        """
-        Makes a OpenMM modeller object based on given geometry
-
-        Parameters
-        ----------
-        keep_qm : a bool of whether to keep the qm atoms in the
-                  modeller or delete them.
-                  The default is to make a modeller without the qm atoms
-
-        Returns
-        -------
-        A OpenMM modeller object
-
-        Examples
-        --------
-        modeller = self.make_modeller()
-        modeller = self.make_modeller(keep_qm=True)
-        """
-
-        modeller = OM_app.Modeller(self._pdb.topology, self._positions)
-        if keep_qm is False:
-            OpenMM_wrapper.delete_atoms(modeller, self._system.qm_atoms)
-        elif keep_qm is True:
-            OpenMM_wrapper.keep_atoms(modeller, self._system.qm_atoms)
-        return modeller
-
     def create_new_residue_template(self, topology):
 
         """
@@ -449,28 +422,6 @@ class OpenMM_wrapper(MM_wrapper):
         values['energy'] = values['potential'] + values['kinetic']
 
         return values
-
-
-    def create_pdb(mm_pdb_file):
-        """
-        Creates an OpenMM PDB object
-
-        Parameters
-        ----------
-        mm_pdb_file: string of pdb file name
-
-        Returns
-        -------
-        OpenMM PDB object
-
-        Examples
-        --------
-        model = create_openmm_pdb('input.pdb')
-        """
-
-        pdb = OM_app.PDBFile(mm_pdb_file)
-        return pdb
-
 
     def write_pdb(mod, filename):
         """

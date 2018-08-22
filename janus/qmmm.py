@@ -92,7 +92,7 @@ class QMMM(object):
             self.qm_geometry = self.get_qm_positions(traj)
             charges = self.get_external_charges(system)
             self.qm_wrapper.set_external_charges(charges)
-            system.qm_info = self.qm_wrapper.get_qm(self.qm_geometry)
+            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -129,7 +129,7 @@ class QMMM(object):
             self.qm_geometry = self.get_qm_positions(traj)
             charges = self.get_external_charges(system)
             self.qm_wrapper.set_external_charges(charges)
-            system.qm_info = self.qm_wrapper.get_qm(self.qm_geometry)
+            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding

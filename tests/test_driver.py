@@ -31,20 +31,8 @@ def test_load_system():
     assert sys.embedding_method == 'Electrostatic'
     assert sys.qm_program == 'Psi4'
 
-#def test_additive():
-#    
-#    sys_mech.boundary['energy'] = -0.010631625405292172
-#    sys_mech.second_subsys['energy'] = 6.873303688617918e-05
-#    sys_mech.qm['energy'] = -74.9629737257 
-#    
-#    driver.additive(sys_mech)
-#    assert np.allclose(sys_mech.qmmm_energy, -74.9735366180801)
-#
-#def test_subtractive():
-#
-#    sys_mech.entire_sys['energy'] = -0.010562892368405992
-#    sys_mech.primary_subsys['energy'] = 0.0
-#    sys_mech.qm['energy'] = -74.9629737257 
-#
-#    driver.subtractive(sys_mech)
-#    assert np.allclose(sys_mech.qmmm_energy, -74.9735366180801)
+def test_initialize_wrappers():
+    pass
+
+def test_run_janus():
+    pass
