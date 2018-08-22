@@ -5,60 +5,53 @@ from copy import deepcopy
 
 class HotSpot(AQMMM):
 
-    def __init__(self, partition_scheme, trajectory):
+    def __init__(self, config, qm_wrapper, mm_wrapper):
         
-        super().__init__(partition_scheme, trajectory, 'Hot-Spot')
+        super().__init__(config, qm_wrapper, mm_wrapper, 'Hot-Spot')
 
     def partition(self, qm_center=None, info=None): 
     
-        # need to first update everything with info!
-        if info is not None:
-            self.update_traj(info['positions'], info['topology'])
-
         if qm_center is None:
             qm_center = self.qm_center
 
         self.define_buffer_zone(qm_center)
 
-        qm = System(indices=self.qm_atoms, ID='qm')
+        qm = System(indices=self.qm_atoms, self.run_ID, partition_ID='qm')
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
 
-            qm.buffer_groups = self.buffer_groups
+            qm.buffer_groups = deepcopy(self.buffer_groups)
 
             for key, value in self.buffer_groups.items():
                 for idx in value:
                     qm.qm_atoms.append(idx)
                 
-        qm.positions = self.get_qm_positions(qm.qm_atoms)
-        self.partitions[qm.ID] = qm 
+        self.systems[self.run_ID][qm.partition_ID] = qm
 
-        return self.partitions
-
-    def get_info(self):
+    def run_aqmmm(self):
         
-        qm = self.partitions['qm'] 
+        qm = self.systems[self.run_ID]['qm']
 
+        # do I need to do deepcopy?
         if not self.buffer_groups:
-            # does this create a deep copy??
-            self.energy = qm.energy
-            self.forces = qm.forces
+            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_energy
+            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_forces
 
         else:
             self.get_switching_function(qm)
             
-            # make sure this is deepcopied
-            self.forces = deepcopy(qm.forces)
-            print(self.forces)
+            forces = deepcopy(qm.forces)
+
             # counter for keeping track of lamda_i
             i = 0
             for key, value in self.buffer_groups.items():
                 for idx in value: 
-                    self.forces[idx] *= qm.switching_functions[i]
+                    forces[idx] *= qm.switching_functions[i]
                 i += 1
 
-        return self.forces
+            self.systems[self.run_ID]['qmmm_forces'] = forces
+
 
     def get_switching_function(self, partition):
 

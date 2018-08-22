@@ -28,8 +28,6 @@ class ONIOM_XS(AQMMM):
                     qm_bz.qm_atoms.append(idx)
 
             # each partition has a copy of its buffer groups - 
-            # good for later when there are multiple partitions with all different
-            # buffer groups
             qm_bz.buffer_groups = self.buffer_groups
 
             self.systems[self.run_ID][qm_bz.partition_ID] = qm_bz
@@ -95,5 +93,3 @@ class ONIOM_XS(AQMMM):
 
         return lamda_i, d_lamda_i
         
-        
-

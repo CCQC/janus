@@ -18,7 +18,6 @@ class AQMMM(ABC, QMMM):
         # for now, need to define later
         #self.qm_center = None
         # this needs to be np.array
-        self.partitions = {}
 
         if 'aqmmm_scheme' in parameters:
             self.aqmmm_scheme = parameters['aqmmm_scheme']
@@ -31,13 +30,13 @@ class AQMMM(ABC, QMMM):
             self.partition_scheme = 'distance'
 
         if (self.partition_scheme == 'distance' and 'Rmin' in parameters):
-            # from oniom-xs paper values are 0.38 and 0.4
+            # from oniom-xs paper 0.38
             self.Rmin = parameters['Rmin']
         else:
             self.Rmin = 0.38 # in nm
 
         if (self.partition_scheme == 'distance' and 'Rmax' in parameters):
-            # from oniom-xs paper values are 0.38 and 0.4
+            # from oniom-xs paper 0.4
             self.Rmax = parameters['Rmax']
         else:
             self.Rmax = 0.45 
@@ -50,7 +49,6 @@ class AQMMM(ABC, QMMM):
             self.qm_center = [0]
 
     def run_qmmm(main_info):
-        #put partitions internally!!!
 
         self.update_traj(main_info['positions'], main_info['pdb'])
         self.partition()
@@ -98,14 +96,8 @@ class AQMMM(ABC, QMMM):
                     for a in top.residue(idx).atoms:
                         if a.index not in groups[idx]:
                             groups[idx].append(a.index)
-                       # # if oxygen in buffer zone remove any hydrogens in qm area from definition of qm atoms
-                      # convered by previous
-                       # if a.index in self.qm_atoms:
-                       #     self.qm_atoms.remove(a.index)
 
         self.buffer_groups = groups
-
-
 
     def get_Rmin(self):
         return self.Rmin
@@ -118,7 +110,6 @@ class AQMMM(ABC, QMMM):
 
     def set_Rmax(self, Rmax):
         self.Rmax = Rmax
-
 
     @abstractmethod
     def partition(self, info):
