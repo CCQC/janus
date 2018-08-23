@@ -72,11 +72,11 @@ class OpenMM_wrapper(MM_wrapper):
 
         if self.embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
+            self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
 
         elif self.embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb, include_coulomb=None, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
+            self.compute_mm(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
@@ -98,7 +98,7 @@ class OpenMM_wrapper(MM_wrapper):
         
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
 
-    def compute_mm(self, pdb, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, set_link_charge=False):
+    def compute_mm(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, set_link_charge=False):
         """
         Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
@@ -128,16 +128,14 @@ class OpenMM_wrapper(MM_wrapper):
         system, simulation, state = System.get_info(mm_pdb)
         state = System.get_info(mm_pdb, charges=True, return_simulation=False, return_system=False)
         """
-        if pdb not openmm_pdb:
-            pdb = self.convert_trajectory(pdb)
 
         # Create an OpenMM system from an object's topology
 
         if initialize is True:
-            OM_system = self.create_openmm_system(pdb, include_coulomb, initialize=True)
+            OM_system = self.create_openmm_system(topology, include_coulomb, initialize=True)
             self.main_charges = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
         else:
-            OM_system = self.create_openmm_system(pdb, include_coulomb)
+            OM_system = self.create_openmm_system(topology, include_coulomb)
 
 
         '''
@@ -145,7 +143,7 @@ class OpenMM_wrapper(MM_wrapper):
         '''
 
         # Create an OpenMM simulation from the openmm system, topology, and positions.
-        simulation = self.create_openmm_simulation(OM_system,pdb)
+        simulation = self.create_openmm_simulation(OM_system, topology, positions)
 
         # Calls openmm wrapper to get information specified
         state = OpenMM_wrapper.get_state_info(simulation,
@@ -163,7 +161,7 @@ class OpenMM_wrapper(MM_wrapper):
             return state
 
 
-    def create_openmm_system(self, pdb, include_coulomb, initialize=False,
+    def create_openmm_system(self, topology, include_coulomb, initialize=False,
                              residue={}):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
@@ -197,15 +195,15 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         # check to see if there are unmatched residues in pdb, create residue templates if there are
-        unmatched = self.forcefield.getUnmatchedResidues(pdb.topology)
+        unmatched = self.forcefield.getUnmatchedResidues(topology)
         if unmatched:
-            self.create_new_residue_template(pdb.topology)
+            self.create_new_residue_template(topology)
 
         if self.is_periodic is True:
-            openmm_system = self.forcefieldcreateSystem(pdb.topology,
+            openmm_system = self.forcefieldcreateSystem(topology,
                                             constraints=self.constraints)
         else:
-            openmm_system = self.forcefield.createSystem(pdb.topology,
+            openmm_system = self.forcefield.createSystem(topology,
                                             nonbondedMethod=self.nonbond_method,
                                             nonbondedCutoff=self.nonbond_cutoff,
                                             constraints=self.contraints,
@@ -318,7 +316,7 @@ class OpenMM_wrapper(MM_wrapper):
         self.ff.registerResidueTemplate(template[i])
 
 
-    def create_openmm_simulation(self, openmm_system, pdb):
+    def create_openmm_simulation(self, openmm_system, topology, positions):
         """
         Creates an OpenMM simulation object given
         an OpenMM system and pdb
@@ -341,8 +339,8 @@ class OpenMM_wrapper(MM_wrapper):
         # The following need to be set as writable options 
 
         integrator = OM.LangevinIntegrator(self.temp, self.fric_coefficient, self.step_size)
-        simulation = OM_app.Simulation(pdb.topology, openmm_system, integrator)
-        simulation.context.setPositions(pdb.positions)
+        simulation = OM_app.Simulation(topology, openmm_system, integrator)
+        simulation.context.setPositions(positions)
 
         return simulation
 

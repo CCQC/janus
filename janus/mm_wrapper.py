@@ -57,8 +57,4 @@ class MM_wrapper(ABC):
     def compute_mm(self):
         pass
 
-    @abstractmethod
-    def convert_trajectory(self, traj):
-        pass
-
     

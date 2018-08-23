@@ -69,7 +69,7 @@ class QMMM(object):
         
         # later can think about saving instead of making new instance
         # convert openmm topology to mdtraj topology
-        if mm_wrapper.program == 'OpenMM':
+        if self.mm_wrapper.program == 'OpenMM':
             top = md.Topology.from_openmm(topology)
         self.traj = md.Trajectory(position, top)
 
@@ -85,8 +85,9 @@ class QMMM(object):
 
             # Get MM energy on QM region
             traj_ps = self.make_primary_subsys_trajectory()
+            topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
-            system.primary_subsys_mm = mm_wrapper.compute_mm(traj_ps, include_coulomb=None)
+            system.primary_subsys_mm = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
 
             # Get QM energy
             self.qm_geometry = self.get_qm_positions(traj)
@@ -116,14 +117,16 @@ class QMMM(object):
 
             # Get MM energy on QM region
             traj_ps = self.make_primary_subsys_trajectory()
+            topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
-            system.primary_subsys_mm = mm_wrapper.compute_mm(traj_ps, include_coulomb=None)
+            system.primary_subsys_mm = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
 
 
             # Get MM coulomb energy on secondary subsystem
             traj_ss = self.make_second_subsys_trajectory()
+            topology_ss, positions_ss = self.convert_trajectory(traj_ss)
             system.second_subsys['trajectory'] = traj_ss
-            system.second_subsys_mm = mm_wrapper.compute_mm(traj_ss, include_coulomb='only')
+            system.second_subsys_mm = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
 
             # Get QM energy
             self.qm_geometry = self.get_qm_positions(traj)
@@ -538,3 +541,14 @@ PUT THIS IN QMMM
             pos.append(new_pos)
         
         return pos
+
+    def convert_trajectory(self, traj):
+
+        if self.mm_wrapper.program == 'OpenMM':
+            topology = traj.topology.to_openmm()
+            positions = traj.openmm_positions((0))
+        
+        return topology, positions
+            
+
+
