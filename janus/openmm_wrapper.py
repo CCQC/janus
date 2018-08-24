@@ -68,11 +68,11 @@ class OpenMM_wrapper(MM_wrapper):
 
         if self.embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
+            self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True)
 
         elif self.embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, charges=True, get_coulomb=True)
+            self.compute_mm(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True)
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
@@ -202,7 +202,7 @@ class OpenMM_wrapper(MM_wrapper):
             openmm_system = self.forcefield.createSystem(topology,
                                             nonbondedMethod=self.nonbond_method,
                                             nonbondedCutoff=self.nonbond_cutoff,
-                                            constraints=self.contraints,
+                                            constraints=self.constraints,
                                             residueTemplates=residue,
                                             ignoreExternalBonds=False)
 
@@ -223,25 +223,25 @@ class OpenMM_wrapper(MM_wrapper):
         # If in electrostatic embedding scheme need to get a system without coulombic interactions
         if include_coulomb is None:
             # get the nonbonded force
-            self.set_charge_zero(OM_system)
+            self.set_charge_zero(openmm_system)
 
         if (include_coulomb == 'no_link' and link_atoms is not None):
-            self.set_charge_zero(OM_system, link_atoms)
+            self.set_charge_zero(openmm_system, link_atoms)
 
         if include_coulomb == 'only':
         # Remove Bond, Angle, and Torsion forces to leave only nonbonded forces
-            for i in range(OM_system.getNumForces()):             
-                if type(system.getForce(0)) is not NonbondedForce:     
-                    system.removeForce(0)                              
-            self.set_LJ_zero(OM_system)
+            for i in range(openmm_system.getNumForces()):             
+                if type(openmm_system.getForce(0)) is not OM.NonbondedForce:     
+                    openmm_system.removeForce(0)                              
+            self.set_LJ_zero(openmm_system)
 
 
         return openmm_system
 
     def set_charge_zero(self, OM_system, link_atoms=None):
 
-        for force in system.getForces():
-            if type(force) is NonbondedForce:
+        for force in OM_system.getForces():
+            if type(force) is OM.NonbondedForce:
                 if link_atoms:
                     for i in link_atoms:
                         a = force.getParticleParameters(i)
@@ -253,8 +253,8 @@ class OpenMM_wrapper(MM_wrapper):
                         force.setParticleParameters(i, charge=0.0, sigma=a[1], epsilon=a[2])
 
     def set_LJ_zero(self, OM_system):
-        for force in system.getForces():
-            if type(force) is NonbondedForce:
+        for force in OM_system.getForces():
+            if type(force) is OM.NonbondedForce:
                 for i in range(force.getNumParticles()):
                     a = force.getParticleParameters(i)
                     force.setParticleParameters(i, charge=a[0], sigma=0.0, epsilon=0.0)
@@ -342,7 +342,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         # The following need to be set as writable options 
 
-        integrator = OM.LangevinIntegrator(self.temp, self.fric_coefficient, self.step_size)
+        integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
         simulation = OM_app.Simulation(topology, openmm_system, integrator)
         simulation.context.setPositions(positions)
 
@@ -414,7 +414,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         if forces is True:
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
-            values['gradients'] = (-1) * values['forces'] * MM_wrapper.kj_mol_nm_to_au_bohr   
+            values['gradients'] = (-1) * values['forces'] * MM_wrapper.kjmol_nm_to_au_bohr   
 
         if main_info is True:
             # need to check if the topology actually updates 

@@ -2,3 +2,4 @@ __pycache__/
 timer.dat
 output.dat
 .cache/
+*.swp
