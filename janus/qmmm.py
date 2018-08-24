@@ -84,21 +84,19 @@ class QMMM(object):
             system.entire_sys = deepcopy(main_info)
 
             # Get MM energy on QM region
-            traj_ps = self.make_primary_subsys_trajectory()
+            traj_ps, link_indices = self.make_primary_subsys_trajectory()
             topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
-            system.primary_subsys_mm = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
+            system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb='no_link', link_atoms=link_indices)
 
             # Get QM energy
             self.qm_geometry = self.get_qm_positions(traj)
-            charges = self.get_external_charges(system)
-            self.qm_wrapper.set_external_charges(charges)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
             system.qmmm_energy = system.entire_sys['energy']\
-                        - system.primary_subsys_mm['energy']\
+                        - system.primary_subsys['mm']['energy']\
                         + system.qm_info['energy']
 
             self.compute_gradients(system)
@@ -116,17 +114,17 @@ class QMMM(object):
             system.entire_sys = deepcopy(main_info)
 
             # Get MM energy on QM region
-            traj_ps = self.make_primary_subsys_trajectory()
+            traj_ps, link_indices = self.make_primary_subsys_trajectory()
             topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
-            system.primary_subsys_mm = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
+            system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
 
 
             # Get MM coulomb energy on secondary subsystem
             traj_ss = self.make_second_subsys_trajectory()
             topology_ss, positions_ss = self.convert_trajectory(traj_ss)
             system.second_subsys['trajectory'] = traj_ss
-            system.second_subsys_mm = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
+            system.second_subsys['mm'] = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
 
             # Get QM energy
             self.qm_geometry = self.get_qm_positions(traj)
@@ -137,8 +135,8 @@ class QMMM(object):
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
             system.qmmm_energy = system.entire_sys['energy']\
-                        - system.primary_subsys_mm['energy']\
-                        + system.second_subsys_mm['energy']\
+                        - system.primary_subsys['mm']['energy']\
+                        + system.second_subsys['mm']['energy']\
                         + system.qm_info['energy']
 
             self.compute_gradients(system)
@@ -385,6 +383,7 @@ class QMMM(object):
         self.find_boundary_bonds(qm_atoms)
         traj = self.trajectory.atom_slice(qm_atoms)
 
+        link_indices = []
         if self.qmmm_boundary_bonds():
             self.prepare_link_atoms()
 
@@ -401,9 +400,10 @@ class QMMM(object):
                                 traj.topology.add_bond(atom2, atom)
                                 link['link_atom_index'] = atom2.index
 
+                link_indices.append(link['link_atom_index'])
                 traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
         
-        return traj
+        return traj, link_indices
 
     def make_second_subsys_trajectory(self, qm_atoms=None):
         '''

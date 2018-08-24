@@ -59,11 +59,7 @@ class OpenMM_wrapper(MM_wrapper):
 
 
         self.pdb = OpenMM_wrapper.create_pdb(self.pdb_file)
-        self.positions = self.pdb.getPositions(asNumpy=True)/OM_unit.nanometer
-        # self._positions *= MM_wrapper.nm_to_angstrom
-
-        self.primary_subsys_modeller = None
-        self.second_subsys_modeller = None
+        self.positions = None
 
         # save forcefield object
         self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
@@ -98,7 +94,7 @@ class OpenMM_wrapper(MM_wrapper):
         
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
 
-    def compute_mm(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, set_link_charge=False):
+    def compute_mm(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, link_atoms=None):
         """
         Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
@@ -132,10 +128,10 @@ class OpenMM_wrapper(MM_wrapper):
         # Create an OpenMM system from an object's topology
 
         if initialize is True:
-            OM_system = self.create_openmm_system(topology, include_coulomb, initialize=True)
+            OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=True)
             self.main_charges = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
         else:
-            OM_system = self.create_openmm_system(topology, include_coulomb)
+            OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms)
 
 
         '''
@@ -161,7 +157,7 @@ class OpenMM_wrapper(MM_wrapper):
             return state
 
 
-    def create_openmm_system(self, topology, include_coulomb, initialize=False,
+    def create_openmm_system(self, topology, include_coulomb, link_atoms, initialize=False,
                              residue={}):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
@@ -227,34 +223,42 @@ class OpenMM_wrapper(MM_wrapper):
         # If in electrostatic embedding scheme need to get a system without coulombic interactions
         if include_coulomb is None:
             # get the nonbonded force
-            self.set_charge_zero(OM_system, 3)
+            self.set_charge_zero(OM_system)
 
-        # Remove Bond, Angle, and Torsion forces to leave only nonbonded forces
+        if (include_coulomb == 'no_link' and link_atoms is not None):
+            self.set_charge_zero(OM_system, link_atoms)
+
         if include_coulomb == 'only':
-            for i in range(3):
-                OM_system.removeForce(0)
-            self.set_charge_zero(OM_system, 0)
-
-        ## Why is this only Mechanical - need to check!
-        #if self.embedding_method=='Mechanical' and set_link_charge is True:
-        #    # set charge of link atom to be zero, assumes link atom is last
-        #    force = OM_system.getForce(3)
-        #    idx = OM_system.getNumParticles() - 1
-        #    a = force.getParticleParameters(idx)
-        #    Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
-        #    # set the charge to 0 so the coulomb energy is zero
-        #    force.setParticleParameters(idx, charge=0, sigma=Sig, epsilon = Eps)
+        # Remove Bond, Angle, and Torsion forces to leave only nonbonded forces
+            for i in range(OM_system.getNumForces()):             
+                if type(system.getForce(0)) is not NonbondedForce:     
+                    system.removeForce(0)                              
+            self.set_LJ_zero(OM_system)
 
 
         return openmm_system
 
-    def set_charge_zero(self, OM_system, force_num):
-        force = OM_system.getForce(force_num)
-        for i in range(force.getNumParticles()):
-            a = force.getParticleParameters(i)
-            Sig, Eps = a[1]/OM_unit.nanometer, a[2]/OM_unit.kilojoule_per_mole
-            # set the charge to 0 so the coulomb energy is zero
-            force.setParticleParameters(i, charge=0, sigma=Sig, epsilon=Eps)
+    def set_charge_zero(self, OM_system, link_atoms=None):
+
+        for force in system.getForces():
+            if type(force) is NonbondedForce:
+                if link_atoms:
+                    for i in link_atoms:
+                        a = force.getParticleParameters(i)
+                        # set the charge to 0 so the coulomb energy is zero
+                        force.setParticleParameters(i, charge=0.0, sigma=a[1], epsilon=a[2])
+                else:
+                    for i in range(force.getNumParticles()):
+                        a = force.getParticleParameters(i)
+                        force.setParticleParameters(i, charge=0.0, sigma=a[1], epsilon=a[2])
+
+    def set_LJ_zero(self, OM_system):
+        for force in system.getForces():
+            if type(force) is NonbondedForce:
+                for i in range(force.getNumParticles()):
+                    a = force.getParticleParameters(i)
+                    force.setParticleParameters(i, charge=a[0], sigma=0.0, epsilon=0.0)
+        
 
     def create_new_residue_template(self, topology):
 

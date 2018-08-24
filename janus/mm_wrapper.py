@@ -31,12 +31,7 @@ class MM_wrapper(ABC):
             self.embedding_method = 'Mechanical'
         
         self.program = program
-        self.second_subsys = {}
-        self.primary_subsys = {}
-        self.entire_sys = {}
-        self.boundary = {} 
-        self.boundary['energy'] = None
-        self.link_atoms = {}
+
 
         super().__init__()
 
