@@ -58,7 +58,7 @@ class QMMM(object):
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
             
-        self.systems.[self.run_ID] = {}
+        self.systems[self.run_ID] = {}
         self.systems[self.run_ID][system.partition_ID] = system
         self.systems[self.run_ID]['qmmm_forces'] = system.qmmm_forces
         self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy
@@ -278,7 +278,7 @@ class QMMM(object):
                         mm_atom = bond[0]
                     self.qmmm_boundary_bonds.append((qm_atom, mm_atom))
 
-    def edit_qm_atoms(self, qm_atoms=None, solvent='water')
+    def edit_qm_atoms(self, qm_atoms=None, solvent='water'):
 
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
@@ -439,9 +439,6 @@ class QMMM(object):
         return self.systems[self.run_ID - 1]['qmmm_forces']
 
 
-'''
-PUT THIS IN QMMM
-'''
     def get_external_charges(self, system):
         """
         Gets the point charges of atoms from secondary subsystem for electrostatic embedding 
@@ -466,12 +463,11 @@ PUT THIS IN QMMM
         get_external_charge(link=True)
         get_external_charge(RC=True)
         """
+        charges = []
+        es = system.entire_sys
 
         if self.embedding_method == 'Mechanical':
             return None
-        
-        charges = []
-        es = system.entire_sys
 
         elif self.boundary_treatment == 'link':
             for i, chrg in enumerate(es['charges']):
@@ -550,5 +546,3 @@ PUT THIS IN QMMM
         
         return topology, positions
             
-
-

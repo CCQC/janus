@@ -16,8 +16,7 @@ class Psi4_wrapper(QM_wrapper):
 
     def compute_qm(self):
 
-        self.compute_energy() 
-        self.compute_gradient()
+        self.compute_energy_and_gradient() 
 
     def compute_energy(self):
         """
@@ -61,6 +60,15 @@ class Psi4_wrapper(QM_wrapper):
         psi4.core.clean()
         psi4.core.clean_options()
         self.set_up_psi4()
+        G = psi4.gradient(self.method)
+        self.gradient = np.asarray(G)
+
+    def compute_energy_and_gradient():
+        psi4.core.clean()
+        psi4.core.clean_options()
+        self.set_up_psi4()
+        self.energy, self.wavefunction = psi4.energy(self.method,
+                                                       return_wfn=True)
         G = psi4.gradient(self.method)
         self.gradient = np.asarray(G)
 

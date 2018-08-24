@@ -53,7 +53,7 @@ class AQMMM(ABC, QMMM):
         self.update_traj(main_info['positions'], main_info['pdb'])
         self.partition()
             
-        for i, system in self.systems[self.run_ID].items()
+        for i, system in self.systems[self.run_ID].items():
 
             self.qm_atoms = deepcopy(system.qm_atoms)
 

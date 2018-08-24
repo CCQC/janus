@@ -46,7 +46,7 @@ class OpenMM_wrapper(MM_wrapper):
         if 'is_periodic' in config:
             self.is_periodic = config['is_periodic']
         else:
-            self.is_periodic is False
+            self.is_periodic = False
 
         if 'mm_fric_coeff' in config:
             self.fric_coeff = config['mm_fric_coeff']
@@ -128,7 +128,7 @@ class OpenMM_wrapper(MM_wrapper):
         # Create an OpenMM system from an object's topology
 
         if initialize is True:
-            OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=True)
+            OM_system = self.create_openmm_system(topology, link_atoms,initialize=True)
             self.main_charges = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
         else:
             OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms)
@@ -157,7 +157,7 @@ class OpenMM_wrapper(MM_wrapper):
             return state
 
 
-    def create_openmm_system(self, topology, include_coulomb, link_atoms, initialize=False,
+    def create_openmm_system(self, topology, include_coulomb='all', link_atoms=None, initialize=False,
                              residue={}):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
@@ -263,7 +263,7 @@ class OpenMM_wrapper(MM_wrapper):
     def create_new_residue_template(self, topology):
 
         """
-        Create a new OpeMM residue template when there is no matching residue and registers it into self._ff
+        Create a new OpeMM residue template when there is no matching residue and registers it into self.ff
         forcefield object.
         Note: currently, if there is unmatched name, currently only checks original unmodified
               residue, N-terminus form, and C-terminus form. This may not be robust.
@@ -280,7 +280,7 @@ class OpenMM_wrapper(MM_wrapper):
         --------
         create_new_residue_template(topology)
         """
-        template, unmatched_res = self.ff.generateTemplatesForUnmatchedResidues(topology)
+        template, unmatched_res = self.forcefield.generateTemplatesForUnmatchedResidues(topology)
 
         # Loop through list of unmatched residues
         print('Loop through list of unmatched residues')
@@ -294,30 +294,30 @@ class OpenMM_wrapper(MM_wrapper):
         # loop through all atoms in modified template and all atoms in orignal template to assign atom type
         print('loop through all atoms in modified template and all atoms in orignal template to assign atom type')
         for atom in template[i].atoms:
-            for atom2 in self._ff._templates[res_name].atoms:
+            for atom2 in self.forcefield._templates[res_name].atoms:
                 if atom.name == atom2.name:
                     atom.type = atom2.type
             # the following is for when there is a unmatched name, check the N and C terminus residues
             if atom.type == None:
                 print('check n')
-                for atom3 in self._ff._templates[n_res_name].atoms:
+                for atom3 in self.forcefield._templates[n_res_name].atoms:
                     if atom.name == atom3.name:
                         atom.type = atom3.type
             if atom.type == None:
                 print('check c')
-                for atom4 in self._ff._templates[c_res_name].atoms:
+                for atom4 in self.forcefield._templates[c_res_name].atoms:
                     if atom.name == atom4.name:
                         atom.type = atom4.type
 
         # override existing modified residues with same name
         print(name)
-        if name in self.ff._templates:
+        if name in self.forcefield._templates:
             print('override existing modified residues with same name')
-            template[i].overrideLevel = self.ff._templates[name].overrideLevel + 1
+            template[i].overrideLevel = self.forcefield._templates[name].overrideLevel + 1
 
         # register the new template to the forcefield object
         print('register the new template to the forcefield object')
-        self.ff.registerResidueTemplate(template[i])
+        self.forcefield.registerResidueTemplate(template[i])
 
 
     def create_openmm_simulation(self, openmm_system, topology, positions):
@@ -443,6 +443,111 @@ class OpenMM_wrapper(MM_wrapper):
         write_pdb(mod, 'input.pdb')
         """
         OM.PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
+ 
+    def create_pdb(mm_pdb_file):
+            """
+            Creates an OpenMM PDB object
+
+            Parameters
+            ----------
+            mm_pdb_file: string of pdb file name
+
+            Returns
+            -------
+            OpenMM PDB object
+
+            Examples
+            --------
+            model = create_openmm_pdb('input.pdb')
+            """
+
+            pdb = OM_app.PDBFile(mm_pdb_file)
+            return pdb
 
 
+    def create_modeller(self, qm_atoms, keep_qm=None):
+        """
+        Makes a OpenMM modeller object based on given geometry
 
+        Parameters
+        ----------
+        keep_qm : a bool of whether to keep the qm atoms in the
+                modeller or delete them.
+                The default is to make a modeller without the qm atoms
+
+        Returns
+        -------
+        A OpenMM modeller object
+
+        Examples
+        --------
+        modeller = self.make_modeller()
+        modeller = self.make_modeller(keep_qm=True)
+        """
+
+        modeller = OM_app.Modeller(self.pdb.topology, self.pdb.getPositions())
+        if keep_qm is False:
+            OpenMM_wrapper.delete_atoms(modeller, qm_atoms)
+        elif keep_qm is True:
+            OpenMM_wrapper.keep_atoms(modeller, qm_atoms)
+        return modeller
+
+    def keep_atoms(model, atoms):
+            """
+            Acts on an OpenMM Modeller object to keep the specified
+            atoms in the MM system and deletes everything else
+
+            Parameters
+            ----------
+            model : OpenMM Modeller object
+            atoms : list of atoms to keep in an OpenMM Modeller object
+
+            Returns
+            -------
+            None
+
+            Examples
+            --------
+            keep_atom(mod, [0,1])
+            keep_atom(mod, ['O', 'H'])
+            """
+            lis = []
+
+            for atom in model.topology.atoms():
+                if type(atoms[0]) is int:
+                    if atom.index not in atoms:
+                        lis.append(atom)
+                elif type(atoms[0]) is str:
+                    if atom.name not in atoms:
+                        lis.append(atom)
+            model.delete(lis)
+
+
+    def delete_atoms(model, atoms):
+         """
+         Delete specified atoms from an OpenMM Modeller object
+
+         Parameters
+         ----------
+         model : OpenMM Modeller object
+         atoms : list of atom IDs (int) or atom names (str) to delete
+                     an OpenMM Modeller object
+
+         Returns
+         -------
+         None
+
+         Examples
+         --------
+         delete_atoms(model, [0, 3, 5])
+         delete_atoms(model, ['Cl'])
+         """
+         lis = []
+         for atom in model.topology.atoms():
+             if type(atoms[0]) is int:
+                 if atom.index in atoms:
+                     lis.append(atom)
+             elif type(atoms[0]) is str:
+                 if atom.name in atoms:
+                     lis.append(atom)
+         model.delete(lis)

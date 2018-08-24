@@ -15,7 +15,7 @@ class ONIOM_XS(AQMMM):
 
         self.define_buffer_zone(qm_center)
 
-        qm = System(indices=self.qm_atoms, self.run_ID, partition_ID='qm')
+        qm = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm')
 
         self.systems[self.run_ID] = {}
         self.systems[self.run_ID][qm.partition_ID] = qm

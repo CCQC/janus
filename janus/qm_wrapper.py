@@ -50,7 +50,7 @@ class QM_wrapper(ABC):
     def compute_qm(self):
         pass
 
-    @abtractmethod
+    @abstractmethod
     def build_qm_param(self):
         pass
 
