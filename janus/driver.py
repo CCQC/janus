@@ -2,16 +2,17 @@
 This is the qmmm driver module
 """
 import json
-from . import parser
-from .system import System
-from .qm_wrapper import QM_wrapper 
+import configparser
 from .psi4_wrapper import Psi4_wrapper 
-from .mm_wrapper import MM_wrapper 
 from .openmm_wrapper import OpenMM_wrapper 
 from .qmmm import QMMM
-from .aqmmm import AQMMM
 from .oniom_xs import ONIOM_XS
+from .hot_spot import HotSpot
 
+def parse_input(filename):
+    config = configparser.ConfigParser()
+    config.read(filename)
+    return config
 
 def load_system(filename):
 
@@ -43,10 +44,12 @@ def initialize_wrappers(config):
 
     if config['aqmmm_scheme'] is None:
         qmmm = QMMM(config, qm_wrapper, mm_wrapper)
-    elif config['aqmmm_scheme'] == 'ONIOM-XS'
+    elif config['aqmmm_scheme'] == 'ONIOM-XS':
         qmmm = ONIOM_XS(config, qm_wrapper, mm_wrapper)
+    elif config['aqmmm_scheme'] == 'Hot-Spot':
+        qmmm = HotSpot(config, qm_wrapper, mm_wrapper)
     else:
-        print("Only ONIOM_XS currently implemented")
+        print("Only ONIOM_XS and Hot Spot currently implemented")
 
     # initialize mm_wrapper with information about initial system
     mm_wrapper.initialize()
