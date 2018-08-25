@@ -1,3 +1,9 @@
+
+sys_ala = system.System(qm={"qm_atoms": [0,1,2,3,4,5,6]}, mm={'mm_pdb_file' : ala_water_pdb_file})
+sys_mech = system.System(qm={"qm_atoms": [0,1,2]}, mm={'mm_pdb_file' : water_pdb_file})
+sys_elec = system.System(qmmm=qmmm_elec,qm={"qm_atoms": [0,1,2]}, mm={'mm_pdb_file' : water_pdb_file})
+sys_ala_link = system.System(qm={"qm_atoms": [0, 1, 2, 3]}, mm={'mm_pdb_file' : ala_pdb_file})
+
 def test_run_qmmm():
     pass
 

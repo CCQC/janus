@@ -1,141 +1,181 @@
 """
 Testing for psi4_wrapper.py module
 """
-import pytest
 from janus import psi4_wrapper
-from janus import system
 import numpy as np
 from copy import deepcopy
 
-qmmm_elec = {"embedding_method" : "Electrostatic"}
-QM = {"qm_atoms" : [0,1,2,3,4,5]}
-qm_rc = {"qm_atoms" : [0,1,2,3]}
-
-sys_mech = system.System(qm=QM)
-sys_elec = system.System(qmmm=qmmm_elec, qm=QM)
-sys_rc = system.System(qmmm=qmmm_elec, qm=qm_rc)
+#qmmm_elec = {"embedding_method" : "Electrostatic"}
+#QM = {"qm_atoms" : [0,1,2,3,4,5]}
+#qm_rc = {"qm_atoms" : [0,1,2,3]}
+#
+#
+#
+#
+#
+#
+#sys_rc.entire_sys = {"charges" : [-0.4157, 0.2719, 0.1997, 0.1997, 0.0337, 0.0823, -0.1825, 0.0603, 0.0603, 0.0603, 0.5973, -0.5679],
+#                     "positions" : np.array([[ 0.024    ,  -0.103   ,  -0.101     ], 
+#                                            [ 0.027     , -1.13200001, -0.239     ],
+#                                            [-0.80499999,  0.163     ,  0.471     ],
+#                                            [-0.059     ,  0.38400002, -1.01899996],
+#                                            [ 1.24700002,  0.37500001,  0.63600004],
+#                                            [ 0.814     ,  0.86099997,  1.49499997],
+#                                            [ 2.05699995, -0.77200003,  1.28900006],
+#                                            [ 3.13600004, -0.75199999,  1.03200004],
+#                                            [ 1.99000001, -0.64099997,  2.39500001],
+#                                            [ 1.65600002, -1.78200006,  1.06299996],
+#                                            [ 1.95600003,  1.57900006,  0.036     ],
+#                                            [ 1.219     ,  2.52499998, -0.20099999]])}
+#          
+#
+config1 = {}
+config2 = {'qm_basis_set' : '3-21G',
+           'qm_scf_type' : 'pk',
+            'qm_reference' : 'uhf'}
+qm_sys1 = psi4_wrapper.Psi4_wrapper(config1)
+qm_sys2 = psi4_wrapper.Psi4_wrapper(config2)
+qm_sys3 = psi4_wrapper.Psi4_wrapper(config2)
 
 qm_mol = """O     0.123   3.593   5.841 
- H    -0.022   2.679   5.599 
- H     0.059   3.601   6.796 
- O     0.017   6.369   7.293 
- H    -0.561   5.928   6.669 
- H     0.695   6.771   6.749 
- """
+H    -0.022   2.679   5.599 
+H     0.059   3.601   6.796 
+O     0.017   6.369   7.293 
+H    -0.561   5.928   6.669 
+H     0.695   6.771   6.749 
+"""
+gradient1 = np.array([[-0.00995519, -0.04924799,  0.03606667],  
+                        [ 0.00685005,  0.0390004 ,  0.00096903],
+                        [ 0.00308006,  0.00941025, -0.03776953],
+                        [ 0.00633522, -0.00137517, -0.0604841 ],
+                        [ 0.01545583,  0.01344479,  0.03199705],
+                        [-0.02176597, -0.01123228,  0.02922087]])
 
-sys_mech.qm_positions = qm_mol
-sys_elec.qm_positions = qm_mol
+gradient2 = np.array([[ 0.00144853, -0.00776505,  0.0015876 ],
+                        [ 0.00158141,  0.01248499,  0.00729603],
+                        [-0.0027212 , -0.00692001, -0.01255027],
+                        [ 0.00238897,  0.00104995, -0.00428942],
+                        [ 0.0084365 ,  0.00927855,  0.00464643],
+                        [-0.01114469, -0.00549142,  0.00150409]])
 
-sys_elec.second_subsys = {"charges" : [-0.834, 0.417, 0.417], "positions" : np.asarray([[ 0.115 ,  0.31300001 , 6.14799976],
-                                                                                       [ 0.12  ,  0.241      , 5.19299984],
-                                                                                       [ 0.66  , -0.41499998 , 6.44599974]])}
+gradient3 = np.array([[  1.70948114e-03,  -5.78855078e-03,  -7.33574116e-06],
+                        [  1.41369972e-03,   1.00855666e-02,   1.12539617e-02],
+                        [ -2.87535666e-03,  -9.09313637e-03,  -1.32275167e-02],
+                        [  2.22089216e-03,   1.89013451e-03,  -4.26816857e-03],
+                        [  8.65798756e-03,   8.65893257e-03,   4.80828938e-03],
+                        [ -1.11267039e-02,  -5.75294651e-03,   1.44077001e-03]])
+
+charges = [[-0.834, 0.115 ,  0.313, 6.148],
+            [ 0.417, 0.12  ,  0.241, 5.193],
+            [ 0.417, 0.66  , -0.415, 6.446]]
+
+def test_build_qm_param():
+    
+    qm_sys1.build_qm_param()
+    qm_sys2.build_qm_param()
+
+    assert qm_sys1.qm_param['basis'] == 'STO-3G'
+    assert qm_sys1.qm_param['scf_type'] == 'df' 
+    assert qm_sys1.qm_param['guess'] == 'sad' 
+    assert qm_sys1.qm_param['reference'] == 'rhf'
+    assert qm_sys1.qm_param['e_convergence'] == 1e-8
+    assert qm_sys1.qm_param['d_convergence'] == 1e-8 
+
+    assert qm_sys2.qm_param['basis'] == '3-21G'
+    assert qm_sys2.qm_param['scf_type'] == 'pk' 
+    assert qm_sys2.qm_param['guess'] == 'sad' 
+    assert qm_sys2.qm_param['reference'] == 'uhf'
+    assert qm_sys2.qm_param['e_convergence'] == 1e-8
+    assert qm_sys2.qm_param['d_convergence'] == 1e-8 
+
+def test_set_external_charges():
+
+    qm_sys2.set_external_charges(charges)
+    
+    assert qm_sys2.external_charges == charges
+
+def test_set_qm_geometry():
+    
+    qm_sys1.set_qm_geometry(qm_mol)
+
+    assert qm_sys1.qm_geometry == qm_mol
+
+def test_compute_energy_and_gradient():
+    
+    qm_sys1.compute_energy_and_gradient()
+
+    assert np.allclose(qm_sys1.energy, -149.92882700815)
+    assert np.allclose(qm_sys1.gradient, gradient1)
+
+def test_run_qm():
+
+    info2 = qm_sys2.run_qm(qm_mol)
+    info3 = qm_sys3.run_qm(qm_mol)
 
 
-sys_rc.boundary_info['mm_index'] = 4
-sys_rc.boundary_info['bonds_to_mm'] = [10, 6, 5]
-
-sys_rc.entire_sys = {"charges" : [-0.4157, 0.2719, 0.1997, 0.1997, 0.0337, 0.0823, -0.1825, 0.0603, 0.0603, 0.0603, 0.5973, -0.5679],
-                     "positions" : np.array([[ 0.024    ,  -0.103   ,  -0.101     ], 
-                                            [ 0.027     , -1.13200001, -0.239     ],
-                                            [-0.80499999,  0.163     ,  0.471     ],
-                                            [-0.059     ,  0.38400002, -1.01899996],
-                                            [ 1.24700002,  0.37500001,  0.63600004],
-                                            [ 0.814     ,  0.86099997,  1.49499997],
-                                            [ 2.05699995, -0.77200003,  1.28900006],
-                                            [ 3.13600004, -0.75199999,  1.03200004],
-                                            [ 1.99000001, -0.64099997,  2.39500001],
-                                            [ 1.65600002, -1.78200006,  1.06299996],
-                                            [ 1.95600003,  1.57900006,  0.036     ],
-                                            [ 1.219     ,  2.52499998, -0.20099999]])}
-          
-          
-psi4_mech = psi4_wrapper.Psi4_wrapper(sys_mech)
-psi4_elec = psi4_wrapper.Psi4_wrapper(sys_elec)
-psi4_rc = psi4_wrapper.Psi4_wrapper(sys_rc)
-psi4_mp2 = deepcopy(psi4_mech) 
-psi4_mp2._system.qm_method = 'mp2'
-
+    assert np.allclose(info2['energy'],-151.18483039002274)
+    assert np.allclose(info3['energy'],-151.17927491846075)
+    assert np.allclose(info2['gradient'], gradient2)
+    assert np.allclose(info3['gradient'], gradient3)
 
 def test_compute_energy():
     """
     Function to test get_psi4_energy is getting energy correctly
     """
 
-    psi4_mech.get_energy()
-    psi4_elec.get_energy()
+    qm_sys1.compute_energy()
+    qm_sys2.compute_energy()
+    qm_sys3.compute_energy()
 
-    assert np.allclose(psi4_mech._energy, -149.9288270081589)
-    assert np.allclose(psi4_elec._energy, -149.93278909825366)
+    assert np.allclose(qm_sys1.energy, -149.92882700815)
+    assert np.allclose(qm_sys2.energy,-151.18483039002274)
+    assert np.allclose(qm_sys3.energy,-151.17927491846075)
+
 
 def test_compute_gradient():
-    """
-    Function to test get_psi4_gradient is getting the gradient correctly
-    """
+    
+    qm_sys1.compute_gradient()
+    qm_sys2.compute_gradient()
+    qm_sys3.compute_gradient()
 
-    psi4_mech.get_gradient()
-    psi4_elec.get_gradient()
+    assert np.allclose(qm_sys1.gradient, gradient1)
+    assert np.allclose(qm_sys2.gradient, gradient2)
+    assert np.allclose(qm_sys3.gradient, gradient3)
 
-    gradient_mech = np.array([[-0.00995519, -0.04924799,  0.03606667],
-                              [ 0.00685005,  0.0390004 ,  0.00096903],
-                              [ 0.00308006,  0.00941025, -0.03776953],
-                              [ 0.00633522, -0.00137517, -0.0604841 ],
-                              [ 0.01545583,  0.01344479,  0.03199705],
-                              [-0.02176597, -0.01123228,  0.02922087]])
-
-    gradient_elec = np.array([[-0.00984083, -0.04908026,  0.03652675],
-                              [ 0.00674015,  0.03945264, -0.00167509],
-                              [ 0.00310424,  0.01065926, -0.036673  ],
-                              [ 0.00656583, -0.00182659, -0.06047419],
-                              [ 0.01528687,  0.01378971,  0.03179818],
-                              [-0.02186328, -0.01109774,  0.02931768]])
-  
-    assert np.allclose(psi4_mech._gradient, gradient_mech)
-    assert np.allclose(psi4_elec._gradient, gradient_elec)
-
-
-def test_run_qm():
-
-    mech = psi4_mech.get_qm(qm_positions=None)
-    elec = psi4_elec.get_qm(qm_positions=None)
-
-    assert np.allclose(mech['energy'], psi4_mech._energy)
-    assert np.allclose(mech['gradients'], psi4_mech._gradient)
-    assert np.allclose(elec['energy'],   psi4_elec._energy)
-    assert np.allclose(elec['gradients'], psi4_elec._gradient)
 
 def test_compute_scf_charges():
 
-    psi4_mech.get_scf_charges()
-    psi4_elec.get_scf_charges()
+    qm_sys1.compute_scf_charges()
 
-    charge_mech = np.array([-0.3742676, 0.18533499, 0.18958095, -0.37355466, 0.18900526, 0.18390106])
-    charge_elec = np.array([-0.38374907, 0.19459701, 0.1898844, -0.37350301, 0.19019059, 0.18258009])
+    charge1 = np.array([-0.3742676, 0.18533499, 0.18958095, -0.37355466, 0.18900526, 0.18390106])
 
-    assert np.allclose(psi4_mech._charges, charge_mech)
-    assert np.allclose(psi4_elec._charges, charge_elec)
-    
+    assert np.allclose(qm_sys1.charges, charge1)
+
 def test_compute_energy_and_charges():
 
-    psi4_mp2.get_energy_and_charges()
+    qm_sys2.compute_energy_and_charges()
 
-    charge_mp2 = np.array([-0.35524337, 0.17608227, 0.17979322, -0.35448027, 0.17916542, 0.17468273])
+    charge2 = np.array([-0.75706309, 0.38308182, 0.37724382, -0.74477242, 0.37486706, 0.36664282])
 
-    assert np.allclose(psi4_mp2._charges, charge_mp2)
-    assert np.allclose(psi4_mp2._energy,  -149.9997933859008)
+    assert np.allclose(qm_sys2.energy,-151.18483039002274)
+    assert np.allclose(qm_sys2.charges, charge2)
 
+test_build_qm_param()
+test_set_external_charges()
+test_set_qm_geometry()
+test_compute_energy_and_gradient()
+test_run_qm()
+test_compute_gradient()
+test_compute_energy()
+test_compute_scf_charges()
+test_compute_energy_and_charges()
 
-def test_build_qm_param():
     
-    assert sys1.qm_param['basis'] == 'STO-3G'
-    assert sys1.qm_param['scf_type'] == 'df' 
-    assert sys1.qm_param['guess'] == 'sad' 
-    assert sys1.qm_param['reference'] == 'rhf'
-    assert sys1.qm_param['e_convergence'] == 1e-8
-    assert sys1.qm_param['d_convergence'] == 1e-8 
+    
+    
+    
+    
 
-    assert sys2.qm_param['basis'] == '6-31G'
-    assert sys2.qm_param['scf_type'] == 'pk' 
-    assert sys2.qm_param['guess'] == 'sad' 
-    assert sys2.qm_param['reference'] == 'rhf'
-    assert sys2.qm_param['e_convergence'] == 1e-9
-    assert sys2.qm_param['d_convergence'] == 1e-8 
+
+
+

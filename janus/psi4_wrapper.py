@@ -9,14 +9,10 @@ class Psi4_wrapper(QM_wrapper):
 
     def __init__(self, config):
 
-        super().__init__(system, "Psi4")
+        super().__init__(config, "Psi4")
         self.energy = None
         self.wavefunction = None
         self.gradient = None
-
-    def compute_qm(self):
-
-        self.compute_energy_and_gradient() 
 
     def compute_energy(self):
         """
@@ -63,7 +59,7 @@ class Psi4_wrapper(QM_wrapper):
         G = psi4.gradient(self.method)
         self.gradient = np.asarray(G)
 
-    def compute_energy_and_gradient():
+    def compute_energy_and_gradient(self):
         psi4.core.clean()
         psi4.core.clean_options()
         self.set_up_psi4()
@@ -103,9 +99,9 @@ class Psi4_wrapper(QM_wrapper):
 
         psi4.set_options(self.qm_param)
 
-        if self.charges:
+        if self.external_charges is not None:
             Chrgfield = psi4.QMMM()
-            for charge in self.charges:
+            for charge in self.external_charges:
                 Chrgfield.extern.addCharge(charge[0], charge[1], charge[2], charge[3])
             psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
 
@@ -129,7 +125,7 @@ class Psi4_wrapper(QM_wrapper):
         get_scf_charge()
         """
         if self.wavefunction is not None:
-            psi4.oeprop(self._wavefunction, self.charge_method)
+            psi4.oeprop(self.wavefunction, self.charge_method)
             self.charges = np.asarray(self.wavefunction.atomic_point_charges())
             self.charges = self.charges 
 
@@ -155,7 +151,7 @@ class Psi4_wrapper(QM_wrapper):
         psi4.core.clean()
         psi4.core.clean_options()
         self.set_up_psi4()
-        self.energy, self.wavefunction = psi4.prop(self.qm_method,
+        self.energy, self.wavefunction = psi4.prop(self.method,
                                 properties=[self.charge_method],
                                 return_wfn=True)
         self.charges = np.asarray(self.wavefunction.atomic_point_charges())

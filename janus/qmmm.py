@@ -90,7 +90,7 @@ class QMMM(object):
             system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb='no_link', link_atoms=link_indices)
 
             # Get QM energy
-            self.qm_geometry = self.get_qm_positions(traj)
+            self.qm_geometry = self.get_qm_geometry(traj)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
 
             # Compute the total QM/MM energy based on
@@ -127,7 +127,7 @@ class QMMM(object):
             system.second_subsys['mm'] = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
 
             # Get QM energy
-            self.qm_geometry = self.get_qm_positions(traj)
+            self.qm_geometry = self.get_qm_geometry(traj)
             charges = self.get_external_charges(system)
             self.qm_wrapper.set_external_charges(charges)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
