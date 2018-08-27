@@ -258,16 +258,16 @@ class QMMM(object):
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
 
-        qm_atoms = self.edit_qm_atoms(qm_atoms)
+        self.edit_qm_atoms(qm_atoms)
 
         self.qmmm_boundary_bonds = []
         # determining if there are bonds that need to be cut
         for bond in self.topology.bonds:
             # find any bonds that involve the qm atoms
             # iterates over tuple of mdtraj atom objects
-            if bond[0].index in qm_atoms or bond[1].index in qm_atoms:
+            if (bond[0].index in qm_atoms or bond[1].index in qm_atoms):
                 # isolate bonds that involve one in the qm atoms and one outside
-                if bond[0].index not in qm_atoms or bond[1].index not in qm_atoms:
+                if (bond[0].index not in qm_atoms or bond[1].index not in qm_atoms):
                     qm_atom = {}
                     mm_atom = {}
                     if bond[0].index in qm_atoms:
@@ -282,7 +282,7 @@ class QMMM(object):
 
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
-
+        
         top = self.topology
         residues = [] 
         for i in qm_atoms:
@@ -381,10 +381,10 @@ class QMMM(object):
             qm_atoms = self.qm_atoms
 
         self.find_boundary_bonds(qm_atoms)
-        traj = self.trajectory.atom_slice(qm_atoms)
+        traj = self.traj.atom_slice(qm_atoms)
 
         link_indices = []
-        if self.qmmm_boundary_bonds():
+        if self.qmmm_boundary_bonds:
             self.prepare_link_atoms()
 
             for i, link in self.link_atoms.items():

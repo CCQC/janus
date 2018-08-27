@@ -79,16 +79,24 @@ class System(object):
     # need to add all the other parameters written into system e.g. energy
 
 
-    def compute_COM(self, positions):
-    
+    def compute_COM(self, atoms, traj=None):
+        
+        if traj is None:
+            traj = self.primary_subsys['trajectory']
+
         xyz = np.zeros(3)
         M = 0
 
-        for pos in positions:
-            m = element(pos[0]).atomic_weight
-            M += m
-            xyz += m * np.array(pos[1])
+        for i in atoms:
 
+            symbol = traj.topology.atom(i).element.symbol
+            m = element(symbol).atomic_weight
+            # this gives positions in nm
+            position =  np.array(traj.xyz[0][i])
+
+            M += m
+            xyz += m * position
+            
         xyz *= 1/M
         
         return xyz

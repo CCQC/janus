@@ -22,7 +22,7 @@ class ONIOM_XS(AQMMM):
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
-            qm_bz = Partition(indices=self.qm_atoms, partition_ID='qm_bz')
+            qm_bz = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm_bz')
             for key, value in self.buffer_groups.items():
                 for idx in value:
                     qm_bz.qm_atoms.append(idx)
@@ -66,8 +66,7 @@ class ONIOM_XS(AQMMM):
         partition.switching_functions = []
         if partition.buffer_groups:
             for key, value in partition.buffer_groups.items():
-                positions = self.get_qm_positions(value, as_string=False)
-                COM = partition.compute_COM(positions)
+                COM = partition.compute_COM(value)
 
                 r_i = np.linalg.norm(COM - self.qm_center_xyz)
                 s_i, d_s_i = self.compute_lamda_i(r_i)
