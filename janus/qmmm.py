@@ -90,7 +90,7 @@ class QMMM(object):
             system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb='no_link', link_atoms=link_indices)
 
             # Get QM energy
-            self.qm_geometry = self.get_qm_geometry(traj)
+            self.qm_geometry = self.get_qm_geometry(traj_ps)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
 
             # Compute the total QM/MM energy based on
@@ -127,7 +127,7 @@ class QMMM(object):
             system.second_subsys['mm'] = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
 
             # Get QM energy
-            self.qm_geometry = self.get_qm_geometry(traj)
+            self.qm_geometry = self.get_qm_geometry(traj_ps)
             charges = self.get_external_charges(system)
             self.qm_wrapper.set_external_charges(charges)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
@@ -148,9 +148,11 @@ class QMMM(object):
         # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
         # NEED TO MAKE SURE UNITS CONSISTENT
 
-        if scheme == 'subtractive':
+        if self.qmmm_scheme == 'subtractive':
 
-            ps_mm_grad, qm_grad = system.primary_subsys['gradients'], self.qm['gradients']
+            print(system.primary_subsys['mm']['gradients'])
+            print(system.qm_info['gradients'])
+            ps_mm_grad, qm_grad = system.primary_subsys['mm']['gradients'], system.qm_info['gradients']
             qmmm_force = {}
                 
             # iterate over list of qm atoms
@@ -163,7 +165,7 @@ class QMMM(object):
                 qmmm_force[atom] += -1 * (- ps_mm_grad[i] + qm_grad[i])
                 
                 # treating gradients for link atoms
-                if self.boundary_info:
+                if self.qmmm_boundary_bonds:
                     for j, link in self.link_atoms.items():
                         q1 = link['qm_atom'].index
                         m1 = link['mm_atom'].index
@@ -181,10 +183,10 @@ class QMMM(object):
                         #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
 
-            if system.second_subsys['gradients']:
+            if 'mm' in system.second_subsys:
                 # iterate over list of mm atoms
                 for i, atom in enumerate(self.mm_atoms):
-                    qmmm_force[atom] = -1 * system.second_subsys['gradients'][i]
+                    qmmm_force[atom] = -1 * system.second_subsys['mm']['gradients'][i]
 
             system.qmmm_forces = qmmm_force
         

@@ -74,7 +74,7 @@ class QM_wrapper(ABC):
 
         self.info = {}
         self.info['energy'] = self.energy
-        self.info['gradient'] = self.gradient
+        self.info['gradients'] = self.gradient
         
         return self.info
 
