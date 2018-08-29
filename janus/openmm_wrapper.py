@@ -128,8 +128,7 @@ class OpenMM_wrapper(MM_wrapper):
         # Create an OpenMM system from an object's topology
 
         if initialize is True:
-            OM_system = self.create_openmm_system(topology, link_atoms,initialize=True)
-            self.main_charges = [OM_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(OM_system.getNumParticles())]
+            OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=True)
         else:
             OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms)
 
@@ -219,6 +218,8 @@ class OpenMM_wrapper(MM_wrapper):
                 self.qmmm_force.addParticle(i, np.array([0.0, 0.0, 0.0]))
             
             openmm_system.addForce(self.qmmm_force)
+
+            self.main_charges = [openmm_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(openmm_system.getNumParticles())]
 
         # If in electrostatic embedding scheme need to get a system without coulombic interactions
         if include_coulomb is None:
@@ -551,3 +552,6 @@ class OpenMM_wrapper(MM_wrapper):
                  if atom.name in atoms:
                      lis.append(atom)
          model.delete(lis)
+
+    def get_main_charges(self):
+        return self.main_charges

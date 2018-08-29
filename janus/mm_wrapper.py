@@ -31,6 +31,8 @@ class MM_wrapper(ABC):
             self.embedding_method = 'Mechanical'
         
         self.program = program
+        self.main_info = None
+        self.main_charges = None
 
 
         super().__init__()
@@ -52,5 +54,10 @@ class MM_wrapper(ABC):
     def compute_mm(self):
         pass
 
+    @abstractmethod
+    def get_main_charges(self):
+        pass
+
+    
     
 # still need to implement make zero function?
