@@ -167,20 +167,21 @@ class QMMM(object):
                 # treating gradients for link atoms
                 if self.qmmm_boundary_bonds:
                     for j, link in self.link_atoms.items():
-                        q1 = link['qm_atom'].index
-                        m1 = link['mm_atom'].index
-                        link_index = link['link_atom_index']
-                        g = link['scale_factor'] 
-                        if atom == q1:
-                            if self.boundary_treatment == 'link_atom':
-                                # Project forces of link atoms onto the mm and qm atoms of the link atom bond
-                                qmmm_force[q1] += -(1 - g) * ps_mm_grad[link_index] + (1 - g) * qm_grad[link_index]
-                                qmmm_force[m1] += -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
-                                
-                        # # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
-                        # if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
-                        #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
-                        #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
+                        if isinstance(j, int):
+                            q1 = link['qm_atom'].index
+                            m1 = link['mm_atom'].index
+                            link_index = link['link_atom_index']
+                            g = link['scale_factor'] 
+                            if atom == q1:
+                                if self.boundary_treatment == 'link_atom':
+                                    # Project forces of link atoms onto the mm and qm atoms of the link atom bond
+                                    qmmm_force[q1] += -(1 - g) * ps_mm_grad[link_index] + (1 - g) * qm_grad[link_index]
+                                    qmmm_force[m1] += -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
+                                    
+                            # # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
+                            # if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
+                            #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
+                            #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
 
             if 'mm' in system.second_subsys:
@@ -393,23 +394,25 @@ class QMMM(object):
 
         link_indices = []
         if self.qmmm_boundary_bonds:
-            self.prepare_link_atoms()
+            self.prepare_link_atom()
 
             for i, link in self.link_atoms.items():
+                
+                if isinstance(i, int):
+                
+                    link_element = md.element.Element.getBySymbol(link['link_atom'])
 
-                link_element = md.element.Element.getBySymbol(link['link_atom'])
+                    for atom in traj.topology.atoms:
+                        if atom.serial == link['qm_atom'].serial:
+                            traj.topology.add_atom(name='H', element=link_element, residue=atom.residue, serial='link')
 
-                for atom in traj.topology.atoms:
-                    if atom.serial == link['qm_atom'].serial:
-                        traj.topology.add_atom(name='H', element=link_element, residue=atom.residue, serial='link')
+                            for atom2 in traj.topology.atoms:
+                                if atom2.serial == 'link':
+                                    traj.topology.add_bond(atom2, atom)
+                                    link['link_atom_index'] = atom2.index
 
-                        for atom2 in traj.topology.atoms:
-                            if atom2.serial == 'link':
-                                traj.topology.add_bond(atom2, atom)
-                                link['link_atom_index'] = atom2.index
-
-                link_indices.append(link['link_atom_index'])
-                traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
+                    link_indices.append(link['link_atom_index'])
+                    traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
         
         return traj, link_indices
 
@@ -437,7 +440,7 @@ class QMMM(object):
     
         self.mm_atoms = [i for i in range(self.traj.n_atoms) if i not in qm_atoms]
 
-        traj = self.trajectory.atom_slice(mm_atoms)
+        traj = self.traj.atom_slice(self.mm_atoms)
 
         return traj
 
@@ -482,7 +485,7 @@ class QMMM(object):
         elif self.boundary_treatment == 'link_atom':
             for i, chrg in enumerate(charge):
                 # add every atom not in qm system 
-                if i not in self.qm_atoms:
+                if i not in system.qm_atoms:
                     # save positions in angstroms
                     charges.append([chrg, es_pos[i][0], es_pos[i][1], es_pos[i][2]])
         
@@ -491,21 +494,23 @@ class QMMM(object):
 
             for i, chrg in enumerate(charge):
                 # add every atom not in qm system or the M1 atom 
-                if i not in self.qm_atoms and i not in self.link_atoms['all_mm']:
+                if i not in system.qm_atoms and i not in self.link_atoms['all_mm']:
                         charges.append([chrg, es_pos[i][0], es_pos[i][1], es_pos[i][2]])
             
             bonds = self.link_atoms['all_outer_bonds']
 
             for i, index in enumerate(self.link_atoms['all_mm']):
 
-                # get q0
-                q0 = charge[index] / len(bonds[i])
+                # check to see that the M1 atom is attached to any M2 atoms
+                if bonds[i]:
+                    # get q0
+                    q0 = charge[index] / len(bonds[i])
 
-                # get positions in angstroms
-                positions = self.get_redistributed_positions(es_pos, bonds[i], index)
+                    # get positions in angstroms
+                    positions = self.get_redistributed_positions(es_pos, bonds[i], index)
 
-                for pos in positions:
-                    charges.append([q0, pos[0], pos[1], pos[2]])
+                    for pos in positions:
+                        charges.append([q0, pos[0], pos[1], pos[2]])
 
         elif self.boundary_treatment == 'RCD':
 
@@ -516,22 +521,25 @@ class QMMM(object):
 
                 m1_m2.append(index)
                 # get q0
-                q0 = charge[index] / len(bonds[i])
-                q0_RCD = q0 * 2
 
-                # get positions in angstroms
-                positions = self.get_redistributed_positions(es_pos, bonds[i], index)
+                if bonds[i]:
 
-                for pos in positions:
-                    charges.append([q0_RCD, pos[0], pos[1], pos[2]])
+                    q0 = charge[index] / len(bonds[i])
+                    q0_RCD = q0 * 2
 
-                for bond in bonds[i]:
-                    m1_m2.append(bond)
-                    charges.append([charge[bond] - q0, es_pos[bond][0], es_pos[bond][1], es_pos[bond][2]])
+                    # get positions in angstroms
+                    positions = self.get_redistributed_positions(es_pos, bonds[i], index)
+
+                    for pos in positions:
+                        charges.append([q0_RCD, pos[0], pos[1], pos[2]])
+
+                    for bond in bonds[i]:
+                        m1_m2.append(bond)
+                        charges.append([charge[bond] - q0, es_pos[bond][0], es_pos[bond][1], es_pos[bond][2]])
 
             for i, chrg in enumerate(charge):
                 # add every atom not in qm system or the M1 atom 
-                if i not in self.qm_atoms and i not in m1_m2:
+                if i not in system.qm_atoms and i not in m1_m2:
                         charges.append([chrg, es_pos[i][0], es_pos[i][1], es_pos[i][2]])
 
                 

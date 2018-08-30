@@ -10,8 +10,8 @@ traj = md.load(water)
 
 def test_compute_scale_factor_g():
     
-    g1 = sys.compute_scale_factor_g('C', 'C', 'H')
-    g2 = sys.compute_scale_factor_g('C', 'N', 'H')
+    g1 = system.System.compute_scale_factor_g('C', 'C', 'H')
+    g2 = system.System.compute_scale_factor_g('C', 'N', 'H')
     
     assert g1 == 0.7133333333333334
     assert g2 == 0.7328767123287672

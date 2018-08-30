@@ -115,8 +115,8 @@ def test_run_qm():
 
     assert np.allclose(info2['energy'],-151.18483039002274)
     assert np.allclose(info3['energy'],-151.17927491846075)
-    assert np.allclose(info2['gradient'], gradient2)
-    assert np.allclose(info3['gradient'], gradient3)
+    assert np.allclose(info2['gradients'], gradient2)
+    assert np.allclose(info3['gradients'], gradient3)
 
 def test_compute_energy():
     """
