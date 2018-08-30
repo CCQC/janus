@@ -45,7 +45,34 @@ class System(object):
         self.boundary = {}
 
 
-    def compute_scale_factor_g(self, qm, mm, link):
+        
+    # need to add all the other parameters written into system e.g. energy
+
+
+    def compute_COM(self, atoms, traj=None):
+        
+        if traj is None:
+            traj = self.primary_subsys['trajectory']
+
+        xyz = np.zeros(3)
+        M = 0
+
+        for i in atoms:
+
+            symbol = traj.topology.atom(i).element.symbol
+            m = element(symbol).atomic_weight
+            # this gives positions in nm
+            position =  np.array(traj.xyz[0][i])
+
+            M += m
+            xyz += m * position
+            
+        xyz *= 1/M
+        
+        return xyz
+
+
+    def compute_scale_factor_g(qm, mm, link):
         '''
         Computes scale factor g for link atom, RC, and RCD schemes. 
         Note: r given in pmm but don't need to convert because it is a ratio
@@ -75,31 +102,3 @@ class System(object):
         g = (r_qm + r_link)/(r_qm + r_mm)
         
         return g
-        
-    # need to add all the other parameters written into system e.g. energy
-
-
-    def compute_COM(self, atoms, traj=None):
-        
-        if traj is None:
-            traj = self.primary_subsys['trajectory']
-
-        xyz = np.zeros(3)
-        M = 0
-
-        for i in atoms:
-
-            symbol = traj.topology.atom(i).element.symbol
-            m = element(symbol).atomic_weight
-            # this gives positions in nm
-            position =  np.array(traj.xyz[0][i])
-
-            M += m
-            xyz += m * position
-            
-        xyz *= 1/M
-        
-        return xyz
-
-
-
