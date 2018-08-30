@@ -4,7 +4,6 @@ import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
-# numbers denote how many buffer groups are in each
 
 config = {"mm_pdb_file" : water}
 psi4 = psi4_wrapper.Psi4_wrapper(config)
@@ -67,7 +66,7 @@ def test_compute_lamda_i():
     s, d = oxs_1.compute_lamda_i(0.333580476259)
     assert (np.allclose(s, 1.1588880014834282) and np.allclose(d, 2.3113804921728383))
 
-def test_switching_function():
+def test_get_switching_function():
 
     oxs_2.systems[0]['qm_bz'].energy = 1.2
     oxs_2.systems[0]['qm_bz'].primary_subsys['trajectory'] = oxs_2.traj

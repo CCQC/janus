@@ -15,6 +15,7 @@ class HotSpot(AQMMM):
             qm_center = self.qm_center
 
         self.define_buffer_zone(qm_center)
+        print(self.qm_atoms)
 
         qm = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm')
 
@@ -27,6 +28,7 @@ class HotSpot(AQMMM):
                 for idx in value:
                     qm.qm_atoms.append(idx)
                 
+        self.systems[self.run_ID] = {}
         self.systems[self.run_ID][qm.partition_ID] = qm
 
     def run_aqmmm(self):
@@ -58,11 +60,12 @@ class HotSpot(AQMMM):
         partition.switching_functions = []
         if partition.buffer_groups:
             for key, value in self.buffer_groups.items():
-                positions = self.get_qm_positions(value, as_string=False)
-                COM = partition.compute_COM(positions)
+                COM = partition.compute_COM(value)
+                print(COM, value)
 
                 r_i = np.linalg.norm(COM - self.qm_center_xyz)
                 lamda_i = self.compute_lamda_i(r_i)
+                print(COM, value, r_i, lamda_i)
                 partition.switching_functions.append(lamda_i)
             
 
@@ -71,11 +74,12 @@ class HotSpot(AQMMM):
         if r_i <= self.Rmin:
             lamda_i = 1
 
+
         elif r_i > self.Rmax:
             lamda_i = 0
 
         else:
-            lamda_i = (self.Rmax**2 - r_i**2)**2 * (self.Rmax**2 + 2*r_i**2 - 3*self.Rmin**2)
-            lamda_i *= 1/(self.Rmax**2 - self.Rmin**2)**2
+            lamda_i = (self.Rmax**2 - r_i**2)**2 * (self.Rmax**2 + 2*(r_i**2) - 3*(self.Rmin**2))
+            lamda_i *= 1/(self.Rmax**2 - self.Rmin**2)**3
 
         return lamda_i

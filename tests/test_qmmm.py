@@ -34,7 +34,6 @@ sys_ala_link = system.System([0,1,2,3], 0)
 sys_ala_RC = system.System([0,1,2,3,4,5], 0)
 sys_ala_RCD = system.System([0], 0)
 
-ss_m.entire_sys = main_info_m
 sys_mech.entire_sys = main_info_m
 sys_ala_link.entire_sys = main_info_ala
 sys_ala_RC.entire_sys = main_info_ala
