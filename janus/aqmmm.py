@@ -12,7 +12,7 @@ class AQMMM(ABC, QMMM):
 
     nm_to_angstrom = 10.0000000
 
-    def __init__(self, config, qm_wrapper, mm_wrapper, scheme=None):
+    def __init__(self, config, qm_wrapper, mm_wrapper):
         super().__init__(config, qm_wrapper, mm_wrapper)
 
 

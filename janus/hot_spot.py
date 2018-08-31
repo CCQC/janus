@@ -7,7 +7,7 @@ class HotSpot(AQMMM):
 
     def __init__(self, config, qm_wrapper, mm_wrapper):
         
-        super().__init__(config, qm_wrapper, mm_wrapper, 'Hot-Spot')
+        super().__init__(config, qm_wrapper, mm_wrapper)
 
     def partition(self, qm_center=None, info=None): 
     

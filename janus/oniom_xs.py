@@ -6,7 +6,7 @@ class ONIOM_XS(AQMMM):
 
     def __init__(self, config, qm_wrapper, mm_wrapper):
         
-        super().__init__(config, qm_wrapper, mm_wrapper, 'ONIOM-XS')
+        super().__init__(config, qm_wrapper, mm_wrapper)
 
     def partition(self, qm_center=None, info=None): 
     
