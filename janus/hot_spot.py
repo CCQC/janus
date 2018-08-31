@@ -15,7 +15,6 @@ class HotSpot(AQMMM):
             qm_center = self.qm_center
 
         self.define_buffer_zone(qm_center)
-        print(self.qm_atoms)
 
         qm = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm')
 
@@ -41,33 +40,13 @@ class HotSpot(AQMMM):
             self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_forces
 
         else:
-            self.get_switching_function(qm)
-            
-            forces = deepcopy(qm.forces)
 
-            # counter for keeping track of lamda_i
-            i = 0
+            forces = deepcopy(qm.forces)
             for key, value in self.buffer_groups.items():
                 for idx in value: 
-                    forces[idx] *= qm.switching_functions[i]
-                i += 1
+                    forces[idx] *= self.buffer_switching_functions[key][0]
 
             self.systems[self.run_ID]['qmmm_forces'] = forces
-
-
-    def get_switching_function(self, partition):
-
-        partition.switching_functions = []
-        if partition.buffer_groups:
-            for key, value in self.buffer_groups.items():
-                COM = partition.compute_COM(value)
-                print(COM, value)
-
-                r_i = np.linalg.norm(COM - self.qm_center_xyz)
-                lamda_i = self.compute_lamda_i(r_i)
-                print(COM, value, r_i, lamda_i)
-                partition.switching_functions.append(lamda_i)
-            
 
     def compute_lamda_i(self, r_i):
 
@@ -82,4 +61,4 @@ class HotSpot(AQMMM):
             lamda_i = (self.Rmax**2 - r_i**2)**2 * (self.Rmax**2 + 2*(r_i**2) - 3*(self.Rmin**2))
             lamda_i *= 1/(self.Rmax**2 - self.Rmin**2)**3
 
-        return lamda_i
+        return lamda_i, None

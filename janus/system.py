@@ -35,7 +35,7 @@ class System(object):
         self.partition_ID = partition_ID
         self.qm_positions = None
         self.buffer_groups = None
-        self.switching_functions = []
+        self.switching_functions = None
         self.forces = None
         self.energy = None
 
@@ -48,28 +48,6 @@ class System(object):
         
     # need to add all the other parameters written into system e.g. energy
 
-
-    def compute_COM(self, atoms, traj=None):
-        
-        if traj is None:
-            traj = self.primary_subsys['trajectory']
-
-        xyz = np.zeros(3)
-        M = 0
-
-        for i in atoms:
-
-            symbol = traj.topology.atom(i).element.symbol
-            m = element(symbol).atomic_weight
-            # this gives positions in nm
-            position =  np.array(traj.xyz[0][i])
-
-            M += m
-            xyz += m * position
-            
-        xyz *= 1/M
-        
-        return xyz
 
 
     def compute_scale_factor_g(qm, mm, link):

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import mdtraj as md
 import numpy as np
+import mendeleev as mdlv
 from .qmmm import QMMM
 
 """
@@ -100,6 +101,50 @@ class AQMMM(ABC, QMMM):
                             groups[idx].append(a.index)
 
         self.buffer_groups = groups
+        if groups:
+            self.get_buffer_info()
+
+    def get_buffer_info(self):
+
+        self.buffer_switching_functions = {}
+        self.buffer_distance = {}
+
+        for key, value in self.buffer_groups.items():
+
+            COM = self.compute_COM(value)
+            r_i = np.linalg.norm(COM - self.qm_center_xyz)
+            self.buffer_distance[key] = r_i
+            s_i, d_s_i = self.compute_lamda_i(r_i)
+            self.buffer_switching_functions[key] = [s_i, d_s_i]
+
+    def compute_COM(self, atoms):
+        
+        xyz = np.zeros(3)
+        M = 0
+
+        for i in atoms:
+
+            symbol = self.traj.topology.atom(i).element.symbol
+            m = mdlv.element(symbol).atomic_weight
+            # this gives positions in nm
+            position =  np.array(self.traj.xyz[0][i])
+
+            M += m
+            xyz += m * position
+            
+        xyz *= 1/M
+        
+        return xyz
+
+    def compute_lamda_i(self, r_i):
+
+        x_i = float((r_i - self.Rmin) / (self.Rmax - self.Rmin))
+
+        lamda_i = -6*(x_i)**5 + 15*(x_i)**4 - 10*(x_i)**3 + 1
+
+        d_lamda_i = -30*(x_i)**4  + 60*(x_i)**3 - 30*(x_i)**2
+
+        return lamda_i, d_lamda_i
 
     def get_Rmin(self):
         return self.Rmin

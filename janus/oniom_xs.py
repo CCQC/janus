@@ -43,52 +43,37 @@ class ONIOM_XS(AQMMM):
         else:
             qm_bz = self.systems[self.run_ID]['qm_bz']
             lamda, d_lamda = self.get_switching_function(qm_bz)
+            
 
             self.systems[self.run_ID]['qmmm_energy'] = \
-            lamda*qm.qmmm_energy + (1-lamda)*qm_bz.qmmm_energy
+            (1- lamda)*qm.qmmm_energy + lamda*qm_bz.qmmm_energy
 
             # needs work!
             print('need to add in d_lamda term for forces')
             forces = {}
             for f, coord in qm_bz.qmmm_forces.items():
                 if f in qm.qmmm_forces:
-                    forces[f] = (1-lamda)*coord + lamda*qm.qmmm_forces[f] 
+                    forces[f] = lamda*coord + (1-lamda)*qm.qmmm_forces[f] 
                 else: 
-                    forces[f] = (1-lamda)*coord
+                    forces[f] = lamda*coord
 
             self.systems[self.run_ID]['qmmm_forces'] = forces
 
 
-    def get_switching_function(self, partition):
+    def get_switching_function(self):
 
         s = 0.0
         d_s = 0.0
-        partition.switching_functions = []
-        if partition.buffer_groups:
-            for key, value in partition.buffer_groups.items():
-                COM = partition.compute_COM(value)
-
-                r_i = np.linalg.norm(COM - self.qm_center_xyz)
-                s_i, d_s_i = self.compute_lamda_i(r_i)
-                partition.switching_functions.append(s_i)
-                s += s_i
-                #d_s += d_s_i
+        length = 0.0
                 
-            #print(" s",s)
-            s *= 1/len(partition.switching_functions)
-            print(partition.switching_functions)
-        #d_s *= 1/len(partition.switching_functions)
+        for buf, value in self.buffer_switching_functions.items():
+            s += value[0]
+            d_s += value[1]
+            length += 1.0
+            
+        s *= 1/length
+        #d_s *= 1/length
         return s, d_s
             
 
-    def compute_lamda_i(self, r_i):
-
-        x_i = float((r_i - self.Rmin) / (self.Rmax - self.Rmin))
-
-        
-        lamda_i = 6*(x_i - 1/2)**5 - 5*(x_i - 1/2)**3 + (15/8)*(x_i - 1/2) + 1/2
-        
-        d_lamda_i = 30*(x_i - 1/2)**4 - 15*(x_i - 1/2)**2 + 15/8
-
-        return lamda_i, d_lamda_i
         
