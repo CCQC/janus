@@ -41,22 +41,11 @@ def test_compute_lamda_i():
     lamda4 = hs.compute_lamda_i(0.45)
     lamda5 = hs.compute_lamda_i(0.50)
 
-    assert lamda1 == 1
-    assert lamda2 == 1
-    assert lamda3 == 0.8224337457798975 
-    assert lamda4 == 0
-    assert lamda5 == 0
-
-def test_get_switching_function():
-
-    hs_1.systems[0]['qm'].primary_subsys['trajectory'] = hs_1.traj
-    hs_2.systems[0]['qm'].primary_subsys['trajectory'] = hs_2.traj
-
-    hs_1.get_switching_function(hs_1.systems[0]['qm'])
-    hs_2.get_switching_function(hs_2.systems[0]['qm'])
-
-    assert np.allclose(np.array(hs_1.systems[0]['qm'].switching_functions), np.array([0.082170679968608343]))
-    assert np.allclose(np.array(hs_2.systems[0]['qm'].switching_functions), np.array([0.35592378808103853, 0.022883641879304705]))
+    assert lamda1[0] == 1
+    assert lamda2[0] == 1
+    assert lamda3[0] == 0.8224337457798975 
+    assert lamda4[0] == 0
+    assert lamda5[0] == 0
 
 def test_run_qmmm():
     pass

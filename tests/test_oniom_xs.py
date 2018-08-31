@@ -63,17 +63,31 @@ def test_partition():
 
 def test_compute_lamda_i():
 
-    s, d = oxs_1.compute_lamda_i(0.333580476259)
-    assert (np.allclose(s, 1.1588880014834282) and np.allclose(d, 2.3113804921728383))
+    s, d = oxs_1.compute_lamda_i(0.30)
+    assert (np.allclose(s, 0.20987654320987748) and np.allclose(d, -1.4814814814814827))
+
+def test_compute_COM():
+
+    xyz = oxs_1.compute_COM(atoms=[0,1,2])
+    com = np.array([0.011130575, .354230624, .588089475])
+    
+    assert np.allclose(xyz, com)
+
+def test_get_buffer_info():
+
+    oxs_1.get_buffer_info()
+    oxs_2.get_buffer_info()
+    assert np.allclose(np.array(oxs_1.buffer_switching_functions[1]), np.array([0.0329177832296379, -0.5535303562505582]))
+    assert np.allclose(np.array(oxs_2.buffer_switching_functions[1]), np.array([0.26960388601830587, -1.6358094204313414]))
+    assert np.allclose(np.array(oxs_2.buffer_switching_functions[2]), np.array([0.004565031092682581, -0.1634150738220228]))
+    assert oxs_1.buffer_distance[1] == 0.31027303118865379
+    assert oxs_2.buffer_distance[1] ==0.31027303118865379 
+    assert oxs_2.buffer_distance[2] ==0.3335804762589481 
 
 def test_get_switching_function():
 
-    oxs_2.systems[0]['qm_bz'].energy = 1.2
-    oxs_2.systems[0]['qm_bz'].primary_subsys['trajectory'] = oxs_2.traj
-
-    s_2, d_s_2 = oxs_2.get_switching_function(oxs_2.systems[0]['qm_bz'])
-
-    assert np.allclose(s_2, 0.862915541444506)
+    s_2, d_s_2 = oxs_2.get_switching_function()
+    assert np.allclose(s_2, 0.13708445855549423)
 
 def test_run_qmmm():
     pass

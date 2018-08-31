@@ -17,12 +17,5 @@ def test_compute_scale_factor_g():
     assert g2 == 0.7328767123287672
 
 
-def test_compute_COM():
-
-
-    xyz = sys.compute_COM(sys.qm_atoms, traj=traj)
-    com = np.array([0.011130575, .354230624, .588089475])
-    
-    assert np.allclose(xyz, com)
 
         
