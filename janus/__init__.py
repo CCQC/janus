@@ -10,4 +10,5 @@ from . import qmmm
 from . import aqmmm
 from . import oniom_xs
 from . import hot_spot
+from . import ap
 

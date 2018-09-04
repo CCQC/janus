@@ -30,7 +30,7 @@ class AP(AQMMM):
             for i, part in enumerate(self.partitions):
                 sys = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID=i)
                 for group in part:
-                    for idx in self.buffer_group[group]:
+                    for idx in self.buffer_groups[group]:
                         sys.qm_atoms.append(idx)
                 
                 # each partition has a copy of its buffer groups - 
@@ -53,14 +53,15 @@ class AP(AQMMM):
             if self.aqmmm_scheme == 'SAP': 
                 switching_functions = self.get_sap_switching_functions()
 
-            energy = self.systems[self.run_id]['qm'].qmmm_energy
-            for buf, func in switching_functions:
+            # getting first term of ap energy
+            energy = self.systems[self.run_ID]['qm'].qmmm_energy
+            for buf, func in switching_functions.items():
                 energy *= (1 - func[0])
 
+            # getting rest of the terms of ap energy
             for i, part in enumerate(self.partitions):
-                part_energy = self.systems[self.run_id][i].qmmm_energy
-
-                for buf, func in switching_functions:
+                part_energy = self.systems[self.run_ID][i].qmmm_energy
+                for buf, func in switching_functions.items():
                     if buf in part:
                         part_energy *= func[0]
                     else:
@@ -71,8 +72,10 @@ class AP(AQMMM):
             # Need to do gradients! 
                         
 
-    def get_combos_pap(self, items=None):
+    def get_combos(self, items=None, buffer_distance=None):
 
+        if buffer_distance is None:
+            buffer_distance = self.buffer_distance
         all_combo = []
 
         if self.aqmmm_scheme == 'PAP':
@@ -80,7 +83,7 @@ class AP(AQMMM):
                 all_combo += list(it.combinations(items, i))
 
         if self.aqmmm_scheme == 'SAP':
-            groups = sorted(self.buffer_distance, key=self.buffer_distance.get)
+            groups = sorted(buffer_distance, key=buffer_distance.get)
             self.sap_order = groups
             combo = []
             for g in groups:
@@ -96,14 +99,14 @@ class AP(AQMMM):
         sf = self.buffer_switching_functions
     
         for i, b_i in enumerate(self.sap_order):
-            chi = (1 - sf[b_i])/sf[b_i]
+            chi = (1 - sf[b_i][0])/sf[b_i][0]
             for j, b_j in enumerate(self.sap_order):
                 if j < i:
-                    chi += (1 - sf[b_j])/(sf[b_j] - sf[b_i])
+                    chi += (1 - sf[b_j][0])/(sf[b_j][0] - sf[b_i][0])
                 elif j > i:
-                    chi += ((1 - sf[b_i])/(sf[b_i] - sf[b_j])) * sf[b_j]
+                    chi += ((1 - sf[b_i][0])/(sf[b_i][0] - sf[b_j][0])) * sf[b_j][0]
 
-            switching_function[b_i] = chi
+            switching_function[b_i] = [1/((1 + chi)**3)]
         
         return switching_function
 

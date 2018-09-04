@@ -140,7 +140,7 @@ class AQMMM(ABC, QMMM):
 
         x_i = float((r_i - self.Rmin) / (self.Rmax - self.Rmin))
 
-        lamda_i = -6*(x_i)**5 + 15*(x_i)**4 - 10*(x_i)**3 + 1
+        lamda_i = -6*((x_i)**5) + 15*((x_i)**4) - 10*((x_i)**3) + 1
 
         d_lamda_i = -30*(x_i)**4  + 60*(x_i)**3 - 30*(x_i)**2
 

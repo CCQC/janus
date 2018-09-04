@@ -36,8 +36,8 @@ class System(object):
         self.qm_positions = None
         self.buffer_groups = None
         self.switching_functions = None
-        self.forces = None
-        self.energy = None
+        self.qmmm_forces = None
+        self.qmmm_energy = None
 
         self.entire_sys = {}
         self.primary_subsys = {}
