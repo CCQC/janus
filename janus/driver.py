@@ -74,6 +74,7 @@ def run_janus(config):
         
         # get aqmmm forces 
         forces = qmmm.get_forces()
+        print('forces', forces)
     
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 

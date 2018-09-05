@@ -45,9 +45,9 @@ class QMMM(object):
 
         self.systems = {}
 
-    def run_qmmm(main_info):
+    def run_qmmm(self, main_info):
 
-        self.update_traj(main_info['positions'], main_info['pdb'])
+        self.update_traj(main_info['positions'], main_info['topology'])
 
         system = System(self.qm_atoms, self.run_ID)
 
@@ -150,8 +150,6 @@ class QMMM(object):
 
         if self.qmmm_scheme == 'subtractive':
 
-            print(system.primary_subsys['mm']['gradients'])
-            print(system.qm_info['gradients'])
             ps_mm_grad, qm_grad = system.primary_subsys['mm']['gradients'], system.qm_info['gradients']
             qmmm_force = {}
                 

@@ -43,8 +43,8 @@ class AP(AQMMM):
         qm = self.systems[self.run_ID]['qm']
 
         if not self.buffer_groups:
-            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_energy
-            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_forces
+            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_energy
+            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_forces
 
         else:
 
@@ -70,6 +70,7 @@ class AP(AQMMM):
                 energy += part_energy
 
             # Need to do gradients! 
+            print('forces need work')
                         
 
     def get_combos(self, items=None, buffer_distance=None):

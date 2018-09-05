@@ -37,12 +37,12 @@ class ONIOM_XS(AQMMM):
         qm = self.systems[self.run_ID]['qm']
 
         if not self.buffer_groups:
-            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_energy
-            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_forces
+            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_energy
+            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_forces
 
         else:
             qm_bz = self.systems[self.run_ID]['qm_bz']
-            lamda, d_lamda = self.get_switching_function(qm_bz)
+            lamda, d_lamda = self.get_switching_function()
             
 
             self.systems[self.run_ID]['qmmm_energy'] = \

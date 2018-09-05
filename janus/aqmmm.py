@@ -49,9 +49,9 @@ class AQMMM(ABC, QMMM):
         # might need this functionality later
             self.qm_center = [0]
 
-    def run_qmmm(main_info):
+    def run_qmmm(self,main_info):
 
-        self.update_traj(main_info['positions'], main_info['pdb'])
+        self.update_traj(main_info['positions'], main_info['topology'])
         self.partition()
             
         for i, system in self.systems[self.run_ID].items():
@@ -165,5 +165,5 @@ class AQMMM(ABC, QMMM):
     @abstractmethod
     def run_aqmmm(self):
         pass
-    
+
 

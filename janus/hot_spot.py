@@ -36,12 +36,12 @@ class HotSpot(AQMMM):
 
         # do I need to do deepcopy?
         if not self.buffer_groups:
-            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_energy
-            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_forces
+            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_energy
+            self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_forces
 
         else:
 
-            forces = deepcopy(qm.forces)
+            forces = deepcopy(qm.qmmm_forces)
             for key, value in self.buffer_groups.items():
                 for idx in value: 
                     forces[idx] *= self.buffer_switching_functions[key][0]
