@@ -5,30 +5,6 @@ from janus import psi4_wrapper
 import numpy as np
 from copy import deepcopy
 
-#qmmm_elec = {"embedding_method" : "Electrostatic"}
-#QM = {"qm_atoms" : [0,1,2,3,4,5]}
-#qm_rc = {"qm_atoms" : [0,1,2,3]}
-#
-#
-#
-#
-#
-#
-#sys_rc.entire_sys = {"charges" : [-0.4157, 0.2719, 0.1997, 0.1997, 0.0337, 0.0823, -0.1825, 0.0603, 0.0603, 0.0603, 0.5973, -0.5679],
-#                     "positions" : np.array([[ 0.024    ,  -0.103   ,  -0.101     ], 
-#                                            [ 0.027     , -1.13200001, -0.239     ],
-#                                            [-0.80499999,  0.163     ,  0.471     ],
-#                                            [-0.059     ,  0.38400002, -1.01899996],
-#                                            [ 1.24700002,  0.37500001,  0.63600004],
-#                                            [ 0.814     ,  0.86099997,  1.49499997],
-#                                            [ 2.05699995, -0.77200003,  1.28900006],
-#                                            [ 3.13600004, -0.75199999,  1.03200004],
-#                                            [ 1.99000001, -0.64099997,  2.39500001],
-#                                            [ 1.65600002, -1.78200006,  1.06299996],
-#                                            [ 1.95600003,  1.57900006,  0.036     ],
-#                                            [ 1.219     ,  2.52499998, -0.20099999]])}
-#          
-#
 config1 = {}
 config2 = {'qm_basis_set' : '3-21G',
            'qm_scf_type' : 'pk',
@@ -73,6 +49,7 @@ def test_build_qm_param():
     
     qm_sys1.build_qm_param()
     qm_sys2.build_qm_param()
+    qm_sys3.build_qm_param()
 
     assert qm_sys1.qm_param['basis'] == 'STO-3G'
     assert qm_sys1.qm_param['scf_type'] == 'df' 
@@ -97,8 +74,12 @@ def test_set_external_charges():
 def test_set_qm_geometry():
     
     qm_sys1.set_qm_geometry(qm_mol)
+    qm_sys2.set_qm_geometry(qm_mol)
+    qm_sys3.set_qm_geometry(qm_mol)
 
     assert qm_sys1.qm_geometry == qm_mol
+    assert qm_sys2.qm_geometry == qm_mol
+    assert qm_sys3.qm_geometry == qm_mol
 
 def test_compute_energy_and_gradient():
     
@@ -107,16 +88,6 @@ def test_compute_energy_and_gradient():
     assert np.allclose(qm_sys1.energy, -149.92882700815)
     assert np.allclose(qm_sys1.gradient, gradient1)
 
-def test_run_qm():
-
-    info2 = qm_sys2.run_qm(qm_mol)
-    info3 = qm_sys3.run_qm(qm_mol)
-
-
-    assert np.allclose(info2['energy'],-151.18483039002274)
-    assert np.allclose(info3['energy'],-151.17927491846075)
-    assert np.allclose(info2['gradients'], gradient2)
-    assert np.allclose(info3['gradients'], gradient3)
 
 def test_compute_energy():
     """
@@ -160,22 +131,14 @@ def test_compute_energy_and_charges():
     assert np.allclose(qm_sys2.energy,-151.18483039002274)
     assert np.allclose(qm_sys2.charges, charge2)
 
-test_build_qm_param()
-test_set_external_charges()
-test_set_qm_geometry()
-test_compute_energy_and_gradient()
-test_run_qm()
-test_compute_gradient()
-test_compute_energy()
-test_compute_scf_charges()
-test_compute_energy_and_charges()
+def test_run_qm():
 
-    
-    
-    
-    
-    
+    info2 = qm_sys2.run_qm(qm_mol)
+    info3 = qm_sys3.run_qm(qm_mol)
 
 
-
+    assert np.allclose(info2['energy'],-151.18483039002274)
+    assert np.allclose(info3['energy'],-151.17927491846075)
+    assert np.allclose(info2['gradients'], gradient2)
+    assert np.allclose(info3['gradients'], gradient3)
 
