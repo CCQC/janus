@@ -88,6 +88,15 @@ def test_compute_energy_and_gradient():
     assert np.allclose(qm_sys1.energy, -149.92882700815)
     assert np.allclose(qm_sys1.gradient, gradient1)
 
+def test_compute_gradient():
+    
+    qm_sys1.compute_gradient()
+    qm_sys2.compute_gradient()
+    qm_sys3.compute_gradient()
+
+    assert np.allclose(qm_sys1.gradient, gradient1)
+    assert np.allclose(qm_sys2.gradient, gradient2)
+    assert np.allclose(qm_sys3.gradient, gradient3)
 
 def test_compute_energy():
     """
@@ -101,17 +110,6 @@ def test_compute_energy():
     assert np.allclose(qm_sys1.energy, -149.92882700815)
     assert np.allclose(qm_sys2.energy,-151.18483039002274)
     assert np.allclose(qm_sys3.energy,-151.17927491846075)
-
-
-def test_compute_gradient():
-    
-    qm_sys1.compute_gradient()
-    qm_sys2.compute_gradient()
-    qm_sys3.compute_gradient()
-
-    assert np.allclose(qm_sys1.gradient, gradient1)
-    assert np.allclose(qm_sys2.gradient, gradient2)
-    assert np.allclose(qm_sys3.gradient, gradient3)
 
 
 def test_compute_scf_charges():

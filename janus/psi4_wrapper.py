@@ -30,8 +30,6 @@ class Psi4_wrapper(QM_wrapper):
         --------
         E = get_psi4_energy()
         """
-        psi4.core.clean()
-        psi4.core.clean_options()
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.energy(self.method,
                                                        return_wfn=True)
@@ -53,15 +51,11 @@ class Psi4_wrapper(QM_wrapper):
         --------
         get_gradient()
         """
-        psi4.core.clean()
-        psi4.core.clean_options()
         self.set_up_psi4()
         G = psi4.gradient(self.method)
         self.gradient = np.asarray(G)
 
     def compute_energy_and_gradient(self):
-        psi4.core.clean()
-        psi4.core.clean_options()
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.energy(self.method,
                                                        return_wfn=True)
@@ -85,6 +79,9 @@ class Psi4_wrapper(QM_wrapper):
         set_up_psi4()
         """
         # psi4.core.set_output_file('output.dat', True)
+        psi4.core.clean()
+        psi4.core.clean_options()
+        psi4.core.EXTERN = None 
         
         # Supress print out
         psi4.core.be_quiet()
@@ -148,8 +145,6 @@ class Psi4_wrapper(QM_wrapper):
         --------
         get_energy_and_charges(system)
         """
-        psi4.core.clean()
-        psi4.core.clean_options()
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.prop(self.method,
                                 properties=[self.charge_method],
