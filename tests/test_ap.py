@@ -62,12 +62,15 @@ def test_partition():
 
 def test_get_sap_switching_functions():
 
-    func1 = sap_1.get_sap_switching_functions()
-    func2 = sap_2.get_sap_switching_functions()
+    sap_1.get_sap_switching_functions()
+    sap_2.get_sap_switching_functions()
     
-    assert func1 == {1: [3.5669066455610295e-05]}
-    assert func2 == {1:[0.019398444948607135],2:[9.163106551223009e-08]}
-    assert func2 == {1:[0.019398444948607135],2:[9.163106551223009e-08]}
+    assert np.allclose(sap_1.buffer_groups[1].lamda_i, 3.5669066455610295e-05)
+    assert np.allclose(sap_2.buffer_groups[1].lamda_i, 0.019398444948607135)
+    assert np.allclose(sap_2.buffer_groups[2].lamda_i, 9.163106551223009e-08)
+
+def test_get_pap_switching_functions():
+    pass
 
 def test_run_aqmmm():
     pass

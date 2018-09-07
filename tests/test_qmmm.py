@@ -139,11 +139,13 @@ def test_get_qm_geometry():
  H     2.642   1.501   0.662 
  H     2.714  -0.176   1.555 
  """
-    out = mech.get_qm_geometry(mech.traj_ps)
-    out2 = ala_RC.get_qm_geometry(ala_RC.traj_ps)
+    out, elec = mech.get_qm_geometry(mech.traj_ps)
+    out2, elec2 = ala_RC.get_qm_geometry(ala_RC.traj_ps)
 
     assert out == qm_mol
     assert out2 == qm_link_mol
+    assert elec == 10
+    assert elec2 == 19
 
    
 def test_make_second_subsys_trajectory():

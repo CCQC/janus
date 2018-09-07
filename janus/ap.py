@@ -112,7 +112,7 @@ class AP(AQMMM):
                 elif j > i:
                     chi += ((1 - sf[b_i].s_i)/(sf[b_i].s_i - sf[b_j].s_i)) * sf[b_j].s_i
 
-            sf[b_i].lamda_i = [1/((1 + chi)**3)]
+            sf[b_i].lamda_i = 1/((1 + chi)**3)
         
     def get_pap_switching_functions(self):
 

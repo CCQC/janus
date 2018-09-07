@@ -96,13 +96,14 @@ class AQMMM(ABC, QMMM):
             # only if oxygen in buffer zone
             if (top.atom(i).residue.is_water and top.atom(i).element.symbol == 'O'):
                 idx = top.atom(i).residue.index
-                if idx not in groups.keys():
+                if idx not in self.buffer_groups.keys():
                     buf = Buffer(ID=idx)
                     for a in top.residue(idx).atoms:
-                        if a.index not in groups[idx]:
+                        if a.index not in buf.atoms:
                             buf.atoms.append(a.index)
 
-        self.buffer_groups[idx] = buf
+                    self.buffer_groups[idx] = buf
+
         if self.buffer_groups:
             self.get_buffer_info()
 
@@ -124,7 +125,7 @@ class AQMMM(ABC, QMMM):
         M = 0
 
         atom_weight = {}
-        atom_ratio = {}
+        weight_ratio = {}
         for i in atoms:
 
             symbol = self.traj.topology.atom(i).element.symbol
@@ -135,7 +136,9 @@ class AQMMM(ABC, QMMM):
             M += m
             xyz += m * position
             atom_weight[i] = m
-            weight_ratio[i] = m/M
+
+        for i in atoms:
+            weight_ratio[i] = atom_weight[i]/M
             
         xyz *= 1/M
         

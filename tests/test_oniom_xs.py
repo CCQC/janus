@@ -42,8 +42,9 @@ def test_define_buffer_zone():
     
     assert (oxs.buffer_atoms == [8] and not oxs.buffer_groups)
     assert (not oxs_0.buffer_atoms and not oxs_0.buffer_groups)
-    assert (oxs_1.buffer_atoms == [3] and oxs_1.buffer_groups == {1: [3, 4, 5]})
-    assert (np.allclose(oxs_2.buffer_atoms, np.array([3, 5, 6])) and oxs_2.buffer_groups == {1: [3, 4, 5], 2: [6, 7, 8]})
+    assert (oxs_1.buffer_atoms == [3] and oxs_1.buffer_groups[1].atoms == [3, 4, 5])
+    assert np.allclose(oxs_2.buffer_atoms, np.array([3, 5, 6]))
+    assert (oxs_2.buffer_groups[1].atoms == [3, 4, 5] and oxs_2.buffer_groups[2].atoms == [6, 7, 8])
 
 
 def test_partition():
@@ -64,29 +65,37 @@ def test_partition():
 def test_compute_lamda_i():
 
     s, d = oxs_1.compute_lamda_i(0.30)
-    assert (np.allclose(s, 0.20987654320987748) and np.allclose(d, -1.4814814814814827))
+    assert (np.allclose(s, 0.20987654320987748) and np.allclose(d, -82.30452674897127))
 
 def test_compute_COM():
 
-    xyz = oxs_1.compute_COM(atoms=[0,1,2])
+    xyz, weight, ratio = oxs_1.compute_COM(atoms=[0,1,2])
     com = np.array([0.011130575, .354230624, .588089475])
     
+    assert weight == {0: 15.999, 1: 1.008, 2: 1.008}
+    assert ratio == {0: 0.8880932556203164, 1: 0.055953372189841796, 2: 0.055953372189841796}
     assert np.allclose(xyz, com)
 
 def test_get_buffer_info():
 
     oxs_1.get_buffer_info()
     oxs_2.get_buffer_info()
-    assert np.allclose(np.array(oxs_1.buffer_switching_functions[1]), np.array([0.0329177832296379, -0.5535303562505582]))
-    assert np.allclose(np.array(oxs_2.buffer_switching_functions[1]), np.array([0.26960388601830587, -1.6358094204313414]))
-    assert np.allclose(np.array(oxs_2.buffer_switching_functions[2]), np.array([0.004565031092682581, -0.1634150738220228]))
-    assert oxs_1.buffer_distance[1] == 0.31027303118865379
-    assert oxs_2.buffer_distance[1] ==0.31027303118865379 
-    assert oxs_2.buffer_distance[2] ==0.3335804762589481 
+
+    assert np.allclose(oxs_1.buffer_groups[1].s_i  , 0.0329177832296379)   
+    assert np.allclose(oxs_2.buffer_groups[1].s_i  , 0.26960388601830587)
+    assert np.allclose(oxs_2.buffer_groups[2].s_i  , 0.004565031092682581)
+    assert np.allclose(oxs_1.buffer_groups[1].d_s_i, -29.7335089104)
+    assert np.allclose(oxs_2.buffer_groups[1].d_s_i, -65.9020143551)
+    assert np.allclose(oxs_2.buffer_groups[2].d_s_i, -6.12352511059) 
+
+
+    assert np.allclose(oxs_1.buffer_distance[1], 0.31027303118865379)
+    assert np.allclose(oxs_2.buffer_distance[1], 0.31027303118865379)
+    assert np.allclose(oxs_2.buffer_distance[2], 0.3335804762589481 )
 
 def test_get_switching_function():
 
-    s_2, d_s_2 = oxs_2.get_switching_function()
+    s_2 = oxs_2.get_switching_function()
     assert np.allclose(s_2, 0.13708445855549423)
 
 def test_run_qmmm():
