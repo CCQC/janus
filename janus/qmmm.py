@@ -1,6 +1,7 @@
 from copy import deepcopy
 import numpy as np
 import mdtraj as md
+import mendeleev as mdlv
 from .system import System
 """
 QMMM class for QMMM computations
@@ -90,8 +91,8 @@ class QMMM(object):
             system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb='no_link', link_atoms=link_indices)
 
             # Get QM energy
-            self.qm_geometry = self.get_qm_geometry(traj_ps)
-            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
+            self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
+            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -127,10 +128,10 @@ class QMMM(object):
             system.second_subsys['mm'] = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
 
             # Get QM energy
-            self.qm_geometry = self.get_qm_geometry(traj_ps)
+            self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
             charges = self.get_external_charges(system)
             self.qm_wrapper.set_external_charges(charges)
-            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry)
+            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -222,6 +223,7 @@ class QMMM(object):
 
         out = ""
         line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
+        total = 0.0
 
         for i in range(qm_traj.n_atoms):
             x, y, z =   qm_traj.xyz[0][i][0],\
@@ -229,10 +231,12 @@ class QMMM(object):
                         qm_traj.xyz[0][i][2]
 
             symbol = qm_traj.topology.atom(i).element.symbol
+            n = mdlv.element(symbol).atomic_number
+            total += n
             
             out += line.format(symbol, x*10, y*10, z*10)
 
-        return out
+        return out, total
 
 
     def find_boundary_bonds(self, qm_atoms=None):

@@ -46,6 +46,17 @@ class QM_wrapper(ABC):
         else: 
             self.charge_method = 'MULLIKEN_CHARGES'
 
+        
+        if 'charge' in config:
+            self.charge = config['qm_charge']
+        else:
+            self.charge = 0
+
+        if 'multiplicity' in config:
+            self.multiplicity = config['qm_multiplicity']
+        else:
+            self.multiplicity = 1
+
         self.qm_param = None
         self.external_charges = None
         self.charges = None
@@ -68,6 +79,8 @@ class QM_wrapper(ABC):
         A dictionary with energy and gradient information
         """
         self.qm_geometry = geometry
+        if self.multiplicity != 1:
+            self.reference = 'uhf'
         if not self.qm_param:
             self.build_qm_param()
         self.compute_energy_and_gradient()
@@ -78,10 +91,15 @@ class QM_wrapper(ABC):
         
         return self.info
 
-    def set_qm_geometry(self, qm_geometry):
+    def set_qm_geometry(self, qm_geometry, total_elec):
 
         self.qm_geometry = qm_geometry
 
+        if total_elec % 2 != 0:
+            total_elec += self.charge
+            if total_elec % 2 != 0:
+                self.reference = 'uhf'
+            
     def set_external_charges(self, charges):
         
         self.external_charges = charges

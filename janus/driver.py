@@ -52,7 +52,7 @@ def initialize_wrappers(config):
     elif (config['aqmmm_scheme'] == 'PAP' or config['aqmmm_scheme'] == 'SAP'):
         qmmm = AP(config, qm_wrapper, mm_wrapper)
     else:
-        print("Only ONIOM_XS and Hot Spot currently implemented")
+        print("Only ONIOM_XS, Hot Spot, PAP, and SAP currently implemented")
 
     # initialize mm_wrapper with information about initial system
     mm_wrapper.initialize()

@@ -34,6 +34,7 @@ class Psi4_wrapper(QM_wrapper):
         self.energy, self.wavefunction = psi4.energy(self.method,
                                                        return_wfn=True)
 
+        
     def compute_gradient(self):
         """
         Calls Psi4 to obtain the energy  of the QM region
@@ -59,8 +60,12 @@ class Psi4_wrapper(QM_wrapper):
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.energy(self.method,
                                                        return_wfn=True)
+
         G = psi4.gradient(self.method)
         self.gradient = np.asarray(G)
+        #deriv = psi4.core.Deriv(self.wavefunction)
+        #deriv.compute()
+        #self.gradient = np.asarray(self.wavefunction.gradient())
 
     def set_up_psi4(self):
         """
@@ -157,8 +162,8 @@ class Psi4_wrapper(QM_wrapper):
         Builds a dictionary of QM parmeters from input options
         '''
         qm_param = {}
-        qm_param['basis'] = self.basis_set
         qm_param['scf_type'] = self.scf_type
+        qm_param['basis'] = self.basis_set
         qm_param['guess'] = self.guess_orbitals
         qm_param['reference'] = self.reference
         qm_param['e_convergence'] = self.e_convergence
