@@ -53,25 +53,31 @@ class AP(AQMMM):
             if self.aqmmm_scheme == 'SAP': 
                 switching_functions = self.get_sap_switching_functions()
 
-            # getting first term of ap energy
+            # getting first term of ap energy and forces (w/o gradient of switching function)
             energy = self.systems[self.run_ID]['qm'].qmmm_energy
+            self.systems[self.run_ID]['qm'].aqmmm_forces = deepcopy(self.systems[self.run_ID]['qm'].qmmm_forces)
+            forces = self.systems[self.run_ID]['qm'].aqmmm_forces
             for i, buf in self.buffer_groups.items():
                 energy *= (1 - buf.lamda_i)
+                forces.update((x, y*(1 - buf.lamda_i)) for x,y in forces.items())
 
-            # getting rest of the terms of ap energy
+            # getting rest of the terms of ap energy and forces (w/o gradient of switching function)
             for i, part in enumerate(self.partitions):
                 part_energy = self.systems[self.run_ID][i].qmmm_energy
+                self.systems[self.run_ID][i].aqmmm_forces = deepcopy(self.systems[self.run_ID][i].qmmm_forces)
+                forces = self.systems[self.run_ID][i].aqmmm_forces
                 for j, buf in self.buffer_groups.items():
                     if j in part:
                         part_energy *= buf.lamda_i
+                        forces.update((x, y*buf.lamda_i) for x,y in forces.items())
                     else:
                         part_energy *= (1 - buf.lamda_i)
+                        forces.update((x, y*(1 - buf.lamda_i)) for x,y in forces.items())
 
                 energy += part_energy
 
-            # Need to do gradients! 
+            # computing gradient of switching function
             print('forces need work')
-                        
 
     def get_combos(self, items=None, buffer_distance=None):
 
