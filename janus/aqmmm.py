@@ -4,6 +4,7 @@ import mdtraj as md
 import numpy as np
 import mendeleev as mdlv
 from .qmmm import QMMM
+from .system import Buffer
 
 """
 AQMMM class for adaptive QMMM computations
@@ -49,6 +50,8 @@ class AQMMM(ABC, QMMM):
         # might need this functionality later
             self.qm_center = [0]
 
+        self.buffer_groups = {}
+
     def run_qmmm(self,main_info):
 
         self.update_traj(main_info['positions'], main_info['topology'])
@@ -85,7 +88,6 @@ class AQMMM(ABC, QMMM):
         self.edit_qm_atoms()
 
         # for adding identifying water buffer groups
-        groups = {}
         top = self.topology
 
         for i in self.buffer_atoms:
@@ -95,33 +97,32 @@ class AQMMM(ABC, QMMM):
             if (top.atom(i).residue.is_water and top.atom(i).element.symbol == 'O'):
                 idx = top.atom(i).residue.index
                 if idx not in groups.keys():
-                    groups[idx] = []
+                    buf = Buffer(ID=idx)
                     for a in top.residue(idx).atoms:
                         if a.index not in groups[idx]:
-                            groups[idx].append(a.index)
+                            buf.atoms.append(a.index)
 
-        self.buffer_groups = groups
-        if groups:
+        self.buffer_groups[idx] = buf
+        if self.buffer_groups:
             self.get_buffer_info()
 
     def get_buffer_info(self):
 
-        self.buffer_switching_functions = {}
         self.buffer_distance = {}
 
-        for key, value in self.buffer_groups.items():
+        for i, buf in self.buffer_groups.items():
 
-            COM = self.compute_COM(value)
-            r_i = np.linalg.norm(COM - self.qm_center_xyz)
-            self.buffer_distance[key] = r_i
-            s_i, d_s_i = self.compute_lamda_i(r_i)
-            self.buffer_switching_functions[key] = [s_i, d_s_i]
+            buf.COM_coord, buf.atom_weights = self.compute_COM(buf.atoms)
+            buf.r_i = np.linalg.norm(buf.COM_coord - self.qm_center_xyz)
+            self.buffer_distance[i] = buf.r_i
+            buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
 
     def compute_COM(self, atoms):
         
         xyz = np.zeros(3)
         M = 0
 
+        atom_weight = {}
         for i in atoms:
 
             symbol = self.traj.topology.atom(i).element.symbol
@@ -131,10 +132,11 @@ class AQMMM(ABC, QMMM):
 
             M += m
             xyz += m * position
+            atom_weight[i] = m
             
         xyz *= 1/M
         
-        return xyz
+        return xyz, atom_weight
 
     def compute_lamda_i(self, r_i):
 
@@ -142,7 +144,8 @@ class AQMMM(ABC, QMMM):
 
         lamda_i = -6*((x_i)**5) + 15*((x_i)**4) - 10*((x_i)**3) + 1
 
-        d_lamda_i = -30*(x_i)**4  + 60*(x_i)**3 - 30*(x_i)**2
+        d_lamda_i = (-30*(x_i)**4  + 60*(x_i)**3 - 30*(x_i)**2)
+        d_lamda_i *= 1/(r_i * (self.Rmax - self.Rmin))
 
         return lamda_i, d_lamda_i
 

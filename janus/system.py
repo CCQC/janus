@@ -80,3 +80,22 @@ class System(object):
         g = (r_qm + r_link)/(r_qm + r_mm)
         
         return g
+
+class Buffer(object):
+
+    def __init__(self, ID):
+
+        self.ID = ID
+        self.atoms = []
+        self.COM_coord = None
+        self.atom_weights = None
+        self.dist_from_center = None
+        self.s_i = None
+        self.d_s_i = None
+
+
+
+
+
+
+

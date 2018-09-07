@@ -30,7 +30,7 @@ class AP(AQMMM):
             for i, part in enumerate(self.partitions):
                 sys = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID=i)
                 for group in part:
-                    for idx in self.buffer_groups[group]:
+                    for idx in self.buffer_groups[group].atoms:
                         sys.qm_atoms.append(idx)
                 
                 # each partition has a copy of its buffer groups - 
@@ -49,23 +49,23 @@ class AP(AQMMM):
         else:
 
             if self.aqmmm_scheme == 'PAP': 
-                switching_functions = self.buffer_switching_functions
+                switching_functions = self.get_pap_switching_functions()
             if self.aqmmm_scheme == 'SAP': 
                 switching_functions = self.get_sap_switching_functions()
 
             # getting first term of ap energy
             energy = self.systems[self.run_ID]['qm'].qmmm_energy
-            for buf, func in switching_functions.items():
-                energy *= (1 - func[0])
+            for i, buf in self.buffer_groups.items():
+                energy *= (1 - buf.lamda_i)
 
             # getting rest of the terms of ap energy
             for i, part in enumerate(self.partitions):
                 part_energy = self.systems[self.run_ID][i].qmmm_energy
-                for buf, func in switching_functions.items():
-                    if buf in part:
-                        part_energy *= func[0]
+                for j, buf in self.buffer_groups.items():
+                    if j in part:
+                        part_energy *= buf.lamda_i
                     else:
-                        part_energy *= (1 - func[0])
+                        part_energy *= (1 - buf.lamda_i)
 
                 energy += part_energy
 
@@ -96,20 +96,24 @@ class AP(AQMMM):
 
     def get_sap_switching_functions(self):
 
-        switching_function = {}
-        sf = self.buffer_switching_functions
+        sf = self.buffer_groups
     
         for i, b_i in enumerate(self.sap_order):
-            chi = (1 - sf[b_i][0])/sf[b_i][0]
+            chi = (1 - sf[b_i].s_i)/sf[b_i].s_i
             for j, b_j in enumerate(self.sap_order):
                 if j < i:
-                    chi += (1 - sf[b_j][0])/(sf[b_j][0] - sf[b_i][0])
+                    chi += (1 - sf[b_j].s_i)/(sf[b_j].s_i - sf[b_i].s_i)
                 elif j > i:
-                    chi += ((1 - sf[b_i][0])/(sf[b_i][0] - sf[b_j][0])) * sf[b_j][0]
+                    chi += ((1 - sf[b_i].s_i)/(sf[b_i].s_i - sf[b_j].s_i)) * sf[b_j].s_i
 
-            switching_function[b_i] = [1/((1 + chi)**3)]
+            sf[b_i].lamda_i = [1/((1 + chi)**3)]
         
-        return switching_function
+    def get_pap_switching_functions(self):
+
+        sf = self.buffer_groups
+
+        for i, buf in self.buffer_groups.items():
+
+            buf.lamda_i = buf.s_i
 
 
-            

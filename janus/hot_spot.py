@@ -23,8 +23,8 @@ class HotSpot(AQMMM):
 
             qm.buffer_groups = deepcopy(self.buffer_groups)
 
-            for key, value in self.buffer_groups.items():
-                for idx in value:
+            for i, buf in self.buffer_groups.items():
+                for idx in buf.atoms:
                     qm.qm_atoms.append(idx)
                 
         self.systems[self.run_ID] = {}
@@ -42,9 +42,9 @@ class HotSpot(AQMMM):
         else:
 
             forces = deepcopy(qm.qmmm_forces)
-            for key, value in self.buffer_groups.items():
-                for idx in value: 
-                    forces[idx] *= self.buffer_switching_functions[key][0]
+            for i, buf in self.buffer_groups.items():
+                for idx in buf.atoms:
+                    forces[idx] *= buf.s_i
 
             self.systems[self.run_ID]['qmmm_forces'] = forces
 
