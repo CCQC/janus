@@ -49,13 +49,20 @@ class ONIOM_XS(AQMMM):
             (1- lamda)*qm.qmmm_energy + lamda*qm_bz.qmmm_energy
 
             # needs work!
-            print('need to add in d_lamda term for forces')
+            # computing gradients
             forces = {}
             for f, coord in qm_bz.qmmm_forces.items():
                 if f in qm.qmmm_forces:
                     forces[f] = lamda*coord + (1-lamda)*qm.qmmm_forces[f] 
                 else: 
                     forces[f] = lamda*coord
+
+            scaler = (qm_bz.qmmm_energy - qm.qmmm_enery) / len(qm_bz.buffer_groups)
+
+            for i, buf in qm_bz.buffer_groups.items():
+                for idx, ratio in buf.weight_ratio.items():
+                    forces[idx] += ratio * scaler * buf.d_s_i * buf.COM_coord
+                forces[self.qm_center[0]] -= scaler * buf.d_s_i * buf.COM_coord 
 
             self.systems[self.run_ID]['qmmm_forces'] = forces
 

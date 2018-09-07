@@ -112,7 +112,8 @@ class AQMMM(ABC, QMMM):
 
         for i, buf in self.buffer_groups.items():
 
-            buf.COM_coord, buf.atom_weights = self.compute_COM(buf.atoms)
+            xyz, buf.atom_weights, buf.weight_ratio = self.compute_COM(buf.atoms)
+            buf.COM_coord = np.array(xyz)
             buf.r_i = np.linalg.norm(buf.COM_coord - self.qm_center_xyz)
             self.buffer_distance[i] = buf.r_i
             buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
@@ -123,6 +124,7 @@ class AQMMM(ABC, QMMM):
         M = 0
 
         atom_weight = {}
+        atom_ratio = {}
         for i in atoms:
 
             symbol = self.traj.topology.atom(i).element.symbol
@@ -133,10 +135,11 @@ class AQMMM(ABC, QMMM):
             M += m
             xyz += m * position
             atom_weight[i] = m
+            weight_ratio[i] = m/M
             
         xyz *= 1/M
         
-        return xyz, atom_weight
+        return xyz, atom_weight, weight_ratio
 
     def compute_lamda_i(self, r_i):
 
