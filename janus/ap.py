@@ -54,16 +54,19 @@ class AP(AQMMM):
                 switching_functions = self.get_sap_switching_functions()
 
             # getting first term of ap energy and forces (w/o gradient of switching function)
-            energy = self.systems[self.run_ID]['qm'].qmmm_energy
+            energy = deepcopy(self.systems[self.run_ID]['qm'].qmmm_energy)
             self.systems[self.run_ID]['qm'].aqmmm_forces = deepcopy(self.systems[self.run_ID]['qm'].qmmm_forces)
             forces = self.systems[self.run_ID]['qm'].aqmmm_forces
             for i, buf in self.buffer_groups.items():
                 energy *= (1 - buf.lamda_i)
                 forces.update((x, y*(1 - buf.lamda_i)) for x,y in forces.items())
+            self.systems[self.run_ID]['qm'].aqmmm_energy = deepcopy(energy)
+
+            qmmm_forces = deepcopy(forces)
 
             # getting rest of the terms of ap energy and forces (w/o gradient of switching function)
             for i, part in enumerate(self.partitions):
-                part_energy = self.systems[self.run_ID][i].qmmm_energy
+                part_energy = deepcopy(self.systems[self.run_ID][i].qmmm_energy)
                 self.systems[self.run_ID][i].aqmmm_forces = deepcopy(self.systems[self.run_ID][i].qmmm_forces)
                 forces = self.systems[self.run_ID][i].aqmmm_forces
                 for j, buf in self.buffer_groups.items():
@@ -74,10 +77,57 @@ class AP(AQMMM):
                         part_energy *= (1 - buf.lamda_i)
                         forces.update((x, y*(1 - buf.lamda_i)) for x,y in forces.items())
 
+                self.systems[self.run_ID][i].aqmmm_energy = deepcopy(part_energy)
                 energy += part_energy
 
-            # computing gradient of switching function
-            print('forces need work')
+            self.systems[self.run_ID]['qmmm_energy'] = energy
+
+            # computing forces due to gradient of switching function for PAP
+            if self.aqmmm_scheme == 'PAP': 
+                forces_sf = self.compute_pap_sf_gradient()
+
+            # adding forces together
+            for i, force in forces_sf.items():
+                if i in qmmm_forces:
+                    qmmm_forces[i] += force
+                else:
+                    qmmm_forces[i] = force
+
+            for i, part in enumerate(self.partitions):
+                forces = self.systems[self.run_ID][i].aqmmm_forces
+                for i, force in forces.items():
+                    if i in qmmm_forces:
+                        qmmm_forces[i] += force
+                    else:
+                        qmmm_forces[i] = force
+
+            self.systems[self.run_ID]['qmmm_forces'] = forces
+            
+
+    def compute_pap_sf_gradient(self):
+
+            forces_sf = {self.qm_center[0]: 0.0}
+
+            for i, buf in self.buffer_groups.items():
+                buf.energy_scalar = 0
+                for p, part in enumerate(self.partitions):
+                    aqmmm_energy = self.systems[self.run_ID][p].aqmmm_energy
+                    if i in part:
+                        buf.energy_scaler += aqmmm_energy / buf.lamda_i
+                    else:
+                        buf.energy_scaler -= aqmmm_energy / (1 - buf.lamda_i)
+                
+                forces[self.qm_center[0]] -= buf.energy_scaler * buf.d_s_i * buf.COM_coord 
+
+                for idx, ratio in buf.weight_ratio.items():
+
+                    if idx not in forces_sf:
+                        forces_sf[idx] = ratio * buf.energy_scaler * buf.d_s_i * buf.COM_coord
+                    else:
+                        raise Exception('Overlapping buffer atoms')
+
+            return forces_sf
+
 
     def get_combos(self, items=None, buffer_distance=None):
 

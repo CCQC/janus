@@ -38,7 +38,7 @@ class System(object):
         self.switching_functions = None
         self.qmmm_forces = None
         self.qmmm_energy = None
-
+        self.aqmmm_energy= None
         self.entire_sys = {}
         self.primary_subsys = {}
         self.second_subsys = {}
