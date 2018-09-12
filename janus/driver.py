@@ -8,7 +8,8 @@ from .openmm_wrapper import OpenMM_wrapper
 from .qmmm import QMMM
 from .oniom_xs import ONIOM_XS
 from .hot_spot import HotSpot
-from .ap import AP
+from .pap import PAP
+from .sap import SAP
 
 def parse_input(filename):
     config = configparser.ConfigParser()
@@ -49,8 +50,10 @@ def initialize_wrappers(config):
         qmmm = ONIOM_XS(config, qm_wrapper, mm_wrapper)
     elif config['aqmmm_scheme'] == 'Hot-Spot':
         qmmm = HotSpot(config, qm_wrapper, mm_wrapper)
-    elif (config['aqmmm_scheme'] == 'PAP' or config['aqmmm_scheme'] == 'SAP'):
-        qmmm = AP(config, qm_wrapper, mm_wrapper)
+    elif config['aqmmm_scheme'] == 'PAP':
+        qmmm = PAP(config, qm_wrapper, mm_wrapper)
+    elif config['aqmmm_scheme'] == 'SAP':
+        qmmm = SAP(config, qm_wrapper, mm_wrapper)
     else:
         print("Only ONIOM_XS, Hot Spot, PAP, and SAP currently implemented")
 

@@ -4,7 +4,7 @@ import itertools as it
 from copy import deepcopy
 import numpy as np
 
-class AP(AQMMM):
+class PAP(AQMMM):
 
     def __init__(self, config, qm_wrapper, mm_wrapper):
         
@@ -48,18 +48,13 @@ class AP(AQMMM):
 
         else:
 
-            if self.aqmmm_scheme == 'PAP': 
-                switching_functions = self.get_pap_switching_functions()
-            if self.aqmmm_scheme == 'SAP': 
-                switching_functions = self.get_sap_switching_functions()
-
             # getting first term of ap energy and forces (w/o gradient of switching function)
             energy = deepcopy(self.systems[self.run_ID]['qm'].qmmm_energy)
             self.systems[self.run_ID]['qm'].aqmmm_forces = deepcopy(self.systems[self.run_ID]['qm'].qmmm_forces)
             forces = self.systems[self.run_ID]['qm'].aqmmm_forces
             for i, buf in self.buffer_groups.items():
-                energy *= (1 - buf.lamda_i)
-                forces.update((x, y*(1 - buf.lamda_i)) for x,y in forces.items())
+                energy *= (1 - buf.s_i)
+                forces.update((x, y*(1 - buf.s_i)) for x,y in forces.items())
             self.systems[self.run_ID]['qm'].aqmmm_energy = deepcopy(energy)
 
             qmmm_forces = deepcopy(forces)
@@ -71,11 +66,11 @@ class AP(AQMMM):
                 forces = self.systems[self.run_ID][i].aqmmm_forces
                 for j, buf in self.buffer_groups.items():
                     if j in part:
-                        part_energy *= buf.lamda_i
-                        forces.update((x, y*buf.lamda_i) for x,y in forces.items())
+                        part_energy *= buf.s_i
+                        forces.update((x, y*buf.s_i) for x,y in forces.items())
                     else:
-                        part_energy *= (1 - buf.lamda_i)
-                        forces.update((x, y*(1 - buf.lamda_i)) for x,y in forces.items())
+                        part_energy *= (1 - buf.s_i)
+                        forces.update((x, y*(1 - buf.s_i)) for x,y in forces.items())
 
                 self.systems[self.run_ID][i].aqmmm_energy = deepcopy(part_energy)
                 energy += part_energy
@@ -83,8 +78,7 @@ class AP(AQMMM):
             self.systems[self.run_ID]['qmmm_energy'] = energy
 
             # computing forces due to gradient of switching function for PAP
-            if self.aqmmm_scheme == 'PAP': 
-                forces_sf = self.compute_pap_sf_gradient()
+            forces_sf = self.compute_sf_gradient()
 
             # adding forces together
             for i, force in forces_sf.items():
@@ -104,18 +98,21 @@ class AP(AQMMM):
             self.systems[self.run_ID]['qmmm_forces'] = forces
             
 
-    def compute_pap_sf_gradient(self):
+    def compute_sf_gradient(self):
 
-            forces_sf = {self.qm_center[0]: 0.0}
+            forces_sf = {self.qm_center[0]: np.zeros((3))}
 
             for i, buf in self.buffer_groups.items():
-                buf.energy_scalar = 0
+
+                # energy scaler due to partition with qm only
+                buf.energy_scaler = -1 * self.systems[self.run_ID]['qm'].aqmmm_energy / (1 - buf.s_i)
+                
                 for p, part in enumerate(self.partitions):
                     aqmmm_energy = self.systems[self.run_ID][p].aqmmm_energy
                     if i in part:
-                        buf.energy_scaler += aqmmm_energy / buf.lamda_i
+                        buf.energy_scaler += aqmmm_energy / buf.s_i
                     else:
-                        buf.energy_scaler -= aqmmm_energy / (1 - buf.lamda_i)
+                        buf.energy_scaler -= aqmmm_energy / (1 - buf.s_i)
                 
                 forces[self.qm_center[0]] -= buf.energy_scaler * buf.d_s_i * buf.COM_coord 
 
@@ -135,41 +132,11 @@ class AP(AQMMM):
             buffer_distance = self.buffer_distance
         all_combo = []
 
-        if self.aqmmm_scheme == 'PAP':
-            for i in range(1, len(items) +1):
-                all_combo += list(it.combinations(items, i))
+        for i in range(1, len(items) +1):
+            all_combo += list(it.combinations(items, i))
 
-        if self.aqmmm_scheme == 'SAP':
-            groups = sorted(buffer_distance, key=buffer_distance.get)
-            self.sap_order = groups
-            combo = []
-            for g in groups:
-                combo.append(g)
-                all_combo.append(deepcopy(combo))
 
         return all_combo
 
-
-    def get_sap_switching_functions(self):
-
-        sf = self.buffer_groups
-    
-        for i, b_i in enumerate(self.sap_order):
-            chi = (1 - sf[b_i].s_i)/sf[b_i].s_i
-            for j, b_j in enumerate(self.sap_order):
-                if j < i:
-                    chi += (1 - sf[b_j].s_i)/(sf[b_j].s_i - sf[b_i].s_i)
-                elif j > i:
-                    chi += ((1 - sf[b_i].s_i)/(sf[b_i].s_i - sf[b_j].s_i)) * sf[b_j].s_i
-
-            sf[b_i].lamda_i = 1/((1 + chi)**3)
-        
-    def get_pap_switching_functions(self):
-
-        sf = self.buffer_groups
-
-        for i, buf in self.buffer_groups.items():
-
-            buf.lamda_i = buf.s_i
 
 
