@@ -4,7 +4,7 @@ import itertools as it
 from copy import deepcopy
 import numpy as np
 
-class AP(AQMMM):
+class SAP(AQMMM):
 
     def __init__(self, config, qm_wrapper, mm_wrapper):
         
