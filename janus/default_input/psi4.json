@@ -1,0 +1,13 @@
+{
+"basis_set" : "STO-3G",
+"scf_type" : "df",
+"guess_orbitals" : "sad",
+"reference" : "rhf",
+"e_convergence" : 1e-8,
+"d_convergence" : 1e-8,
+"method" : "scf",
+"charge_method" : "MULLIKEN_CHARGES",
+"charge" : 0,
+"multiplicity" : 1
+}
+
