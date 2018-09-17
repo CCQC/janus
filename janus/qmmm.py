@@ -19,30 +19,11 @@ class QMMM(object):
         self.topology = self.traj.topology
         self.positions = self.traj.xyz[0]
 
-        if 'qm_atoms' in config:
-            self.qm_atoms = config['qm_atoms']
-        else:
-            self.qm_atoms = []
-
-        if 'scheme' in config:
-            self.qmmm_scheme = config['scheme']
-        else: 
-            self.qmmm_scheme = 'subtractive'
-
-        if 'embedding_method' in config:
-            self.embedding_method = config['embedding_method']
-        else:
-            self.embedding_method = 'Mechanical'
-
-        if 'boundary_treatment' in config:
-            self.boundary_treatment = config['boundary_treatment']
-        else:
-            self.boundary_treatment = 'link_atom'
-
-        if 'link_atom' in config:
-            self.link_atom_element = config['link_atom']
-        else:
-            self.link_atom_element = 'H'
+        self.qm_atoms = config['qm_atoms']
+        self.qmmm_scheme = config['scheme']
+        self.embedding_method = config['embedding_method']
+        self.boundary_treatment = config['boundary_treatment']
+        self.link_atom_element = config['link_atom']
 
         self.systems = {}
 

@@ -12,51 +12,19 @@ to obtain MM information
 
 class OpenMM_wrapper(MM_wrapper):
 
-    def __init__(self, config):
+    def __init__(self, param):
 
         # OpenMM_wrapper class inherits from MM_wrapper super class
-        super().__init__(config, "OpenMM")
-
-        if 'mm_forcefield' in config:
-            self.ff = config['mm_forcefield']
-        else:
-            self.ff = 'amber99sb.xml' 
-
-        if 'mm_forcefield_water' in config:
-            self.ff_water = config['mm_forcefield_water']
-        else:
-            self.ff_water = 'tip3p.xml'
-
-        #need to tinker with these and figure out if specific to openmm
-        if 'mm_nonbond_method' in config:
-            self.nonbond_method = config['mm_nonbond_method']
-        else:
-            self.nonbond_method=OM_app.NoCutoff
-            
-        if 'mm_nonbond_cutoff' in config:
-            self.nonbond_cutoff = config['mm_nonbond_cutoff']
-        else:
-            self.nonbond_cutoff = 1*OM_unit.nanometer
-
-        if 'mm_constraints' in config:
-            self.constraints = config['mm_constraints']
-        else:
-            self.constraints = OM_app.HBonds
-
-        if 'is_periodic' in config:
-            self.is_periodic = config['is_periodic']
-        else:
-            self.is_periodic = False
-
-        if 'mm_fric_coeff' in config:
-            self.fric_coeff = config['mm_fric_coeff']
-        else:
-            self.fric_coeff = 1/OM_unit.picosecond
+        super().__init__(param, "OpenMM")
 
 
-        self.temp*OM_unit.kelvin
-        self.step_size*OM_unit.picoseconds
+        self.ff = param['mm_forcefield']
+        self.ff_water = param['mm_water_forcefield']
+        self.is_periodic = param['is_periodic']
 
+        self.temp = eval(param['temp'])
+        self.step_size = eval(param['step_size'])
+        self.fric_coeff = eval(param['fric_coff'])
 
         self.pdb = OpenMM_wrapper.create_pdb(self.pdb_file)
         self.positions = None
@@ -64,13 +32,13 @@ class OpenMM_wrapper(MM_wrapper):
         # save forcefield object
         self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
 
-    def initialize(self):
+    def initialize(self, embedding_method):
 
-        if self.embedding_method == 'Mechanical':
+        if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
             self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True)
 
-        elif self.embedding_method == 'Electrostatic':
+        elif embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
             self.compute_mm(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True)
         else:
@@ -199,11 +167,16 @@ class OpenMM_wrapper(MM_wrapper):
                                             constraints=self.constraints)
         else:
             openmm_system = self.forcefield.createSystem(topology,
-                                            nonbondedMethod=self.nonbond_method,
-                                            nonbondedCutoff=self.nonbond_cutoff,
-                                            constraints=self.constraints,
-                                            residueTemplates=residue,
-                                            ignoreExternalBonds=False)
+                                            nonbondedMethod=eval(self.param['nonbondedMethod']),
+                                            nonbondedCutoff=eval(self.param['nonbondedCutoff']),
+                                            constraints=eval(self.param['constraints']),
+                                            residueTemplates=param['residueTemplates'],
+                                            hydrogenMass=eval(param['hydrogenMass']),
+                                            switchDistance=eval(param['switchDistance']),
+                                            rigid_water=self.param['rigid_water'],
+                                            removeCMMotion=self.param['removeCMMotion'],
+                                            flexibleConstraints=self.param['flexibleConstraints'],
+                                            ignoreExternalBonds=self.param['ignoreExternalBonds'])
 
 
         if initialize is True:
@@ -343,7 +316,10 @@ class OpenMM_wrapper(MM_wrapper):
 
         # The following need to be set as writable options 
 
-        integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
+        if self.param['integrator'] == 'Langevin':
+            integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
+        else:
+            print('only Langevin integrator supported currently')
         simulation = OM_app.Simulation(topology, openmm_system, integrator)
         simulation.context.setPositions(positions)
 

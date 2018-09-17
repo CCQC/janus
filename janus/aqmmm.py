@@ -16,39 +16,13 @@ class AQMMM(ABC, QMMM):
     def __init__(self, config, qm_wrapper, mm_wrapper):
         super().__init__(config, qm_wrapper, mm_wrapper)
 
-
-        # for now, need to define later
-        #self.qm_center = None
-        # this needs to be np.array
-
-        if 'aqmmm_scheme' in config:
-            self.aqmmm_scheme = config['aqmmm_scheme']
-        else: 
-            self.aqmmm_scheme = 'ONIOM-XS'
-
-        if 'aqmmm_partition_scheme' in config:
-            self.partition_scheme = config['aqmmm_partition_scheme']
-        else:
-            self.partition_scheme = 'distance'
-
-        if (self.partition_scheme == 'distance' and 'Rmin' in config):
-            # from oniom-xs paper 0.38
-            self.Rmin = config['Rmin']
-        else:
-            self.Rmin = 0.38 # in nm
-
-        if (self.partition_scheme == 'distance' and 'Rmax' in config):
-            # from oniom-xs paper 0.4
-            self.Rmax = config['Rmax']
-        else:
-            self.Rmax = 0.45 
-        
-        if 'qm_center' in config:
-            self.qm_center = config['qm_center']
-        else:
-        # this does not include options of computing the qm center with the program - 
+        self.aqmmm_scheme = config['aqmmm_scheme']
+        self.partition_scheme = config['aqmmm_partition_scheme']
+        self.Rmin = config['Rmin']
+        self.Rmax = config['Rmax']
+        # do not include options of computing the qm center with the program - 
         # might need this functionality later
-            self.qm_center = [0]
+        self.qm_center = config['qm_center']
 
         self.buffer_groups = {}
 

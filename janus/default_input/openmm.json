@@ -1,19 +1,21 @@
 {
-"ff" : "amber99sb.xml",
-"ff_water" : "tip3p.xml",
-"fric_coeff" : 1,
-"temp" : 300,
-"step_size" : 0.002,
+"mm_forcefield" : "amber99sb.xml",
+"mm_water_forcefield" : "tip3p.xml",
+"fric_coeff" : "1/OM_unit.picosecond",
+"temp" : "300*OM_unit.kelvin",
+"step_size" : "0.002*OM_unit.picoseconds",
+"nonbondCutoff" : "1*OM_unit.nanometer",
 "nonbondMethod" : "OM_app.NoCutoff",
-"nonbondCutoff" : 1,
 "constraints" : "OM_app.HBonds",
 "rigid_water" : true,
 "removeCMMotion" : true,
+"ignoreExternalBonds" : false,
+"flexibleConstraints" : false,
 "hydrogenMass" : "None",
 "residueTemplates" : {},
-"ignoreExternalBonds" : false,
 "switchDistance" : "None",
-"flexibleConstraints" : false
+"is_periodic" : false,
+"integrator" : "Langevin"
 }
 
 

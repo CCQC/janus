@@ -7,18 +7,18 @@ This module is a wrapper that calls Psi4 to obtain QM information
 
 class Psi4_wrapper(QM_wrapper):
 
-    def __init__(self, config):
+    def __init__(self, param):
 
-        super().__init__(config, "Psi4")
+        super().__init__(param, "Psi4")
         self.energy = None
         self.wavefunction = None
         self.gradient = None
 
-        self.reference = config['qm_reference']
-        self.method = config['qm_method']
-        self.charge_method = config['qm_charge_method']
-        self.charge = config['qm_charge']
-        self.multiplicity = config['qm_multiplicity']
+        self.reference = param['qm_reference']
+        self.method = param['qm_method']
+        self.charge_method = param['qm_charge_method']
+        self.charge = param['qm_charge']
+        self.multiplicity = param['qm_multiplicity']
 
 
     def compute_energy(self):
