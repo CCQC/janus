@@ -5,7 +5,6 @@ from janus import psi4_wrapper
 import numpy as np
 from copy import deepcopy
 
-config1 = {}
 config2 = {'qm_basis_set' : '3-21G',
            'qm_scf_type' : 'pk',
             'qm_reference' : 'uhf'}

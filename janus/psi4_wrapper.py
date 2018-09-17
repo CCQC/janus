@@ -14,11 +14,11 @@ class Psi4_wrapper(QM_wrapper):
         self.wavefunction = None
         self.gradient = None
 
-        self.reference = param['qm_reference']
-        self.method = param['qm_method']
-        self.charge_method = param['qm_charge_method']
-        self.charge = param['qm_charge']
-        self.multiplicity = param['qm_multiplicity']
+        self.reference = param['reference']
+        self.method = param['method']
+        self.charge_method = param['charge_method']
+        self.charge = param['charge']
+        self.multiplicity = param['multiplicity']
 
 
     def compute_energy(self):
