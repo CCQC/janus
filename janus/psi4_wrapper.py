@@ -14,6 +14,13 @@ class Psi4_wrapper(QM_wrapper):
         self.wavefunction = None
         self.gradient = None
 
+        self.reference = config['qm_reference']
+        self.method = config['qm_method']
+        self.charge_method = config['qm_charge_method']
+        self.charge = config['qm_charge']
+        self.multiplicity = config['qm_multiplicity']
+
+
     def compute_energy(self):
         """
         Calls Psi4 to obtain the energy and Psi4 wavefunction object of the QM region
@@ -34,7 +41,6 @@ class Psi4_wrapper(QM_wrapper):
         self.energy, self.wavefunction = psi4.energy(self.method,
                                                        return_wfn=True)
 
-        
     def compute_gradient(self):
         """
         Calls Psi4 to obtain the energy  of the QM region
@@ -90,16 +96,16 @@ class Psi4_wrapper(QM_wrapper):
         
         # Supress print out
         psi4.core.be_quiet()
+        
+        psi4.set_options(self.qm_param)
 
-        if 'no_reorient' not in self.qm_geometry:
-            self.qm_geometry += 'no_reorient \n '
-        if 'no_com' not in self.qm_geometry:
-            self.qm_geometry += 'no_com \n '
+        psi4_geom = str(self.charge) + str(self.multiplicity) + '\n'
+        psi4_geom += self.qm_geometry
+        psi4_geom += 'no_reorient \n '
+        psi4_geom += 'no_com \n '
 
         # make sure this is in angstroms
-        mol = psi4.geometry(self.qm_geometry)
-
-        psi4.set_options(self.qm_param)
+        mol = psi4.geometry(psi4_geom)
 
         if self.external_charges is not None:
             Chrgfield = psi4.QMMM()
@@ -162,11 +168,16 @@ class Psi4_wrapper(QM_wrapper):
         Builds a dictionary of QM parmeters from input options
         '''
         qm_param = {}
-        qm_param['scf_type'] = self.scf_type
-        qm_param['basis'] = self.basis_set
-        qm_param['guess'] = self.guess_orbitals
-        qm_param['reference'] = self.reference
-        qm_param['e_convergence'] = self.e_convergence
-        qm_param['d_convergence'] = self.d_convergence
+        qm_param['scf_type'] = self.param['scf_type']
+        qm_param['basis'] = self.param['basis_set']
+        qm_param['guess'] = self.param['guess_orbitals']
+        qm_param['e_convergence'] = self.param['e_convergence']  
+        qm_param['d_convergence'] = self.param['d_convergence']
         
+        if self.is_closed_shelled is False and self.reference == 'rhf':
+            qm_param['reference'] = 'uhf'
+            self.multiplicity = 2
+        else:
+            qm_param['reference'] = self.reference
+
         self.qm_param = qm_param
