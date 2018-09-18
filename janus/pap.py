@@ -152,30 +152,30 @@ class PAP(AQMMM):
         forces = compute_sf_gradient
         """
 
-            forces_sf = {self.qm_center[0]: np.zeros((3))}
+        forces_sf = {self.qm_center[0]: np.zeros((3))}
 
-            for i, buf in self.buffer_groups.items():
+        for i, buf in self.buffer_groups.items():
 
-                # energy scaler due to partition with qm only
-                buf.energy_scaler = -1 * self.systems[self.run_ID]['qm'].aqmmm_energy / (1 - buf.s_i)
-                
-                for p, part in enumerate(self.partitions):
-                    aqmmm_energy = self.systems[self.run_ID][p].aqmmm_energy
-                    if i in part:
-                        buf.energy_scaler += aqmmm_energy / buf.s_i
-                    else:
-                        buf.energy_scaler -= aqmmm_energy / (1 - buf.s_i)
-                
-                forces[self.qm_center[0]] -= buf.energy_scaler * buf.d_s_i * buf.COM_coord 
+            # energy scaler due to partition with qm only
+            buf.energy_scaler = -1 * self.systems[self.run_ID]['qm'].aqmmm_energy / (1 - buf.s_i)
+            
+            for p, part in enumerate(self.partitions):
+                aqmmm_energy = self.systems[self.run_ID][p].aqmmm_energy
+                if i in part:
+                    buf.energy_scaler += aqmmm_energy / buf.s_i
+                else:
+                    buf.energy_scaler -= aqmmm_energy / (1 - buf.s_i)
+            
+            forces[self.qm_center[0]] -= buf.energy_scaler * buf.d_s_i * buf.COM_coord 
 
-                for idx, ratio in buf.weight_ratio.items():
+            for idx, ratio in buf.weight_ratio.items():
 
-                    if idx not in forces_sf:
-                        forces_sf[idx] = ratio * buf.energy_scaler * buf.d_s_i * buf.COM_coord
-                    else:
-                        raise Exception('Overlapping buffer atom definitions')
+                if idx not in forces_sf:
+                    forces_sf[idx] = ratio * buf.energy_scaler * buf.d_s_i * buf.COM_coord
+                else:
+                    raise Exception('Overlapping buffer atom definitions')
 
-            return forces_sf
+        return forces_sf
 
 
     def get_combos(self, items=None):

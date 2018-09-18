@@ -28,8 +28,8 @@ def test_get_combos():
     buffer_distance = {0:1.2, 1:0.4, 2:0.8, 3:1.5, 4:0.2}
     buffer_distance2 = {0:3, 1:1}
 
-    combo1 = pap_1.get_combos(buffers, buffer_distance)
-    combo2 = pap_1.get_combos(buffers2, buffer_distance2)
+    combo1 = pap_1.get_combos(buffers)
+    combo2 = pap_1.get_combos(buffers2)
 
     assert(len(combo1)) == 2**len(buffers) - 1
     assert(len(combo2)) == 2**len(buffers2) - 1
