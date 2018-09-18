@@ -1,17 +1,20 @@
 import pytest
-from janus import pap, psi4_wrapper, openmm_wrapper
+from janus import pap, psi4_wrapper, openmm_wrapper, initializer
 from copy import deepcopy
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
-config_pap = {"mm_pdb_file" : water, "aqmmm_scheme" : "PAP", "embedding_scheme" : "Electrostatic"}
-psi4 = psi4_wrapper.Psi4_wrapper(config_pap)
-openmm = openmm_wrapper.OpenMM_wrapper(config_pap)
+param = {"system" : {"mm_pdb_file": water},
+         "qmmm" : {"embedding_scheme" : "Electrostatic"}}
 
-pap_1 = pap.PAP(config_pap, psi4, openmm)
-pap_2 = pap.PAP(config_pap, psi4, openmm)
+config = initializer.Initializer(param, as_file=False)
+psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
+openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
+
+pap_1 = pap.PAP(config.aqmmm_param, psi4, openmm)
+pap_2 = pap.PAP(config.aqmmm_param, psi4, openmm)
 
 pap_1.set_Rmin(0.26)
 pap_1.set_Rmax(0.32)

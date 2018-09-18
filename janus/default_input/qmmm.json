@@ -3,6 +3,7 @@
  "embedding_method" : "Mechanical",
  "boundary_treatment" : "link_atom",
  "link_atom_element" : "H",
- "qm_atoms" : []
+ "qm_atoms" : [],
+ "run_aqmmm" : true
 }
 

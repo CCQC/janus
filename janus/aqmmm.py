@@ -17,7 +17,7 @@ class AQMMM(ABC, QMMM):
         super().__init__(config, qm_wrapper, mm_wrapper)
 
         self.aqmmm_scheme = config['aqmmm_scheme']
-        self.partition_scheme = config['aqmmm_partition_scheme']
+        self.partition_scheme = config['partition_scheme']
         self.Rmin = config['Rmin']
         self.Rmax = config['Rmax']
         # do not include options of computing the qm center with the program - 

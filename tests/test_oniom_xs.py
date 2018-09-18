@@ -1,17 +1,19 @@
 import pytest
-from janus import oniom_xs, psi4_wrapper, openmm_wrapper
+from janus import oniom_xs, psi4_wrapper, openmm_wrapper, initializer
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
-config = {"mm_pdb_file" : water}
-psi4 = psi4_wrapper.Psi4_wrapper(config)
-openmm = openmm_wrapper.OpenMM_wrapper(config)
-oxs =   oniom_xs.ONIOM_XS(config, psi4, openmm)
-oxs_0 = oniom_xs.ONIOM_XS(config, psi4, openmm)
-oxs_1 = oniom_xs.ONIOM_XS(config, psi4, openmm)
-oxs_2 = oniom_xs.ONIOM_XS(config, psi4, openmm)
+param = {"system" : {"mm_pdb_file" : water}}
+config = initializer.Initializer(param, as_file=False)
+psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
+openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
+
+oxs =   oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
+oxs_0 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
+oxs_1 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
+oxs_2 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
 
 def test_set_Rmin():
 

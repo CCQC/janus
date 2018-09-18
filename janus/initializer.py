@@ -42,11 +42,6 @@ class Initializer(object):
             print("No MM program was specified. OpenMM will be used")
             self.mm_program = 'OpenMM'
 
-        if 'aqmmm' in self.param:
-            self.aqmmm_scheme = self.param['aqmmm']['aqmmm_scheme']
-        else:
-            self.aqmmm_scheme = None
-            
         self.update_param()
 
     def update_param(self):
@@ -109,15 +104,15 @@ class Initializer(object):
             print("Only OpenMM currently available")
 
 
-        if self.aqmmm_scheme is None:
+        if self.qmmm_param['run_aqmmm'] is False: 
             qmmm = QMMM(qmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmmm_scheme == 'ONIOM-XS':
+        elif self.aqmm_param['aqmmm_scheme'] == 'ONIOM-XS':
             qmmm = ONIOM_XS(aqmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmmm_scheme == 'Hot-Spot':
+        elif self.aqmm_param['aqmmm_scheme'] == 'Hot-Spot':
             qmmm = HotSpot(aqmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmmm_scheme == 'PAP':
+        elif self.aqmm_param['aqmmm_scheme'] == 'PAP':
             qmmm = PAP(aqmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmmm_scheme == 'SAP':
+        elif self.aqmm_param['aqmmm_scheme'] == 'SAP':
             qmmm = SAP(aqmmm_param, qm_wrapper, mm_wrapper)
         else:
             print("Only ONIOM_XS, Hot Spot, PAP, and SAP currently implemented")
