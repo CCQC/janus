@@ -14,7 +14,7 @@ class MM_wrapper(ABC):
     def __init__(self, param, program):
 
         self.pdb_file = param['mm_pdb_file']
-
+        self.param = param
         self.program = program
         self.main_info = None
         self.main_charges = None

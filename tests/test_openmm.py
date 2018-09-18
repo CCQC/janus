@@ -3,6 +3,7 @@ Testing for the openmm_wrapper module
 """
 import pytest
 from janus import openmm_wrapper 
+from janus import initializer
 import simtk.unit as OM_unit
 import numpy as np
 import os
@@ -11,14 +12,15 @@ import os
 water_pdb_file = os.path.join(str('tests/files/test_openmm/water.pdb'))
 ala_pdb_file = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 
-config_water = {"mm_pdb_file" : water_pdb_file,
-          "embedding_method" : "Electrostatic"}
+config_water = {"system" : {"mm_pdb_file" : water_pdb_file}}
+config_ala = {"system" : {"mm_pdb_file" : ala_pdb_file}}
+          #"embedding_method" : "Electrostatic"}
 
-config_ala = {"mm_pdb_file" : ala_pdb_file,
-          "embedding_method" : "Electrostatic"}
+config1 = initializer.Initializer(config_water, as_file=False)
+config2 = initializer.Initializer(config_ala, as_file=False)
 
-wrapper = openmm_wrapper.OpenMM_wrapper(config_water)
-wrapper_ala = openmm_wrapper.OpenMM_wrapper(config_ala)
+wrapper = openmm_wrapper.OpenMM_wrapper(config1.mm_param)
+wrapper_ala = openmm_wrapper.OpenMM_wrapper(config2.mm_param)
 #openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 #openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)

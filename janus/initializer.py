@@ -10,9 +10,12 @@ from .sap import SAP
 
 class Initializer(object):
 
-    def _init__(self, paramfile):
+    def __init__(self, param, as_file=True):
 
-        self.param = self.load_param(paramfile)
+        if as_file is True:
+            self.param = self.load_param(param)
+        else:
+            self.param = param
 
         self.qmmm_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/qmmm.json'
         self.aqmmm_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/aqmmm.json'
@@ -22,14 +25,29 @@ class Initializer(object):
         self.qmmm_param = self.load_param(self.qmmm_paramfile)
         self.aqmmm_param = self.load_param(self.aqmmm_paramfile)
 
-        self.qm_program = self.param['qmmm']['qm_program']
-        self.mm_program = self.param['qmmm']['mm_program']
+        try:
+            print('Using pdb file ', self.param['system']['mm_pdb_file'])
+        except KeyError:
+            print('No pdb file given')
+            
+        try:
+            self.qm_program = self.param['qmmm']['qm_program']
+        except:
+            print("No QM program was specified. Psi4 will be used")
+            self.qm_program = 'Psi4'
+
+        try:
+            self.mm_program = self.param['qmmm']['mm_program']
+        except:
+            print("No MM program was specified. OpenMM will be used")
+            self.mm_program = 'OpenMM'
 
         if 'aqmmm' in self.param:
             self.aqmmm_scheme = self.param['aqmmm']['aqmmm_scheme']
         else:
             self.aqmmm_scheme = None
             
+        self.update_param()
 
     def update_param(self):
 
@@ -45,13 +63,28 @@ class Initializer(object):
         # add other options for mm program here
             print("Only OpenMM currently available")
 
-        self.qm_param.update(self.param['qm'])
-        self.mm_param.update(self.param['mm'])
+        try:
+            self.qm_param.update(self.param['qm'])
+        except:
+            print("No QM parameters given. Using defaults")
+        try:
+            self.mm_param.update(self.param['mm'])
+        except:
+            print("No MM parameters given. Using defaults")
+
         self.mm_param.update(self.param['system'])
-        self.qmmm_param.update(self.param['qmmm'])
-        self.qmmm_param.update(self.param['system'])
-        self.aqmmm_param.update(self.param['aqmmm'])
-        self.aqmmm_param.update(self.param['qmmm'])
+
+        try:
+            self.qmmm_param.update(self.param['qmmm'])
+        except: 
+            self.qmmm_param.update(self.param['system'])
+            print("No QMMM parameters given. Using defaults")
+        try:
+            self.aqmmm_param.update(self.param['aqmmm'])
+            self.aqmmm_param.update(self.param['qmmm'])
+        except: 
+            self.aqmmm_param.update(self.qmmm_param)
+            print("No AQMMM parameters given. Using defaults")
         
 
     def initialize_wrappers(self):

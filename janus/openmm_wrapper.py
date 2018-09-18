@@ -24,7 +24,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         self.temp = eval(param['temp'])
         self.step_size = eval(param['step_size'])
-        self.fric_coeff = eval(param['fric_coff'])
+        self.fric_coeff = eval(param['fric_coeff'])
 
         self.pdb = OpenMM_wrapper.create_pdb(self.pdb_file)
         self.positions = None
@@ -170,9 +170,9 @@ class OpenMM_wrapper(MM_wrapper):
                                             nonbondedMethod=eval(self.param['nonbondedMethod']),
                                             nonbondedCutoff=eval(self.param['nonbondedCutoff']),
                                             constraints=eval(self.param['constraints']),
-                                            residueTemplates=param['residueTemplates'],
-                                            hydrogenMass=eval(param['hydrogenMass']),
-                                            switchDistance=eval(param['switchDistance']),
+                                            residueTemplates=self.param['residueTemplates'],
+                                            hydrogenMass=eval(self.param['hydrogenMass']),
+                                            switchDistance=eval(self.param['switchDistance']),
                                             rigid_water=self.param['rigid_water'],
                                             removeCMMotion=self.param['removeCMMotion'],
                                             flexibleConstraints=self.param['flexibleConstraints'],
