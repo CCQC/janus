@@ -5,9 +5,31 @@ from janus import psi4_wrapper
 import numpy as np
 from copy import deepcopy
 
-config2 = {'qm_basis_set' : '3-21G',
-           'qm_scf_type' : 'pk',
-            'qm_reference' : 'uhf'}
+config2 = {
+        "basis_set" : "3-21G",
+        "scf_type" : "pk",
+        "guess_orbitals" : "sad",
+        "reference" : "uhf",
+        "e_convergence" : 1e-8,
+        "d_convergence" : 1e-8,
+        "method" : "scf",
+        "charge_method" : "MULLIKEN_CHARGES",
+        "charge" : 0,
+        "multiplicity" : 1
+        }
+config1 = {
+        "basis_set" : "STO-3G",
+        "scf_type" : "df",
+        "guess_orbitals" : "sad",
+        "reference" : "rhf",
+        "e_convergence" : 1e-8,
+        "d_convergence" : 1e-8,
+        "method" : "scf",
+        "charge_method" : "MULLIKEN_CHARGES",
+        "charge" : 0,
+        "multiplicity" : 1
+        }
+
 qm_sys1 = psi4_wrapper.Psi4_wrapper(config1)
 qm_sys2 = psi4_wrapper.Psi4_wrapper(config2)
 qm_sys3 = psi4_wrapper.Psi4_wrapper(config2)
@@ -136,8 +158,8 @@ def test_compute_energy_and_charges():
 
 def test_run_qm():
 
-    info2 = qm_sys2.run_qm(qm_mol)
-    info3 = qm_sys3.run_qm(qm_mol)
+    info2 = qm_sys2.run_qm(qm_mol,20)
+    info3 = qm_sys3.run_qm(qm_mol,20)
     print(qm_sys2.gradient)
     print(gradient2)
     print(qm_sys3.gradient)

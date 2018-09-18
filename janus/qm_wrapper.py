@@ -11,6 +11,7 @@ class QM_wrapper(ABC):
         self.qm_param = None
         self.external_charges = None
         self.charges = None
+        self.is_open_shelled = False
 
     @abstractmethod
     def build_qm_param(self):
@@ -48,7 +49,7 @@ class QM_wrapper(ABC):
         if total_elec % 2 != 0:
             self.total_elec += self.charge
             if total_elec % 2 != 0:
-                self.is_close_shelled = False
+                self.is_open_shelled = True
             
     def set_external_charges(self, charges):
         

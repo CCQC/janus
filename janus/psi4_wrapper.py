@@ -99,10 +99,11 @@ class Psi4_wrapper(QM_wrapper):
         
         psi4.set_options(self.qm_param)
 
-        psi4_geom = str(self.charge) + str(self.multiplicity) + '\n'
+        psi4_geom = '\n' + str(self.charge) + ' ' + str(self.multiplicity) + '\n '
         psi4_geom += self.qm_geometry
-        psi4_geom += 'no_reorient \n '
+        psi4_geom += 'no_reorient \n'
         psi4_geom += 'no_com \n '
+        print(psi4_geom)
 
         # make sure this is in angstroms
         mol = psi4.geometry(psi4_geom)
@@ -174,7 +175,7 @@ class Psi4_wrapper(QM_wrapper):
         qm_param['e_convergence'] = self.param['e_convergence']  
         qm_param['d_convergence'] = self.param['d_convergence']
         
-        if self.is_closed_shelled is False and self.reference == 'rhf':
+        if self.is_open_shelled is True and self.reference == 'rhf':
             qm_param['reference'] = 'uhf'
             self.multiplicity = 2
         else:
