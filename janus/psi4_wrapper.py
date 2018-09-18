@@ -1,13 +1,48 @@
 import psi4
 import numpy as np
 from .qm_wrapper import QM_wrapper
-"""
-This module is a wrapper that calls Psi4 to obtain QM information
-"""
 
 class Psi4_wrapper(QM_wrapper):
+    """
+    A wrapper class that calls Psi4 to obtain quantum mechanical
+    information. Class inherits from QM_wrapper.
+    """
 
     def __init__(self, param):
+        """
+        Initializes a Psi4_wrapper class with a set of 
+        parameters for running Psi4
+
+        Parameters
+        ----------
+        param: dict containing parameters for QM computations
+               Individual parameters include:
+
+               - basis_set: the basis set to use for compuatations, 
+                            default is STO-3G
+               - scf_type: scf algorithm, default is density fitting(df)
+               - guess_orbitals: type of guess orbitals, default is 
+                                 Superposition of Atomic Densities(sad)
+               - reference: type of reference wavefunction, default is RHF
+               - e_convergence: degree of energy convergence, default is 1e-8
+               - d_convergence: degree of density convergence, default is 1e-8
+               - method: computation method, default is scf
+               - charge_method: method for getting QM charges, default is Mulliken
+               - charge: charge of qm system, default is 0
+               - multiplicity: spin state of qm system, default is singlet(1)
+
+                For more information about these parameters and 
+                other possible parameter values consult psicode.org
+
+
+        Returns
+        -------
+        A Psi4_wrapper object
+
+        Examples
+        --------
+        psi4_wrapper = Psi4_wrapper(param)
+        """
 
         super().__init__(param, "Psi4")
         self.energy = None
@@ -24,6 +59,7 @@ class Psi4_wrapper(QM_wrapper):
     def compute_energy(self):
         """
         Calls Psi4 to obtain the energy and Psi4 wavefunction object of the QM region
+        and saves as self.energy and self.wavefunction
 
         Parameters
         ----------
@@ -31,11 +67,11 @@ class Psi4_wrapper(QM_wrapper):
 
         Returns
         -------
-        Energy, wavefunction
+        None
 
         Examples
         --------
-        E = get_psi4_energy()
+        compute_energy()
         """
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.energy(self.method,
@@ -43,8 +79,8 @@ class Psi4_wrapper(QM_wrapper):
 
     def compute_gradient(self):
         """
-        Calls Psi4 to obtain the energy  of the QM region
-        and saves it as a numpy array self._gradient
+        Calls Psi4 to obtain the gradient of the QM region
+        and saves it as a numpy array self.gradient
 
         Parameters
         ----------
@@ -56,13 +92,30 @@ class Psi4_wrapper(QM_wrapper):
 
         Examples
         --------
-        get_gradient()
+        compute_gradient()
         """
         self.set_up_psi4()
         G = psi4.gradient(self.method)
         self.gradient = np.asarray(G)
 
     def compute_energy_and_gradient(self):
+        """
+        Calls Psi4 to obtain the energy, Psi4 wavefunction object, and 
+        gradient of the QM region and saves as self.energy, self.wavefuction,
+        and self.gradient
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        compute_energy()
+        """
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.energy(self.method,
                                                        return_wfn=True)
@@ -117,9 +170,9 @@ class Psi4_wrapper(QM_wrapper):
             
     def compute_scf_charges(self):
         """
-        Calls Psi4 to obtain the charges on each atom given and saves it as a numpy array.
+        Calls Psi4 to obtain the self.charges on each atom given and saves it as a numpy array.
         This method works well for SCF wavefunctions. For correlated levels of theory (e.g., MP2),
-        it is advised that get_psi4_properties() be used instead.
+        it is advised that compute_energy_and_charges() be used instead.
 
         Parameters
         ----------
@@ -131,7 +184,7 @@ class Psi4_wrapper(QM_wrapper):
 
         Examples
         --------
-        get_scf_charge()
+        compute_scf_charge()
         """
         if self.wavefunction is not None:
             psi4.oeprop(self.wavefunction, self.charge_method)
@@ -141,8 +194,8 @@ class Psi4_wrapper(QM_wrapper):
 
     def compute_energy_and_charges(self):
         """
-        Calls Psi4 to obtain the energy, wavefunction, and charges on each atom.
-        This method for correlated methods.
+        Calls Psi4 to obtain the self.energy, self.wavefunction, 
+        and self.charges on each atom. This method for correlated methods.
         Note: think about passing in wavefunction instead of calling for energy and wavefunction
 
         Parameters
@@ -155,7 +208,7 @@ class Psi4_wrapper(QM_wrapper):
 
         Examples
         --------
-        get_energy_and_charges(system)
+        compute_energy_and_charges(system)
         """
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.prop(self.method,
@@ -165,9 +218,22 @@ class Psi4_wrapper(QM_wrapper):
 
 
     def build_qm_param(self):
-        '''
-        Builds a dictionary of QM parmeters from input options
-        '''
+        """
+        Builds a dictionary of QM parameters from input options
+        and saves as self.param
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        build_qm_param()
+        """
         qm_param = {}
         qm_param['scf_type'] = self.param['scf_type']
         qm_param['basis'] = self.param['basis_set']

@@ -4,7 +4,23 @@ This is the qmmm driver module
 import json
 from .initializer import Initializer
 
-def run_janus(filename):
+def run_janus(filename='input.json'):
+    """
+    Function that drives the running of janus
+    
+    Parameters
+    ----------
+    filename: a string containing the filename of the input file,
+              default is 'input.json'
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    run_janus('input.json')
+    """
 
     initializer = Initializer(filename)
 

@@ -9,8 +9,32 @@ from .pap import PAP
 from .sap import SAP
 
 class Initializer(object):
+    """
+    Class that initializes the initial parameters 
+    and necessary wrapppers
+    """
 
     def __init__(self, param, as_file=True):
+        """
+        Initializes the Initializer class with parameters and updates 
+        defaults with user defined parameters
+
+        Parameters
+        ----------
+        param: a string of a filename containing a json input file
+               If as_file is False, param is a dict
+        as_file: a bool specifying whether param is a file or dict,
+                 default is True
+
+        Returns
+        -------
+        An initializer object
+
+        Examples
+        --------
+        init = Initializer('input.dat')
+        init = Initializer(param, as_file=False)
+        """
 
         if as_file is True:
             self.param = self.load_param(param)
@@ -45,17 +69,30 @@ class Initializer(object):
         self.update_param()
 
     def update_param(self):
+        """
+        updates default parameters with user defined parameters
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        update_param()
+        """
 
         if self.qm_program == "Psi4":
             self.qm_param = self.load_param(self.psi4_paramfile)
         else:
-        # add other options for qm program here
             print("Only Psi4 currently available")
 
         if self.mm_program == "OpenMM":
             self.mm_param = self.load_param(self.openmm_paramfile)
         else:
-        # add other options for mm program here
             print("Only OpenMM currently available")
 
         try:
@@ -86,7 +123,20 @@ class Initializer(object):
 
     def initialize_wrappers(self):
         """
-        Initializes the programs to use for computations
+        Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects 
+        used for computation based on input parameters
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        mm_wrapper object, qmmm object
+
+        Examples
+        --------
+        mm_wrapper, qmmm = initialize_wrapers()
         """
 
         # create qm_wrapper object
@@ -123,8 +173,24 @@ class Initializer(object):
         return mm_wrapper, qmmm
 
     def load_param(self, filename):
+        """
+        Converts a json file into a dictionary
+    
+        Parameters
+        ----------
+        filename: string of json file
+
+        Returns
+        -------
+        a dictionary
+
+        Examples
+        --------
+        dict = load_param('input.json')
+        """
 
         with open(filename) as parameter_file:
             param = json.load(parameter_file)
         
         return param
+

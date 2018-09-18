@@ -4,31 +4,31 @@ from mendeleev import element
 
 class System(object):
     """
-    A system class that stores QM, MM, and QM/MM
-    input parameters, as well as system information
-    such as geometry, and energy
-    psi4_mp2._system.
+    A system class that stores system information
+    such as energy, forces, and positions for each region 
+    of a system at a particular point
+    Stores qmmm and aqmmm information as well.
     """
 
     def __init__(self, qm_indices, run_ID, partition_ID='qm'):
-
         """
-        Initializes system with None values for all parameters
+        Initializes class
 
         Parameters
         ----------
-
-        I think I should just leave the parameters blank and
-        define everything as None..
+        qm indices: list of indices of the atoms of the QM region
+        run_ID: an int with the current step of the MD simulation
+        partition_ID: An identifier for the specfic partition in aqmmm computations,
+                      default is 'qm'
 
         Returns
         -------
-        A built system
+        A system object
 
         Examples
         --------
-        qm_parameters = System.qm_param()
-        method = System.qm_method()
+        system = System(qm_indices=[0,1,2], run_ID = 0)
+        system = System(qm_indices=[0,1,2], run_ID = 0, partition_ID=0)
         """
         self.qm_atoms = deepcopy(qm_indices)
         self.run_ID = run_ID
@@ -44,18 +44,11 @@ class System(object):
         self.second_subsys = {}
         self.boundary = {}
 
-
-        
-    # need to add all the other parameters written into system e.g. energy
-
-
-
     def compute_scale_factor_g(qm, mm, link):
         '''
         Computes scale factor g for link atom, RC, and RCD schemes. 
         Note: r given in pmm but don't need to convert because it is a ratio
-              need to get other ways to compute g factor
-              need functionality for different link atoms
+              need functionality for link atoms != 'H'
 
         Parameters
         ----------
@@ -69,7 +62,7 @@ class System(object):
 
         Examples
         --------
-        compute_scale_factor(qm='C', mm='C', link='H')
+        g = compute_scale_factor(qm='C', mm='C', link='H')
         """
         '''
         
@@ -82,8 +75,30 @@ class System(object):
         return g
 
 class Buffer(object):
+    """
+    A class to store information for buffer groups 
+    from aqmmm computations such as what atoms are contained
+    in the buffer group, the switching function, COM coordinates, etc.
+    """
 
     def __init__(self, ID):
+        """
+        Initializes buffer class
+
+        Parameters
+        ----------
+        ID: an int that serves as the identifer for the 
+            buffer group
+        
+        Returns
+        -------
+        A Buffer object
+
+        Examples
+        --------
+        buf1 = Buffer(ID=1)
+        buf1 = Buffer(ID=2)
+        """
 
         self.ID = ID
         self.atoms = []
@@ -93,10 +108,5 @@ class Buffer(object):
         self.dist_from_center = None
         self.s_i = None
         self.d_s_i = None
-
-
-
-
-
 
 
