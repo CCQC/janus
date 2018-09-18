@@ -4,11 +4,44 @@ import numpy as np
 
 class ONIOM_XS(AQMMM):
 
-    def __init__(self, config, qm_wrapper, mm_wrapper):
+    def __init__(self, param, qm_wrapper, mm_wrapper):
+        """
+        Initializes the ONIOM_XS class object
+    
+        Parameters
+        ----------
+        See parameters for AQMMM class 
+
+        Returns
+        -------
+        A ONIOM_XS class object
+
+        Examples
+        --------
+        ox = ONIOM_XS(param, psi4_wrapper, openmm_wrapper)
+        """
         
-        super().__init__(config, qm_wrapper, mm_wrapper)
+        super().__init__(param, qm_wrapper, mm_wrapper)
 
     def partition(self, qm_center=None, info=None): 
+        """
+        Finds the partitions as required by the ONIOM-XS method 
+        and saves each partition as a system object.
+        Saves all systems in the dictionary self.systems
+
+        Parameters
+        ----------
+        qm_center: list of atoms that define the qm center, 
+                   default is None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        partition([0])
+        """
     
         if qm_center is None:
             qm_center = self.qm_center
@@ -33,6 +66,10 @@ class ONIOM_XS(AQMMM):
             self.systems[self.run_ID][qm_bz.partition_ID] = qm_bz
 
     def run_aqmmm(self):
+        """
+        Interpolates the energy and gradients from each partition
+        according to the ONIOM-XS method
+        """
         
         qm = self.systems[self.run_ID]['qm']
 
@@ -69,6 +106,22 @@ class ONIOM_XS(AQMMM):
 
 
     def get_switching_function(self):
+        """
+        Averages the individual switching functions 
+        of each buffer group
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        The average of the switching functions as a float
+
+        Examples
+        --------
+        s = get_switching_function()
+        """
 
         s = 0.0
                 

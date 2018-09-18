@@ -9,6 +9,36 @@ QMMM class for QMMM computations
 class QMMM(object):
 
     def __init__(self, param, qm_wrapper, mm_wrapper):
+        """
+        Initializes QMMM class with parameters given in param
+
+        Parameters
+        ----------
+        param: a dict containing parameters for QM/MM and adaptive QM/MM computations
+               Individual parameters include:
+                - qmmm_scheme: str of scheme for computing QM/MM energies and gradients, 
+                               only substractive available(default)
+                - embedding_method: str of embedding method to use for QM/MM. 
+                                    Mechanical(default) and Electrostatic available
+                - boundary_treatment: str of method for treating dangling bonds in the QM region,
+                                      link_atom(default), RC, and RCD available
+                - link_atom_element: str of element to use for link atom,
+                                     default is H. Beware of using others (not all functionality tested)
+                - qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations
+                - run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,
+                             default is True. Regular QM/MM run if False
+
+        qm_wrapper: a qm_wrapper object
+        mm_wrapper: a mm_wrapper object
+
+        Returns
+        -------
+        A QMMM object
+
+        Examples
+        --------
+        qmmm = QMMM(param, psi4_wrapper, mm_wrapper)
+        """
         
         self.qm_wrapper = qm_wrapper
         self.mm_wrapper = mm_wrapper
@@ -28,6 +58,23 @@ class QMMM(object):
         self.systems = {}
 
     def run_qmmm(self, main_info):
+        """
+        Updates the positions and topology given in main_info,
+        and determines the QM/MM energy and gradients
+
+        Parameters
+        ----------
+        main_info: a dictionary containing the energy and forces 
+                   for the whole system, obtained from mm_wrapper
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        run_qmmm(main_info)
+        """
 
         self.update_traj(main_info['positions'], main_info['topology'])
 
@@ -44,6 +91,8 @@ class QMMM(object):
         self.systems[self.run_ID][system.partition_ID] = system
         self.systems[self.run_ID]['qmmm_forces'] = system.qmmm_forces
         self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy
+
+        # updates current step count
         self.run_ID += 1
 
 

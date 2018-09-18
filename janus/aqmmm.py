@@ -6,27 +6,82 @@ import mendeleev as mdlv
 from .qmmm import QMMM
 from .system import Buffer
 
-"""
-AQMMM class for adaptive QMMM computations
-"""
 class AQMMM(ABC, QMMM):
+    """
+    AQMMM super class for adaptive QMMM computations.
+    Inherits from QMMM class.
+    """
 
     nm_to_angstrom = 10.0000000
 
-    def __init__(self, config, qm_wrapper, mm_wrapper):
-        super().__init__(config, qm_wrapper, mm_wrapper)
+    def __init__(self, param, qm_wrapper, mm_wrapper):
+        """
+        Initializes AQMMM class with parameters given in param
 
-        self.aqmmm_scheme = config['aqmmm_scheme']
-        self.partition_scheme = config['partition_scheme']
-        self.Rmin = config['Rmin']
-        self.Rmax = config['Rmax']
+        Parameters
+        ----------
+        param: a dict containing parameters for QM/MM and adaptive QM/MM computations
+               Individual parameters include:
+                - aqmmm_scheme: str of scheme to use for adaptive QM/MM, default is ONIOM-XS. 
+                                Hot-Spot, PAP, SAP also available
+                - partition_scheme: str of scheme to use to define buffer groups,
+                                    default is distance (only scheme available as of now)
+                - Rmin: float of inner radius for distance partition, default is 0.38
+                - Rmax: float of outer radius for distance partition, default is 0.45
+                - qm_center: list of atoms that define the qm center, default is [0]
+                - qmmm_scheme: str of scheme for computing QM/MM energies and gradients, 
+                               only substractive available(default)
+                - embedding_method: str of embedding method to use for QM/MM. 
+                                    Mechanical(default) and Electrostatic available
+                - boundary_treatment: str of method for treating dangling bonds in the QM region,
+                                      link_atom(default), RC, and RCD available
+                - link_atom_element: str of element to use for link atom,
+                                     default is H. Beware of using others (not all functionality tested)
+                - qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations
+                - run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,
+                             default is True. Regular QM/MM run if False
+
+        qm_wrapper: a qm_wrapper object
+        mm_wrapper: a mm_wrapper object
+
+        Returns
+        -------
+        Note: since AQMMM is a super class and has abstract methods
+        cannot actually instantiate AQMMM object, but only its child objects
+        """
+        
+        super().__init__(param, qm_wrapper, mm_wrapper)
+
+        self.aqmmm_scheme = param['aqmmm_scheme']
+        self.partition_scheme = param['partition_scheme']
+        self.Rmin = param['Rmin']
+        self.Rmax = param['Rmax']
         # do not include options of computing the qm center with the program - 
         # might need this functionality later
-        self.qm_center = config['qm_center']
+        self.qm_center = param['qm_center']
 
         self.buffer_groups = {}
 
     def run_qmmm(self,main_info):
+        """
+        Updates the positions and topology given in main_info,
+        determines the partitions to be computed, for each partition,
+        determines the QM/MM energy and gradients, then interpolates all
+        partitions using specified adaptive QM/MM scheme
+
+        Parameters
+        ----------
+        main_info: a dictionary containing the energy and forces 
+                   for the whole system, obtained from mm_wrapper
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        run_qmmm(main_info)
+        """
 
         self.update_traj(main_info['positions'], main_info['topology'])
         self.partition()
@@ -43,15 +98,34 @@ class AQMMM(ABC, QMMM):
                 print('only mechanical and electrostatic embedding schemes implemented at this time')
 
         self.run_aqmmm()
+        # updates current step count
         self.run_ID += 1
 
     def define_buffer_zone(self, qm_center):
-        # qm_center needs to be in list form
+        """
+        Gets the buffer groups in the buffer zone based on a distance 
+        partitioning scheme, saves each buffer group as a Buffer object,
+        and saves all buffer groups in the dictionary self.buffer_groups.
+        For water as a solvent, considers the whole water molecule as a buffer group.
+        Need to generalize for all solvents
+
+        Parameters
+        ----------
+        qm_center: a list of the indicies that make up the qm center
+
+        Returns
+        -------
+        None
+        
+        Examples
+        --------
+        define_buffer_zone([0])
+        """
+
         self.qm_center = qm_center
         self.qm_center_xyz = self.traj.xyz[0][qm_center]
 
         if self.partition_scheme == 'distance': 
-#            self.traj.xyz = positions
             rmin_atoms = md.compute_neighbors(self.traj, self.Rmin, qm_center)
             rmax_atoms = md.compute_neighbors(self.traj, self.Rmax, qm_center)
             self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
@@ -82,6 +156,23 @@ class AQMMM(ABC, QMMM):
             self.get_buffer_info()
 
     def get_buffer_info(self):
+        """
+        Computes the distance r_i for each buffer group i
+        between the qm_center and the COM of buffer group i
+        and the computes lamda_i and d_lamda_i for that buffer group
+
+        Parameters
+        ----------      
+        None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        get_buffer_info()
+        """
 
         self.buffer_distance = {}
 
@@ -94,6 +185,29 @@ class AQMMM(ABC, QMMM):
             buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
 
     def compute_COM(self, atoms):
+        """
+        Computes the center of mass of a
+        specified group
+
+        Parameters
+        ----------
+        atoms : a list of indices defining the group
+                to compute the COM for
+
+        Returns
+        -------
+        xyz, atom_weight, weight_ratio
+        xyz: an numpy array of the COM coordinates 
+        atom_weight: a dictionary with the indices of each atom in the  
+                     group and the atomic weight for each atom
+        weight_ratio: a dictionary with the indices of each atom in the 
+                      group and the weight ratio of each atom to
+                      the total weight of the group (sum of all atomic weights)
+
+        Examples
+        --------
+        xyz, atoms, weights = compute_COM([0,1,2])
+        """
         
         xyz = np.zeros(3)
         M = 0
@@ -119,6 +233,29 @@ class AQMMM(ABC, QMMM):
         return xyz, atom_weight, weight_ratio
 
     def compute_lamda_i(self, r_i):
+        """
+        Computes the switching function and the derivative 
+        of the switching function defined as a 5th order spline:
+        
+        lamda_i = -6x^5 + 15x^4 - 10x^3 + 1 and 
+        d_lamda_i = -30x^4 + 60x^3 - 30x^2
+
+        where x is the reduced distance (r_i - rmin)/(rmax - rmin)
+        of buffer group i
+
+        Parameters
+        ----------
+        r_i: float in angstroms of the distance between the 
+             qm center and the COM 
+
+        Returns
+        -------
+        lamda_i, d_lamda_i as unitless floats
+
+        Examples
+        --------
+        l, dl = compute_lamda_i(0.234)
+        """
 
         x_i = float((r_i - self.Rmin) / (self.Rmax - self.Rmin))
 
@@ -130,15 +267,81 @@ class AQMMM(ABC, QMMM):
         return lamda_i, d_lamda_i
 
     def get_Rmin(self):
+        """
+        function to return self.Rmin
+
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        self.Rmin: float for the distance from qm center to 
+              inner limit of buffer zone in angstroms
+
+        Examples
+        --------
+        rmin = get_Rmin()
+        """
         return self.Rmin
 
     def get_Rmax(self):
+        """
+        function to return self.Rmin
+
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        self.Rmax: float for the distance from qm center to 
+              outer limit of buffer zone in angstroms
+
+        Examples
+        --------
+        rmax = get_Rmax()
+        """
+
         return self.Rmax
 
     def set_Rmin(self, Rmin):
+        """
+        function to set self.Rmin
+        
+        Parameters
+        ----------
+        Rmin: float for the distance from qm center to 
+              inner limit of buffer zone in angstroms
+        
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        set_Rmin(.35)
+        """
+
         self.Rmin = Rmin
 
     def set_Rmax(self, Rmax):
+        """
+        function to set self.Rmax
+        
+        Parameters
+        ----------
+        Rmax: float for the distance from qm center to 
+              outer limit of buffer zone in angstroms
+        
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        set_Rmax(.50)
+        """
         self.Rmax = Rmax
 
     @abstractmethod

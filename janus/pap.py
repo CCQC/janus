@@ -6,11 +6,44 @@ import numpy as np
 
 class PAP(AQMMM):
 
-    def __init__(self, config, qm_wrapper, mm_wrapper):
+    def __init__(self, param, qm_wrapper, mm_wrapper):
+        """
+        Initializes the PAP class object
+    
+        Parameters
+        ----------
+        See parameters for AQMMM class 
+
+        Returns
+        -------
+        A PAP class object
+
+        Examples
+        --------
+        pap = PAP(param, psi4_wrapper, openmm_wrapper)
+        """
         
-        super().__init__(config, qm_wrapper, mm_wrapper)
+        super().__init__(param, qm_wrapper, mm_wrapper)
 
     def partition(self, qm_center=None, info=None): 
+        """
+        Finds the partitions as required by the PAP method 
+        and saves each partition as a system object.
+        Saves all systems in the dictionary self.systems
+
+        Parameters
+        ----------
+        qm_center: list of atoms that define the qm center, 
+                   default is None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        partition([0])
+        """
     
         if qm_center is None:
             qm_center = self.qm_center
@@ -39,6 +72,10 @@ class PAP(AQMMM):
                 self.systems[self.run_ID][sys.partition_ID] = sys
 
     def run_aqmmm(self):
+        """
+        Interpolates the energy and gradients from each partition
+        according to the PAP method
+        """
         
         qm = self.systems[self.run_ID]['qm']
 
@@ -99,6 +136,21 @@ class PAP(AQMMM):
             
 
     def compute_sf_gradient(self):
+        """
+        Computes forces due to the gradient of the switching function
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        Forces due to gradient of switching function as a dictionary
+
+        Examples
+        --------
+        forces = compute_sf_gradient
+        """
 
             forces_sf = {self.qm_center[0]: np.zeros((3))}
 
@@ -121,20 +173,35 @@ class PAP(AQMMM):
                     if idx not in forces_sf:
                         forces_sf[idx] = ratio * buf.energy_scaler * buf.d_s_i * buf.COM_coord
                     else:
-                        raise Exception('Overlapping buffer atoms')
+                        raise Exception('Overlapping buffer atom definitions')
 
             return forces_sf
 
 
-    def get_combos(self, items=None, buffer_distance=None):
+    def get_combos(self, items=None):
+        """
+        Gets all combinations of a given list of indices 
 
-        if buffer_distance is None:
-            buffer_distance = self.buffer_distance
+        Parameters
+        ----------
+        items: list of indices to get combinations for
+    
+        Returns
+        -------
+        List of all possible combinations 
+
+        Examples    
+        --------
+        combos = get_combos([1,2])
+
+        In this case, combos will return 
+        [(1), (2), (1,2)]
+        """
+        
         all_combo = []
 
         for i in range(1, len(items) +1):
             all_combo += list(it.combinations(items, i))
-
 
         return all_combo
 

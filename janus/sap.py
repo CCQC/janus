@@ -7,10 +7,43 @@ import numpy as np
 class SAP(AQMMM):
 
     def __init__(self, config, qm_wrapper, mm_wrapper):
+        """
+        Initializes the SAP class object
+    
+        Parameters
+        ----------
+        See parameters for AQMMM class 
+
+        Returns
+        -------
+        A SAP class object
+
+        Examples
+        --------
+        sap = SAP(param, psi4_wrapper, openmm_wrapper)
+        """
         
         super().__init__(config, qm_wrapper, mm_wrapper)
 
     def partition(self, qm_center=None, info=None): 
+        """
+        Finds the partitions as required by the SAP method 
+        and saves each partition as a system object.
+        Saves all systems in the dictionary self.systems
+
+        Parameters
+        ----------
+        qm_center: list of atoms that define the qm center, 
+                   default is None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        partition([0])
+        """
     
         if qm_center is None:
             qm_center = self.qm_center
@@ -39,6 +72,10 @@ class SAP(AQMMM):
                 self.systems[self.run_ID][sys.partition_ID] = sys
 
     def run_aqmmm(self):
+        """
+        Interpolates the energy and gradients from each partition
+        according to the SAP method
+        """
         
         qm = self.systems[self.run_ID]['qm']
 
@@ -100,6 +137,21 @@ class SAP(AQMMM):
             self.systems[self.run_ID]['qmmm_forces'] = forces
             
     def compute_sf_gradient(self):
+        """
+        Computes forces due to the gradient of the switching function
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        Forces due to gradient of switching function as a dictionary
+
+        Examples
+        --------
+        forces = compute_sf_gradient
+        """
 
         # computing forces due to gradient of switching function for SAP
         forces_sf = {self.qm_center[0]: np.zeros((3))}
@@ -134,7 +186,29 @@ class SAP(AQMMM):
 
 
     def get_combos(self, items=None, buffer_distance=None):
+        """
+        A given list of indices is sorted by distance and 
+        the combinations is found based on distance order.
+        See example
 
+        Parameters
+        ----------
+        items: list of indices to get combinations for
+        buffer_distance: dictionary with indices from items 
+                         and their distances from the qm center
+    
+        Returns
+        -------
+        List of all possible combinations 
+
+        Examples    
+        --------
+        combos = get_combos([1,2,3])
+
+        If 1 was closer to the center than 2, and 2 closer to the center than 3,
+        functions returns following:
+        [(1), (1,2), (1,2,3)]
+        """
         if buffer_distance is None:
             buffer_distance = self.buffer_distance
 
@@ -152,6 +226,22 @@ class SAP(AQMMM):
 
 
     def get_switching_functions(self):
+        """
+        Computes switching function for SAP computations
+        and saves to each buffer group object
+        
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        get_switching_function()
+        """
 
         sf = self.buffer_groups
     
