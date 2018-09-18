@@ -97,6 +97,24 @@ class QMMM(object):
 
 
     def update_traj(self, position, topology):
+        """
+        Updates the positions and topology of self.traj,
+        a MDtraj trajectory object
+
+        Parameters
+        ----------
+        positions: a list of positions in nm
+        topology: If the mm program is  OpenMM, this is a 
+                  OpenMM topology object
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        update_traj(pos, top)
+        """
         
         # later can think about saving instead of making new instance
         # convert openmm topology to mdtraj topology
@@ -108,8 +126,12 @@ class QMMM(object):
     def mechanical(self, system, main_info):
         """
         Gets energies of needed components and computes
-        a qm/mm energy with a subtractive mechanical embedding scheme
+        a QM/MM energy with a subtractive mechanical embedding scheme
+        using the formula
+
+        E(QM/MM) = E(MM)_entire_sys - E(MM)_primary_subsys + E(QM)_primary_subsys
         """
+
         if self.qmmm_scheme == 'subtractive':
             # Get MM energy on whole system
             system.entire_sys = deepcopy(main_info)
@@ -137,8 +159,12 @@ class QMMM(object):
     def electrostatic(self, system, main_info):
         """
         Gets energies of needed components and computes
-        a qm/mm energy with a subtractive mechanical embedding scheme
-        """
+        a QM/MM energy with a subtractive electrostatic embedding scheme
+
+        E(QM/MM) = E(MM no coulomb)_entire_sys - E(MM no coulomb)_primary_subsys 
+                 + E(QM)_primary_subsys + E(MM just coulomb)_secondary_subsys
+        """ 
+
         if self.qmmm_scheme == 'subtractive':
 
             # Get MM energy on whole system
@@ -176,6 +202,23 @@ class QMMM(object):
             print('only a subtractive scheme is implemented at this time')
 
     def compute_gradients(self, system):
+        """
+        Computes the QM/MM gradients 
+        TODO:RCD gradients need work
+
+        Parameters
+        ----------
+        system: a system object that contains the gradients 
+                of qm and mm regions
+        
+        Returns
+        -------
+        None
+        
+        Examples
+        --------
+        compute_gradients(system)
+        """
         # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
         # NEED TO MAKE SURE UNITS CONSISTENT
 
@@ -204,6 +247,7 @@ class QMMM(object):
                             if atom == q1:
                                 if self.boundary_treatment == 'link_atom':
                                     # Project forces of link atoms onto the mm and qm atoms of the link atom bond
+                                    # need to make sure sign is correct
                                     qmmm_force[q1] += -(1 - g) * ps_mm_grad[link_index] + (1 - g) * qm_grad[link_index]
                                     qmmm_force[m1] += -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
                                     
@@ -221,32 +265,25 @@ class QMMM(object):
             system.qmmm_forces = qmmm_force
         
 
-    def get_qm_geometry(self, qm_traj):
+    def get_qm_geometry(self, qm_traj=None):
         """
-        TODO:
-        1. need to phase out getting qm_positions in the openmm wrapper
-        2. need to phase out getting link atom stuff through the openmm wrapper
-        - MDtraj can do ALL - just need to convert to openmm trajectory
-        - this way would be more general and robust - the only thing is to make sure the qmmm 
-         only things still work - not just with aqmmm
-        """
-        """
-        Grabs the positions of the atoms in the primary subsystem from self._positions
-        and makes a string with the element and xyz geometry coordinates. Adds the link atom positions
-        when link atoms are needed.
-        Note: In a MD time step, does the position update or not? Need to make sure this updates
+        Uses the atoms and positions from a MDtraj trajectory object
+        with just the qm region to obtain the geometry information
 
         Parameters
         ----------
-        None
+        qm_traj: a MDtraj object describing just the primary subsystem,
+                 default is None
 
         Returns
         -------
-        None
+        out, total
+        out: the str with geometry information in angstroms
+        total: total number of electrons in the primary subsystem
 
         Examples
         --------
-        qm_positions()
+        geom, total_elec = qm_positions()
         """
         if qm_traj is None:
             qm_traj = self.qm_trajectory
@@ -276,18 +313,16 @@ class QMMM(object):
         Parameters
         ----------
         qm_atoms: A list of atom indicies corresponding to the atoms in
-                  the primary subsystem. Default list is taken from qm_atoms
-                  stored in the System object
+                  the primary subsystem. Default is None and uses self.qm_atoms
 
         Returns
         -------
-        A list of tuples corresponding to the qm and mm atoms (as OpenMM atom object) involved in every bond
-        that need to be cut.
+        None
 
         Examples
         --------
-        bonds = find_boundary_bonds()
-        bonds = find_boundary_bonds(qm_atoms=[0,1,2,3])
+        find_boundary_bonds()
+        find_boundary_bonds(qm_atoms=[0,1,2,3])
         """
 
         if qm_atoms is None:
@@ -314,6 +349,29 @@ class QMMM(object):
                     self.qmmm_boundary_bonds.append((qm_atom, mm_atom))
 
     def edit_qm_atoms(self, qm_atoms=None, solvent='water'):
+        """
+        Cleans up the qm_atoms. If the definition of the primary subsystem 
+        cuts across a solvent molecule, will move the whole molecule in the qm_atoms 
+        if COM of solvent molecule in qm_atoms already, or delete parts of the solvent
+        molecule from qm_atoms if COM of solvent molecule not in qm_atoms already
+
+        Parameters
+        ----------
+        qm_atoms: A list of atom indicies corresponding to the atoms in
+                  the primary subsystem. Default is None and uses self.qm_atoms
+
+        solvent: A str that identifies what solvent needs to be edited.
+                 Only water supported for now(default)
+
+        Returns
+        -------
+        edited list of qm_atoms
+
+        Examples
+        --------
+        atoms = edit_qm_atoms()
+        atoms = edit_qm_atoms(qm_atoms=[0,1,2])
+        """
 
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
@@ -351,8 +409,7 @@ class QMMM(object):
 
         Parameters
         ----------
-        RC: a bool specifying whether to find the indices of the atoms bonded to mm atom of 
-            bond being cut. Default is false
+        None
 
         Returns
         -------
@@ -360,7 +417,7 @@ class QMMM(object):
 
         Examples
         --------
-        prepare_link_atom(RC=True)
+        prepare_link_atom()
         """
 
         self.link_atoms = {}
@@ -401,21 +458,25 @@ class QMMM(object):
 
     def make_primary_subsys_trajectory(self, qm_atoms=None):
         '''
-        Creates an OpenMM modeller object that includes any link atoms.
-        Note: Currently adds a very specfic link atom, need to expand 
+        Creates a MDtraj trajectory object with just the 
+        primary subsystem, and adds in any link atoms
+        Note: Currently adds just H as link atom, need to expand 
 
         Parameters
         ----------
-        mod: modeller object of primary system without link atom added
-        atom: dictionary containing information for the link atom 
+        qm_atoms: A list of atom indicies corresponding to the atoms in
+                  the primary subsystem. Default is None and uses self.qm_atoms
 
         Returns
         -------
-        A OpenMM modeller object
+        traj, link_indicies
+        traj: MDtraj trajectory object
+        link_indices: list of the link atom indices in traj
 
         Examples
         --------
-        create_link_atom_modeller(mod=modeller, atom=link)
+        make_primary_subsys_trajectory([0,1,2])
+        make_primary_subsys_trajectory()
         '''
 
         if qm_atoms is None:
@@ -450,21 +511,22 @@ class QMMM(object):
 
     def make_second_subsys_trajectory(self, qm_atoms=None):
         '''
-        Creates an OpenMM modeller object that includes any link atoms.
-        Note: Currently adds a very specfic link atom, need to expand 
+        Creates a MDtraj trajectory object with just the 
+        secondary subsystem
 
         Parameters
         ----------
-        mod: modeller object of primary system without link atom added
-        atom: dictionary containing information for the link atom 
+        qm_atoms: A list of atom indicies corresponding to the atoms in
+                  the primary subsystem. Default is None and uses self.qm_atoms
 
         Returns
         -------
-        A OpenMM modeller object
+        a MDtraj trajectory object
 
         Examples
         --------
-        create_link_atom_modeller(mod=modeller, atom=link)
+        make_second_subsys_trajectory([0,1,2])
+        make_second_subsys_trajectory()
         '''
 
         if qm_atoms is None:
@@ -478,6 +540,21 @@ class QMMM(object):
 
 
     def get_forces(self):
+        """
+        function to return qmmm forces
+
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        qmmm forces: a dictionary of forces in au/bohr
+
+        Examples
+        --------
+        forces = get_forces()
+        """
 
         return self.systems[self.run_ID - 1]['qmmm_forces']
 
@@ -486,25 +563,18 @@ class QMMM(object):
         """
         Gets the point charges of atoms from secondary subsystem for electrostatic embedding 
 
-        Note: check to make sure positions are in angstroms
-
         Parameters
         ----------
-        link: a bool specifying whether the link atom scheme is used for determining point charges. 
-              default is False.
-        RC: a bool specifying whether the RC scheme is used for determining point charges. 
-              default is False.
-        RCD: a bool specifying whether the RCD scheme is used for determining point charges. 
-              default is False.
+        system: a system object that contains the gradients 
+                of qm and mm regions
 
         Returns
         -------
-        A list of charges and cooresponding positions as  xyz coordinates
+        A list of charges and cooresponding positions in angstroms as xyz coordinates
 
         Examples
         --------
-        get_external_charge(link=True)
-        get_external_charge(RC=True)
+        get_external_charge(system)
         """
         charges = []
         # in angstroms
@@ -605,6 +675,24 @@ class QMMM(object):
         return pos
 
     def convert_trajectory(self, traj):
+        """
+        Converts an OpenMM trajectory to get 
+        topology and positions that are compatible with MDtraj
+        NOTE: with more programs need to expand
+
+        Parameters
+        ----------
+        traj: an OpenMM trajectory object
+
+        Returns
+        -------
+        positions: a list of positions in nm
+        topology: a MDtraj topology object 
+                  
+        Examples
+        --------
+        positions, topology = convert_trajectory(OpenMM_traj)
+        """
 
         if self.mm_wrapper.program == 'OpenMM':
             topology = traj.topology.to_openmm()
