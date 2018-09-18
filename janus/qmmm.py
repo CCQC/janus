@@ -8,22 +8,22 @@ QMMM class for QMMM computations
 """
 class QMMM(object):
 
-    def __init__(self, config, qm_wrapper, mm_wrapper):
+    def __init__(self, param, qm_wrapper, mm_wrapper):
         
         self.qm_wrapper = qm_wrapper
         self.mm_wrapper = mm_wrapper
         self.qm_geometry = None
         self.run_ID = 0
 
-        self.traj = md.load(config['mm_pdb_file'])
+        self.traj = md.load(param['mm_pdb_file'])
         self.topology = self.traj.topology
         self.positions = self.traj.xyz[0]
 
-        self.qm_atoms = config['qm_atoms']
-        self.qmmm_scheme = config['scheme']
-        self.embedding_method = config['embedding_method']
-        self.boundary_treatment = config['boundary_treatment']
-        self.link_atom_element = config['link_atom']
+        self.qm_atoms = param['qm_atoms']
+        self.qmmm_scheme = param['qmmm_scheme']
+        self.embedding_method = param['embedding_method']
+        self.boundary_treatment = param['boundary_treatment']
+        self.link_atom_element = param['link_atom_element']
 
         self.systems = {}
 

@@ -1,4 +1,4 @@
-from janus import qmmm, psi4_wrapper, openmm_wrapper, system
+from janus import qmmm, psi4_wrapper, openmm_wrapper, system, initializer
 import numpy as np
 import pytest
 import os
@@ -6,27 +6,30 @@ import os
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 ala = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 
-config_m = {"mm_pdb_file" : water,
-          "qm_atoms" : [0,1,2]}
+param_m = {"system" : {"mm_pdb_file" : water},
+            "qmmm" : {"qm_atoms" : [0,1,2]}}
+param_ala = {"system" : {"mm_pdb_file" : ala},
+              "qmmm" : {"embedding_method" : "Electrostatic"}}
 
-config_ala = {"mm_pdb_file" : ala,
-          "embedding_method" : "Electrostatic"}
 
-psi4 = psi4_wrapper.Psi4_wrapper(config_m)
+config_m = initializer.Initializer(param_m, as_file=False)
+config_ala = initializer.Initializer(param_ala, as_file=False)
 
-om_m = openmm_wrapper.OpenMM_wrapper(config_m)
-om_m.initialize()
+psi4 = psi4_wrapper.Psi4_wrapper(config_m.qm_param)
+
+om_m = openmm_wrapper.OpenMM_wrapper(config_m.mm_param)
+om_m.initialize('Mechanical')
 main_info_m = om_m.get_main_info()
 
-om_ala = openmm_wrapper.OpenMM_wrapper(config_ala)
-om_ala.initialize()
+om_ala = openmm_wrapper.OpenMM_wrapper(config_ala.mm_param)
+om_ala.initialize('Electrostatic')
 main_info_ala = om_ala.get_main_info()
 
-mech = qmmm.QMMM(config_m, psi4, om_m)
-ala_link = qmmm.QMMM(config_ala, psi4, om_ala)
-ala_RC = qmmm.QMMM(config_ala, psi4, om_ala)
+mech = qmmm.QMMM(config_m.qmmm_param, psi4, om_m)
+ala_link = qmmm.QMMM(config_ala.qmmm_param, psi4, om_ala)
+ala_RC = qmmm.QMMM(config_ala.qmmm_param, psi4, om_ala)
+ala_RCD = qmmm.QMMM(config_ala.qmmm_param, psi4, om_ala)
 ala_RC.boundary_treatment = 'RC'
-ala_RCD = qmmm.QMMM(config_ala, psi4, om_ala)
 ala_RCD.boundary_treatment = 'RCD'
 
 sys_mech = system.System([0,1,2], 0)

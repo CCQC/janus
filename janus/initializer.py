@@ -77,8 +77,10 @@ class Initializer(object):
         try:
             self.qmmm_param.update(self.param['qmmm'])
         except: 
-            self.qmmm_param.update(self.param['system'])
             print("No QMMM parameters given. Using defaults")
+
+        self.qmmm_param.update(self.param['system'])
+
         try:
             self.aqmmm_param.update(self.param['aqmmm'])
             self.aqmmm_param.update(self.param['qmmm'])
