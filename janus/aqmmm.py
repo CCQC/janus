@@ -125,13 +125,7 @@ class AQMMM(ABC, QMMM):
         self.qm_center = qm_center
         self.qm_center_xyz = self.traj.xyz[0][qm_center]
 
-        if self.partition_scheme == 'distance': 
-            rmin_atoms = md.compute_neighbors(self.traj, self.Rmin, qm_center)
-            rmax_atoms = md.compute_neighbors(self.traj, self.Rmax, qm_center)
-            self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
-            self.qm_atoms = rmin_atoms[0].tolist()
-            self.qm_atoms.append(qm_center[0])
-        
+        self.partition(qm_center)
         
         self.edit_qm_atoms()
 
@@ -154,6 +148,16 @@ class AQMMM(ABC, QMMM):
 
         if self.buffer_groups:
             self.get_buffer_info()
+
+    def partition(self, qm_center):
+
+        if self.partition_scheme == 'distance': 
+            rmin_atoms = md.compute_neighbors(self.traj, self.Rmin, qm_center)
+            rmax_atoms = md.compute_neighbors(self.traj, self.Rmax, qm_center)
+            self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
+            self.qm_atoms = rmin_atoms[0].tolist()
+            self.qm_atoms.append(qm_center[0])
+        
 
     def get_buffer_info(self):
         """
@@ -343,6 +347,21 @@ class AQMMM(ABC, QMMM):
         set_Rmax(.50)
         """
         self.Rmax = Rmax
+
+    def compute_zero_energy(self):
+ 
+        # for explicit solvent systems can just do once, but for bond forming/breaking processes
+        # need to update??
+        
+        # get all the unique groups 
+        residues = {}
+        for res in self.topology.residues:
+            if res.name not in residues:
+                residues[res.name] = []
+                for atom in res.atoms:
+                    residues[res.name].append(atom.index)
+                
+            
 
     @abstractmethod
     def partition(self, info):
