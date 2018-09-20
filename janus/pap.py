@@ -23,7 +23,9 @@ class PAP(AQMMM):
         pap = PAP(param, psi4_wrapper, openmm_wrapper)
         """
         
+        self.modified_variant = param['modified_variant']
         super().__init__(param, qm_wrapper, mm_wrapper)
+
 
     def partition(self, qm_center=None, info=None): 
         """
@@ -114,16 +116,18 @@ class PAP(AQMMM):
 
             self.systems[self.run_ID]['qmmm_energy'] = energy
 
-            # computing forces due to gradient of switching function for PAP
-            forces_sf = self.compute_sf_gradient()
+            if self.modified_variant is False:
+                # computing forces due to gradient of switching function for PAP
+                forces_sf = self.compute_sf_gradient()
 
-            # adding forces together
-            for i, force in forces_sf.items():
-                if i in qmmm_forces:
-                    qmmm_forces[i] += force
-                else:
-                    qmmm_forces[i] = force
+                # adding forces to total forces
+                for i, force in forces_sf.items():
+                    if i in qmmm_forces:
+                        qmmm_forces[i] += force
+                    else:
+                        qmmm_forces[i] = force
 
+            # combining all forces
             for i, part in enumerate(self.partitions):
                 forces = self.systems[self.run_ID][i].aqmmm_forces
                 for i, force in forces.items():
