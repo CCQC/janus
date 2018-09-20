@@ -4,7 +4,7 @@ import mdtraj as md
 import numpy as np
 import os
 
-sys = system.System(qm_indices=[0,1,2], run_ID=0)
+sys = system.System(qm_indices=[0,1,2], qm_residues=[0], run_ID=0)
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 traj = md.load(water)
 

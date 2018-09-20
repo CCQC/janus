@@ -1,6 +1,6 @@
 {
  "aqmmm_scheme" : "ONIOM-XS",
- "modified_variant" : false",
+ "modified_variant" : false,
  "partition_scheme" : "distance",
  "Rmin" : 0.38,
  "Rmax" : 0.45,

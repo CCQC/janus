@@ -62,6 +62,8 @@ class AQMMM(ABC, QMMM):
 
         self.buffer_groups = {}
 
+        self.compute_zero_energy()
+
     def run_qmmm(self,main_info):
         """
         Updates the positions and topology given in main_info,
@@ -97,6 +99,7 @@ class AQMMM(ABC, QMMM):
             else:
                 print('only mechanical and electrostatic embedding schemes implemented at this time')
 
+        self.get_zero_energy()
         self.run_aqmmm()
         # updates current step count
         self.run_ID += 1
@@ -125,7 +128,7 @@ class AQMMM(ABC, QMMM):
         self.qm_center = qm_center
         self.qm_center_xyz = self.traj.xyz[0][qm_center]
 
-        self.partition(qm_center)
+        self.find_buffer_atoms(qm_center)
         
         self.edit_qm_atoms()
 
@@ -149,7 +152,7 @@ class AQMMM(ABC, QMMM):
         if self.buffer_groups:
             self.get_buffer_info()
 
-    def partition(self, qm_center):
+    def find_buffer_atoms(self, qm_center):
 
         if self.partition_scheme == 'distance': 
             rmin_atoms = md.compute_neighbors(self.traj, self.Rmin, qm_center)
@@ -352,6 +355,7 @@ class AQMMM(ABC, QMMM):
  
         # for explicit solvent systems can just do once, but for bond forming/breaking processes
         # need to update??
+        # this is only functional for explicitly solvated systems
         
         # get all the unique groups 
         residues = {}
@@ -360,9 +364,32 @@ class AQMMM(ABC, QMMM):
                 residues[res.name] = []
                 for atom in res.atoms:
                     residues[res.name].append(atom.index)
-                
-            
 
+        self.qm_zero_energies = {}
+        self.mm_zero_energies = {}
+        for res in residues:
+            traj = self.traj.atom_slice((residues[res]))
+
+            topology, positions = self.convert_trajectory(traj)
+            mm = self.mm_wrapper.compute_mm(topology, positions, minimize=True)
+            self.mm_zero_energies[res] = mm['energy']
+
+            qm_geom, tot_elec = self.get_qm_geometry(traj)
+            qm = self.qm_wrapper.run_qm(qm_geom, tot_elec)
+            self.qm_zero_energies[res] = qm['energy']
+    
+    def get_zero_energy(self):
+
+        for sys in self.systems[self.run_ID]:
+            for res in self.topology.residues:
+                if res.index in sys.qm_residues:
+                    sys.zero_energy += self.qm_zero_energy[res.name]
+                else:
+                    sys.zero_energy += self.mm_zero_energy[res.name]
+
+            # maybe I should save a separate copy of qmmm energy somewhere
+            sys.qmmm_energy -= sys.zero_energy
+                    
     @abstractmethod
     def partition(self, info):
         pass

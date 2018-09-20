@@ -10,7 +10,7 @@ class System(object):
     Stores qmmm and aqmmm information as well.
     """
 
-    def __init__(self, qm_indices, run_ID, partition_ID='qm'):
+    def __init__(self, qm_indices, qm_residues, run_ID, partition_ID='qm'):
         """
         Initializes class
 
@@ -31,6 +31,7 @@ class System(object):
         system = System(qm_indices=[0,1,2], run_ID = 0, partition_ID=0)
         """
         self.qm_atoms = deepcopy(qm_indices)
+        self.qm_residues = deepcopy(qm_residues)
         self.run_ID = run_ID
         self.partition_ID = partition_ID
         self.qm_positions = None
@@ -43,7 +44,7 @@ class System(object):
         self.primary_subsys = {}
         self.second_subsys = {}
         self.boundary = {}
-
+        self.zero_energy = 0.0
     def compute_scale_factor_g(qm, mm, link):
         '''
         Computes scale factor g for link atom, RC, and RCD schemes. 

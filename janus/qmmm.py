@@ -377,13 +377,15 @@ class QMMM(object):
             qm_atoms = self.qm_atoms
         
         top = self.topology
-        residues = [] 
+        residue_tracker = [] 
+        self.qm_residues = [] 
         qm_atoms_copy = deepcopy(qm_atoms)
         for i in qm_atoms_copy:
             idx = top.atom(i).residue.index
             # make sure just go through each residues once
-            if idx not in residues:
-                residues.append(idx)
+            if idx not in residue_tracker:
+                residue_tracker.append(idx)
+                self.qm_residues.append(idx)
                 res = top.residue(idx)
                 if res.is_water:
                 ## add any hydrogens that have oxygen inside of qm region 
@@ -395,6 +397,7 @@ class QMMM(object):
                     elif top.atom(i).element.symbol == 'H':
                         for a in res.atoms:
                             if (a.element.symbol =='O' and a.index not in qm_atoms):
+                                self.qm_residues.remove(idx)
                                 for a1 in res.atoms:
                                     if (a1.element.symbol =='H' and a1.index in qm_atoms):
                                         qm_atoms.remove(a1.index)

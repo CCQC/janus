@@ -48,15 +48,16 @@ class ONIOM_XS(AQMMM):
 
         self.define_buffer_zone(qm_center)
 
-        qm = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm')
+        qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
 
         self.systems[self.run_ID] = {}
         self.systems[self.run_ID][qm.partition_ID] = qm
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
-            qm_bz = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm_bz')
+            qm_bz = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm_bz')
             for i, buf in self.buffer_groups.items():
+                qm_bz.qm_residues.append(i)
                 for idx in buf.atoms:
                     qm_bz.qm_atoms.append(idx)
 

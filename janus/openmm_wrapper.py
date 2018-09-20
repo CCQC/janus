@@ -164,7 +164,7 @@ class OpenMM_wrapper(MM_wrapper):
         
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
 
-    def compute_mm(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, link_atoms=None):
+    def compute_mm(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, link_atoms=None, minimize=False):
         """
         Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
@@ -208,6 +208,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         # Create an OpenMM simulation from the openmm system, topology, and positions.
         simulation = self.create_openmm_simulation(OM_system, topology, positions)
+
+        if minimize is True:
+            simulation.minimizeEnergy()
 
         # Calls openmm wrapper to get information specified
         state = OpenMM_wrapper.get_state_info(simulation,

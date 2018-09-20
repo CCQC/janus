@@ -23,8 +23,8 @@ class PAP(AQMMM):
         pap = PAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        self.modified_variant = param['modified_variant']
         super().__init__(param, qm_wrapper, mm_wrapper)
+        self.modified_variant = param['modified_variant']
 
 
     def partition(self, qm_center=None, info=None): 
@@ -52,7 +52,7 @@ class PAP(AQMMM):
 
         self.define_buffer_zone(qm_center)
 
-        qm = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm')
+        qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
 
         self.systems[self.run_ID] = {}
         self.systems[self.run_ID][qm.partition_ID] = qm
@@ -63,8 +63,9 @@ class PAP(AQMMM):
             self.partitions = self.get_combos(list(self.buffer_groups))
 
             for i, part in enumerate(self.partitions):
-                sys = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID=i)
+                sys = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID=i)
                 for group in part:
+                    sys.qm_residues.append(group)
                     for idx in self.buffer_groups[group].atoms:
                         sys.qm_atoms.append(idx)
                 

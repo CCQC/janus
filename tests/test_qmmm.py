@@ -32,10 +32,10 @@ ala_RCD = qmmm.QMMM(config_ala.qmmm_param, psi4, om_ala)
 ala_RC.boundary_treatment = 'RC'
 ala_RCD.boundary_treatment = 'RCD'
 
-sys_mech = system.System([0,1,2], 0)
-sys_ala_link = system.System([0,1,2,3], 0)
-sys_ala_RC = system.System([0,1,2,3,4,5], 0)
-sys_ala_RCD = system.System([0], 0)
+sys_mech = system.System([0,1,2], [0],  0)
+sys_ala_link = system.System([0,1,2,3],[0],  0)
+sys_ala_RC = system.System([0,1,2,3,4,5], [0,1], 0)
+sys_ala_RCD = system.System([0], [0],  0)
 
 sys_mech.entire_sys = main_info_m
 sys_ala_link.entire_sys = main_info_ala

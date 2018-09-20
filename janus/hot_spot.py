@@ -53,7 +53,7 @@ class HotSpot(AQMMM):
 
         self.define_buffer_zone(qm_center)
 
-        qm = System(qm_indices=self.qm_atoms, run_ID=self.run_ID, partition_ID='qm')
+        qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
@@ -61,6 +61,7 @@ class HotSpot(AQMMM):
             qm.buffer_groups = deepcopy(self.buffer_groups)
 
             for i, buf in self.buffer_groups.items():
+                qm.qm_residues.append(i)
                 for idx in buf.atoms:
                     qm.qm_atoms.append(idx)
                 
