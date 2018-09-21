@@ -1,0 +1,297 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>janus.pap &#8212; janus 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">janus 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for janus.pap</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.aqmmm</span> <span class="k">import</span> <span class="n">AQMMM</span>
+<span class="kn">from</span> <span class="nn">.system</span> <span class="k">import</span> <span class="n">System</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="PAP"><a class="viewcode-back" href="../../source/janus.pap.html#janus.pap.PAP">[docs]</a><span class="k">class</span> <span class="nc">PAP</span><span class="p">(</span><span class="n">AQMMM</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the PAP class object</span>
+<span class="sd">    </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        See parameters for AQMMM class </span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A PAP class object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        pap = PAP(param, psi4_wrapper, openmm_wrapper)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_variant</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;modified_variant&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="PAP.partition"><a class="viewcode-back" href="../../source/janus.pap.html#janus.pap.PAP.partition">[docs]</a>    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qm_center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the partitions as required by the PAP method </span>
+<span class="sd">        and saves each partition as a system object.</span>
+<span class="sd">        Saves all systems in the dictionary self.systems</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        qm_center: list of atoms that define the qm center, </span>
+<span class="sd">                   default is None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        partition([0])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">qm_center</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qm_center</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_center</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">define_buffer_zone</span><span class="p">(</span><span class="n">qm_center</span><span class="p">)</span>
+
+        <span class="n">qm</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="n">qm_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span><span class="p">,</span> <span class="n">qm_residues</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_residues</span><span class="p">,</span> <span class="n">run_ID</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">,</span> <span class="n">partition_ID</span><span class="o">=</span><span class="s1">&#39;qm&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">qm</span><span class="o">.</span><span class="n">partition_ID</span><span class="p">]</span> <span class="o">=</span> <span class="n">qm</span>
+
+        <span class="c1"># the following only runs if there are groups in the buffer zone</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">partitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_combos</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partitions</span><span class="p">):</span>
+                <span class="n">sys</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="n">qm_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span><span class="p">,</span> <span class="n">qm_residues</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_residues</span><span class="p">,</span> <span class="n">run_ID</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">,</span> <span class="n">partition_ID</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">part</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">qm_residues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                        <span class="n">sys</span><span class="o">.</span><span class="n">qm_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                
+                <span class="c1"># each partition has a copy of its buffer groups - </span>
+                <span class="c1"># don&#39;t know if this is actually needed</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">buffer_groups</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">part</span><span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">sys</span><span class="o">.</span><span class="n">partition_ID</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys</span></div>
+
+<div class="viewcode-block" id="PAP.run_aqmmm"><a class="viewcode-back" href="../../source/janus.pap.html#janus.pap.PAP.run_aqmmm">[docs]</a>    <span class="k">def</span> <span class="nf">run_aqmmm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interpolates the energy and gradients from each partition</span>
+<span class="sd">        according to the PAP method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">qm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qm&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qmmm_energy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qm</span><span class="o">.</span><span class="n">qmmm_energy</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qmmm_forces&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qm</span><span class="o">.</span><span class="n">qmmm_forces</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># getting first term of ap energy and forces (w/o gradient of switching function)</span>
+            <span class="n">energy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">qmmm_energy</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_forces</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">qmmm_forces</span><span class="p">)</span>
+            <span class="n">forces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_forces</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">buf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">energy</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span><span class="p">)</span>
+                <span class="n">forces</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">forces</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_energy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span>
+
+            <span class="n">qmmm_forces</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">forces</span><span class="p">)</span>
+
+            <span class="c1"># getting rest of the terms of ap energy and forces (w/o gradient of switching function)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partitions</span><span class="p">):</span>
+                <span class="n">part_energy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">qmmm_energy</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_forces</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">qmmm_forces</span><span class="p">)</span>
+                <span class="n">forces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_forces</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">buf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">part</span><span class="p">:</span>
+                        <span class="n">part_energy</span> <span class="o">*=</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span>
+                        <span class="n">forces</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="n">buf</span><span class="o">.</span><span class="n">s_i</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">forces</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">part_energy</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span><span class="p">)</span>
+                        <span class="n">forces</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">forces</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_energy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">part_energy</span><span class="p">)</span>
+                <span class="n">energy</span> <span class="o">+=</span> <span class="n">part_energy</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qmmm_energy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modified_variant</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="c1"># computing forces due to gradient of switching function for PAP</span>
+                <span class="n">forces_sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_sf_gradient</span><span class="p">()</span>
+
+                <span class="c1"># adding forces to total forces</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">force</span> <span class="ow">in</span> <span class="n">forces_sf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">qmmm_forces</span><span class="p">:</span>
+                        <span class="n">qmmm_forces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">force</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">qmmm_forces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">force</span>
+
+            <span class="c1"># combining all forces</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partitions</span><span class="p">):</span>
+                <span class="n">forces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_forces</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">force</span> <span class="ow">in</span> <span class="n">forces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">qmmm_forces</span><span class="p">:</span>
+                        <span class="n">qmmm_forces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">force</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">qmmm_forces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">force</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qmmm_forces&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">forces</span></div>
+            
+
+<div class="viewcode-block" id="PAP.compute_sf_gradient"><a class="viewcode-back" href="../../source/janus.pap.html#janus.pap.PAP.compute_sf_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">compute_sf_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes forces due to the gradient of the switching function</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Forces due to gradient of switching function as a dictionary</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        forces = compute_sf_gradient</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">forces_sf</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">))}</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">buf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># energy scaler due to partition with qm only</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">energy_scaler</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_energy</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partitions</span><span class="p">):</span>
+                <span class="n">aqmmm_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">aqmmm_energy</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">part</span><span class="p">:</span>
+                    <span class="n">buf</span><span class="o">.</span><span class="n">energy_scaler</span> <span class="o">+=</span> <span class="n">aqmmm_energy</span> <span class="o">/</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">buf</span><span class="o">.</span><span class="n">energy_scaler</span> <span class="o">-=</span> <span class="n">aqmmm_energy</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">buf</span><span class="o">.</span><span class="n">s_i</span><span class="p">)</span>
+            
+            <span class="n">forces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-=</span> <span class="n">buf</span><span class="o">.</span><span class="n">energy_scaler</span> <span class="o">*</span> <span class="n">buf</span><span class="o">.</span><span class="n">d_s_i</span> <span class="o">*</span> <span class="n">buf</span><span class="o">.</span><span class="n">COM_coord</span> 
+
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ratio</span> <span class="ow">in</span> <span class="n">buf</span><span class="o">.</span><span class="n">weight_ratio</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">forces_sf</span><span class="p">:</span>
+                    <span class="n">forces_sf</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">buf</span><span class="o">.</span><span class="n">energy_scaler</span> <span class="o">*</span> <span class="n">buf</span><span class="o">.</span><span class="n">d_s_i</span> <span class="o">*</span> <span class="n">buf</span><span class="o">.</span><span class="n">COM_coord</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Overlapping buffer atom definitions&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">forces_sf</span></div>
+
+
+<div class="viewcode-block" id="PAP.get_combos"><a class="viewcode-back" href="../../source/janus.pap.html#janus.pap.PAP.get_combos">[docs]</a>    <span class="k">def</span> <span class="nf">get_combos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets all combinations of a given list of indices </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        items: list of indices to get combinations for</span>
+<span class="sd">    </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List of all possible combinations </span>
+
+<span class="sd">        Examples    </span>
+<span class="sd">        --------</span>
+<span class="sd">        combos = get_combos([1,2])</span>
+
+<span class="sd">        In this case, combos will return </span>
+<span class="sd">        [(1), (2), (1,2)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">all_combo</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">all_combo</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">all_combo</span></div></div>
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">janus 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyi Zhang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.0.
+    </div>
+  </body>
+</html>

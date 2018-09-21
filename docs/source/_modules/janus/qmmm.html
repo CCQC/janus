@@ -1,0 +1,788 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>janus.qmmm &#8212; janus 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">janus 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for janus.qmmm</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">mdtraj</span> <span class="k">as</span> <span class="nn">md</span>
+<span class="kn">import</span> <span class="nn">mendeleev</span> <span class="k">as</span> <span class="nn">mdlv</span>
+<span class="kn">from</span> <span class="nn">.system</span> <span class="k">import</span> <span class="n">System</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">QMMM class for QMMM computations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="QMMM"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM">[docs]</a><span class="k">class</span> <span class="nc">QMMM</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes QMMM class with parameters given in param</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        param: a dict containing parameters for QM/MM and adaptive QM/MM computations</span>
+<span class="sd">               Individual parameters include:</span>
+<span class="sd">                - qmmm_scheme: str of scheme for computing QM/MM energies and gradients, </span>
+<span class="sd">                               only substractive available(default)</span>
+<span class="sd">                - embedding_method: str of embedding method to use for QM/MM. </span>
+<span class="sd">                                    Mechanical(default) and Electrostatic available</span>
+<span class="sd">                - boundary_treatment: str of method for treating dangling bonds in the QM region,</span>
+<span class="sd">                                      link_atom(default), RC, and RCD available</span>
+<span class="sd">                - link_atom_element: str of element to use for link atom,</span>
+<span class="sd">                                     default is H. Beware of using others (not all functionality tested)</span>
+<span class="sd">                - qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations</span>
+<span class="sd">                - run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,</span>
+<span class="sd">                             default is True. Regular QM/MM run if False</span>
+
+<span class="sd">        qm_wrapper: a qm_wrapper object</span>
+<span class="sd">        mm_wrapper: a mm_wrapper object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A QMMM object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        qmmm = QMMM(param, psi4_wrapper, mm_wrapper)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">qm_wrapper</span> <span class="o">=</span> <span class="n">qm_wrapper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_wrapper</span> <span class="o">=</span> <span class="n">mm_wrapper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qm_geometry</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;mm_pdb_file&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">topology</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;qm_atoms&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_scheme</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;qmmm_scheme&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_method</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;embedding_method&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boundary_treatment</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;boundary_treatment&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_atom_element</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;link_atom_element&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="QMMM.run_qmmm"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.run_qmmm">[docs]</a>    <span class="k">def</span> <span class="nf">run_qmmm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the positions and topology given in main_info,</span>
+<span class="sd">        and determines the QM/MM energy and gradients</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        main_info: a dictionary containing the energy and forces </span>
+<span class="sd">                   for the whole system, obtained from mm_wrapper</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        run_qmmm(main_info)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_traj</span><span class="p">(</span><span class="n">main_info</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span> <span class="n">main_info</span><span class="p">[</span><span class="s1">&#39;topology&#39;</span><span class="p">])</span>
+
+        <span class="n">system</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_method</span> <span class="o">==</span><span class="s1">&#39;Mechanical&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mechanical</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">main_info</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_method</span> <span class="o">==</span><span class="s1">&#39;Electrostatic&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">electrostatic</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">main_info</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;only mechanical and electrostatic embedding schemes implemented at this time&#39;</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="n">system</span><span class="o">.</span><span class="n">partition_ID</span><span class="p">]</span> <span class="o">=</span> <span class="n">system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qmmm_forces&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">qmmm_forces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span><span class="p">][</span><span class="s1">&#39;qmmm_energy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">qmmm_energy</span>
+
+        <span class="c1"># updates current step count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="QMMM.update_traj"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.update_traj">[docs]</a>    <span class="k">def</span> <span class="nf">update_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">topology</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the positions and topology of self.traj,</span>
+<span class="sd">        a MDtraj trajectory object</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        positions: a list of positions in nm</span>
+<span class="sd">        topology: If the mm program is  OpenMM, this is a </span>
+<span class="sd">                  OpenMM topology object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        update_traj(pos, top)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="c1"># later can think about saving instead of making new instance</span>
+        <span class="c1"># convert openmm topology to mdtraj topology</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_wrapper</span><span class="o">.</span><span class="n">program</span> <span class="o">==</span> <span class="s1">&#39;OpenMM&#39;</span><span class="p">:</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">Topology</span><span class="o">.</span><span class="n">from_openmm</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QMMM.mechanical"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.mechanical">[docs]</a>    <span class="k">def</span> <span class="nf">mechanical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">main_info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets energies of needed components and computes</span>
+<span class="sd">        a QM/MM energy with a subtractive mechanical embedding scheme</span>
+<span class="sd">        using the formula</span>
+
+<span class="sd">        E(QM/MM) = E(MM)_entire_sys - E(MM)_primary_subsys + E(QM)_primary_subsys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_scheme</span> <span class="o">==</span> <span class="s1">&#39;subtractive&#39;</span><span class="p">:</span>
+            <span class="c1"># Get MM energy on whole system</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">entire_sys</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">main_info</span><span class="p">)</span>
+
+            <span class="c1"># Get MM energy on QM region</span>
+            <span class="n">traj_ps</span><span class="p">,</span> <span class="n">link_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_primary_subsys_trajectory</span><span class="p">()</span>
+            <span class="n">topology</span><span class="p">,</span> <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_trajectory</span><span class="p">(</span><span class="n">traj_ps</span><span class="p">)</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">primary_subsys</span><span class="p">[</span><span class="s1">&#39;trajectory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_ps</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">primary_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_wrapper</span><span class="o">.</span><span class="n">compute_mm</span><span class="p">(</span><span class="n">topology</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">include_coulomb</span><span class="o">=</span><span class="s1">&#39;no_link&#39;</span><span class="p">,</span> <span class="n">link_atoms</span><span class="o">=</span><span class="n">link_indices</span><span class="p">)</span>
+
+            <span class="c1"># Get QM energy</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qm_geometry</span><span class="p">,</span> <span class="n">total_elec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_qm_geometry</span><span class="p">(</span><span class="n">traj_ps</span><span class="p">)</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">qm_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_wrapper</span><span class="o">.</span><span class="n">run_qm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_geometry</span><span class="p">,</span> <span class="n">total_elec</span><span class="p">)</span>
+
+            <span class="c1"># Compute the total QM/MM energy based on</span>
+            <span class="c1"># subtractive Mechanical embedding</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">qmmm_energy</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">entire_sys</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>\
+                        <span class="o">-</span> <span class="n">system</span><span class="o">.</span><span class="n">primary_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">][</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>\
+                        <span class="o">+</span> <span class="n">system</span><span class="o">.</span><span class="n">qm_info</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_gradients</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;only a subtractive scheme is implemented at this time&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QMMM.electrostatic"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.electrostatic">[docs]</a>    <span class="k">def</span> <span class="nf">electrostatic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">main_info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets energies of needed components and computes</span>
+<span class="sd">        a QM/MM energy with a subtractive electrostatic embedding scheme</span>
+
+<span class="sd">        E(QM/MM) = E(MM no coulomb)_entire_sys - E(MM no coulomb)_primary_subsys </span>
+<span class="sd">                 + E(QM)_primary_subsys + E(MM just coulomb)_secondary_subsys</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_scheme</span> <span class="o">==</span> <span class="s1">&#39;subtractive&#39;</span><span class="p">:</span>
+
+            <span class="c1"># Get MM energy on whole system</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">entire_sys</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">main_info</span><span class="p">)</span>
+
+            <span class="c1"># Get MM energy on QM region</span>
+            <span class="n">traj_ps</span><span class="p">,</span> <span class="n">link_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_primary_subsys_trajectory</span><span class="p">()</span>
+            <span class="n">topology</span><span class="p">,</span> <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_trajectory</span><span class="p">(</span><span class="n">traj_ps</span><span class="p">)</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">primary_subsys</span><span class="p">[</span><span class="s1">&#39;trajectory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_ps</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">primary_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_wrapper</span><span class="o">.</span><span class="n">compute_mm</span><span class="p">(</span><span class="n">topology</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">include_coulomb</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+
+            <span class="c1"># Get MM coulomb energy on secondary subsystem</span>
+            <span class="n">traj_ss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_second_subsys_trajectory</span><span class="p">()</span>
+            <span class="n">topology_ss</span><span class="p">,</span> <span class="n">positions_ss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_trajectory</span><span class="p">(</span><span class="n">traj_ss</span><span class="p">)</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">second_subsys</span><span class="p">[</span><span class="s1">&#39;trajectory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_ss</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">second_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_wrapper</span><span class="o">.</span><span class="n">compute_mm</span><span class="p">(</span><span class="n">topology_ss</span><span class="p">,</span> <span class="n">positions_ss</span><span class="p">,</span> <span class="n">include_coulomb</span><span class="o">=</span><span class="s1">&#39;only&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Get QM energy</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qm_geometry</span><span class="p">,</span> <span class="n">total_elec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_qm_geometry</span><span class="p">(</span><span class="n">traj_ps</span><span class="p">)</span>
+            <span class="n">charges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_external_charges</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qm_wrapper</span><span class="o">.</span><span class="n">set_external_charges</span><span class="p">(</span><span class="n">charges</span><span class="p">)</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">qm_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_wrapper</span><span class="o">.</span><span class="n">run_qm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_geometry</span><span class="p">,</span> <span class="n">total_elec</span><span class="p">)</span>
+
+            <span class="c1"># Compute the total QM/MM energy based on</span>
+            <span class="c1"># subtractive Mechanical embedding</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">qmmm_energy</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">entire_sys</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>\
+                        <span class="o">-</span> <span class="n">system</span><span class="o">.</span><span class="n">primary_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">][</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>\
+                        <span class="o">+</span> <span class="n">system</span><span class="o">.</span><span class="n">second_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">][</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>\
+                        <span class="o">+</span> <span class="n">system</span><span class="o">.</span><span class="n">qm_info</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_gradients</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;only a subtractive scheme is implemented at this time&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QMMM.compute_gradients"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.compute_gradients">[docs]</a>    <span class="k">def</span> <span class="nf">compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the QM/MM gradients </span>
+<span class="sd">        TODO:RCD gradients need work</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        system: a system object that contains the gradients </span>
+<span class="sd">                of qm and mm regions</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        compute_gradients(system)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!</span>
+        <span class="c1"># NEED TO MAKE SURE UNITS CONSISTENT</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_scheme</span> <span class="o">==</span> <span class="s1">&#39;subtractive&#39;</span><span class="p">:</span>
+
+            <span class="n">ps_mm_grad</span><span class="p">,</span> <span class="n">qm_grad</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">primary_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">][</span><span class="s1">&#39;gradients&#39;</span><span class="p">],</span> <span class="n">system</span><span class="o">.</span><span class="n">qm_info</span><span class="p">[</span><span class="s1">&#39;gradients&#39;</span><span class="p">]</span>
+            <span class="n">qmmm_force</span> <span class="o">=</span> <span class="p">{}</span>
+                
+            <span class="c1"># iterate over list of qm atoms</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span><span class="p">):</span>
+
+                <span class="c1"># compute the qmmm gradient for the qm atoms: </span>
+                <span class="c1"># mm_entire - mm_primary - qm</span>
+                <span class="n">qmmm_force</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+                <span class="c1"># these are in units of au_bohr, convert to openmm units in openmm wrapper</span>
+                <span class="n">qmmm_force</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">+=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span> <span class="n">ps_mm_grad</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">qm_grad</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                
+                <span class="c1"># treating gradients for link atoms</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_boundary_bonds</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">link</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                            <span class="n">q1</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="s1">&#39;qm_atom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+                            <span class="n">m1</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="s1">&#39;mm_atom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+                            <span class="n">link_index</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="s1">&#39;link_atom_index&#39;</span><span class="p">]</span>
+                            <span class="n">g</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="s1">&#39;scale_factor&#39;</span><span class="p">]</span> 
+                            <span class="k">if</span> <span class="n">atom</span> <span class="o">==</span> <span class="n">q1</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_treatment</span> <span class="o">==</span> <span class="s1">&#39;link_atom&#39;</span><span class="p">:</span>
+                                    <span class="c1"># Project forces of link atoms onto the mm and qm atoms of the link atom bond</span>
+                                    <span class="c1"># need to make sure sign is correct</span>
+                                    <span class="n">qmmm_force</span><span class="p">[</span><span class="n">q1</span><span class="p">]</span> <span class="o">+=</span> <span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">ps_mm_grad</span><span class="p">[</span><span class="n">link_index</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">qm_grad</span><span class="p">[</span><span class="n">link_index</span><span class="p">]</span>
+                                    <span class="n">qmmm_force</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">+=</span> <span class="o">-</span><span class="n">g</span> <span class="o">*</span> <span class="n">ps_mm_grad</span><span class="p">[</span><span class="n">link_index</span><span class="p">]</span> <span class="o">+</span> <span class="n">g</span> <span class="o">*</span> <span class="n">qm_grad</span><span class="p">[</span><span class="n">link_index</span><span class="p">]</span>
+                                    
+                            <span class="c1"># # Forces on M2 requires forces on point charges which I&#39;m not sure about so need to double check</span>
+                            <span class="c1"># if self.boundary_treatment == &#39;RC&#39; or self.boundary_treatment == &#39;RCD&#39;:</span>
+                            <span class="c1">#     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]</span>
+                            <span class="c1">#     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]</span>
+
+
+            <span class="k">if</span> <span class="s1">&#39;mm&#39;</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">second_subsys</span><span class="p">:</span>
+                <span class="c1"># iterate over list of mm atoms</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mm_atoms</span><span class="p">):</span>
+                    <span class="n">qmmm_force</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">system</span><span class="o">.</span><span class="n">second_subsys</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">][</span><span class="s1">&#39;gradients&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">system</span><span class="o">.</span><span class="n">qmmm_forces</span> <span class="o">=</span> <span class="n">qmmm_force</span></div>
+        
+
+<div class="viewcode-block" id="QMMM.get_qm_geometry"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.get_qm_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">get_qm_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qm_traj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses the atoms and positions from a MDtraj trajectory object</span>
+<span class="sd">        with just the qm region to obtain the geometry information</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        qm_traj: a MDtraj object describing just the primary subsystem,</span>
+<span class="sd">                 default is None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out, total</span>
+<span class="sd">        out: the str with geometry information in angstroms</span>
+<span class="sd">        total: total number of electrons in the primary subsystem</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        geom, total_elec = qm_positions()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">qm_traj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qm_traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_trajectory</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:3}</span><span class="s1"> </span><span class="si">{: &gt; 7.3f}</span><span class="s1"> </span><span class="si">{: &gt; 7.3f}</span><span class="s1"> </span><span class="si">{: &gt; 7.3f}</span><span class="s1"> </span><span class="se">\n</span><span class="s1"> &#39;</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">qm_traj</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span>   <span class="n">qm_traj</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>\
+                        <span class="n">qm_traj</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>\
+                        <span class="n">qm_traj</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="n">symbol</span> <span class="o">=</span> <span class="n">qm_traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">atom</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">mdlv</span><span class="o">.</span><span class="n">element</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span><span class="o">.</span><span class="n">atomic_number</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">n</span>
+            
+            <span class="n">out</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">x</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="n">z</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">total</span></div>
+
+
+<div class="viewcode-block" id="QMMM.find_boundary_bonds"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.find_boundary_bonds">[docs]</a>    <span class="k">def</span> <span class="nf">find_boundary_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qm_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Identified any covalent bonds that the QM/MM boundary cuts across</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        qm_atoms: A list of atom indicies corresponding to the atoms in</span>
+<span class="sd">                  the primary subsystem. Default is None and uses self.qm_atoms</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        find_boundary_bonds()</span>
+<span class="sd">        find_boundary_bonds(qm_atoms=[0,1,2,3])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">qm_atoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qm_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span>
+
+        <span class="n">qm_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_qm_atoms</span><span class="p">(</span><span class="n">qm_atoms</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_boundary_bonds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># determining if there are bonds that need to be cut</span>
+        <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
+            <span class="c1"># find any bonds that involve the qm atoms</span>
+            <span class="c1"># iterates over tuple of mdtraj atom objects</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="n">qm_atoms</span> <span class="ow">or</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="n">qm_atoms</span><span class="p">):</span>
+                <span class="c1"># isolate bonds that involve one in the qm atoms and one outside</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qm_atoms</span> <span class="ow">or</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qm_atoms</span><span class="p">):</span>
+                    <span class="n">qm_atom</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">mm_atom</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">if</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="n">qm_atoms</span><span class="p">:</span>
+                        <span class="n">qm_atom</span> <span class="o">=</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">mm_atom</span> <span class="o">=</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">qm_atom</span> <span class="o">=</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">mm_atom</span> <span class="o">=</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_boundary_bonds</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">qm_atom</span><span class="p">,</span> <span class="n">mm_atom</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="QMMM.edit_qm_atoms"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.edit_qm_atoms">[docs]</a>    <span class="k">def</span> <span class="nf">edit_qm_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qm_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solvent</span><span class="o">=</span><span class="s1">&#39;water&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cleans up the qm_atoms. If the definition of the primary subsystem </span>
+<span class="sd">        cuts across a solvent molecule, will move the whole molecule in the qm_atoms </span>
+<span class="sd">        if COM of solvent molecule in qm_atoms already, or delete parts of the solvent</span>
+<span class="sd">        molecule from qm_atoms if COM of solvent molecule not in qm_atoms already</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        qm_atoms: A list of atom indicies corresponding to the atoms in</span>
+<span class="sd">                  the primary subsystem. Default is None and uses self.qm_atoms</span>
+
+<span class="sd">        solvent: A str that identifies what solvent needs to be edited.</span>
+<span class="sd">                 Only water supported for now(default)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        edited list of qm_atoms</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        atoms = edit_qm_atoms()</span>
+<span class="sd">        atoms = edit_qm_atoms(qm_atoms=[0,1,2])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">qm_atoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qm_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span>
+        
+        <span class="n">top</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span>
+        <span class="n">residue_tracker</span> <span class="o">=</span> <span class="p">[]</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">qm_residues</span> <span class="o">=</span> <span class="p">[]</span> 
+        <span class="n">qm_atoms_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">qm_atoms</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">qm_atoms_copy</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">top</span><span class="o">.</span><span class="n">atom</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">index</span>
+            <span class="c1"># make sure just go through each residues once</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">residue_tracker</span><span class="p">:</span>
+                <span class="n">residue_tracker</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">qm_residues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">top</span><span class="o">.</span><span class="n">residue</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">is_water</span><span class="p">:</span>
+                <span class="c1">## add any hydrogens that have oxygen inside of qm region </span>
+                    <span class="k">if</span> <span class="n">top</span><span class="o">.</span><span class="n">atom</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span><span class="s1">&#39;H&#39;</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qm_atoms</span><span class="p">):</span>
+                                <span class="n">qm_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                <span class="c1">## remove any hydrogens that have oxygen outside of qm region from qm region</span>
+                    <span class="k">elif</span> <span class="n">top</span><span class="o">.</span><span class="n">atom</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span><span class="s1">&#39;O&#39;</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qm_atoms</span><span class="p">):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">qm_residues</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">a1</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="p">(</span><span class="n">a1</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span><span class="s1">&#39;H&#39;</span> <span class="ow">and</span> <span class="n">a1</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="n">qm_atoms</span><span class="p">):</span>
+                                        <span class="n">qm_atoms</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">a1</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="n">qm_atoms</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">qm_atoms</span></div>
+
+<div class="viewcode-block" id="QMMM.prepare_link_atom"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.prepare_link_atom">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_link_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary</span>
+<span class="sd">        and computes the g scaling factor for the link atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        prepare_link_atom()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_mm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_outer_bonds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qmmm_boundary_bonds</span><span class="p">):</span>
+
+            <span class="n">qm</span> <span class="o">=</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">mm</span> <span class="o">=</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;qm_atom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qm</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;mm_atom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mm</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_mm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mm</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;link_atom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_atom_element</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">compute_scale_factor_g</span><span class="p">(</span><span class="n">qm</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">mm</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_atom_element</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;scale_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span> 
+            <span class="c1"># this is in nm</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;link_positions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">qm</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="n">g</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">mm</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_treatment</span> <span class="o">==</span> <span class="s1">&#39;RC&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_treatment</span> <span class="o">==</span> <span class="s1">&#39;RCD&#39;</span><span class="p">:</span>
+                <span class="n">bonds</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="c1"># find index of atoms bonded to mm atom</span>
+                <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span> <span class="n">mm</span> <span class="ow">or</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">mm</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">qm</span> <span class="ow">and</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">qm</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mm</span><span class="p">:</span>
+                                <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mm</span><span class="p">:</span>
+                                <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;bonds_to_mm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bonds</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_outer_bonds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bonds</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QMMM.make_primary_subsys_trajectory"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.make_primary_subsys_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">make_primary_subsys_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qm_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a MDtraj trajectory object with just the </span>
+<span class="sd">        primary subsystem, and adds in any link atoms</span>
+<span class="sd">        Note: Currently adds just H as link atom, need to expand </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        qm_atoms: A list of atom indicies corresponding to the atoms in</span>
+<span class="sd">                  the primary subsystem. Default is None and uses self.qm_atoms</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        traj, link_indicies</span>
+<span class="sd">        traj: MDtraj trajectory object</span>
+<span class="sd">        link_indices: list of the link atom indices in traj</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        make_primary_subsys_trajectory([0,1,2])</span>
+<span class="sd">        make_primary_subsys_trajectory()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">qm_atoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qm_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">find_boundary_bonds</span><span class="p">(</span><span class="n">qm_atoms</span><span class="p">)</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">atom_slice</span><span class="p">(</span><span class="n">qm_atoms</span><span class="p">)</span>
+
+        <span class="n">link_indices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_boundary_bonds</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prepare_link_atom</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">link</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                
+                    <span class="n">link_element</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">Element</span><span class="o">.</span><span class="n">getBySymbol</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;link_atom&#39;</span><span class="p">])</span>
+
+                    <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">serial</span> <span class="o">==</span> <span class="n">link</span><span class="p">[</span><span class="s1">&#39;qm_atom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">serial</span><span class="p">:</span>
+                            <span class="n">traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">add_atom</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">link_element</span><span class="p">,</span> <span class="n">residue</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">residue</span><span class="p">,</span> <span class="n">serial</span><span class="o">=</span><span class="s1">&#39;link&#39;</span><span class="p">)</span>
+
+                            <span class="k">for</span> <span class="n">atom2</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">atom2</span><span class="o">.</span><span class="n">serial</span> <span class="o">==</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span>
+                                    <span class="n">traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">add_bond</span><span class="p">(</span><span class="n">atom2</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+                                    <span class="n">link</span><span class="p">[</span><span class="s1">&#39;link_atom_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom2</span><span class="o">.</span><span class="n">index</span>
+
+                    <span class="n">link_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;link_atom_index&#39;</span><span class="p">])</span>
+                    <span class="n">traj</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;link_positions&#39;</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">traj</span><span class="p">,</span> <span class="n">link_indices</span></div>
+
+<div class="viewcode-block" id="QMMM.make_second_subsys_trajectory"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.make_second_subsys_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">make_second_subsys_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qm_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a MDtraj trajectory object with just the </span>
+<span class="sd">        secondary subsystem</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        qm_atoms: A list of atom indicies corresponding to the atoms in</span>
+<span class="sd">                  the primary subsystem. Default is None and uses self.qm_atoms</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        a MDtraj trajectory object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        make_second_subsys_trajectory([0,1,2])</span>
+<span class="sd">        make_second_subsys_trajectory()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">qm_atoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qm_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_atoms</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qm_atoms</span><span class="p">]</span>
+
+        <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">atom_slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mm_atoms</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">traj</span></div>
+
+
+<div class="viewcode-block" id="QMMM.get_forces"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.get_forces">[docs]</a>    <span class="k">def</span> <span class="nf">get_forces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        function to return qmmm forces</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        qmmm forces: a dictionary of forces in au/bohr</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        forces = get_forces()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">run_ID</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="s1">&#39;qmmm_forces&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="QMMM.get_external_charges"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.get_external_charges">[docs]</a>    <span class="k">def</span> <span class="nf">get_external_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the point charges of atoms from secondary subsystem for electrostatic embedding </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        system: a system object that contains the gradients </span>
+<span class="sd">                of qm and mm regions</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of charges and cooresponding positions in angstroms as xyz coordinates</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        get_external_charge(system)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">charges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># in angstroms</span>
+        <span class="n">es_pos</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">system</span><span class="o">.</span><span class="n">entire_sys</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">]</span>
+        <span class="n">charge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_wrapper</span><span class="o">.</span><span class="n">get_main_charges</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_method</span> <span class="o">==</span> <span class="s1">&#39;Mechanical&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_treatment</span> <span class="o">==</span> <span class="s1">&#39;link_atom&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chrg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">charge</span><span class="p">):</span>
+                <span class="c1"># add every atom not in qm system </span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">qm_atoms</span><span class="p">:</span>
+                    <span class="c1"># save positions in angstroms</span>
+                    <span class="n">charges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">chrg</span><span class="p">,</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]])</span>
+        
+        <span class="c1"># This is for the RC and RCD schemes</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_treatment</span> <span class="o">==</span> <span class="s1">&#39;RC&#39;</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chrg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">charge</span><span class="p">):</span>
+                <span class="c1"># add every atom not in qm system or the M1 atom </span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">qm_atoms</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_mm&#39;</span><span class="p">]:</span>
+                        <span class="n">charges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">chrg</span><span class="p">,</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]])</span>
+            
+            <span class="n">bonds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_outer_bonds&#39;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_mm&#39;</span><span class="p">]):</span>
+
+                <span class="c1"># check to see that the M1 atom is attached to any M2 atoms</span>
+                <span class="k">if</span> <span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="c1"># get q0</span>
+                    <span class="n">q0</span> <span class="o">=</span> <span class="n">charge</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+                    <span class="c1"># get positions in angstroms</span>
+                    <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_redistributed_positions</span><span class="p">(</span><span class="n">es_pos</span><span class="p">,</span> <span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">index</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+                        <span class="n">charges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">q0</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_treatment</span> <span class="o">==</span> <span class="s1">&#39;RCD&#39;</span><span class="p">:</span>
+
+            <span class="n">bonds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_outer_bonds&#39;</span><span class="p">]</span>
+            <span class="n">m1_m2</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_atoms</span><span class="p">[</span><span class="s1">&#39;all_mm&#39;</span><span class="p">]):</span>
+
+                <span class="n">m1_m2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="c1"># get q0</span>
+
+                <span class="k">if</span> <span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+
+                    <span class="n">q0</span> <span class="o">=</span> <span class="n">charge</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">q0_RCD</span> <span class="o">=</span> <span class="n">q0</span> <span class="o">*</span> <span class="mi">2</span>
+
+                    <span class="c1"># get positions in angstroms</span>
+                    <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_redistributed_positions</span><span class="p">(</span><span class="n">es_pos</span><span class="p">,</span> <span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">index</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+                        <span class="n">charges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">q0_RCD</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
+                    <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                        <span class="n">m1_m2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="p">)</span>
+                        <span class="n">charges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">charge</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">-</span> <span class="n">q0</span><span class="p">,</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">bond</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">bond</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">bond</span><span class="p">][</span><span class="mi">2</span><span class="p">]])</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chrg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">charge</span><span class="p">):</span>
+                <span class="c1"># add every atom not in qm system or the M1 atom </span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">qm_atoms</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">m1_m2</span><span class="p">:</span>
+                        <span class="n">charges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">chrg</span><span class="p">,</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">es_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]])</span>
+
+                
+        <span class="k">return</span> <span class="n">charges</span></div>
+
+<div class="viewcode-block" id="QMMM.get_redistributed_positions"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.get_redistributed_positions">[docs]</a>    <span class="k">def</span> <span class="nf">get_redistributed_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">bonds</span><span class="p">,</span> <span class="n">mm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the positions for the redistributed point charges in the RC and RCD schemes</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        positions: a list of the positions</span>
+<span class="sd">        bonds: a list of indices of all atoms (in secondary subsystem) bonded to M1  </span>
+<span class="sd">        mm: the index of M1</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List of positions for the redistributed charges</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        get_redistributed_positions(positions=pos, bonds=bond, mm=mm_index)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">[]</span>
+    
+        <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">bonds</span><span class="p">:</span>
+            <span class="n">new_pos</span> <span class="o">=</span> <span class="p">((</span><span class="n">positions</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">+</span> <span class="n">positions</span><span class="p">[</span><span class="n">mm</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">pos</span></div>
+
+<div class="viewcode-block" id="QMMM.convert_trajectory"><a class="viewcode-back" href="../../source/janus.qmmm.html#janus.qmmm.QMMM.convert_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">convert_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts an OpenMM trajectory to get </span>
+<span class="sd">        topology and positions that are compatible with MDtraj</span>
+<span class="sd">        NOTE: with more programs need to expand</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        traj: an OpenMM trajectory object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        positions: a list of positions in nm</span>
+<span class="sd">        topology: a MDtraj topology object </span>
+<span class="sd">                  </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        positions, topology = convert_trajectory(OpenMM_traj)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_wrapper</span><span class="o">.</span><span class="n">program</span> <span class="o">==</span> <span class="s1">&#39;OpenMM&#39;</span><span class="p">:</span>
+            <span class="n">topology</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">to_openmm</span><span class="p">()</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">openmm_positions</span><span class="p">((</span><span class="mi">0</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="n">topology</span><span class="p">,</span> <span class="n">positions</span></div></div>
+            
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">janus 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyi Zhang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.0.
+    </div>
+  </body>
+</html>

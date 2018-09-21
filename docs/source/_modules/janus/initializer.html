@@ -1,0 +1,279 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>janus.initializer &#8212; janus 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">janus 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for janus.initializer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">.psi4_wrapper</span> <span class="k">import</span> <span class="n">Psi4_wrapper</span> 
+<span class="kn">from</span> <span class="nn">.openmm_wrapper</span> <span class="k">import</span> <span class="n">OpenMM_wrapper</span> 
+<span class="kn">from</span> <span class="nn">.qmmm</span> <span class="k">import</span> <span class="n">QMMM</span>
+<span class="kn">from</span> <span class="nn">.oniom_xs</span> <span class="k">import</span> <span class="n">ONIOM_XS</span>
+<span class="kn">from</span> <span class="nn">.hot_spot</span> <span class="k">import</span> <span class="n">HotSpot</span>
+<span class="kn">from</span> <span class="nn">.pap</span> <span class="k">import</span> <span class="n">PAP</span>
+<span class="kn">from</span> <span class="nn">.sap</span> <span class="k">import</span> <span class="n">SAP</span>
+
+<div class="viewcode-block" id="Initializer"><a class="viewcode-back" href="../../source/janus.initializer.html#janus.initializer.Initializer">[docs]</a><span class="k">class</span> <span class="nc">Initializer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that initializes the initial parameters </span>
+<span class="sd">    and necessary wrapppers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">as_file</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the Initializer class with parameters and updates </span>
+<span class="sd">        defaults with user defined parameters</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        param: a string of a filename containing a json input file</span>
+<span class="sd">               If as_file is False, param is a dict</span>
+<span class="sd">        as_file: a bool specifying whether param is a file or dict,</span>
+<span class="sd">                 default is True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        An initializer object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        init = Initializer(&#39;input.dat&#39;)</span>
+<span class="sd">        init = Initializer(param, as_file=False)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">as_file</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_paramfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/default_input/qmmm.json&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aqmmm_paramfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/default_input/aqmmm.json&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psi4_paramfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/default_input/psi4.json&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">openmm_paramfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/default_input/openmm.json&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qmmm_paramfile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aqmmm_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aqmmm_paramfile</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Using pdb file &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">][</span><span class="s1">&#39;mm_pdb_file&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No pdb file given&#39;</span><span class="p">)</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qm_program</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;qmmm&#39;</span><span class="p">][</span><span class="s1">&#39;qm_program&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No QM program was specified. Psi4 will be used&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qm_program</span> <span class="o">=</span> <span class="s1">&#39;Psi4&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mm_program</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;qmmm&#39;</span><span class="p">][</span><span class="s1">&#39;mm_program&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No MM program was specified. OpenMM will be used&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mm_program</span> <span class="o">=</span> <span class="s1">&#39;OpenMM&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_param</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Initializer.update_param"><a class="viewcode-back" href="../../source/janus.initializer.html#janus.initializer.Initializer.update_param">[docs]</a>    <span class="k">def</span> <span class="nf">update_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        updates default parameters with user defined parameters</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        update_param()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_program</span> <span class="o">==</span> <span class="s2">&quot;Psi4&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qm_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi4_paramfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only Psi4 currently available&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_program</span> <span class="o">==</span> <span class="s2">&quot;OpenMM&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mm_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openmm_paramfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only OpenMM currently available&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;qm&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No QM parameters given. Using defaults&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;mm&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No MM parameters given. Using defaults&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;qmmm&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No QMMM parameters given. Using defaults&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aqmmm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;aqmmm&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aqmmm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;qmmm&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">aqmmm_param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qmmm_param</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No AQMMM parameters given. Using defaults&quot;</span><span class="p">)</span></div>
+        
+
+<div class="viewcode-block" id="Initializer.initialize_wrappers"><a class="viewcode-back" href="../../source/janus.initializer.html#janus.initializer.Initializer.initialize_wrappers">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_wrappers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects </span>
+<span class="sd">        used for computation based on input parameters</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mm_wrapper object, qmmm object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        mm_wrapper, qmmm = initialize_wrapers()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create qm_wrapper object</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qm_program</span> <span class="o">==</span> <span class="s2">&quot;Psi4&quot;</span><span class="p">:</span>
+            <span class="n">qm_wrapper</span> <span class="o">=</span> <span class="n">Psi4_wrapper</span><span class="p">(</span><span class="n">qm_param</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># add other options for qm program here</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only Psi4 currently available&quot;</span><span class="p">)</span>
+
+        <span class="c1"># create mm_wrapper object</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_program</span> <span class="o">==</span> <span class="s2">&quot;OpenMM&quot;</span><span class="p">:</span>
+            <span class="n">mm_wrapper</span> <span class="o">=</span> <span class="n">OpenMM_wrapper</span><span class="p">(</span><span class="n">mm_param</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># add other options for mm program here</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only OpenMM currently available&quot;</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qmmm_param</span><span class="p">[</span><span class="s1">&#39;run_aqmmm&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span> 
+            <span class="n">qmmm</span> <span class="o">=</span> <span class="n">QMMM</span><span class="p">(</span><span class="n">qmmm_param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aqmm_param</span><span class="p">[</span><span class="s1">&#39;aqmmm_scheme&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ONIOM-XS&#39;</span><span class="p">:</span>
+            <span class="n">qmmm</span> <span class="o">=</span> <span class="n">ONIOM_XS</span><span class="p">(</span><span class="n">aqmmm_param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aqmm_param</span><span class="p">[</span><span class="s1">&#39;aqmmm_scheme&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Hot-Spot&#39;</span><span class="p">:</span>
+            <span class="n">qmmm</span> <span class="o">=</span> <span class="n">HotSpot</span><span class="p">(</span><span class="n">aqmmm_param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aqmm_param</span><span class="p">[</span><span class="s1">&#39;aqmmm_scheme&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;PAP&#39;</span><span class="p">:</span>
+            <span class="n">qmmm</span> <span class="o">=</span> <span class="n">PAP</span><span class="p">(</span><span class="n">aqmmm_param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aqmm_param</span><span class="p">[</span><span class="s1">&#39;aqmmm_scheme&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;SAP&#39;</span><span class="p">:</span>
+            <span class="n">qmmm</span> <span class="o">=</span> <span class="n">SAP</span><span class="p">(</span><span class="n">aqmmm_param</span><span class="p">,</span> <span class="n">qm_wrapper</span><span class="p">,</span> <span class="n">mm_wrapper</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only ONIOM_XS, Hot Spot, PAP, and SAP currently implemented&quot;</span><span class="p">)</span>
+
+        <span class="c1"># initialize mm_wrapper with information about initial system</span>
+        <span class="n">mm_wrapper</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;qmmm&#39;</span><span class="p">][</span><span class="s1">&#39;embedding_method&#39;</span><span class="p">])</span>
+        
+        <span class="k">return</span> <span class="n">mm_wrapper</span><span class="p">,</span> <span class="n">qmmm</span></div>
+
+<div class="viewcode-block" id="Initializer.load_param"><a class="viewcode-back" href="../../source/janus.initializer.html#janus.initializer.Initializer.load_param">[docs]</a>    <span class="k">def</span> <span class="nf">load_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a json file into a dictionary</span>
+<span class="sd">    </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename: string of json file</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        a dictionary</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        dict = load_param(&#39;input.json&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">parameter_file</span><span class="p">:</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">parameter_file</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">param</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">janus 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyi Zhang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.0.
+    </div>
+  </body>
+</html>

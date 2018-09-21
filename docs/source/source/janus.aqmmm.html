@@ -1,0 +1,254 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>janus.aqmmm module &#8212; janus 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">janus 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-janus.aqmmm">
+<span id="janus-aqmmm-module"></span><h1>janus.aqmmm module<a class="headerlink" href="#module-janus.aqmmm" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="janus.aqmmm.AQMMM">
+<em class="property">class </em><code class="descclassname">janus.aqmmm.</code><code class="descname">AQMMM</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code>, <a class="reference internal" href="janus.qmmm.html#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.QMMM</span></code></a></p>
+<p>AQMMM super class for adaptive QMMM computations.
+Inherits from QMMM class.</p>
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.compute_COM">
+<code class="descname">compute_COM</code><span class="sig-paren">(</span><em>atoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.compute_COM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.compute_COM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the center of mass of a
+specified group</p>
+<dl class="docutils">
+<dt>atoms <span class="classifier-delimiter">:</span> <span class="classifier">a list of indices defining the group</span></dt>
+<dd>to compute the COM for</dd>
+</dl>
+<p>xyz, atom_weight, weight_ratio
+xyz: an numpy array of the COM coordinates 
+atom_weight: a dictionary with the indices of each atom in the</p>
+<blockquote>
+<div>group and the atomic weight for each atom</div></blockquote>
+<dl class="docutils">
+<dt>weight_ratio: a dictionary with the indices of each atom in the </dt>
+<dd>group and the weight ratio of each atom to
+the total weight of the group (sum of all atomic weights)</dd>
+</dl>
+<p>xyz, atoms, weights = compute_COM([0,1,2])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.compute_lamda_i">
+<code class="descname">compute_lamda_i</code><span class="sig-paren">(</span><em>r_i</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.compute_lamda_i"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.compute_lamda_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the switching function and the derivative 
+of the switching function defined as a 5th order spline:</p>
+<p>lamda_i = -6x^5 + 15x^4 - 10x^3 + 1 and 
+d_lamda_i = -30x^4 + 60x^3 - 30x^2</p>
+<p>where x is the reduced distance (r_i - rmin)/(rmax - rmin)
+of buffer group i</p>
+<dl class="docutils">
+<dt>r_i: float in angstroms of the distance between the </dt>
+<dd>qm center and the COM</dd>
+</dl>
+<p>lamda_i, d_lamda_i as unitless floats</p>
+<p>l, dl = compute_lamda_i(0.234)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.compute_zero_energy">
+<code class="descname">compute_zero_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.compute_zero_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.compute_zero_energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.define_buffer_zone">
+<code class="descname">define_buffer_zone</code><span class="sig-paren">(</span><em>qm_center</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.define_buffer_zone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.define_buffer_zone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the buffer groups in the buffer zone based on a distance 
+partitioning scheme, saves each buffer group as a Buffer object,
+and saves all buffer groups in the dictionary self.buffer_groups.
+For water as a solvent, considers the whole water molecule as a buffer group.
+Need to generalize for all solvents</p>
+<p>qm_center: a list of the indicies that make up the qm center</p>
+<p>None</p>
+<p>define_buffer_zone([0])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.find_buffer_atoms">
+<code class="descname">find_buffer_atoms</code><span class="sig-paren">(</span><em>qm_center</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.find_buffer_atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.find_buffer_atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_Rmax">
+<code class="descname">get_Rmax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.get_Rmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.get_Rmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to return self.Rmin</p>
+<p>None</p>
+<dl class="docutils">
+<dt>self.Rmax: float for the distance from qm center to </dt>
+<dd>outer limit of buffer zone in angstroms</dd>
+</dl>
+<p>rmax = get_Rmax()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_Rmin">
+<code class="descname">get_Rmin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.get_Rmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.get_Rmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to return self.Rmin</p>
+<p>None</p>
+<dl class="docutils">
+<dt>self.Rmin: float for the distance from qm center to </dt>
+<dd>inner limit of buffer zone in angstroms</dd>
+</dl>
+<p>rmin = get_Rmin()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_buffer_info">
+<code class="descname">get_buffer_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.get_buffer_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.get_buffer_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the distance r_i for each buffer group i
+between the qm_center and the COM of buffer group i
+and the computes lamda_i and d_lamda_i for that buffer group</p>
+<p>None</p>
+<p>None</p>
+<p>get_buffer_info()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_zero_energy">
+<code class="descname">get_zero_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.get_zero_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.get_zero_energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="janus.aqmmm.AQMMM.nm_to_angstrom">
+<code class="descname">nm_to_angstrom</code><em class="property"> = 10.0</em><a class="headerlink" href="#janus.aqmmm.AQMMM.nm_to_angstrom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.partition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.run_aqmmm">
+<code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.run_aqmmm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.run_aqmmm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.run_qmmm">
+<code class="descname">run_qmmm</code><span class="sig-paren">(</span><em>main_info</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.run_qmmm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.run_qmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the positions and topology given in main_info,
+determines the partitions to be computed, for each partition,
+determines the QM/MM energy and gradients, then interpolates all
+partitions using specified adaptive QM/MM scheme</p>
+<dl class="docutils">
+<dt>main_info: a dictionary containing the energy and forces </dt>
+<dd>for the whole system, obtained from mm_wrapper</dd>
+</dl>
+<p>None</p>
+<p>run_qmmm(main_info)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.set_Rmax">
+<code class="descname">set_Rmax</code><span class="sig-paren">(</span><em>Rmax</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.set_Rmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.set_Rmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to set self.Rmax</p>
+<dl class="docutils">
+<dt>Rmax: float for the distance from qm center to </dt>
+<dd>outer limit of buffer zone in angstroms</dd>
+</dl>
+<p>None</p>
+<p>set_Rmax(.50)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.set_Rmin">
+<code class="descname">set_Rmin</code><span class="sig-paren">(</span><em>Rmin</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/janus/aqmmm.html#AQMMM.set_Rmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janus.aqmmm.AQMMM.set_Rmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to set self.Rmin</p>
+<dl class="docutils">
+<dt>Rmin: float for the distance from qm center to </dt>
+<dd>inner limit of buffer zone in angstroms</dd>
+</dl>
+<p>None</p>
+<p>set_Rmin(.35)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/janus.aqmmm.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">janus 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyi Zhang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.0.
+    </div>
+  </body>
+</html>
