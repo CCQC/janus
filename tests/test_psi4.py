@@ -97,10 +97,12 @@ def test_set_qm_geometry():
     qm_sys1.set_qm_geometry(qm_mol,10)
     qm_sys2.set_qm_geometry(qm_mol,10)
     qm_sys3.set_qm_geometry(qm_mol,10)
+    
 
     assert qm_sys1.qm_geometry == qm_mol
     assert qm_sys2.qm_geometry == qm_mol
     assert qm_sys3.qm_geometry == qm_mol
+    assert qm_sys1.is_open_shelled is False
 
 def test_compute_energy():
     """

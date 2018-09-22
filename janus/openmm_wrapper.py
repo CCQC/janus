@@ -104,6 +104,7 @@ class OpenMM_wrapper(MM_wrapper):
         initialize('Electrostatic')
         """
 
+        # should I minimize energy here? If so, need to return new positions
         if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
             self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True)
@@ -462,6 +463,8 @@ class OpenMM_wrapper(MM_wrapper):
             integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
         else:
             print('only Langevin integrator supported currently')
+
+        integrator.setRandomNumberSeed(1)
 
         simulation = OM_app.Simulation(topology, openmm_system, integrator)
         simulation.context.setPositions(positions)
