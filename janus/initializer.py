@@ -112,13 +112,14 @@ class Initializer(object):
             print("No QMMM parameters given. Using defaults")
 
         self.qmmm_param.update(self.param['system'])
+        print(self.qmmm_param)
 
         try:
             self.aqmmm_param.update(self.param['aqmmm'])
-            self.aqmmm_param.update(self.param['qmmm'])
         except: 
-            self.aqmmm_param.update(self.qmmm_param)
             print("No AQMMM parameters given. Using defaults")
+
+        self.aqmmm_param.update(self.qmmm_param)
         
 
     def initialize_wrappers(self):
@@ -141,34 +142,34 @@ class Initializer(object):
 
         # create qm_wrapper object
         if self.qm_program == "Psi4":
-            qm_wrapper = Psi4_wrapper(qm_param)
+            qm_wrapper = Psi4_wrapper(self.qm_param)
         else:
         # add other options for qm program here
             print("Only Psi4 currently available")
 
         # create mm_wrapper object
         if self.mm_program == "OpenMM":
-            mm_wrapper = OpenMM_wrapper(mm_param)
+            mm_wrapper = OpenMM_wrapper(self.mm_param)
         else:
         # add other options for mm program here
             print("Only OpenMM currently available")
 
 
         if self.qmmm_param['run_aqmmm'] is False: 
-            qmmm = QMMM(qmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmm_param['aqmmm_scheme'] == 'ONIOM-XS':
-            qmmm = ONIOM_XS(aqmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmm_param['aqmmm_scheme'] == 'Hot-Spot':
-            qmmm = HotSpot(aqmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmm_param['aqmmm_scheme'] == 'PAP':
-            qmmm = PAP(aqmmm_param, qm_wrapper, mm_wrapper)
-        elif self.aqmm_param['aqmmm_scheme'] == 'SAP':
-            qmmm = SAP(aqmmm_param, qm_wrapper, mm_wrapper)
+            qmmm = QMMM(self.qmmm_param, qm_wrapper, mm_wrapper)
+        elif self.aqmmm_param['aqmmm_scheme'] == 'ONIOM-XS':
+            qmmm = ONIOM_XS(self.aqmmm_param, qm_wrapper, mm_wrapper)
+        elif self.aqmmm_param['aqmmm_scheme'] == 'Hot-Spot':
+            qmmm = HotSpot(self.aqmmm_param, qm_wrapper, mm_wrapper)
+        elif self.aqmmm_param['aqmmm_scheme'] == 'PAP':
+            qmmm = PAP(self.aqmmm_param, qm_wrapper, mm_wrapper)
+        elif self.aqmmm_param['aqmmm_scheme'] == 'SAP':
+            qmmm = SAP(self.aqmmm_param, qm_wrapper, mm_wrapper)
         else:
             print("Only ONIOM_XS, Hot Spot, PAP, and SAP currently implemented")
 
         # initialize mm_wrapper with information about initial system
-        mm_wrapper.initialize(self.param['qmmm']['embedding_method'])
+        mm_wrapper.initialize(self.qmmm_param['embedding_method'])
         
         return mm_wrapper, qmmm
 

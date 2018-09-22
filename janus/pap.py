@@ -23,7 +23,7 @@ class PAP(AQMMM):
         pap = PAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper)
+        super().__init__(param, qm_wrapper, mm_wrapper, 'PAP')
         self.modified_variant = param['modified_variant']
 
 

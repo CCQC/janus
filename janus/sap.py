@@ -23,7 +23,7 @@ class SAP(AQMMM):
         sap = SAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper)
+        super().__init__(param, qm_wrapper, mm_wrapper, 'SAP')
         self.modified_variant = param['modified_variant']
 
     def partition(self, qm_center=None, info=None): 

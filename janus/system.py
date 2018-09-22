@@ -45,6 +45,7 @@ class System(object):
         self.second_subsys = {}
         self.boundary = {}
         self.zero_energy = 0.0
+
     def compute_scale_factor_g(qm, mm, link):
         '''
         Computes scale factor g for link atom, RC, and RCD schemes. 

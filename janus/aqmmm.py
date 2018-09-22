@@ -14,7 +14,7 @@ class AQMMM(ABC, QMMM):
 
     nm_to_angstrom = 10.0000000
 
-    def __init__(self, param, qm_wrapper, mm_wrapper):
+    def __init__(self, param, qm_wrapper, mm_wrapper, class_type):
         """
         Initializes AQMMM class with parameters given in param
 
@@ -51,6 +51,7 @@ class AQMMM(ABC, QMMM):
         """
         
         super().__init__(param, qm_wrapper, mm_wrapper)
+        self.class_type = class_type
 
         self.aqmmm_scheme = param['aqmmm_scheme']
         self.partition_scheme = param['partition_scheme']

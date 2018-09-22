@@ -1,0 +1,16 @@
+{
+"system" : {"mm_pdb_file" : "tests/files/test_openmm/water.pdb" },
+
+"qmmm" : {"embedding_method" : "Electrostatic",
+          "qm_program" : "Psi4",
+          "qm_atoms" : [0,1,2],
+          "run_aqmmm" : false,
+          "mm_program" : "OpenMM"},
+
+"qm" : {},
+"mm" : {
+         "mm_forcefield" :  "amber99sb.xml",
+         "mm_step_size" : 0.005}
+}
+
+

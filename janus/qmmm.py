@@ -40,6 +40,7 @@ class QMMM(object):
         qmmm = QMMM(param, psi4_wrapper, mm_wrapper)
         """
         
+        self.class_type = 'QMMM'
         self.qm_wrapper = qm_wrapper
         self.mm_wrapper = mm_wrapper
         self.qm_geometry = None
