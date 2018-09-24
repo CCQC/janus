@@ -8,8 +8,9 @@
    :caption: Contents:
 
    source/intro
+   source/setting-up-janus
+   source/running-janus
    source/modules
-   source/janus
     
 
 Indices and tables
