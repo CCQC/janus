@@ -74,9 +74,9 @@ class QM_wrapper(ABC):
         self.qm_geometry = qm_geometry
         self.total_elec = total_elec
 
-        if total_elec % 2 != 0:
+        if self.total_elec % 2 != 0:
             self.total_elec += self.charge   # takes charge into account
-            if total_elec % 2 != 0:
+            if self.total_elec % 2 != 0:
                 self.is_open_shelled = True
             
     def set_external_charges(self, charges):

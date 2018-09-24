@@ -9,7 +9,7 @@
 "constraints" : "OM_app.HBonds",
 "rigid_water" : true,
 "removeCMMotion" : true,
-"ignoreExternalBonds" : false,
+"ignoreExternalBonds" : true,
 "flexibleConstraints" : false,
 "hydrogenMass" : "None",
 "residueTemplates" : {},

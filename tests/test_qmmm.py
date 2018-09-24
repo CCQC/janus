@@ -9,13 +9,15 @@ ala = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 param_m = {"system" : {"mm_pdb_file" : water},
             "qmmm" : {"qm_atoms" : [0,1,2]}}
 param_ala = {"system" : {"mm_pdb_file" : ala},
-              "qmmm" : {"embedding_method" : "Electrostatic"}}
+              "qmmm" : {"embedding_method" : "Electrostatic"},
+              "qm" : {"charge" : +1}}
 
 
 config_m = initializer.Initializer(param_m, as_file=False)
 config_ala = initializer.Initializer(param_ala, as_file=False)
 
 psi4 = psi4_wrapper.Psi4_wrapper(config_m.qm_param)
+psi4_ala = psi4_wrapper.Psi4_wrapper(config_ala.qm_param)
 
 om_m = openmm_wrapper.OpenMM_wrapper(config_m.mm_param)
 om_m.initialize('Mechanical')
@@ -26,9 +28,9 @@ om_ala.initialize('Electrostatic')
 main_info_ala = om_ala.get_main_info()
 
 mech = qmmm.QMMM(config_m.qmmm_param, psi4, om_m)
-ala_link = qmmm.QMMM(config_ala.qmmm_param, psi4, om_ala)
-ala_RC = qmmm.QMMM(config_ala.qmmm_param, psi4, om_ala)
-ala_RCD = qmmm.QMMM(config_ala.qmmm_param, psi4, om_ala)
+ala_link = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala)
+ala_RC = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala)
+ala_RCD = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala)
 ala_RC.boundary_treatment = 'RC'
 ala_RCD.boundary_treatment = 'RCD'
 
@@ -139,8 +141,8 @@ def test_get_qm_geometry():
  H    -0.059   0.384  -1.019 
  C     1.247   0.375   0.636 
  H     0.814   0.861   1.495 
- H     2.642   1.501   0.662 
- H     2.714  -0.176   1.555 
+ H     1.753   1.234   0.208 
+ H     1.825  -0.443   1.102 
  """
     out, elec = mech.get_qm_geometry(mech.traj_ps)
     out2, elec2 = ala_RC.get_qm_geometry(ala_RC.traj_ps)
@@ -162,15 +164,34 @@ def test_make_second_subsys_trajectory():
 #def test_compute_gradients():
 # pass in a system with gradients 
 # both mech and ala_RC
+#    pass
+def test_mechanical():
+    mech.mechanical(sys_mech, main_info_m)
+    ala_link.mechanical(sys_ala_link, main_info_ala)
+    
+    assert sys_mech.entire_sys['energy'] == -0.010562891563767518
+    assert sys_mech.primary_subsys['mm']['energy'] == 0.0
+    assert sys_mech.qm_info['energy'] == -74.96297372571573
+    assert sys_ala_link.entire_sys['energy'] == 0.4511258275881568
+    assert sys_ala_link.primary_subsys['mm']['energy'] == 0.02109665357308523
+    assert sys_ala_link.qm_info['energy'] == -55.86812550986576
 
-#    pass
-#def test_mechanical():
-#    pass
-#def test_electrostatic():
+def test_electrostatic():
+    ala_link.electrostatic(sys_ala_link, main_info_ala)
+    ala_RCD.electrostatic(sys_ala_RCD, main_info_ala)
+
+    assert sys_ala_link.entire_sys['energy'] == 0.4511258275881568
+    assert sys_ala_link.primary_subsys['mm']['energy'] == 0.02109665357308523
+    assert sys_ala_link.second_subsys['mm']['energy'] == -0.04867360210802038
+    assert sys_ala_link.qm_info['energy'] == -55.81153697205511
+    assert sys_ala_RCD.entire_sys['energy'] == 0.4511258275881568
+    assert sys_ala_RCD.primary_subsys['mm']['energy'] == 0.02121477274357972
+    assert sys_ala_RCD.second_subsys['mm']['energy'] == -0.04867360210802038
+    assert sys_ala_RCD.qm_info['energy'] == -55.83972081949333
+
+#def test_get_forces():
 #    pass
 #def test_update_traj():
 #    pass
 #def test_run_qmmm():
-#    pass
-#def test_get_forces():
 #    pass

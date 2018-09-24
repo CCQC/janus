@@ -137,21 +137,25 @@ class QMMM(object):
             # Get MM energy on whole system
             system.entire_sys = deepcopy(main_info)
 
+            print(system.entire_sys['energy'])
             # Get MM energy on QM region
-            traj_ps, link_indices = self.make_primary_subsys_trajectory()
+            traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
             topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
             system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb='no_link', link_atoms=link_indices)
+            print(system.primary_subsys['mm']['energy'])
 
             # Get QM energy
             self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
+            print(system.qm_info['energy'])
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
             system.qmmm_energy = system.entire_sys['energy']\
                         - system.primary_subsys['mm']['energy']\
                         + system.qm_info['energy']
+
 
             self.compute_gradients(system)
         else:
@@ -170,12 +174,15 @@ class QMMM(object):
 
             # Get MM energy on whole system
             system.entire_sys = deepcopy(main_info)
+            print(system.entire_sys['energy'])
 
             # Get MM energy on QM region
-            traj_ps, link_indices = self.make_primary_subsys_trajectory()
+            traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
             topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
             system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
+
+            print(system.primary_subsys['mm']['energy'])
 
 
             # Get MM coulomb energy on secondary subsystem
@@ -183,12 +190,14 @@ class QMMM(object):
             topology_ss, positions_ss = self.convert_trajectory(traj_ss)
             system.second_subsys['trajectory'] = traj_ss
             system.second_subsys['mm'] = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
+            print(system.second_subsys['mm']['energy'])
 
             # Get QM energy
             self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
             charges = self.get_external_charges(system)
             self.qm_wrapper.set_external_charges(charges)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
+            print(system.qm_info['energy'])
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -443,7 +452,7 @@ class QMMM(object):
             g = System.compute_scale_factor_g(qm.element.symbol, mm.element.symbol, self.link_atom_element)
             self.link_atoms[i]['scale_factor'] = g 
             # this is in nm
-            self.link_atoms[i]['link_positions'] = self.positions[qm.index] + g*self.positions[mm.index]
+            self.link_atoms[i]['link_positions'] = (1-g) * self.positions[qm.index] + g*self.positions[mm.index]
 
             if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
                 bonds = []
@@ -464,7 +473,11 @@ class QMMM(object):
         '''
         Creates a MDtraj trajectory object with just the 
         primary subsystem, and adds in any link atoms
-        Note: Currently adds just H as link atom, need to expand 
+        Note: Currently adds just H as link atom, need to expand. Also, H is added
+              as a very specific H1 atom, or else the connectivity in the create_new_residue_templates
+              function in openmm gets messed up and gives a "set of atoms match but bonds are different
+               error"
+        
 
         Parameters
         ----------
@@ -485,13 +498,16 @@ class QMMM(object):
 
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
+        print(qm_atoms)
 
         self.find_boundary_bonds(qm_atoms)
         traj = self.traj.atom_slice(qm_atoms)
 
         link_indices = []
         if self.qmmm_boundary_bonds:
+            print(self.qmmm_boundary_bonds)
             self.prepare_link_atom()
+            print(self.link_atoms)
 
             for i, link in self.link_atoms.items():
                 
@@ -501,8 +517,7 @@ class QMMM(object):
 
                     for atom in traj.topology.atoms:
                         if atom.serial == link['qm_atom'].serial:
-                            traj.topology.add_atom(name='H', element=link_element, residue=atom.residue, serial='link')
-
+                            traj.topology.add_atom(name='H1', element=link_element, residue=atom.residue, serial='link')
                             for atom2 in traj.topology.atoms:
                                 if atom2.serial == 'link':
                                     traj.topology.add_bond(atom2, atom)

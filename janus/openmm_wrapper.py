@@ -271,7 +271,8 @@ class OpenMM_wrapper(MM_wrapper):
             self.create_new_residue_template(topology)
 
         if self.is_periodic is True:
-            openmm_system = self.forcefieldcreateSystem(topology,
+            print("periodic")
+            openmm_system = self.forcefield.createSystem(topology,
                                             constraints=self.constraints)
         else:
             openmm_system = self.forcefield.createSystem(topology,
@@ -408,33 +409,33 @@ class OpenMM_wrapper(MM_wrapper):
             name = 'Modified_' + res_name                   # assign new name
             template[i].name = name
 
-        # loop through all atoms in modified template and all atoms in orignal template to assign atom type
-        print('loop through all atoms in modified template and all atoms in orignal template to assign atom type')
-        for atom in template[i].atoms:
-            for atom2 in self.forcefield._templates[res_name].atoms:
-                if atom.name == atom2.name:
-                    atom.type = atom2.type
-            # the following is for when there is a unmatched name, check the N and C terminus residues
-            if atom.type == None:
-                print('check n')
-                for atom3 in self.forcefield._templates[n_res_name].atoms:
-                    if atom.name == atom3.name:
-                        atom.type = atom3.type
-            if atom.type == None:
-                print('check c')
-                for atom4 in self.forcefield._templates[c_res_name].atoms:
-                    if atom.name == atom4.name:
-                        atom.type = atom4.type
+            # loop through all atoms in modified template and all atoms in orignal template to assign atom type
+            print('loop through all atoms in modified template and all atoms in orignal template to assign atom type')
+            for atom in template[i].atoms:
+                for atom2 in self.forcefield._templates[res_name].atoms:
+                    if atom.name == atom2.name:
+                        atom.type = atom2.type
+                # the following is for when there is a unmatched name, check the N and C terminus residues
+                if atom.type == None:
+                    print('check n')
+                    for atom3 in self.forcefield._templates[n_res_name].atoms:
+                        if atom.name == atom3.name:
+                            atom.type = atom3.type
+                if atom.type == None:
+                    print('check c')
+                    for atom4 in self.forcefield._templates[c_res_name].atoms:
+                        if atom.name == atom4.name:
+                            atom.type = atom4.type
 
-        # override existing modified residues with same name
-        print(name)
-        if name in self.forcefield._templates:
-            print('override existing modified residues with same name')
-            template[i].overrideLevel = self.forcefield._templates[name].overrideLevel + 1
+            # override existing modified residues with same name
+            print(name)
+            if name in self.forcefield._templates:
+                print('override existing modified residues with same name')
+                template[i].overrideLevel = self.forcefield._templates[name].overrideLevel + 1
 
-        # register the new template to the forcefield object
-        print('register the new template to the forcefield object')
-        self.forcefield.registerResidueTemplate(template[i])
+            # register the new template to the forcefield object
+            print('register the new template to the forcefield object')
+            self.forcefield.registerResidueTemplate(template[i])
 
 
     def create_openmm_simulation(self, openmm_system, topology, positions):
