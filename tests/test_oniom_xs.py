@@ -100,19 +100,35 @@ def test_get_switching_function():
     s_2 = oxs_2.get_switching_function()
     assert np.allclose(s_2, 0.13708445855549423)
 
+def test_compute_zero_energy():
+
+    oxs_0.compute_zero_energy()
+    oxs_1.compute_zero_energy()
+    oxs_2.compute_zero_energy()
+
+    assert oxs_0.qm_zero_energies['HOH'] == -74.96297372571573
+    assert oxs_0.mm_zero_energies['HOH'] == 0.0
+    assert oxs_1.qm_zero_energies['HOH'] == -74.96297372571573
+    assert oxs_1.mm_zero_energies['HOH'] == 0.0
+    assert oxs_2.qm_zero_energies['HOH'] == -74.96297372571573
+    assert oxs_2.mm_zero_energies['HOH'] == 0.0
+    
+def test_get_zero_energy():
+
+    oxs_0.get_zero_energy()
+    oxs_1.get_zero_energy()
+    oxs_2.get_zero_energy()
+
+    assert oxs_0.systems[0]['qm'].qmmm_energy == 74.96297372571573
+    assert oxs_1.systems[0]['qm'].qmmm_energy == 74.96297372571573
+    assert oxs_2.systems[0]['qm'].qmmm_energy == 74.96297372571573
+    assert oxs_1.systems[0]['qm_bz'].qmmm_energy == 74.96297372571573 * 2
+    assert oxs_2.systems[0]['qm_bz'].qmmm_energy == 74.96297372571573 * 3
+
+    
+
 def test_run_qmmm():
     pass
     
-
 def test_run_aqmmm():
     pass
-#
-#    oxs.save('qm', np.zeros((9,3)), 1.0)
-#    forces = oxs.get_info()
-#    
-#    forces_1 = oxs_1.get_info()
-#    #forces_2 = oxs_2.get_info()
-#
-#    assert (np.allclose(forces, np.zeros((9,3))) and oxs.energy == 1.0)
-#    assert (forces_1 is None and oxs_1.energy == 1.0065835566459276)
-#    #assert (forces_2 is None and oxs_2.energy == 1.0274168917110988)

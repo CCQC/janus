@@ -43,5 +43,29 @@ def test_partition():
     assert len(pap_1.systems[0]) == 2
     assert len(pap_2.systems[0]) == 4
 
+def test_compute_sf_gradient():
+
+    f1 =  pap_1.compute_sf_gradient()
+    f2 = pap_2.compute_sf_gradient()
+
+    force1 = {0: np.array([ 1.97148884,  555.51774573,  630.6267936 ]), 
+              3: np.array([ -1.75086594, -493.35156336, -560.05540221]), 
+              4: np.array([ -0.11031145, -31.08309118, -35.28569569]),
+              5: np.array([ -0.11031145, -31.08309118, -35.28569569])}
+
+    force2 =  {0:  np.array([   39.62584163,   268.0010218 ,  1854.92067971]),
+               3: np.array([  -0.61890873, -174.39347167, -197.9724261 ]),
+               4: np.array([ -0.03899369, -10.98747543, -12.47304241]),
+               5: np.array([ -0.03899369, -10.98747543, -12.47304241]),
+               6: np.array([  -34.57253397,   -63.61642829, -1449.37011926]),
+               7: np.array([ -2.17820578,  -4.00808549, -91.31602477]),
+               8: np.array([ -2.17820578,  -4.00808549, -91.31602477])}
+
+    for i, f in f1.items():
+        assert np.allclose(f, force1[i])
+    for i, f in f2.items():
+        assert np.allclose(f, force2[i])
+
 def test_run_aqmmm():
     pass
+

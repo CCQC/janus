@@ -381,12 +381,12 @@ class AQMMM(ABC, QMMM):
     
     def get_zero_energy(self):
 
-        for sys in self.systems[self.run_ID]:
+        for i, sys in self.systems[self.run_ID].items():
             for res in self.topology.residues:
                 if res.index in sys.qm_residues:
-                    sys.zero_energy += self.qm_zero_energy[res.name]
+                    sys.zero_energy += self.qm_zero_energies[res.name]
                 else:
-                    sys.zero_energy += self.mm_zero_energy[res.name]
+                    sys.zero_energy += self.mm_zero_energies[res.name]
 
             # maybe I should save a separate copy of qmmm energy somewhere
             sys.qmmm_energy -= sys.zero_energy

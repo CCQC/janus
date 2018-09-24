@@ -171,7 +171,7 @@ class PAP(AQMMM):
                 else:
                     buf.energy_scaler -= aqmmm_energy / (1 - buf.s_i)
             
-            forces[self.qm_center[0]] -= buf.energy_scaler * buf.d_s_i * buf.COM_coord 
+            forces_sf[self.qm_center[0]] -= buf.energy_scaler * buf.d_s_i * buf.COM_coord 
 
             for idx, ratio in buf.weight_ratio.items():
 

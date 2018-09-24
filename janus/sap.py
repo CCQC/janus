@@ -169,16 +169,16 @@ class SAP(AQMMM):
             for p, part in enumerate(self.partitions):
                 aqmmm_energy = self.systems[self.run_ID][p].aqmmm_energy
                 if (i in part and b_i.order == p):
-                    b_i.energy_scaler += aqmmm_energy / buf.s_i
+                    b_i.energy_scaler += aqmmm_energy / b_i.s_i
                 elif i not in part:
-                    b_i.energy_scaler -= aqmmm_energy / (1 - buf.s_i)
+                    b_i.energy_scaler -= aqmmm_energy / (1 - b_i.s_i)
             
             # get d_phi
             for j, b_j in self.buffer_groups.items():
 
                 force_j = b_i.energy_scaler * b_j.d_s_i * b_j.COM_coord * b_i.d_phi_i[j] * b_i.d_phi_i_scaler
 
-                forces[self.qm_center[0]] -= force_j
+                forces_sf[self.qm_center[0]] -= force_j
 
                 for idx, ratio in b_j.weight_ratio.items():
 

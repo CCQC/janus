@@ -38,13 +38,13 @@ class System(object):
         self.buffer_groups = None
         self.switching_functions = None
         self.qmmm_forces = None
-        self.qmmm_energy = None
-        self.aqmmm_energy= None
         self.entire_sys = {}
         self.primary_subsys = {}
         self.second_subsys = {}
         self.boundary = {}
         self.zero_energy = 0.0
+        self.qmmm_energy = 0.0
+        self.aqmmm_energy= 1.0
 
     def compute_scale_factor_g(qm, mm, link):
         '''
