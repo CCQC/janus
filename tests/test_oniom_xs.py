@@ -10,6 +10,9 @@ config = initializer.Initializer(param, as_file=False)
 psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
 openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
 
+openmm.initialize('Mechanical')
+main_info_m = openmm.get_main_info()
+
 oxs =   oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
 oxs_0 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
 oxs_1 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
@@ -62,7 +65,6 @@ def test_partition():
     assert np.allclose(oxs_1.systems[0]['qm_bz'].qm_atoms, np.array([0, 1, 2, 3, 4, 5]))
     assert np.allclose(oxs_2.systems[0]['qm'].qm_atoms, np.array([0, 1, 2]))
     assert np.allclose(oxs_2.systems[0]['qm_bz'].qm_atoms, np.array([0, 1, 2, 3, 4, 5, 6, 7, 8]))
-
 
 def test_compute_lamda_i():
 
@@ -125,9 +127,30 @@ def test_get_zero_energy():
     assert oxs_1.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 2
     assert oxs_2.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 3
 
-    
-def test_run_qmmm():
-    pass
-    
 def test_run_aqmmm():
-    pass
+
+    oxs_0.systems[0]['qm'].qmmm_forces = {key: np.ones((1,3)) for key in range(3)}
+    oxs_1.systems[0]['qm'].qmmm_forces = {key: np.ones((1,3)) for key in range(3)}
+    oxs_1.systems[0]['qm_bz'].qmmm_forces = {key: np.ones((1,3)) for key in range(6)}
+
+    oxs_0.run_aqmmm()
+    oxs_1.run_aqmmm()
+
+    assert oxs_0.systems[0]['qmmm_energy'] == oxs_0.systems[0]['qm'].qmmm_energy
+    assert oxs_0.systems[0]['qmmm_forces'] == oxs_0.systems[0]['qm'].qmmm_forces
+    assert oxs_1.systems[0]['qmmm_energy'] == 77.43370419740786
+    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.ones((1,3))) is False
+
+def test_run_qmmm():
+
+    oxs_0.run_qmmm(main_info_m)
+    oxs_1.run_qmmm(main_info_m)
+
+    assert oxs_0.systems[0]['qmmm_energy'] == -0.007546627936051209
+    assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([ 0.01126955,  0.04914971, -0.03767929]))
+    assert oxs_1.systems[0]['qmmm_energy'] ==  -0.007543160121869773
+    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([ 0.01123216,  0.05117862, -0.03534585]))
+    assert oxs_0.run_ID == 1
+    assert oxs_1.run_ID == 1
+    
+ 

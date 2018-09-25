@@ -14,6 +14,9 @@ config = initializer.Initializer(param, as_file=False)
 psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
 openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
 
+openmm.initialize('Mechanical')
+main_info_m = openmm.get_main_info()
+
 sap_1 = sap.SAP(config.aqmmm_param, psi4, openmm)
 sap_2 = sap.SAP(config.aqmmm_param, psi4, openmm)
 
@@ -49,11 +52,16 @@ def test_partition():
     assert len(sap_2.systems[0]) == 3
 
 def test_get_switching_functions():
-    # need more here
 
     sap_1.get_switching_functions()
     sap_2.get_switching_functions()
     
+    assert np.allclose(sap_1.buffer_groups[1].chi_i, 29.37871636203129)
+    assert np.allclose(sap_2.buffer_groups[1].chi_i, 2.7217256971620434)
+    assert np.allclose(sap_2.buffer_groups[2].chi_i, 220.81236605454026)
+    assert np.allclose(sap_1.buffer_groups[1].d_phi_i_scaler, -3.5224397927679847e-06)
+    assert np.allclose(sap_2.buffer_groups[1].d_phi_i_scaler, -0.015636653418654025)
+    assert np.allclose(sap_2.buffer_groups[2].d_phi_i_scaler, -1.2393051001903936e-09)
     assert np.allclose(sap_1.buffer_groups[1].phi_i, 3.5669066455610295e-05)
     assert np.allclose(sap_2.buffer_groups[1].phi_i, 0.019398444948607135)
     assert np.allclose(sap_2.buffer_groups[2].phi_i, 9.163106551223009e-08)
@@ -81,4 +89,38 @@ def test_compute_sf_gradients():
         assert np.allclose(f, force2[i])
 
 def test_run_aqmmm():
-    pass
+
+    sap_1.systems[0]['qm'].qmmm_forces = {key: np.ones((3)) for key in range(3)}
+    sap_1.systems[0][0].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    sap_2.systems[0]['qm'].qmmm_forces = {key: np.ones((3)) for key in range(3)}
+    sap_2.systems[0][0].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    sap_2.systems[0][1].qmmm_forces = {key: np.ones((3)) for key in range(9)}
+
+    sap_1.get_zero_energy() 
+    sap_2.get_zero_energy()
+
+    sap_1.run_aqmmm()
+    sap_2.run_aqmmm()
+
+    assert sap_1.systems[0]['qmmm_energy'] == 74.96866395622227
+    assert sap_2.systems[0]['qmmm_energy'] == 76.42022722434459
+    assert np.allclose(sap_1.systems[0]['qmmm_forces'][0], np.array([ 0.98310642, -3.76020004, -4.40380521]))
+    assert np.allclose(sap_2.systems[0]['qmmm_forces'][0], np.array([-4.50578712, -1648.70920742, -1857.76955754]))
+    assert np.allclose(sap_1.systems[0]['qmmm_forces'][1], np.ones((3))) 
+    assert np.allclose(sap_2.systems[0]['qmmm_forces'][1], np.ones((3))) 
+    assert len(sap_1.systems[0]['qmmm_forces']) == 6
+    assert len(sap_2.systems[0]['qmmm_forces']) == 9
+
+def test_run_qmmm():
+
+    sap_1.run_qmmm(main_info_m)
+    sap_2.run_qmmm(main_info_m)
+
+    assert sap_1.systems[0]['qmmm_energy'] == -0.007546624178395548
+    assert sap_2.systems[0]['qmmm_energy'] ==  -0.0075445843523419725
+    assert np.allclose(sap_1.systems[0]['qmmm_forces'][0], np.array([ 0.0112712 ,  0.04962946, -0.03713465]))
+    assert np.allclose(sap_2.systems[0]['qmmm_forces'][0], np.array([ 0.01183133,  0.22534988,  0.1608678 ]))
+    assert len(sap_1.systems[0]['qmmm_forces']) == 6
+    assert len(sap_2.systems[0]['qmmm_forces']) == 9
+
+

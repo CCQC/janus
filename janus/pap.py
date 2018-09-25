@@ -92,9 +92,12 @@ class PAP(AQMMM):
             energy = deepcopy(self.systems[self.run_ID]['qm'].qmmm_energy)
             self.systems[self.run_ID]['qm'].aqmmm_forces = deepcopy(self.systems[self.run_ID]['qm'].qmmm_forces)
             forces = self.systems[self.run_ID]['qm'].aqmmm_forces
+            print(forces)
             for i, buf in self.buffer_groups.items():
                 energy *= (1 - buf.s_i)
                 forces.update((x, y*(1 - buf.s_i)) for x,y in forces.items())
+                print('forces', forces)
+                print('aqmmm forces' ,self.systems[self.run_ID]['qm'].aqmmm_forces)
             self.systems[self.run_ID]['qm'].aqmmm_energy = deepcopy(energy)
 
             qmmm_forces = deepcopy(forces)
@@ -130,14 +133,18 @@ class PAP(AQMMM):
 
             # combining all forces
             for i, part in enumerate(self.partitions):
+                print(i, part)
                 forces = self.systems[self.run_ID][i].aqmmm_forces
-                for i, force in forces.items():
-                    if i in qmmm_forces:
-                        qmmm_forces[i] += force
+                print(forces)
+                for j, force in forces.items():
+                    if j in qmmm_forces:
+                        print('force j ', force)
+                        print('qmmm force j ', qmmm_forces[j])
+                        qmmm_forces[j] += force
                     else:
-                        qmmm_forces[i] = force
+                        qmmm_forces[j] = force
 
-            self.systems[self.run_ID]['qmmm_forces'] = forces
+            self.systems[self.run_ID]['qmmm_forces'] = qmmm_forces
             
 
     def compute_sf_gradient(self):

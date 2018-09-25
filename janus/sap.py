@@ -107,10 +107,10 @@ class SAP(AQMMM):
                 self.systems[self.run_ID][i].aqmmm_forces = deepcopy(self.systems[self.run_ID][i].qmmm_forces)
                 forces = self.systems[self.run_ID][i].aqmmm_forces
                 for j, buf in self.buffer_groups.items():
-                    if (b_j in part and buf.order == i):
+                    if (j in part and buf.order == i):
                         part_energy *= buf.phi_i
                         forces.update((x, y*buf.phi_i) for x,y in forces.items())
-                    elif b_j not in part:
+                    elif j not in part:
                         part_energy *= (1 - buf.phi_i)
                         forces.update((x, y*(1 - buf.phi_i)) for x,y in forces.items())
 
@@ -133,13 +133,13 @@ class SAP(AQMMM):
             # combining all forces
             for i, part in enumerate(self.partitions):
                 forces = self.systems[self.run_ID][i].aqmmm_forces
-                for i, force in forces.items():
-                    if i in qmmm_forces:
-                        qmmm_forces[i] += force
+                for j, force in forces.items():
+                    if j in qmmm_forces:
+                        qmmm_forces[j] += force
                     else:
-                        qmmm_forces[i] = force
+                        qmmm_forces[j] = force
 
-            self.systems[self.run_ID]['qmmm_forces'] = forces
+            self.systems[self.run_ID]['qmmm_forces'] = qmmm_forces
             
     def compute_sf_gradient(self):
         """

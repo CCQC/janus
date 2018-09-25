@@ -13,6 +13,9 @@ config = initializer.Initializer(param, as_file=False)
 psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
 openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
 
+openmm.initialize('Mechanical')
+main_info_m = openmm.get_main_info()
+
 pap_1 = pap.PAP(config.aqmmm_param, psi4, openmm)
 pap_2 = pap.PAP(config.aqmmm_param, psi4, openmm)
 
@@ -67,5 +70,38 @@ def test_compute_sf_gradient():
         assert np.allclose(f, force2[i])
 
 def test_run_aqmmm():
-    pass
 
+    pap_1.systems[0]['qm'].qmmm_forces = {key: np.ones((3)) for key in range(3)}
+    pap_1.systems[0][0].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    pap_2.systems[0]['qm'].qmmm_forces = {key: np.ones((3)) for key in range(3)}
+    pap_2.systems[0][0].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    pap_2.systems[0][1].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    pap_2.systems[0][2].qmmm_forces = {key: np.ones((3)) for key in range(9)}
+
+    pap_1.get_zero_energy() 
+    pap_2.get_zero_energy()
+
+    pap_1.run_aqmmm()
+    pap_2.run_aqmmm()
+
+    assert pap_1.systems[0]['qmmm_energy'] == 77.43370419740786
+    assert pap_2.systems[0]['qmmm_energy'] == 95.51933428487493
+    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([6.03650482,  1420.16491984,  1612.04380529]))
+    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([   18.85488287,  3158.7824764 ,  3852.29366477]))
+    assert np.allclose(pap_1.systems[0]['qmmm_forces'][1], np.ones((3))) 
+    assert np.allclose(pap_2.systems[0]['qmmm_forces'][1], np.ones((3))) 
+    assert len(pap_1.systems[0]['qmmm_forces']) == 6
+    assert len(pap_2.systems[0]['qmmm_forces']) == 9
+
+
+def test_run_qmmm():
+
+    pap_1.run_qmmm(main_info_m)
+    pap_2.run_qmmm(main_info_m)
+
+    assert pap_1.systems[0]['qmmm_energy'] == -0.007543160121869773
+    assert pap_2.systems[0]['qmmm_energy'] == -0.007518680464338515
+    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([ 0.01123216,  0.05117862, -0.03534585]))
+    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([ 0.01091057,  0.05383476, -0.03246386]))
+    assert len(pap_1.systems[0]['qmmm_forces']) == 6
+    assert len(pap_2.systems[0]['qmmm_forces']) == 9

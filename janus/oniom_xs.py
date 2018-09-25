@@ -96,7 +96,7 @@ class ONIOM_XS(AQMMM):
                     forces[f] = lamda*coord
 
             # computing gradient of switching function
-            scaler = (qm_bz.qmmm_energy - qm.qmmm_enery) / len(qm_bz.buffer_groups)
+            scaler = (qm_bz.qmmm_energy - qm.qmmm_energy) / len(qm_bz.buffer_groups)
 
             for i, buf in qm_bz.buffer_groups.items():
                 for idx, ratio in buf.weight_ratio.items():
