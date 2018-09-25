@@ -18,7 +18,7 @@ class QM_wrapper(ABC):
     def build_qm_param(self):
         pass
 
-    def run_qm(self, geometry, total_elec):
+    def run_qm(self, geometry, total_elec, minimize=False):
         """
         Gets the energy and gradient from a QM computation of the primary subsystem 
 
@@ -41,7 +41,11 @@ class QM_wrapper(ABC):
         self.set_qm_geometry(geometry, total_elec)
         if not self.qm_param:
             self.build_qm_param()
-        self.compute_energy_and_gradient()
+
+        if minimize is True:
+            geom = self.optimize_geometry()
+        else:
+            self.compute_energy_and_gradient()
 
         self.info = {}
         self.info['energy'] = self.energy

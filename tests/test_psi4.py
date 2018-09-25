@@ -122,8 +122,6 @@ def test_compute_gradient():
     qm_sys1.compute_gradient()
     qm_sys2.compute_gradient()
     qm_sys3.compute_gradient()
-    print(qm_sys1.gradient)
-    print(gradient1)
 
     assert np.allclose(qm_sys1.gradient, gradient1)
     assert np.allclose(qm_sys2.gradient, gradient2)
@@ -132,11 +130,7 @@ def test_compute_gradient():
 def test_compute_energy_and_gradient():
     
     qm_sys1.compute_energy_and_gradient()
-    print(qm_sys1.gradient)
-    print(gradient1)
     qm_sys2.compute_energy_and_gradient()
-    print(qm_sys2.gradient)
-    print(gradient2)
 
     assert np.allclose(qm_sys1.energy, -149.92882700815)
     assert np.allclose(qm_sys1.gradient, gradient1)
@@ -158,18 +152,30 @@ def test_compute_energy_and_charges():
     assert np.allclose(qm_sys2.energy,-151.18483039002274)
     assert np.allclose(qm_sys2.charges, charge2)
 
+def test_optimize_geometry():
+
+    mol = """O     0.123   3.593   5.841 
+             H    -0.022   2.679   5.599 
+             H     0.059   3.601   6.796 
+          """
+    opt_mol = np.array([[  0.24378043,  6.83912883, 10.9996208 ],
+                        [ -0.04741611,  5.03618555, 10.59775698],
+                        [  0.10599186,  6.78195172, 12.86366798]])
+
+    qm_sys1.set_qm_geometry(mol, 10)
+    geom = qm_sys1.optimize_geometry()
+
+    assert np.allclose(geom, opt_mol)
+    assert qm_sys1.energy == -74.96598998934344
+
 def test_run_qm():
 
     info2 = qm_sys2.run_qm(qm_mol,20)
     info3 = qm_sys3.run_qm(qm_mol,20)
-    print(qm_sys2.gradient)
-    print(gradient2)
-    print(qm_sys3.gradient)
-    print(gradient3)
-
 
     assert np.allclose(info2['energy'],-151.18483039002274)
     assert np.allclose(info3['energy'],-151.17927491846075)
     assert np.allclose(info2['gradients'], gradient2)
     assert np.allclose(info3['gradients'], gradient3)
+
 

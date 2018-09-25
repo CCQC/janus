@@ -126,6 +126,12 @@ class Psi4_wrapper(QM_wrapper):
         #deriv.compute()
         #self.gradient = np.asarray(self.wavefunction.gradient())
 
+    def optimize_geometry(self):
+
+        self.set_up_psi4()
+        self.energy, self.wavefunction = psi4.opt(self.method, return_wfn=True)
+        return np.array(self.wavefunction.molecule().geometry())
+
     def set_up_psi4(self):
         """
         Sets up a psi4 computation

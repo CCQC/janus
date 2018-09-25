@@ -376,7 +376,7 @@ class AQMMM(ABC, QMMM):
             self.mm_zero_energies[res] = mm['energy']
 
             qm_geom, tot_elec = self.get_qm_geometry(traj)
-            qm = self.qm_wrapper.run_qm(qm_geom, tot_elec)
+            qm = self.qm_wrapper.run_qm(qm_geom, tot_elec, minimize=True)
             self.qm_zero_energies[res] = qm['energy']
     
     def get_zero_energy(self):

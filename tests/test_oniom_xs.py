@@ -106,11 +106,11 @@ def test_compute_zero_energy():
     oxs_1.compute_zero_energy()
     oxs_2.compute_zero_energy()
 
-    assert oxs_0.qm_zero_energies['HOH'] == -74.96297372571573
+    assert oxs_0.qm_zero_energies['HOH'] == -74.96598998934344
     assert oxs_0.mm_zero_energies['HOH'] == 0.0
-    assert oxs_1.qm_zero_energies['HOH'] == -74.96297372571573
+    assert oxs_1.qm_zero_energies['HOH'] == -74.96598998934344
     assert oxs_1.mm_zero_energies['HOH'] == 0.0
-    assert oxs_2.qm_zero_energies['HOH'] == -74.96297372571573
+    assert oxs_2.qm_zero_energies['HOH'] == -74.96598998934344
     assert oxs_2.mm_zero_energies['HOH'] == 0.0
     
 def test_get_zero_energy():
@@ -119,14 +119,13 @@ def test_get_zero_energy():
     oxs_1.get_zero_energy()
     oxs_2.get_zero_energy()
 
-    assert oxs_0.systems[0]['qm'].qmmm_energy == 74.96297372571573
-    assert oxs_1.systems[0]['qm'].qmmm_energy == 74.96297372571573
-    assert oxs_2.systems[0]['qm'].qmmm_energy == 74.96297372571573
-    assert oxs_1.systems[0]['qm_bz'].qmmm_energy == 74.96297372571573 * 2
-    assert oxs_2.systems[0]['qm_bz'].qmmm_energy == 74.96297372571573 * 3
+    assert oxs_0.systems[0]['qm'].qmmm_energy == 74.96598998934344 
+    assert oxs_1.systems[0]['qm'].qmmm_energy == 74.96598998934344
+    assert oxs_2.systems[0]['qm'].qmmm_energy == 74.96598998934344
+    assert oxs_1.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 2
+    assert oxs_2.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 3
 
     
-
 def test_run_qmmm():
     pass
     
