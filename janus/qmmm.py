@@ -79,7 +79,7 @@ class QMMM(object):
 
         self.update_traj(main_info['positions'], main_info['topology'])
 
-        system = System(self.qm_atoms, self.run_ID)
+        system = System(qm_indices=self.qm_atoms, qm_residues=None, run_ID=self.run_ID)
 
         if self.embedding_method =='Mechanical':
             self.mechanical(system, main_info)
@@ -121,6 +121,8 @@ class QMMM(object):
         # convert openmm topology to mdtraj topology
         if self.mm_wrapper.program == 'OpenMM':
             top = md.Topology.from_openmm(topology)
+        for atom in top.atoms:
+            atom.serial = atom.index + 1
         self.traj = md.Trajectory(position, top)
 
 
@@ -235,10 +237,13 @@ class QMMM(object):
         if self.qmmm_scheme == 'subtractive':
 
             ps_mm_grad, qm_grad = system.primary_subsys['mm']['gradients'], system.qm_info['gradients']
+            print('ps_mm', ps_mm_grad)
+            print('qm', qm_grad)
             qmmm_force = {}
+            print('sys qm_atom', system.qm_atoms)
                 
             # iterate over list of qm atoms
-            for i, atom in enumerate(self.qm_atoms):
+            for i, atom in enumerate(system.qm_atoms):
 
                 # compute the qmmm gradient for the qm atoms: 
                 # mm_entire - mm_primary - qm
@@ -259,7 +264,7 @@ class QMMM(object):
                                     # Project forces of link atoms onto the mm and qm atoms of the link atom bond
                                     # need to make sure sign is correct
                                     qmmm_force[q1] += -(1 - g) * ps_mm_grad[link_index] + (1 - g) * qm_grad[link_index]
-                                    qmmm_force[m1] += -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
+                                    qmmm_force[m1] = -g * ps_mm_grad[link_index] + g * qm_grad[link_index]
                                     
                             # # Forces on M2 requires forces on point charges which I'm not sure about so need to double check
                             # if self.boundary_treatment == 'RC' or self.boundary_treatment == 'RCD':
@@ -505,12 +510,9 @@ class QMMM(object):
 
         link_indices = []
         if self.qmmm_boundary_bonds:
-            print(self.qmmm_boundary_bonds)
             self.prepare_link_atom()
-            print(self.link_atoms)
 
             for i, link in self.link_atoms.items():
-                
                 if isinstance(i, int):
                 
                     link_element = md.element.Element.getBySymbol(link['link_atom'])
@@ -558,7 +560,7 @@ class QMMM(object):
         return traj
 
 
-    def get_forces(self):
+    def get_forces(self, run_ID=None):
         """
         function to return qmmm forces
 
@@ -574,8 +576,10 @@ class QMMM(object):
         --------
         forces = get_forces()
         """
+        if run_ID is None:
+            run_ID = self.run_ID - 1
 
-        return self.systems[self.run_ID - 1]['qmmm_forces']
+        return self.systems[run_ID]['qmmm_forces']
 
 
     def get_external_charges(self, system):
