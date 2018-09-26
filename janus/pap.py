@@ -89,36 +89,33 @@ class PAP(AQMMM):
         else:
 
             # getting first term of ap energy and forces (w/o gradient of switching function)
-            energy = deepcopy(self.systems[self.run_ID]['qm'].qmmm_energy)
-            self.systems[self.run_ID]['qm'].aqmmm_forces = deepcopy(self.systems[self.run_ID]['qm'].qmmm_forces)
-            forces = self.systems[self.run_ID]['qm'].aqmmm_forces
-            print(forces)
-            for i, buf in self.buffer_groups.items():
-                energy *= (1 - buf.s_i)
-                forces.update((x, y*(1 - buf.s_i)) for x,y in forces.items())
-                print('forces', forces)
-                print('aqmmm forces' ,self.systems[self.run_ID]['qm'].aqmmm_forces)
-            self.systems[self.run_ID]['qm'].aqmmm_energy = deepcopy(energy)
+            qm.aqmmm_energy = deepcopy(qm.qmmm_energy)
+            qm.aqmmm_forces = deepcopy(qm.qmmm_forces)
 
-            qmmm_forces = deepcopy(forces)
+            for i, buf in self.buffer_groups.items():
+
+                qm.aqmmm_energy *= (1 - buf.s_i)
+                qm.aqmmm_forces.update((x, y*(1 - buf.s_i)) for x,y in qm.aqmmm_forces.items())
+
+            energy = deepcopy(qm.aqmmm_energy)
+            qmmm_forces = deepcopy(qm.aqmmm_forces)
 
             # getting rest of the terms of ap energy and forces (w/o gradient of switching function)
             for i, part in enumerate(self.partitions):
-                part_energy = deepcopy(self.systems[self.run_ID][i].qmmm_energy)
-                self.systems[self.run_ID][i].aqmmm_forces = deepcopy(self.systems[self.run_ID][i].qmmm_forces)
-                forces = self.systems[self.run_ID][i].aqmmm_forces
+
+                sys = self.systems[self.run_ID][i]
+                sys.aqmmm_energy = deepcopy(sys.qmmm_energy)
+                sys.aqmmm_forces = deepcopy(sys.qmmm_forces)
+
                 for j, buf in self.buffer_groups.items():
                     if j in part:
-                        part_energy *= buf.s_i
-                        forces.update((x, y*buf.s_i) for x,y in forces.items())
+                        sys.aqmmm_energy *= buf.s_i
+                        sys.aqmmm_forces.update((x, y*buf.s_i) for x,y in sys.aqmmm_forces.items())
                     else:
-                        part_energy *= (1 - buf.s_i)
-                        forces.update((x, y*(1 - buf.s_i)) for x,y in forces.items())
+                        sys.aqmmm_energy *= (1 - buf.s_i)
+                        sys.aqmmm_forces.update((x, y*(1 - buf.s_i)) for x,y in sys.aqmmm_forces.items())
 
-                self.systems[self.run_ID][i].aqmmm_energy = deepcopy(part_energy)
-                energy += part_energy
-
-            self.systems[self.run_ID]['qmmm_energy'] = energy
+                energy += sys.aqmmm_energy
 
             if self.modified_variant is False:
                 # computing forces due to gradient of switching function for PAP
@@ -133,18 +130,15 @@ class PAP(AQMMM):
 
             # combining all forces
             for i, part in enumerate(self.partitions):
-                print(i, part)
                 forces = self.systems[self.run_ID][i].aqmmm_forces
-                print(forces)
                 for j, force in forces.items():
                     if j in qmmm_forces:
-                        print('force j ', force)
-                        print('qmmm force j ', qmmm_forces[j])
                         qmmm_forces[j] += force
                     else:
                         qmmm_forces[j] = force
 
             self.systems[self.run_ID]['qmmm_forces'] = qmmm_forces
+            self.systems[self.run_ID]['qmmm_energy'] = energy
             
 
     def compute_sf_gradient(self):

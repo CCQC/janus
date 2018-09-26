@@ -123,7 +123,10 @@ class QMMM(object):
             top = md.Topology.from_openmm(topology)
         for atom in top.atoms:
             atom.serial = atom.index + 1
+
         self.traj = md.Trajectory(position, top)
+        self.topology = self.traj.topology
+        self.positions = self.traj.xyz[0]
 
 
     def mechanical(self, system, main_info):

@@ -90,34 +90,32 @@ class SAP(AQMMM):
             self.get_switching_functions()
 
             # getting first term of ap energy and forces (w/o gradient of switching function)
-            energy = deepcopy(self.systems[self.run_ID]['qm'].qmmm_energy)
-            self.systems[self.run_ID]['qm'].aqmmm_forces = deepcopy(self.systems[self.run_ID]['qm'].qmmm_forces)
-            forces = self.systems[self.run_ID]['qm'].aqmmm_forces
+            qm.aqmmm_energy = deepcopy(qm.qmmm_energy)
+            qm.aqmmm_forces = deepcopy(qm.qmmm_forces)
 
             for i, buf in self.buffer_groups.items():
-                energy *= (1 - buf.phi_i)
-                forces.update((x, y*(1 - buf.phi_i)) for x,y in forces.items())
-            self.systems[self.run_ID]['qm'].aqmmm_energy = deepcopy(energy)
+                qm.aqmmm_energy *= (1 - buf.phi_i)
+                qm.aqmmm_forces.update((x, y*(1 - buf.phi_i)) for x,y in qm.aqmmm_forces.items())
 
-            qmmm_forces = deepcopy(forces)
+            energy = deepcopy(qm.aqmmm_energy)
+            qmmm_forces = deepcopy(qm.aqmmm_forces)
 
             # getting rest of the terms of sap energy and forces (w/o gradient of switching function)
             for i, part in enumerate(self.partitions):
-                part_energy = deepcopy(self.systems[self.run_ID][i].qmmm_energy)
-                self.systems[self.run_ID][i].aqmmm_forces = deepcopy(self.systems[self.run_ID][i].qmmm_forces)
-                forces = self.systems[self.run_ID][i].aqmmm_forces
+
+                sys = self.systems[self.run_ID][i]
+                sys.aqmmm_energy = deepcopy(sys.qmmm_energy)
+                sys.aqmmm_forces = deepcopy(sys.qmmm_forces)
+
                 for j, buf in self.buffer_groups.items():
                     if (j in part and buf.order == i):
-                        part_energy *= buf.phi_i
-                        forces.update((x, y*buf.phi_i) for x,y in forces.items())
+                        sys.aqmmm_energy *= buf.phi_i
+                        sys.aqmmm_forces.update((x, y*buf.phi_i) for x,y in sys.aqmmm_forces.items())
                     elif j not in part:
-                        part_energy *= (1 - buf.phi_i)
-                        forces.update((x, y*(1 - buf.phi_i)) for x,y in forces.items())
+                        sys.aqmmm_energy *= (1 - buf.phi_i)
+                        sys.aqmmm_forces.update((x, y*(1 - buf.phi_i)) for x,y in sys.aqmmm_forces.items())
 
-                self.systems[self.run_ID][i].aqmmm_energy = deepcopy(part_energy)
-                energy += part_energy
-
-            self.systems[self.run_ID]['qmmm_energy'] = energy
+                energy += sys.aqmmm_energy
 
             if self.modified_variant is False:
                 # computing forces due to gradient of switching function for SAP
@@ -139,6 +137,7 @@ class SAP(AQMMM):
                     else:
                         qmmm_forces[j] = force
 
+            self.systems[self.run_ID]['qmmm_energy'] = energy
             self.systems[self.run_ID]['qmmm_forces'] = qmmm_forces
             
     def compute_sf_gradient(self):
