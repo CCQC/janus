@@ -4,6 +4,7 @@ from copy import deepcopy
 import numpy as np
 import itertools as it
 from scipy.misc import logsumexp
+from collections import Counter
 
 class DAS(AQMMM):
 
@@ -112,8 +113,6 @@ class DAS(AQMMM):
 
                 energy += sys.aqmmm_energy
 
-            # need to deal with bookkeeping term
-
             # combining all forces
             for i, part in enumerate(self.partitions):
                 forces = self.systems[self.run_ID][i].aqmmm_forces
@@ -123,6 +122,26 @@ class DAS(AQMMM):
                     else:
                         qmmm_forces[j] = force
 
+
+            # need to deal with bookkeeping term
+            energy_bk = 0.0
+            systems_f = []
+            systems_match = []
+            if self.run_ID != 0:
+                for sys_f in self.systems[self.run_ID]:
+                    if isinstance(sys_f, System()):
+                        systems_f.append(Counter(sys_f.qm_residues))
+                        for sys_i in self.systems[self.run_ID-1]:
+                            if isinstance(sys_i, System()):
+                                if Counter(sys_f.qm_residues) == Counter(sys_i.qm_residues):
+                                    systems_match.append(Counter(sys_f.qm_residues))
+                                    energy_bk += sys_f.aqmmm_energy * (sys_f.sigma-sys_i.sigma)
+
+                for sys in systems_f:
+                    if sys not in systems_match:
+                        energy_bk += sys_f.aqmmm_energy * sys_f.sigma
+                        
+            energy -= energy_bk
             self.systems[self.run_ID]['qmmm_energy'] = energy
             self.systems[self.run_ID]['qmmm_forces'] = qmmm_forces
             
