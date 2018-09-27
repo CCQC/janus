@@ -537,7 +537,7 @@ class OpenMM_wrapper(MM_wrapper):
             values['potential'] *= MM_wrapper.kjmol_to_au
             values['kinetic'] = state.getKineticEnergy()/OM_unit.kilojoule_per_mole
             values['kinetic'] *= MM_wrapper.kjmol_to_au
-            values['energy'] = values['potential'] + values['kinetic']
+            values['energy'] = values['potential'] 
 
         if positions is True:
             values['positions'] = state.getPositions(asNumpy=True)/OM_unit.nanometer

@@ -90,8 +90,9 @@ class QMMM(object):
             
         self.systems[self.run_ID] = {}
         self.systems[self.run_ID][system.partition_ID] = system
-        self.systems[self.run_ID]['qmmm_forces'] = system.qmmm_forces
-        self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy
+        self.systems[self.run_ID]['qmmm_forces'] = system.qmmm_forces 
+        self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy 
+        self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
 
         # updates current step count
         self.run_ID += 1
