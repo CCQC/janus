@@ -94,9 +94,10 @@ class QMMM(object):
         self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy 
         self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
 
+        if self.run_ID % 10 == 0:
+            print(self.run_ID, self.systems[self.run_ID]['qmmm_energy'])
         # updates current step count
         self.run_ID += 1
-
 
     def update_traj(self, position, topology):
         """
@@ -143,18 +144,18 @@ class QMMM(object):
             # Get MM energy on whole system
             system.entire_sys = deepcopy(main_info)
 
-            print(system.entire_sys['energy'])
+            #print(system.entire_sys['energy'])
             # Get MM energy on QM region
             traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
             topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
             system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb='no_link', link_atoms=link_indices)
-            print(system.primary_subsys['mm']['energy'])
+            #print(system.primary_subsys['mm']['energy'])
 
             # Get QM energy
             self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
-            print(system.qm_info['energy'])
+            #print(system.qm_info['energy'])
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -180,7 +181,7 @@ class QMMM(object):
 
             # Get MM energy on whole system
             system.entire_sys = deepcopy(main_info)
-            print(system.entire_sys['energy'])
+            #print(system.entire_sys['energy'])
 
             # Get MM energy on QM region
             traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
@@ -188,7 +189,7 @@ class QMMM(object):
             system.primary_subsys['trajectory'] = traj_ps
             system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
 
-            print(system.primary_subsys['mm']['energy'])
+            #print(system.primary_subsys['mm']['energy'])
 
 
             # Get MM coulomb energy on secondary subsystem
@@ -196,14 +197,14 @@ class QMMM(object):
             topology_ss, positions_ss = self.convert_trajectory(traj_ss)
             system.second_subsys['trajectory'] = traj_ss
             system.second_subsys['mm'] = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
-            print(system.second_subsys['mm']['energy'])
+            #print(system.second_subsys['mm']['energy'])
 
             # Get QM energy
             self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
             charges = self.get_external_charges(system)
             self.qm_wrapper.set_external_charges(charges)
             system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
-            print(system.qm_info['energy'])
+            #print(system.qm_info['energy'])
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -241,10 +242,10 @@ class QMMM(object):
         if self.qmmm_scheme == 'subtractive':
 
             ps_mm_grad, qm_grad = system.primary_subsys['mm']['gradients'], system.qm_info['gradients']
-            print('ps_mm', ps_mm_grad)
-            print('qm', qm_grad)
+           # print('ps_mm', ps_mm_grad)
+           # print('qm', qm_grad)
             qmmm_force = {}
-            print('sys qm_atom', system.qm_atoms)
+           # print('sys qm_atom', system.qm_atoms)
                 
             # iterate over list of qm atoms
             for i, atom in enumerate(system.qm_atoms):
@@ -507,7 +508,7 @@ class QMMM(object):
 
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
-        print(qm_atoms)
+        #print(qm_atoms)
 
         self.find_boundary_bonds(qm_atoms)
         traj = self.traj.atom_slice(qm_atoms)

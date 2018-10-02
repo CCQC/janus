@@ -1,6 +1,7 @@
 import simtk.openmm.app as OM_app
 import simtk.openmm as OM
 import simtk.unit as OM_unit
+from mdtraj.reporters import NetCDFReporter
 from .mm_wrapper import MM_wrapper
 import numpy as np
 from copy import deepcopy
@@ -107,11 +108,11 @@ class OpenMM_wrapper(MM_wrapper):
         # should I minimize energy here? If so, need to return new positions
         if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True)
+            self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, minimize=True)
 
         elif embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True)
+            self.compute_mm(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, minimize=True)
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
@@ -143,7 +144,10 @@ class OpenMM_wrapper(MM_wrapper):
         self.main_simulation.step(1)                                             # take a step
         self.main_info = self.get_main_info()                                    # get the energy and gradients after step
         self.positions = self.main_info['positions']                             # get positions after step
-    
+
+    def equilibrate(self, num):
+
+        self.main_simulation.step(num)
 
     def get_main_info(self):
         """
@@ -213,6 +217,11 @@ class OpenMM_wrapper(MM_wrapper):
         if minimize is True:
             simulation.minimizeEnergy()
 
+        if initialize is True:
+            simulation.reporters.append(NetCDFReporter('output.nc', 50))
+            simulation.reporters.append(OM_app.StateDataReporter('info.dat', 100, step=True,
+            potentialEnergy=True, kineticEnergy=True, totalEnergy=True, temperature=True))
+
         # Calls openmm wrapper to get information specified
         state = OpenMM_wrapper.get_state_info(simulation,
                                       energy=True,
@@ -270,22 +279,22 @@ class OpenMM_wrapper(MM_wrapper):
         if unmatched:
             self.create_new_residue_template(topology)
 
-        if self.is_periodic is True:
-            print("periodic")
-            openmm_system = self.forcefield.createSystem(topology,
-                                            constraints=self.constraints)
-        else:
-            openmm_system = self.forcefield.createSystem(topology,
-                                            nonbondedMethod=eval(self.param['nonbondedMethod']),
-                                            nonbondedCutoff=eval(self.param['nonbondedCutoff']),
-                                            constraints=eval(self.param['constraints']),
-                                            residueTemplates=self.param['residueTemplates'],
-                                            hydrogenMass=eval(self.param['hydrogenMass']),
-                                            switchDistance=eval(self.param['switchDistance']),
-                                            rigid_water=self.param['rigid_water'],
-                                            removeCMMotion=self.param['removeCMMotion'],
-                                            flexibleConstraints=self.param['flexibleConstraints'],
-                                            ignoreExternalBonds=self.param['ignoreExternalBonds'])
+        #if self.is_periodic is True:
+        #    print("periodic")
+        #    openmm_system = self.forcefield.createSystem(topology,
+        #                                    constraints=self.constraints)
+        #else:
+        openmm_system = self.forcefield.createSystem(topology,
+                                        nonbondedMethod=eval(self.param['nonbondedMethod']),
+                                        nonbondedCutoff=eval(self.param['nonbondedCutoff']),
+                                        constraints=eval(self.param['constraints']),
+                                        residueTemplates=self.param['residueTemplates'],
+                                        hydrogenMass=eval(self.param['hydrogenMass']),
+                                        switchDistance=eval(self.param['switchDistance']),
+                                        rigid_water=self.param['rigid_water'],
+                                        removeCMMotion=self.param['removeCMMotion'],
+                                        flexibleConstraints=self.param['flexibleConstraints'],
+                                        ignoreExternalBonds=self.param['ignoreExternalBonds'])
 
 
         if initialize is True:                                             # this is for the initialization of the entire system

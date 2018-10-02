@@ -53,6 +53,11 @@ class Initializer(object):
             print('Using pdb file ', self.param['system']['mm_pdb_file'])
         except KeyError:
             print('No pdb file given')
+
+        try:
+            self.steps = self.param['system']['md_steps']
+        except:
+            print("Number of steps is not specified")
             
         try:
             self.qm_program = self.param['qmmm']['qm_program']
@@ -65,6 +70,7 @@ class Initializer(object):
         except:
             print("No MM program was specified. OpenMM will be used")
             self.mm_program = 'OpenMM'
+
 
         self.update_param()
 
@@ -112,7 +118,6 @@ class Initializer(object):
             print("No QMMM parameters given. Using defaults")
 
         self.qmmm_param.update(self.param['system'])
-        print(self.qmmm_param)
 
         try:
             self.aqmmm_param.update(self.param['aqmmm'])

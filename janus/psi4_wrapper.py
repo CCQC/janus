@@ -162,7 +162,7 @@ class Psi4_wrapper(QM_wrapper):
         psi4_geom += self.qm_geometry
         psi4_geom += 'no_reorient \n'
         psi4_geom += 'no_com \n '
-        print(psi4_geom)
+        #print(psi4_geom)
 
         # make sure this is in angstroms
         mol = psi4.geometry(psi4_geom)
