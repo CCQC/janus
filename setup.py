@@ -34,6 +34,11 @@ if __name__ == "__main__":
             'pytest-pep8',
             'tox',
         ],
+        data_files=[('/janus/default_input/', ['janus/default_input/qmmm.json',
+                                               'janus/default_input/aqmmm.json',
+                                               'janus/default_input/psi4.json',
+                                               'janus/default_input/openmm.json'])],
+
 
         classifiers=[
             'Development Status :: 4 - Beta',
