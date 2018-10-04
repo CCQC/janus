@@ -1,5 +1,4 @@
 # After changing this file, check it on:
-#   http://lint.travis-ci.org/
 language: python
 
 # Run jobs on container-based infrastructure, can be overridden per job
@@ -43,7 +42,7 @@ before_script:
   - python -c 'import numpy; print(numpy.version.version)'
 
 script:
-  - py.test -v --cov=./
+  - pytest -v --cov=./
 
 # after_success:
 #   - ./tools/travis-upload-wheel.sh
