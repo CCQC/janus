@@ -51,4 +51,4 @@ notifications:
     email: false
 
 after_success:
-  - codecov -t 323513ae-80cb-4c43-ab5c-49c962f3e9a6
+  - codecov 

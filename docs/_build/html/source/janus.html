@@ -1,0 +1,1340 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>janus package &#8212; janus 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="janus" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="janus"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">janus 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">janus</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="janus-package">
+<h1>janus package<a class="headerlink" href="#janus-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-janus.aqmmm">
+<span id="janus-aqmmm-module"></span><h2>janus.aqmmm module<a class="headerlink" href="#module-janus.aqmmm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.aqmmm.AQMMM">
+<em class="property">class </em><code class="descclassname">janus.aqmmm.</code><code class="descname">AQMMM</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code>, <a class="reference internal" href="#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.QMMM</span></code></a></p>
+<p>AQMMM super class for adaptive QMMM computations.
+Inherits from QMMM class.</p>
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.compute_COM">
+<code class="descname">compute_COM</code><span class="sig-paren">(</span><em>atoms</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.compute_COM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the center of mass of a
+specified group</p>
+<dl class="docutils">
+<dt>atoms <span class="classifier-delimiter">:</span> <span class="classifier">a list of indices defining the group</span></dt>
+<dd>to compute the COM for</dd>
+</dl>
+<p>xyz, atom_weight, weight_ratio
+xyz: an numpy array of the COM coordinates 
+atom_weight: a dictionary with the indices of each atom in the</p>
+<blockquote>
+<div>group and the atomic weight for each atom</div></blockquote>
+<dl class="docutils">
+<dt>weight_ratio: a dictionary with the indices of each atom in the </dt>
+<dd>group and the weight ratio of each atom to
+the total weight of the group (sum of all atomic weights)</dd>
+</dl>
+<p>xyz, atoms, weights = compute_COM([0,1,2])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.compute_lamda_i">
+<code class="descname">compute_lamda_i</code><span class="sig-paren">(</span><em>r_i</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.compute_lamda_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the switching function and the derivative 
+of the switching function defined as a 5th order spline:</p>
+<p>lamda_i = -6x^5 + 15x^4 - 10x^3 + 1 and 
+d_lamda_i = -30x^4 + 60x^3 - 30x^2</p>
+<p>where x is the reduced distance (r_i - rmin)/(rmax - rmin)
+of buffer group i</p>
+<dl class="docutils">
+<dt>r_i: float in angstroms of the distance between the </dt>
+<dd>qm center and the COM</dd>
+</dl>
+<p>lamda_i, d_lamda_i as unitless floats</p>
+<p>l, dl = compute_lamda_i(0.234)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.compute_zero_energy">
+<code class="descname">compute_zero_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.compute_zero_energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.define_buffer_zone">
+<code class="descname">define_buffer_zone</code><span class="sig-paren">(</span><em>qm_center</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.define_buffer_zone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the buffer groups in the buffer zone based on a distance 
+partitioning scheme, saves each buffer group as a Buffer object,
+and saves all buffer groups in the dictionary self.buffer_groups.
+For water as a solvent, considers the whole water molecule as a buffer group.
+Need to generalize for all solvents</p>
+<p>qm_center: a list of the indicies that make up the qm center</p>
+<p>None</p>
+<p>define_buffer_zone([0])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.find_buffer_atoms">
+<code class="descname">find_buffer_atoms</code><span class="sig-paren">(</span><em>qm_center</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.find_buffer_atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_Rmax">
+<code class="descname">get_Rmax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.get_Rmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to return self.Rmin</p>
+<p>None</p>
+<dl class="docutils">
+<dt>self.Rmax: float for the distance from qm center to </dt>
+<dd>outer limit of buffer zone in angstroms</dd>
+</dl>
+<p>rmax = get_Rmax()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_Rmin">
+<code class="descname">get_Rmin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.get_Rmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to return self.Rmin</p>
+<p>None</p>
+<dl class="docutils">
+<dt>self.Rmin: float for the distance from qm center to </dt>
+<dd>inner limit of buffer zone in angstroms</dd>
+</dl>
+<p>rmin = get_Rmin()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_buffer_info">
+<code class="descname">get_buffer_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.get_buffer_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the distance r_i for each buffer group i
+between the qm_center and the COM of buffer group i
+and the computes lamda_i and d_lamda_i for that buffer group</p>
+<p>None</p>
+<p>None</p>
+<p>get_buffer_info()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.get_zero_energy">
+<code class="descname">get_zero_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.get_zero_energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="janus.aqmmm.AQMMM.nm_to_angstrom">
+<code class="descname">nm_to_angstrom</code><em class="property"> = 10.0</em><a class="headerlink" href="#janus.aqmmm.AQMMM.nm_to_angstrom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.partition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.run_aqmmm">
+<code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.run_aqmmm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.run_qmmm">
+<code class="descname">run_qmmm</code><span class="sig-paren">(</span><em>main_info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.run_qmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the positions and topology given in main_info,
+determines the partitions to be computed, for each partition,
+determines the QM/MM energy and gradients, then interpolates all
+partitions using specified adaptive QM/MM scheme</p>
+<dl class="docutils">
+<dt>main_info: a dictionary containing the energy and forces </dt>
+<dd>for the whole system, obtained from mm_wrapper</dd>
+</dl>
+<p>None</p>
+<p>run_qmmm(main_info)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.set_Rmax">
+<code class="descname">set_Rmax</code><span class="sig-paren">(</span><em>Rmax</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.set_Rmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to set self.Rmax</p>
+<dl class="docutils">
+<dt>Rmax: float for the distance from qm center to </dt>
+<dd>outer limit of buffer zone in angstroms</dd>
+</dl>
+<p>None</p>
+<p>set_Rmax(.50)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.aqmmm.AQMMM.set_Rmin">
+<code class="descname">set_Rmin</code><span class="sig-paren">(</span><em>Rmin</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.set_Rmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to set self.Rmin</p>
+<dl class="docutils">
+<dt>Rmin: float for the distance from qm center to </dt>
+<dd>inner limit of buffer zone in angstroms</dd>
+</dl>
+<p>None</p>
+<p>set_Rmin(.35)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.das">
+<span id="janus-das-module"></span><h2>janus.das module<a class="headerlink" href="#module-janus.das" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.das.DAS">
+<em class="property">class </em><code class="descclassname">janus.das.</code><code class="descname">DAS</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.das.DAS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#janus.aqmmm.AQMMM" title="janus.aqmmm.AQMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.aqmmm.AQMMM</span></code></a></p>
+<dl class="method">
+<dt id="janus.das.DAS.compute_lamda_i">
+<code class="descname">compute_lamda_i</code><span class="sig-paren">(</span><em>r_i</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.das.DAS.compute_lamda_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the switching function of the Hot-Spot method
+and overrides the compute_lamda_i function from the AQMMM class</p>
+<dl class="docutils">
+<dt>r_i: float in angstroms of the distance between the </dt>
+<dd>qm center and the COM</dd>
+</dl>
+<p>lamda_i as an unitless float, None for the value of d_lamda_i</p>
+<p>l, dl = compute_lamda_i(0.234)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.das.DAS.get_combos">
+<code class="descname">get_combos</code><span class="sig-paren">(</span><em>items=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.das.DAS.get_combos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all combinations of a given list of indices</p>
+<p>items: list of indices to get combinations for</p>
+<p>List of all possible combinations</p>
+<p>combos = get_combos([1,2])</p>
+<p>In this case, combos will return 
+[(1), (2), (1,2)]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.das.DAS.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>qm_center=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.das.DAS.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the partitions as required by the PAP method 
+and saves each partition as a system object.
+Saves all systems in the dictionary self.systems</p>
+<dl class="docutils">
+<dt>qm_center: list of atoms that define the qm center, </dt>
+<dd>default is None</dd>
+</dl>
+<p>None</p>
+<p>partition([0])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.das.DAS.run_aqmmm">
+<code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.das.DAS.run_aqmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates the energy and gradients from each partition
+according to the PAP method</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.driver">
+<span id="janus-driver-module"></span><h2>janus.driver module<a class="headerlink" href="#module-janus.driver" title="Permalink to this headline">¶</a></h2>
+<p>This is the qmmm driver module</p>
+<dl class="function">
+<dt id="janus.driver.run_janus">
+<code class="descclassname">janus.driver.</code><code class="descname">run_janus</code><span class="sig-paren">(</span><em>filename='input.json'</em>, <em>equilibrate=5000</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_janus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that drives the running of janus</p>
+<dl class="docutils">
+<dt>filename: a string containing the filename of the input file,</dt>
+<dd>default is ‘input.json’</dd>
+</dl>
+<p>None</p>
+<p>run_janus(‘input.json’)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.hot_spot">
+<span id="janus-hot-spot-module"></span><h2>janus.hot_spot module<a class="headerlink" href="#module-janus.hot_spot" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.hot_spot.HotSpot">
+<em class="property">class </em><code class="descclassname">janus.hot_spot.</code><code class="descname">HotSpot</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.hot_spot.HotSpot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#janus.aqmmm.AQMMM" title="janus.aqmmm.AQMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.aqmmm.AQMMM</span></code></a></p>
+<p>Class for the Hot-Spot adaptive QM/MM method.
+Inherits from AQMMM class</p>
+<dl class="method">
+<dt id="janus.hot_spot.HotSpot.compute_lamda_i">
+<code class="descname">compute_lamda_i</code><span class="sig-paren">(</span><em>r_i</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.hot_spot.HotSpot.compute_lamda_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the switching function of the Hot-Spot method
+and overrides the compute_lamda_i function from the AQMMM class</p>
+<dl class="docutils">
+<dt>r_i: float in angstroms of the distance between the </dt>
+<dd>qm center and the COM</dd>
+</dl>
+<p>lamda_i as an unitless float, None for the value of d_lamda_i</p>
+<p>l, dl = compute_lamda_i(0.234)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.hot_spot.HotSpot.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>qm_center=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.hot_spot.HotSpot.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the partitions as required by the Hot-Spot method 
+and saves each partition as a system object.
+Saves all systems in the dictionary self.systems</p>
+<dl class="docutils">
+<dt>qm_center: list of atoms that define the qm center, </dt>
+<dd>default is None</dd>
+</dl>
+<p>None</p>
+<p>partition([0])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.hot_spot.HotSpot.run_aqmmm">
+<code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.hot_spot.HotSpot.run_aqmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates the energy and gradients from each partition
+according to the Hot-Spot method</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.initializer">
+<span id="janus-initializer-module"></span><h2>janus.initializer module<a class="headerlink" href="#module-janus.initializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.initializer.Initializer">
+<em class="property">class </em><code class="descclassname">janus.initializer.</code><code class="descname">Initializer</code><span class="sig-paren">(</span><em>param</em>, <em>as_file=True</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that initializes the initial parameters 
+and necessary wrapppers</p>
+<dl class="method">
+<dt id="janus.initializer.Initializer.initialize_wrappers">
+<code class="descname">initialize_wrappers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.initialize_wrappers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects 
+used for computation based on input parameters</p>
+<p>None</p>
+<p>mm_wrapper object, qmmm object</p>
+<p>mm_wrapper, qmmm = initialize_wrapers()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.initializer.Initializer.load_param">
+<code class="descname">load_param</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.load_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a json file into a dictionary</p>
+<p>filename: string of json file</p>
+<p>a dictionary</p>
+<p>dict = load_param(‘input.json’)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.initializer.Initializer.update_param">
+<code class="descname">update_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.update_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>updates default parameters with user defined parameters</p>
+<p>None</p>
+<p>None</p>
+<p>update_param()</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.mm_wrapper">
+<span id="janus-mm-wrapper-module"></span><h2>janus.mm_wrapper module<a class="headerlink" href="#module-janus.mm_wrapper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.mm_wrapper.MM_wrapper">
+<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">MM_wrapper</code><span class="sig-paren">(</span><em>param</em>, <em>program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>A super class for all molecular mechanics wrappers</p>
+<dl class="attribute">
+<dt id="janus.mm_wrapper.MM_wrapper.au_bohr_to_kjmol_nm">
+<code class="descname">au_bohr_to_kjmol_nm</code><em class="property"> = 49614.50168278496</em><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.au_bohr_to_kjmol_nm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.mm_wrapper.MM_wrapper.compute_mm">
+<code class="descname">compute_mm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.compute_mm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.mm_wrapper.MM_wrapper.get_main_charges">
+<code class="descname">get_main_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.get_main_charges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.mm_wrapper.MM_wrapper.get_main_info">
+<code class="descname">get_main_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.get_main_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.mm_wrapper.MM_wrapper.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="janus.mm_wrapper.MM_wrapper.kjmol_nm_to_au_bohr">
+<code class="descname">kjmol_nm_to_au_bohr</code><em class="property"> = 2.0155397435886694e-05</em><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.kjmol_nm_to_au_bohr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="janus.mm_wrapper.MM_wrapper.kjmol_to_au">
+<code class="descname">kjmol_to_au</code><em class="property"> = 0.0003808798033989866</em><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.kjmol_to_au" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="janus.mm_wrapper.MM_wrapper.nm_to_angstrom">
+<code class="descname">nm_to_angstrom</code><em class="property"> = 10.0</em><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.nm_to_angstrom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="janus.mm_wrapper.MM_wrapper.nm_to_bohr">
+<code class="descname">nm_to_bohr</code><em class="property"> = 0.052917999999</em><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.nm_to_bohr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.mm_wrapper.MM_wrapper.take_step">
+<code class="descname">take_step</code><span class="sig-paren">(</span><em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.take_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.oniom_xs">
+<span id="janus-oniom-xs-module"></span><h2>janus.oniom_xs module<a class="headerlink" href="#module-janus.oniom_xs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.oniom_xs.ONIOM_XS">
+<em class="property">class </em><code class="descclassname">janus.oniom_xs.</code><code class="descname">ONIOM_XS</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.oniom_xs.ONIOM_XS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#janus.aqmmm.AQMMM" title="janus.aqmmm.AQMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.aqmmm.AQMMM</span></code></a></p>
+<dl class="method">
+<dt id="janus.oniom_xs.ONIOM_XS.get_switching_function">
+<code class="descname">get_switching_function</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.oniom_xs.ONIOM_XS.get_switching_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Averages the individual switching functions 
+of each buffer group</p>
+<p>None</p>
+<p>The average of the switching functions as a float</p>
+<p>s = get_switching_function()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.oniom_xs.ONIOM_XS.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>qm_center=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.oniom_xs.ONIOM_XS.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the partitions as required by the ONIOM-XS method 
+and saves each partition as a system object.
+Saves all systems in the dictionary self.systems</p>
+<dl class="docutils">
+<dt>qm_center: list of atoms that define the qm center, </dt>
+<dd>default is None</dd>
+</dl>
+<p>None</p>
+<p>partition([0])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.oniom_xs.ONIOM_XS.run_aqmmm">
+<code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.oniom_xs.ONIOM_XS.run_aqmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates the energy and gradients from each partition
+according to the ONIOM-XS method</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.openmm_wrapper">
+<span id="janus-openmm-wrapper-module"></span><h2>janus.openmm_wrapper module<a class="headerlink" href="#module-janus.openmm_wrapper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper">
+<em class="property">class </em><code class="descclassname">janus.openmm_wrapper.</code><code class="descname">OpenMM_wrapper</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#janus.mm_wrapper.MM_wrapper" title="janus.mm_wrapper.MM_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.mm_wrapper.MM_wrapper</span></code></a></p>
+<p>A wrapper class that calls OpenMM
+to obtain molecular mechanics information and 
+take steps in a molecular dynamics simulation. 
+Class inherits from MM_wrapper.</p>
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.compute_mm">
+<code class="descname">compute_mm</code><span class="sig-paren">(</span><em>topology</em>, <em>positions</em>, <em>include_coulomb='all'</em>, <em>initialize=False</em>, <em>return_system=False</em>, <em>return_simulation=False</em>, <em>link_atoms=None</em>, <em>minimize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.compute_mm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets information about a set of molecules as defined in the pdb, including energy, positions, forces</p>
+<p>topology: an OpenMM topology object
+positions: an OpenMM Vec3 vector containing</p>
+<blockquote>
+<div>the positions of the system in nm</div></blockquote>
+<dl class="docutils">
+<dt>include_coulomb: whether to include coulombic interactions. </dt>
+<dd>‘all’ (default) includes coulombic forces for all particles,
+‘no_link’ excludes coulombic forces for link atoms,
+‘only’ excludes all other forces for all atoms,
+None excludes coulombic forces for all particles.</dd>
+</dl>
+<p>initialize: bool to specifying whether the main system is being initialized.
+return_system: a bool to specify whether to return the OpenMM system object.</p>
+<blockquote>
+<div>Default is True.</div></blockquote>
+<dl class="docutils">
+<dt>return_simulation: a bool to specify whether to return the OpenMM simulation object.</dt>
+<dd>Default is True.</dd>
+<dt>link_atoms: if included as a list with include_coulomb=’no_link’, specifies which </dt>
+<dd>atoms to remove coulombic forces from. Default is None.</dd>
+</dl>
+<p>system, simulation, state 
+state: A dictionary with state information
+system: OpenMM system object returned unless return_system=False
+simulation: OpenMM simulation object returned unless return_simulation=False</p>
+<p>system, simulation, state = compute_mm(top, pos)
+state = compute_mm(top, pos, return_simulation=False, return_system=False)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.create_modeller">
+<code class="descname">create_modeller</code><span class="sig-paren">(</span><em>qm_atoms</em>, <em>keep_qm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_modeller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a OpenMM modeller object based on given geometry</p>
+<dl class="docutils">
+<dt>keep_qm <span class="classifier-delimiter">:</span> <span class="classifier">a bool of whether to keep the qm atoms in the</span></dt>
+<dd>modeller or delete them.
+The default is to make a modeller without the qm atoms</dd>
+</dl>
+<p>A OpenMM modeller object</p>
+<p>modeller = self.make_modeller()
+modeller = self.make_modeller(keep_qm=True)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.create_new_residue_template">
+<code class="descname">create_new_residue_template</code><span class="sig-paren">(</span><em>topology</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_new_residue_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new OpeMM residue template when there is no matching residue 
+and registers it into self.forcefield forcefield object.
+Note: currently, if there is unmatched name, currently only checks original</p>
+<blockquote>
+<div>unmodified residue, N-terminus form, and C-terminus form. 
+This may not be robust.</div></blockquote>
+<p>topology: an OpenMM topology object</p>
+<p>None</p>
+<p>create_new_residue_template(topology)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.create_openmm_simulation">
+<code class="descname">create_openmm_simulation</code><span class="sig-paren">(</span><em>openmm_system</em>, <em>topology</em>, <em>positions</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_openmm_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an OpenMM simulation object given
+an OpenMM system, topology, and positions</p>
+<p>openmm_system: OpenMM system object
+topology: an OpenMM topology object
+positions: an OpenMM Vec3 vector containing</p>
+<blockquote>
+<div>the positions of the system in nm</div></blockquote>
+<p>an OpenMM simulation object</p>
+<p>create_open_simulation(openmm_sys, top, pos) 
+create_open_simulation(openmm_sys, pdb.topology. pdb.positions)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.create_openmm_system">
+<code class="descname">create_openmm_system</code><span class="sig-paren">(</span><em>topology</em>, <em>include_coulomb='all'</em>, <em>link_atoms=None</em>, <em>initialize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_openmm_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls OpenMM to create an OpenMM System object give a topology,
+forcefield, and other paramters as given in input</p>
+<p>topology: an OpenMM topology object
+include_coulomb: whether to include coulombic interactions.</p>
+<blockquote>
+<div>‘all’ (default) includes coulombic forces for all particles,
+‘no_link’ excludes coulombic forces for link atoms,
+‘only’ excludes all other forces for all atoms,
+None excludes coulombic forces for all particles.</div></blockquote>
+<dl class="docutils">
+<dt>link_atoms: if included as a list with include_coulomb=’no_link’, specifies which </dt>
+<dd>atoms to remove coulombic forces from. Default is None.</dd>
+<dt>initialize: bool to specifying whether the main system is being initialized.</dt>
+<dd>If True, this will create a custom force to store qmmm forces. 
+default is false</dd>
+<dt>TODO: need to put nonbond and nonbond_cutoff back but not doing for now</dt>
+<dd><p class="first">because need non-periodic system. Other parameters are also needed
+also, expand forcefield to take not openmm built in</p>
+<blockquote class="last">
+<div>but customized as well</div></blockquote>
+</dd>
+</dl>
+<p>An OpenMM system object</p>
+<p>openmm_sys = create_openmm_system(topology)
+openmm_sys = create_openmm_system(top, include_coulomb=’no_link’, link_atoms=[0,1,2])
+openmm_sys = create_openmm_system(top, include_coulomb=’only’)
+openmm_sys = create_openmm_system(top, initialize=True)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.create_pdb">
+<code class="descname">create_pdb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an OpenMM PDB object</p>
+<p>mm_pdb_file: string of pdb file name</p>
+<p>OpenMM PDB object</p>
+<p>model = create_openmm_pdb(‘input.pdb’)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.delete_atoms">
+<code class="descname">delete_atoms</code><span class="sig-paren">(</span><em>atoms</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.delete_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete specified atoms from an OpenMM Modeller object</p>
+<p>model : OpenMM Modeller object
+atoms : list of atom IDs (int) or atom names (str) to delete</p>
+<blockquote>
+<div>an OpenMM Modeller object</div></blockquote>
+<p>None</p>
+<p>delete_atoms(model, [0, 3, 5])
+delete_atoms(model, [‘Cl’])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.equilibrate">
+<code class="descname">equilibrate</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.equilibrate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.get_main_charges">
+<code class="descname">get_main_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.get_main_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the MM point charges for the system of interest</p>
+<p>None</p>
+<p>list of charges</p>
+<p>charges = get_main_charges()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.get_main_info">
+<code class="descname">get_main_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.get_main_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the information for the system of interest</p>
+<p>None</p>
+<p>dictionary with information like energy and gradient 
+for the system of interest</p>
+<p>info = get_main_info()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.get_state_info">
+<code class="descname">get_state_info</code><span class="sig-paren">(</span><em>main_info=False</em>, <em>energy=True</em>, <em>positions=True</em>, <em>velocity=False</em>, <em>forces=True</em>, <em>parameters=False</em>, <em>param_deriv=False</em>, <em>periodic_box=False</em>, <em>groups_included=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.get_state_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets information like the kinetic and potential energy,
+positions, forces, and topology from an OpenMM state.
+Some of these may need to be made accessible to user.</p>
+<p>simulation : an OpenMM simulation object
+main_info : a bool for specifying whether to return the topology of the system
+energy : a bool for specifying whether to get the energy,</p>
+<blockquote>
+<div>returns in hartrees(a.u.), default is true.</div></blockquote>
+<dl class="docutils">
+<dt>positions <span class="classifier-delimiter">:</span> <span class="classifier">a bool for specifying whether to get the positions,</span></dt>
+<dd>returns in nanometers, default is true</dd>
+</dl>
+<p>velocity : a bool for specifying whether to get the velocities, default is false
+forces : a bool for specifying whether to get the forces acting</p>
+<blockquote>
+<div>on the system, returns as numpy array in jk/mol/nm, as well as the gradients,
+in au/bohr, default is true</div></blockquote>
+<dl class="docutils">
+<dt>parameters <span class="classifier-delimiter">:</span> <span class="classifier">a bool for specifying whether to get the parameters</span></dt>
+<dd>of the state, default is false.</dd>
+<dt>param_deriv <span class="classifier-delimiter">:</span> <span class="classifier">a bool for specifying whether to get the parameter</span></dt>
+<dd>derivatives of the state, default is false</dd>
+<dt>periodic_box <span class="classifier-delimiter">:</span> <span class="classifier">a bool for whether to translate the positions so the</span></dt>
+<dd>center of every molecule lies in the same periodic box, default is false</dd>
+<dt>groups <span class="classifier-delimiter">:</span> <span class="classifier">a set of indices for which force groups to include when computing</span></dt>
+<dd>forces and energies. Default is all groups</dd>
+</dl>
+<p>A dictionary with information specified by parameters.
+Keys include ‘energy’, ‘potential’, ‘kinetic’, ‘forces’,
+‘gradients’, ‘topology’</p>
+<p>get_state_info(sim)
+get_state_info(sim, groups_included=set{0,1,2})
+get_state_info(sim, positions=True, forces=True)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>embedding_method</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls compute_mm to get information for the system
+of interest in its initial state and saves the simulation 
+object and information dictionary returned by compute_mm</p>
+<dl class="docutils">
+<dt>embedding_method: what embedding method to use for initialization.</dt>
+<dd>If ‘Mechanical’, all forces are included
+If ‘Electrostatic’, all coulomic forces are excluded</dd>
+</dl>
+<p>None</p>
+<p>initialize(‘Mechanical’)
+initialize(‘Electrostatic’)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.keep_atoms">
+<code class="descname">keep_atoms</code><span class="sig-paren">(</span><em>atoms</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.keep_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acts on an OpenMM Modeller object to keep the specified
+atoms in the MM system and deletes everything else</p>
+<p>model : OpenMM Modeller object
+atoms : list of atoms to keep in an OpenMM Modeller object</p>
+<p>None</p>
+<p>keep_atom(mod, [0,1])
+keep_atom(mod, [‘O’, ‘H’])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.set_LJ_zero">
+<code class="descname">set_LJ_zero</code><span class="sig-paren">(</span><em>OM_system</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.set_LJ_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the Lennard-Jones (van der Waals) force from the system</p>
+<p>OM_system : an OpenMM system object</p>
+<p>None</p>
+<p>set_LJ_zero(system)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.set_charge_zero">
+<code class="descname">set_charge_zero</code><span class="sig-paren">(</span><em>OM_system</em>, <em>link_atoms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.set_charge_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the coulombic forces by setting charges of 
+specified atoms to zero</p>
+<p>OM_system : an OpenMM system object
+link_atoms : list of link_atoms to set the charge to zero,</p>
+<blockquote>
+<div>if link_atoms is None (default), the charge of 
+all particles in the system will be set to zero</div></blockquote>
+<p>None</p>
+<p>set_charge_zero(system)
+set_charge_zero(system, link_atoms=[0,1,2])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.take_step">
+<code class="descname">take_step</code><span class="sig-paren">(</span><em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.take_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the system with forces from qmmm 
+and takes a simulation step</p>
+<dl class="docutils">
+<dt>forces: dict of forces(particle index: forces) in au/bohr to </dt>
+<dd>be updated in custom qmmm force and fed into simulation</dd>
+</dl>
+<p>None</p>
+<p>take_step(forces)
+take_step({0: [0.0, 0.0, 0.0]})</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.write_pdb">
+<code class="descname">write_pdb</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.write_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a pdb file from an OpenMM modeller</p>
+<p>mod : OpenMM modeller object
+filename : string of file to write to</p>
+<p>None</p>
+<p>write_pdb(mod, ‘input.pdb’)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.pap">
+<span id="janus-pap-module"></span><h2>janus.pap module<a class="headerlink" href="#module-janus.pap" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.pap.PAP">
+<em class="property">class </em><code class="descclassname">janus.pap.</code><code class="descname">PAP</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.pap.PAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#janus.aqmmm.AQMMM" title="janus.aqmmm.AQMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.aqmmm.AQMMM</span></code></a></p>
+<dl class="method">
+<dt id="janus.pap.PAP.compute_sf_gradient">
+<code class="descname">compute_sf_gradient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.pap.PAP.compute_sf_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes forces due to the gradient of the switching function</p>
+<p>None</p>
+<p>Forces due to gradient of switching function as a dictionary</p>
+<p>forces = compute_sf_gradient</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.pap.PAP.get_combos">
+<code class="descname">get_combos</code><span class="sig-paren">(</span><em>items=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.pap.PAP.get_combos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all combinations of a given list of indices</p>
+<p>items: list of indices to get combinations for</p>
+<p>List of all possible combinations</p>
+<p>combos = get_combos([1,2])</p>
+<p>In this case, combos will return 
+[(1), (2), (1,2)]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.pap.PAP.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>qm_center=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.pap.PAP.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the partitions as required by the PAP method 
+and saves each partition as a system object.
+Saves all systems in the dictionary self.systems</p>
+<dl class="docutils">
+<dt>qm_center: list of atoms that define the qm center, </dt>
+<dd>default is None</dd>
+</dl>
+<p>None</p>
+<p>partition([0])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.pap.PAP.run_aqmmm">
+<code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.pap.PAP.run_aqmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates the energy and gradients from each partition
+according to the PAP method</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.psi4_wrapper">
+<span id="janus-psi4-wrapper-module"></span><h2>janus.psi4_wrapper module<a class="headerlink" href="#module-janus.psi4_wrapper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.psi4_wrapper.Psi4_wrapper">
+<em class="property">class </em><code class="descclassname">janus.psi4_wrapper.</code><code class="descname">Psi4_wrapper</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#janus.qm_wrapper.QM_wrapper" title="janus.qm_wrapper.QM_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qm_wrapper.QM_wrapper</span></code></a></p>
+<p>A wrapper class that calls Psi4 to obtain quantum mechanical
+information. Class inherits from QM_wrapper.</p>
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.build_qm_param">
+<code class="descname">build_qm_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.build_qm_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a dictionary of QM parameters from input options
+and saves as self.param</p>
+<p>None</p>
+<p>None</p>
+<p>build_qm_param()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.compute_energy">
+<code class="descname">compute_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.compute_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls Psi4 to obtain the energy and Psi4 wavefunction object of the QM region
+and saves as self.energy and self.wavefunction</p>
+<p>None</p>
+<p>None</p>
+<p>compute_energy()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.compute_energy_and_charges">
+<code class="descname">compute_energy_and_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.compute_energy_and_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls Psi4 to obtain the self.energy, self.wavefunction, 
+and self.charges on each atom. This method for correlated methods.
+Note: think about passing in wavefunction instead of calling for energy and wavefunction</p>
+<p>None</p>
+<p>None</p>
+<p>compute_energy_and_charges(system)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.compute_energy_and_gradient">
+<code class="descname">compute_energy_and_gradient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.compute_energy_and_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls Psi4 to obtain the energy, Psi4 wavefunction object, and 
+gradient of the QM region and saves as self.energy, self.wavefuction,
+and self.gradient</p>
+<p>None</p>
+<p>None</p>
+<p>compute_energy()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.compute_gradient">
+<code class="descname">compute_gradient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.compute_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls Psi4 to obtain the gradient of the QM region
+and saves it as a numpy array self.gradient</p>
+<p>None</p>
+<p>None</p>
+<p>compute_gradient()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.compute_scf_charges">
+<code class="descname">compute_scf_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.compute_scf_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls Psi4 to obtain the self.charges on each atom given and saves it as a numpy array.
+This method works well for SCF wavefunctions. For correlated levels of theory (e.g., MP2),
+it is advised that compute_energy_and_charges() be used instead.</p>
+<p>None</p>
+<p>None</p>
+<p>compute_scf_charge()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.optimize_geometry">
+<code class="descname">optimize_geometry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.optimize_geometry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.psi4_wrapper.Psi4_wrapper.set_up_psi4">
+<code class="descname">set_up_psi4</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.psi4_wrapper.Psi4_wrapper.set_up_psi4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up a psi4 computation</p>
+<p>None</p>
+<p>None</p>
+<p>set_up_psi4()</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.qm_wrapper">
+<span id="janus-qm-wrapper-module"></span><h2>janus.qm_wrapper module<a class="headerlink" href="#module-janus.qm_wrapper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.qm_wrapper.QM_wrapper">
+<em class="property">class </em><code class="descclassname">janus.qm_wrapper.</code><code class="descname">QM_wrapper</code><span class="sig-paren">(</span><em>param</em>, <em>program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="method">
+<dt id="janus.qm_wrapper.QM_wrapper.build_qm_param">
+<code class="descname">build_qm_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.build_qm_param" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QM_wrapper.run_qm">
+<code class="descname">run_qm</code><span class="sig-paren">(</span><em>geometry</em>, <em>total_elec</em>, <em>minimize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.run_qm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the energy and gradient from a QM computation of the primary subsystem</p>
+<dl class="docutils">
+<dt>geometry: A string with the geometry information </dt>
+<dd>for the QM region</dd>
+<dt>total_elec: An int of the total number of electrons </dt>
+<dd>present in the QM region</dd>
+</dl>
+<p>A dictionary with energy(‘energy’) and gradient(‘gradients’) information</p>
+<p>run_qm(geom, 10)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QM_wrapper.set_external_charges">
+<code class="descname">set_external_charges</code><span class="sig-paren">(</span><em>charges</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.set_external_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the charges due to the MM point charges
+as self.external_charges</p>
+<dl class="docutils">
+<dt>charges: a list with the charge and position(in angstroms) for all </dt>
+<dd>particles outside the QM region</dd>
+</dl>
+<p>None</p>
+<p>set_external_charges([[-.45, 0.0, 0.0, 0.0]])
+set_external_charges(charges)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QM_wrapper.set_qm_geometry">
+<code class="descname">set_qm_geometry</code><span class="sig-paren">(</span><em>qm_geometry</em>, <em>total_elec</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.set_qm_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the geometry for the QM region as 
+self.qm_geometry. Also determines if the system is open shelled
+based on the number of electrons</p>
+<dl class="docutils">
+<dt>geometry: A string with the geometry information </dt>
+<dd>for the QM region</dd>
+<dt>total_elec: An int of the total number of electrons </dt>
+<dd>present in the QM region</dd>
+</dl>
+<p>None</p>
+<p>set_qm_geometry(geom, 10)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.qmmm">
+<span id="janus-qmmm-module"></span><h2>janus.qmmm module<a class="headerlink" href="#module-janus.qmmm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.qmmm.QMMM">
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">QMMM</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="janus.qmmm.QMMM.compute_gradients">
+<code class="descname">compute_gradients</code><span class="sig-paren">(</span><em>system</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.compute_gradients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the QM/MM gradients 
+TODO:RCD gradients need work</p>
+<dl class="docutils">
+<dt>system: a system object that contains the gradients </dt>
+<dd>of qm and mm regions</dd>
+</dl>
+<p>None</p>
+<p>compute_gradients(system)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.convert_trajectory">
+<code class="descname">convert_trajectory</code><span class="sig-paren">(</span><em>traj</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.convert_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts an OpenMM trajectory to get 
+topology and positions that are compatible with MDtraj
+NOTE: with more programs need to expand</p>
+<p>traj: an OpenMM trajectory object</p>
+<p>positions: a list of positions in nm
+topology: a MDtraj topology object</p>
+<p>positions, topology = convert_trajectory(OpenMM_traj)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.edit_qm_atoms">
+<code class="descname">edit_qm_atoms</code><span class="sig-paren">(</span><em>qm_atoms=None</em>, <em>solvent='water'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.edit_qm_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans up the qm_atoms. If the definition of the primary subsystem 
+cuts across a solvent molecule, will move the whole molecule in the qm_atoms 
+if COM of solvent molecule in qm_atoms already, or delete parts of the solvent
+molecule from qm_atoms if COM of solvent molecule not in qm_atoms already</p>
+<dl class="docutils">
+<dt>qm_atoms: A list of atom indicies corresponding to the atoms in</dt>
+<dd>the primary subsystem. Default is None and uses self.qm_atoms</dd>
+<dt>solvent: A str that identifies what solvent needs to be edited.</dt>
+<dd>Only water supported for now(default)</dd>
+</dl>
+<p>edited list of qm_atoms</p>
+<p>atoms = edit_qm_atoms()
+atoms = edit_qm_atoms(qm_atoms=[0,1,2])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.electrostatic">
+<code class="descname">electrostatic</code><span class="sig-paren">(</span><em>system</em>, <em>main_info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.electrostatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets energies of needed components and computes
+a QM/MM energy with a subtractive electrostatic embedding scheme</p>
+<dl class="docutils">
+<dt>E(QM/MM) = E(MM no coulomb)_entire_sys - E(MM no coulomb)_primary_subsys </dt>
+<dd><ul class="first last simple">
+<li>E(QM)_primary_subsys + E(MM just coulomb)_secondary_subsys</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.find_boundary_bonds">
+<code class="descname">find_boundary_bonds</code><span class="sig-paren">(</span><em>qm_atoms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.find_boundary_bonds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identified any covalent bonds that the QM/MM boundary cuts across</p>
+<dl class="docutils">
+<dt>qm_atoms: A list of atom indicies corresponding to the atoms in</dt>
+<dd>the primary subsystem. Default is None and uses self.qm_atoms</dd>
+</dl>
+<p>None</p>
+<p>find_boundary_bonds()
+find_boundary_bonds(qm_atoms=[0,1,2,3])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.get_external_charges">
+<code class="descname">get_external_charges</code><span class="sig-paren">(</span><em>system</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.get_external_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</p>
+<dl class="docutils">
+<dt>system: a system object that contains the gradients </dt>
+<dd>of qm and mm regions</dd>
+</dl>
+<p>A list of charges and cooresponding positions in angstroms as xyz coordinates</p>
+<p>get_external_charge(system)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.get_forces">
+<code class="descname">get_forces</code><span class="sig-paren">(</span><em>run_ID=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.get_forces" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to return qmmm forces</p>
+<p>None</p>
+<p>qmmm forces: a dictionary of forces in au/bohr</p>
+<p>forces = get_forces()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.get_qm_geometry">
+<code class="descname">get_qm_geometry</code><span class="sig-paren">(</span><em>qm_traj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.get_qm_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the atoms and positions from a MDtraj trajectory object
+with just the qm region to obtain the geometry information</p>
+<dl class="docutils">
+<dt>qm_traj: a MDtraj object describing just the primary subsystem,</dt>
+<dd>default is None</dd>
+</dl>
+<p>out, total
+out: the str with geometry information in angstroms
+total: total number of electrons in the primary subsystem</p>
+<p>geom, total_elec = qm_positions()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.get_redistributed_positions">
+<code class="descname">get_redistributed_positions</code><span class="sig-paren">(</span><em>positions</em>, <em>bonds</em>, <em>mm</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.get_redistributed_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the positions for the redistributed point charges in the RC and RCD schemes</p>
+<p>positions: a list of the positions
+bonds: a list of indices of all atoms (in secondary subsystem) bonded to M1  
+mm: the index of M1</p>
+<p>List of positions for the redistributed charges</p>
+<p>get_redistributed_positions(positions=pos, bonds=bond, mm=mm_index)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.make_primary_subsys_trajectory">
+<code class="descname">make_primary_subsys_trajectory</code><span class="sig-paren">(</span><em>qm_atoms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.make_primary_subsys_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a MDtraj trajectory object with just the 
+primary subsystem, and adds in any link atoms
+Note: Currently adds just H as link atom, need to expand. Also, H is added</p>
+<blockquote>
+<div><p>as a very specific H1 atom, or else the connectivity in the create_new_residue_templates
+function in openmm gets messed up and gives a “set of atoms match but bonds are different</p>
+<blockquote>
+<div>error”</div></blockquote>
+</div></blockquote>
+<dl class="docutils">
+<dt>qm_atoms: A list of atom indicies corresponding to the atoms in</dt>
+<dd>the primary subsystem. Default is None and uses self.qm_atoms</dd>
+</dl>
+<p>traj, link_indicies
+traj: MDtraj trajectory object
+link_indices: list of the link atom indices in traj</p>
+<p>make_primary_subsys_trajectory([0,1,2])
+make_primary_subsys_trajectory()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.make_second_subsys_trajectory">
+<code class="descname">make_second_subsys_trajectory</code><span class="sig-paren">(</span><em>qm_atoms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.make_second_subsys_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a MDtraj trajectory object with just the 
+secondary subsystem</p>
+<dl class="docutils">
+<dt>qm_atoms: A list of atom indicies corresponding to the atoms in</dt>
+<dd>the primary subsystem. Default is None and uses self.qm_atoms</dd>
+</dl>
+<p>a MDtraj trajectory object</p>
+<p>make_second_subsys_trajectory([0,1,2])
+make_second_subsys_trajectory()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.mechanical">
+<code class="descname">mechanical</code><span class="sig-paren">(</span><em>system</em>, <em>main_info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.mechanical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets energies of needed components and computes
+a QM/MM energy with a subtractive mechanical embedding scheme
+using the formula</p>
+<p>E(QM/MM) = E(MM)_entire_sys - E(MM)_primary_subsys + E(QM)_primary_subsys</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.prepare_link_atom">
+<code class="descname">prepare_link_atom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.prepare_link_atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary
+and computes the g scaling factor for the link atom.</p>
+<p>None</p>
+<p>None</p>
+<p>prepare_link_atom()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.run_qmmm">
+<code class="descname">run_qmmm</code><span class="sig-paren">(</span><em>main_info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.run_qmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the positions and topology given in main_info,
+and determines the QM/MM energy and gradients</p>
+<dl class="docutils">
+<dt>main_info: a dictionary containing the energy and forces </dt>
+<dd>for the whole system, obtained from mm_wrapper</dd>
+</dl>
+<p>None</p>
+<p>run_qmmm(main_info)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.QMMM.update_traj">
+<code class="descname">update_traj</code><span class="sig-paren">(</span><em>position</em>, <em>topology</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.update_traj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the positions and topology of self.traj,
+a MDtraj trajectory object</p>
+<p>positions: a list of positions in nm
+topology: If the mm program is  OpenMM, this is a</p>
+<blockquote>
+<div>OpenMM topology object</div></blockquote>
+<p>None</p>
+<p>update_traj(pos, top)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.sap">
+<span id="janus-sap-module"></span><h2>janus.sap module<a class="headerlink" href="#module-janus.sap" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.sap.SAP">
+<em class="property">class </em><code class="descclassname">janus.sap.</code><code class="descname">SAP</code><span class="sig-paren">(</span><em>param</em>, <em>qm_wrapper</em>, <em>mm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.sap.SAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#janus.aqmmm.AQMMM" title="janus.aqmmm.AQMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.aqmmm.AQMMM</span></code></a></p>
+<dl class="method">
+<dt id="janus.sap.SAP.compute_sf_gradient">
+<code class="descname">compute_sf_gradient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.sap.SAP.compute_sf_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes forces due to the gradient of the switching function</p>
+<p>None</p>
+<p>Forces due to gradient of switching function as a dictionary</p>
+<p>forces = compute_sf_gradient</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.sap.SAP.get_combos">
+<code class="descname">get_combos</code><span class="sig-paren">(</span><em>items=None</em>, <em>buffer_distance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.sap.SAP.get_combos" title="Permalink to this definition">¶</a></dt>
+<dd><p>A given list of indices is sorted by distance and 
+the combinations is found based on distance order.
+See example</p>
+<p>items: list of indices to get combinations for
+buffer_distance: dictionary with indices from items</p>
+<blockquote>
+<div>and their distances from the qm center</div></blockquote>
+<p>List of all possible combinations</p>
+<p>combos = get_combos([1,2,3])</p>
+<p>If 1 was closer to the center than 2, and 2 closer to the center than 3,
+functions returns following:
+[(1), (1,2), (1,2,3)]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.sap.SAP.get_switching_functions">
+<code class="descname">get_switching_functions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.sap.SAP.get_switching_functions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes switching function for SAP computations
+and saves to each buffer group object</p>
+<p>None</p>
+<p>None</p>
+<p>get_switching_function()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.sap.SAP.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>qm_center=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.sap.SAP.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the partitions as required by the SAP method 
+and saves each partition as a system object.
+Saves all systems in the dictionary self.systems</p>
+<dl class="docutils">
+<dt>qm_center: list of atoms that define the qm center, </dt>
+<dd>default is None</dd>
+</dl>
+<p>None</p>
+<p>partition([0])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.sap.SAP.run_aqmmm">
+<code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.sap.SAP.run_aqmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates the energy and gradients from each partition
+according to the SAP method</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus.system">
+<span id="janus-system-module"></span><h2>janus.system module<a class="headerlink" href="#module-janus.system" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="janus.system.Buffer">
+<em class="property">class </em><code class="descclassname">janus.system.</code><code class="descname">Buffer</code><span class="sig-paren">(</span><em>ID</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.system.Buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to store information for buffer groups 
+from aqmmm computations such as what atoms are contained
+in the buffer group, the switching function, COM coordinates, etc.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="janus.system.System">
+<em class="property">class </em><code class="descclassname">janus.system.</code><code class="descname">System</code><span class="sig-paren">(</span><em>qm_indices</em>, <em>qm_residues</em>, <em>run_ID</em>, <em>partition_ID='qm'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.system.System" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A system class that stores system information
+such as energy, forces, and positions for each region 
+of a system at a particular point
+Stores qmmm and aqmmm information as well.</p>
+<dl class="method">
+<dt id="janus.system.System.compute_scale_factor_g">
+<code class="descname">compute_scale_factor_g</code><span class="sig-paren">(</span><em>mm</em>, <em>link</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.system.System.compute_scale_factor_g" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes scale factor g for link atom, RC, and RCD schemes. 
+Note: r given in pmm but don’t need to convert because it is a ratio</p>
+<blockquote>
+<div>need functionality for link atoms != ‘H’</div></blockquote>
+<p>qm: string of element symbol of the QM atom involved in broken bond 
+mm: string of element symbol of the MM atom involved in broken bond 
+link: string of element symbol for link atom</p>
+<p>g, the scaling factor</p>
+<p>g = compute_scale_factor(qm=’C’, mm=’C’, link=’H’)
+“”“</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-janus">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-janus" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">janus package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-janus.aqmmm">janus.aqmmm module</a></li>
+<li><a class="reference internal" href="#module-janus.das">janus.das module</a></li>
+<li><a class="reference internal" href="#module-janus.driver">janus.driver module</a></li>
+<li><a class="reference internal" href="#module-janus.hot_spot">janus.hot_spot module</a></li>
+<li><a class="reference internal" href="#module-janus.initializer">janus.initializer module</a></li>
+<li><a class="reference internal" href="#module-janus.mm_wrapper">janus.mm_wrapper module</a></li>
+<li><a class="reference internal" href="#module-janus.oniom_xs">janus.oniom_xs module</a></li>
+<li><a class="reference internal" href="#module-janus.openmm_wrapper">janus.openmm_wrapper module</a></li>
+<li><a class="reference internal" href="#module-janus.pap">janus.pap module</a></li>
+<li><a class="reference internal" href="#module-janus.psi4_wrapper">janus.psi4_wrapper module</a></li>
+<li><a class="reference internal" href="#module-janus.qm_wrapper">janus.qm_wrapper module</a></li>
+<li><a class="reference internal" href="#module-janus.qmmm">janus.qmmm module</a></li>
+<li><a class="reference internal" href="#module-janus.sap">janus.sap module</a></li>
+<li><a class="reference internal" href="#module-janus.system">janus.system module</a></li>
+<li><a class="reference internal" href="#module-janus">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">janus</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/janus.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="janus"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">janus 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >janus</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyi Zhang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.0.
+    </div>
+  </body>
+</html>

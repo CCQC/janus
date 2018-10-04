@@ -3,6 +3,3 @@ timer.dat
 output.dat
 .cache/
 *.swp
-_build
-_static
-_templates
