@@ -91,7 +91,8 @@ class HotSpot(AQMMM):
         float
             lamda_i, unitless
         None
-
+            placeholder for the derivative of r_i
+        
         """
 
         if r_i <= self.Rmin:

@@ -19,7 +19,7 @@ class MM_wrapper(ABC):
             what program to use for QM computations
 
         """
-        if param['mm_pdb_file']
+        if param['mm_pdb_file']:
             self.pdb_file = param['mm_pdb_file']
         self.param = param
         self.program = program
@@ -36,11 +36,13 @@ class MM_wrapper(ABC):
         ----------
         traj : MDtraj trajectory object
         include_coulomb : str
+
             whether to include coulombic interactions. 
             'all' (default) includes coulombic forces for all particles,
             'no_link' excludes coulombic forces for link atoms,
             'only' excludes all other forces for all atoms,
             'none' excludes coulombic forces for all particles.
+
         link_atoms : list
             indices of link_atoms
         minimize : bool
@@ -52,7 +54,7 @@ class MM_wrapper(ABC):
         -------
         dict
             A dictionary with energy('energy') and gradient('gradients') information
-
+             
         """
 
         topology, positions = self.convert_trajectory(traj)
@@ -88,11 +90,11 @@ class MM_wrapper(ABC):
     def get_main_charges(self):
         pass
 
-    @abstract_method
+    @abstractmethod
     def convert_trajectory(self):
         pass
 
-    @abstract_method
+    @abstractmethod
     def equilibrate(self):
         pass
     

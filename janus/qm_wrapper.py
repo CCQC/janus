@@ -51,6 +51,7 @@ class QM_wrapper(ABC):
         traj : MDtraj trajectory object
         include_coulomb : str
             whether to include coulombic interactions. Not applicable for QM programs
+
         link_atoms : list
             indices of link_atoms
         minimize : bool

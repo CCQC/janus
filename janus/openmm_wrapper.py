@@ -236,11 +236,13 @@ class OpenMM_wrapper(MM_wrapper):
         ----------
         topology : OpenMM topology object
         include_coulomb : str
+
             whether to include coulombic interactions. 
             'all' (default) includes coulombic forces for all particles,
             'no_link' excludes coulombic forces for link atoms,
             'only' excludes all other forces for all atoms,
             'none' excludes coulombic forces for all particles.
+
         link_atoms : list
             if included as a list with include_coulomb='no_link', specifies which 
             atoms to remove coulombic forces from. Default is None.

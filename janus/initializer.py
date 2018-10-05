@@ -80,7 +80,7 @@ class Initializer(object):
 
         if self.hl_program == "Psi4":
             self.hl_param = self.load_param(self.psi4_paramfile)
-        elif self.hl_program == "OpenMM"
+        elif self.hl_program == "OpenMM":
             self.hl_param = self.load_param(self.openmm_paramfile)
         else:
             print("Only Psi4 and OpenMM currently available")
@@ -90,14 +90,14 @@ class Initializer(object):
         else:
             print("Only OpenMM currently available")
 
-        self.ll_param.update(self.param['system']
+        self.ll_param.update(self.param['system'])
 
         if self.md_sim_prog == "OpenMM":
             self.md_sim_param = self.load_param(self.openmm_paramfile)
         else:
             print("Only OpenMM currently available")
 
-        self.md_sim_param.update(self.param['system']
+        self.md_sim_param.update(self.param['system'])
 
         try:
             self.hl_param.update(self.param['hl'])
