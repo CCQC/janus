@@ -210,7 +210,11 @@
       <li><a href="source/janus.html#janus.psi4_wrapper.Psi4_wrapper.compute_energy_and_charges">compute_energy_and_charges() (janus.psi4_wrapper.Psi4_wrapper method)</a>
 </li>
       <li><a href="source/janus.html#janus.psi4_wrapper.Psi4_wrapper.compute_energy_and_gradient">compute_energy_and_gradient() (janus.psi4_wrapper.Psi4_wrapper method)</a>
+
+      <ul>
+        <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.compute_energy_and_gradient">(janus.qm_wrapper.QM_wrapper method)</a>
 </li>
+      </ul></li>
       <li><a href="source/janus.html#janus.psi4_wrapper.Psi4_wrapper.compute_gradient">compute_gradient() (janus.psi4_wrapper.Psi4_wrapper method)</a>
 </li>
       <li><a href="source/janus.html#janus.qmmm.QMMM.compute_gradients">compute_gradients() (janus.qmmm.QMMM method)</a>
@@ -243,8 +247,12 @@
       </ul></li>
       <li><a href="source/janus.html#janus.aqmmm.AQMMM.compute_zero_energy">compute_zero_energy() (janus.aqmmm.AQMMM method)</a>
 </li>
-      <li><a href="source/janus.html#janus.qmmm.QMMM.convert_trajectory">convert_trajectory() (janus.qmmm.QMMM method)</a>
+      <li><a href="source/janus.html#janus.mm_wrapper.MM_wrapper.convert_trajectory">convert_trajectory() (janus.mm_wrapper.MM_wrapper method)</a>
+
+      <ul>
+        <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.convert_trajectory">(janus.openmm_wrapper.OpenMM_wrapper method)</a>
 </li>
+      </ul></li>
       <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.create_modeller">create_modeller() (janus.openmm_wrapper.OpenMM_wrapper method)</a>
 </li>
       <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.create_new_residue_template">create_new_residue_template() (janus.openmm_wrapper.OpenMM_wrapper method)</a>
@@ -277,12 +285,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/janus.html#janus.qmmm.QMMM.edit_qm_atoms">edit_qm_atoms() (janus.qmmm.QMMM method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/janus.html#janus.qmmm.QMMM.electrostatic">electrostatic() (janus.qmmm.QMMM method)</a>
 </li>
-      <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.equilibrate">equilibrate() (janus.openmm_wrapper.OpenMM_wrapper method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/janus.html#janus.mm_wrapper.MM_wrapper.equilibrate">equilibrate() (janus.mm_wrapper.MM_wrapper method)</a>
+
+      <ul>
+        <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.equilibrate">(janus.openmm_wrapper.OpenMM_wrapper method)</a>
 </li>
+        <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.equilibrate">(janus.qm_wrapper.QM_wrapper method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -311,6 +325,12 @@
         <li><a href="source/janus.html#janus.sap.SAP.get_combos">(janus.sap.SAP method)</a>
 </li>
       </ul></li>
+      <li><a href="source/janus.html#janus.mm_wrapper.MM_wrapper.get_energy_and_gradient">get_energy_and_gradient() (janus.mm_wrapper.MM_wrapper method)</a>
+
+      <ul>
+        <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.get_energy_and_gradient">(janus.qm_wrapper.QM_wrapper method)</a>
+</li>
+      </ul></li>
       <li><a href="source/janus.html#janus.qmmm.QMMM.get_external_charges">get_external_charges() (janus.qmmm.QMMM method)</a>
 </li>
       <li><a href="source/janus.html#janus.qmmm.QMMM.get_forces">get_forces() (janus.qmmm.QMMM method)</a>
@@ -321,15 +341,17 @@
         <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.get_main_charges">(janus.openmm_wrapper.OpenMM_wrapper method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/janus.html#janus.mm_wrapper.MM_wrapper.get_main_info">get_main_info() (janus.mm_wrapper.MM_wrapper method)</a>
 
       <ul>
         <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.get_main_info">(janus.openmm_wrapper.OpenMM_wrapper method)</a>
 </li>
+        <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.get_main_info">(janus.qm_wrapper.QM_wrapper method)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/janus.html#janus.qmmm.QMMM.get_qm_geometry">get_qm_geometry() (janus.qmmm.QMMM method)</a>
+      <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.get_qm_geometry">get_qm_geometry() (janus.qm_wrapper.QM_wrapper method)</a>
 </li>
       <li><a href="source/janus.html#janus.qmmm.QMMM.get_redistributed_positions">get_redistributed_positions() (janus.qmmm.QMMM method)</a>
 </li>
@@ -471,12 +493,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/janus.html#janus.oniom_xs.ONIOM_XS">ONIOM_XS (class in janus.oniom_xs)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper">OpenMM_wrapper (class in janus.openmm_wrapper)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/janus.html#janus.psi4_wrapper.Psi4_wrapper.optimize_geometry">optimize_geometry() (janus.psi4_wrapper.Psi4_wrapper method)</a>
+
+      <ul>
+        <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.optimize_geometry">(janus.qm_wrapper.QM_wrapper method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -539,16 +565,16 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/janus.html#janus.driver.run_janus">run_janus() (in module janus.driver)</a>
-</li>
-      <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.run_qm">run_qm() (janus.qm_wrapper.QM_wrapper method)</a>
-</li>
       <li><a href="source/janus.html#janus.aqmmm.AQMMM.run_qmmm">run_qmmm() (janus.aqmmm.AQMMM method)</a>
 
       <ul>
         <li><a href="source/janus.html#janus.qmmm.QMMM.run_qmmm">(janus.qmmm.QMMM method)</a>
 </li>
       </ul></li>
+      <li><a href="source/janus.html#janus.driver.run_simulation">run_simulation() (in module janus.driver)</a>
+</li>
+      <li><a href="source/janus.html#janus.driver.run_single_point">run_single_point() (in module janus.driver)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -559,14 +585,12 @@
 </li>
       <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.set_charge_zero">set_charge_zero() (janus.openmm_wrapper.OpenMM_wrapper method)</a>
 </li>
-      <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.set_external_charges">set_external_charges() (janus.qm_wrapper.QM_wrapper method)</a>
+      <li><a href="source/janus.html#janus.mm_wrapper.MM_wrapper.set_external_charges">set_external_charges() (janus.mm_wrapper.MM_wrapper method)</a>
 </li>
       <li><a href="source/janus.html#janus.openmm_wrapper.OpenMM_wrapper.set_LJ_zero">set_LJ_zero() (janus.openmm_wrapper.OpenMM_wrapper method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/janus.html#janus.qm_wrapper.QM_wrapper.set_qm_geometry">set_qm_geometry() (janus.qm_wrapper.QM_wrapper method)</a>
-</li>
       <li><a href="source/janus.html#janus.aqmmm.AQMMM.set_Rmax">set_Rmax() (janus.aqmmm.AQMMM method)</a>
 </li>
       <li><a href="source/janus.html#janus.aqmmm.AQMMM.set_Rmin">set_Rmin() (janus.aqmmm.AQMMM method)</a>
