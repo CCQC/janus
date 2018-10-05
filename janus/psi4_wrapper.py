@@ -15,33 +15,26 @@ class Psi4_wrapper(QM_wrapper):
 
         Parameters
         ----------
-        param: dict containing parameters for QM computations
-               Individual parameters include:
+        param : dict 
+            parameters for QM computations
+            Individual parameters include:
 
-               - basis_set: the basis set to use for compuatations, 
-                            default is STO-3G
-               - scf_type: scf algorithm, default is density fitting(df)
-               - guess_orbitals: type of guess orbitals, default is 
-                                 Superposition of Atomic Densities(sad)
-               - reference: type of reference wavefunction, default is RHF
-               - e_convergence: degree of energy convergence, default is 1e-8
-               - d_convergence: degree of density convergence, default is 1e-8
-               - method: computation method, default is scf
-               - charge_method: method for getting QM charges, default is Mulliken
-               - charge: charge of qm system, default is 0
-               - multiplicity: spin state of qm system, default is singlet(1)
+            - basis_set : the basis set to use for compuatations, 
+                        default is STO-3G
+            - scf_type : scf algorithm, default is density fitting(df)
+            - guess_orbitals : type of guess orbitals, default is 
+                                Superposition of Atomic Densities(sad)
+            - reference : type of reference wavefunction, default is RHF
+            - e_convergence : degree of energy convergence, default is 1e-8
+            - d_convergence : degree of density convergence, default is 1e-8
+            - method : computation method, default is scf
+            - charge_method : method for getting QM charges, default is Mulliken
+            - charge : charge of qm system, default is 0
+            - multiplicity : spin state of qm system, default is singlet(1)
 
-                For more information about these parameters and 
-                other possible parameter values consult psicode.org
+            For more information about these parameters and 
+            other possible parameter values consult psicode.org
 
-
-        Returns
-        -------
-        A Psi4_wrapper object
-
-        Examples
-        --------
-        psi4_wrapper = Psi4_wrapper(param)
         """
 
         super().__init__(param, "Psi4")
@@ -60,18 +53,6 @@ class Psi4_wrapper(QM_wrapper):
         """
         Calls Psi4 to obtain the energy and Psi4 wavefunction object of the QM region
         and saves as self.energy and self.wavefunction
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        compute_energy()
         """
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.energy(self.method,
@@ -81,18 +62,6 @@ class Psi4_wrapper(QM_wrapper):
         """
         Calls Psi4 to obtain the gradient of the QM region
         and saves it as a numpy array self.gradient
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        compute_gradient()
         """
         self.set_up_psi4()
         G = psi4.gradient(self.method)
@@ -103,18 +72,6 @@ class Psi4_wrapper(QM_wrapper):
         Calls Psi4 to obtain the energy, Psi4 wavefunction object, and 
         gradient of the QM region and saves as self.energy, self.wavefuction,
         and self.gradient
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        compute_energy()
         """
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.energy(self.method,
@@ -127,6 +84,14 @@ class Psi4_wrapper(QM_wrapper):
         #self.gradient = np.asarray(self.wavefunction.gradient())
 
     def optimize_geometry(self):
+        """
+        Calls Psi4 to obtain a geometry optimized geometry 
+    
+        Returns
+        -------
+        numpy array
+            XYZ coordinates of the optimized geometry
+        """
 
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.opt(self.method, return_wfn=True)
@@ -135,18 +100,6 @@ class Psi4_wrapper(QM_wrapper):
     def set_up_psi4(self):
         """
         Sets up a psi4 computation
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        set_up_psi4()
         """
         # psi4.core.set_output_file('output.dat', True)
         psi4.core.clean()
@@ -179,18 +132,6 @@ class Psi4_wrapper(QM_wrapper):
         Calls Psi4 to obtain the self.charges on each atom given and saves it as a numpy array.
         This method works well for SCF wavefunctions. For correlated levels of theory (e.g., MP2),
         it is advised that compute_energy_and_charges() be used instead.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        compute_scf_charge()
         """
         if self.wavefunction is not None:
             psi4.oeprop(self.wavefunction, self.charge_method)
@@ -202,19 +143,10 @@ class Psi4_wrapper(QM_wrapper):
         """
         Calls Psi4 to obtain the self.energy, self.wavefunction, 
         and self.charges on each atom. This method for correlated methods.
-        Note: think about passing in wavefunction instead of calling for energy and wavefunction
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        compute_energy_and_charges(system)
+        
+        Note
+        ----
+        Think about passing in wavefunction instead of calling for energy and wavefunction
         """
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.prop(self.method,
@@ -227,18 +159,6 @@ class Psi4_wrapper(QM_wrapper):
         """
         Builds a dictionary of QM parameters from input options
         and saves as self.param
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        build_qm_param()
         """
         qm_param = {}
         qm_param['scf_type'] = self.param['scf_type']

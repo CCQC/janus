@@ -23,47 +23,40 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        param : dict containing parameters for molecular mechanics computations.
-                Individual parameters include:
-                - mm_pdb_file: a pdb file that contains the system of interest
-                - mm_forcefield: the name of the forcefield to use, default is amber99sb.xml
-                - mm_water_forcefield: the name of the forcefield to use for water, default is tip3p.xml
-                - is_periodic: whether to treat the system periodically, default is False
-                - step_size: step size to integrate system in picoseconds, 
-                             default is 0.002*OM_unit.picoseconds
-                - integrator" : which integrator to use for simulation, default is Langevin
-                - fric_coeff" : friction coefficient to couple the system to heat bath in inverse
-                                picoseconds, default is 1/OM_unit.picosecond
-                - temp: the temperature at which the simulation runs in kelvin, default is 300*OM_unit.kelvin
-                - nonbondedMethod: method for nonbonded interactions, default is OM_app.NoCutoff
-                - nonbondedCutoff: cutoff distance for nonbonded interactions in nanometers,
-                                   default is "1*OM_unit.nanometer",
-                - constraints: which bonds and angles implemented with constraints,
-                               default is OM_app.HBonds
-                - rigid_water: whether water is treated as rigid, default is True
-                - removeCMMotion: whether to include a CMMotionRemover, default is True
-                - ignoreExternalBonds: whether to ignore external bonds when matching residues to templates,
-                                       default is True
-                - flexibleConstraints: whether to add parameters for constrained parameters,
-                                       default is False
-                - hydrogenMass: the mass to use for hydrogen atoms bonded to heavy atoms,
-                                default is False
-                - residueTemplates: allows user to specify a template for a residue,
-                                    default is empty dict {}
-                - switchDistance: the distance to turn on potential energy switching function for 
-                                  Lennard-Jones interactions. Default is None
+        param : dict 
+            Parameters for molecular mechanics computations.
+            Individual parameters include:
+            - mm_pdb_file : a pdb file that contains the system of interest
+            - mm_forcefield : the name of the forcefield to use, default is amber99sb.xml
+            - mm_water_forcefield : the name of the forcefield to use for water, default is tip3p.xml
+            - is_periodic : whether to treat the system periodically, default is False
+            - step_size : step size to integrate system in picoseconds, 
+                            default is 0.002*OM_unit.picoseconds
+            - integrator" : which integrator to use for simulation, default is Langevin
+            - fric_coeff" : friction coefficient to couple the system to heat bath in inverse
+                            picoseconds, default is 1/OM_unit.picosecond
+            - temp: the temperature at which the simulation runs in kelvin, default is 300*OM_unit.kelvin
+            - nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff
+            - nonbondedCutoff : cutoff distance for nonbonded interactions in nanometers,
+                                default is "1*OM_unit.nanometer",
+            - constraints : which bonds and angles implemented with constraints,
+                            default is OM_app.HBonds
+            - rigid_water : whether water is treated as rigid, default is True
+            - removeCMMotion : whether to include a CMMotionRemover, default is True
+            - ignoreExternalBonds : whether to ignore external bonds when matching residues to templates,
+                                    default is True
+            - flexibleConstraints : whether to add parameters for constrained parameters,
+                                    default is False
+            - hydrogenMass : the mass to use for hydrogen atoms bonded to heavy atoms,
+                            default is False
+            - residueTemplates : allows user to specify a template for a residue,
+                                default is empty dict {}
+            - switchDistance : the distance to turn on potential energy switching function for 
+                                Lennard-Jones interactions. Default is None
 
-                For more information about these pararmeters and 
-                other possible parameter values consult docs.openmm.org
-                
+            For more information about these pararmeters and 
+            other possible parameter values consult docs.openmm.org
 
-        Returns
-        -------
-        An OpenMM_wrapper object
-
-        Examples
-        --------
-        mm_wrapper = OpenMM_wrapper(param)
         """
 
         super().__init__(param, "OpenMM")
@@ -93,18 +86,11 @@ class OpenMM_wrapper(MM_wrapper):
     
         Parameters
         ----------
-        embedding_method: what embedding method to use for initialization.
-                          If 'Mechanical', all forces are included
-                          If 'Electrostatic', all coulomic forces are excluded
+        embedding_method : str
+            what embedding method to use for initialization.
+            If 'Mechanical', all forces are included
+            If 'Electrostatic', all coulomic forces are excluded
 
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        initialize('Mechanical')
-        initialize('Electrostatic')
         """
 
         # should I minimize energy here? If so, need to return new positions
@@ -125,17 +111,10 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        forces: dict of forces(particle index: forces) in au/bohr to 
-                be updated in custom qmmm force and fed into simulation
+        force : dict 
+            forces(particle index : forces) in au/bohr to 
+            be updated in custom qmmm force and fed into simulation
 
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        take_step(forces)
-        take_step({0: [0.0, 0.0, 0.0]})
         """
 
         for f, coord in force.items():
@@ -148,25 +127,27 @@ class OpenMM_wrapper(MM_wrapper):
         self.positions = self.main_info['positions']                             # get positions after step
 
     def equilibrate(self, num):
+        """
+        Takes a specified num of steps in the MD simulation
+        
+        Parameters
+        ----------
+        num : int
+            the number of pure MD steps to take
+        """
 
         self.main_simulation.step(num)
 
     def get_main_info(self):
         """
         Gets the information for the system of interest
-        
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        dictionary with information like energy and gradient 
-        for the system of interest
+        dict
+            Information including the current energy, gradient, 
+            and positions for the system of interest
     
-        Examples
-        --------
-        info = get_main_info()
         """
         
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
@@ -177,29 +158,35 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        topology: an OpenMM topology object
-        positions: an OpenMM Vec3 vector containing 
-                   the positions of the system in nm
-        include_coulomb: whether to include coulombic interactions. 
-                         'all' (default) includes coulombic forces for all particles,
-                         'no_link' excludes coulombic forces for link atoms,
-                         'only' excludes all other forces for all atoms,
-                         None excludes coulombic forces for all particles.
-        initialize: bool to specifying whether the main system is being initialized.
-        return_system: a bool to specify whether to return the OpenMM system object. 
-                       Default is True. 
-        return_simulation: a bool to specify whether to return the OpenMM simulation object.
-                       Default is True. 
-        link_atoms: if included as a list with include_coulomb='no_link', specifies which 
-                    atoms to remove coulombic forces from. Default is None.
+        topology : OpenMM topology object
+        positions : OpenMM Vec3 vector 
+            contains the positions of the system in nm
+        include_coulomb : str
+            whether to include coulombic interactions. 
+            'all' (default) includes coulombic forces for all particles,
+            'no_link' excludes coulombic forces for link atoms,
+            'only' excludes all other forces for all atoms,
+            'none' excludes coulombic forces for all particles.
+        initialize : bool 
+            Whether the main system is being initialized.
+        return_system : bool 
+            True(default) to return OpenMM system object
+        return_simulation : bool 
+            True(default) to return OpenMM simulation object
+        link_atoms : list
+            if included as a list with include_coulomb='no_link', specifies which 
+            atoms to remove coulombic forces from. Default is None.
+        minimize : bool
+            whether to minimize the energy of the system
 
         Returns
         -------
-        system, simulation, state 
-        state: A dictionary with state information
-        system: OpenMM system object returned unless return_system=False
-        simulation: OpenMM simulation object returned unless return_simulation=False
-
+        dict
+            A dictionary with state information
+        OpenMM system object
+            OpenMM system object returned unless return_system=False
+        OpenMM simulation object 
+            OpenMM simulation object returned unless return_simulation=False
 
         Examples
         --------
@@ -247,17 +234,18 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        topology: an OpenMM topology object
-        include_coulomb: whether to include coulombic interactions. 
-                         'all' (default) includes coulombic forces for all particles,
-                         'no_link' excludes coulombic forces for link atoms,
-                         'only' excludes all other forces for all atoms,
-                         None excludes coulombic forces for all particles.
-        link_atoms: if included as a list with include_coulomb='no_link', specifies which 
-                    atoms to remove coulombic forces from. Default is None.
-        initialize: bool to specifying whether the main system is being initialized.
-                    If True, this will create a custom force to store qmmm forces. 
-                    default is false
+        topology : OpenMM topology object
+        include_coulomb : str
+            whether to include coulombic interactions. 
+            'all' (default) includes coulombic forces for all particles,
+            'no_link' excludes coulombic forces for link atoms,
+            'only' excludes all other forces for all atoms,
+            'none' excludes coulombic forces for all particles.
+        link_atoms : list
+            if included as a list with include_coulomb='no_link', specifies which 
+            atoms to remove coulombic forces from. Default is None.
+        initialize : bool 
+            Whether the main system is being initialized.
 
         TODO: need to put nonbond and nonbond_cutoff back but not doing for now
             because need non-periodic system. Other parameters are also needed
@@ -266,7 +254,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         Returns
         -------
-        An OpenMM system object
+        OpenMM system object
 
         Examples
         --------
@@ -313,7 +301,7 @@ class OpenMM_wrapper(MM_wrapper):
             self.main_charges = [openmm_system.getForce(3).getParticleParameters(i)[0]/OM_unit.elementary_charge for i in range(openmm_system.getNumParticles())]
 
         # If in electrostatic embedding scheme need to get a system without coulombic interactions
-        if include_coulomb is None:
+        if include_coulomb == 'none':
             # get the nonbonded force
             self.set_charge_zero(openmm_system)
 
@@ -337,15 +325,12 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        OM_system : an OpenMM system object
-        link_atoms : list of link_atoms to set the charge to zero,
-                     if link_atoms is None (default), the charge of 
-                     all particles in the system will be set to zero
+        OM_system : OpenMM system object
+        link_atoms : list 
+            link_atoms to set the charge to zero,
+            if link_atoms is None (default), the charge of 
+            all particles in the system will be set to zero
     
-        Returns
-        -------
-        None
-
         Examples
         --------
         set_charge_zero(system)
@@ -371,15 +356,8 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        OM_system : an OpenMM system object
+        OM_system : OpenMM system object
     
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        set_LJ_zero(system)
         """
 
         for force in OM_system.getForces():
@@ -393,17 +371,16 @@ class OpenMM_wrapper(MM_wrapper):
         """
         Create a new OpeMM residue template when there is no matching residue 
         and registers it into self.forcefield forcefield object.
-        Note: currently, if there is unmatched name, currently only checks original 
-              unmodified residue, N-terminus form, and C-terminus form. 
-              This may not be robust.
+    
+        Note
+        ----
+        currently, if there is unmatched name, currently only checks original 
+        unmodified residue, N-terminus form, and C-terminus form. 
+        This may not be robust.
 
         Parameters
         ----------
-        topology: an OpenMM topology object
-
-        Returns
-        -------
-        None
+        topology : OpenMM topology object
 
         Examples
         --------
@@ -456,14 +433,14 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        openmm_system: OpenMM system object
-        topology: an OpenMM topology object
-        positions: an OpenMM Vec3 vector containing 
-                   the positions of the system in nm
+        openmm_system : OpenMM system object
+        topology : OpenMM topology object
+        positions : OpenMM Vec3 vector 
+            contains the positions of the system in nm
 
         Returns
         -------
-        an OpenMM simulation object
+        OpenMM simulation object
 
         Examples
         --------
@@ -502,30 +479,33 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        simulation : an OpenMM simulation object
-        main_info : a bool for specifying whether to return the topology of the system
-        energy : a bool for specifying whether to get the energy,
-                 returns in hartrees(a.u.), default is true.
-        positions : a bool for specifying whether to get the positions,
-                    returns in nanometers, default is true
-        velocity : a bool for specifying whether to get the velocities, default is false
-        forces : a bool for specifying whether to get the forces acting
-                on the system, returns as numpy array in jk/mol/nm, as well as the gradients,
-                in au/bohr, default is true
-        parameters : a bool for specifying whether to get the parameters
-                    of the state, default is false.
-        param_deriv : a bool for specifying whether to get the parameter
-                    derivatives of the state, default is false
-        periodic_box : a bool for whether to translate the positions so the
-                    center of every molecule lies in the same periodic box, default is false
-        groups : a set of indices for which force groups to include when computing
-                forces and energies. Default is all groups
+        simulation : OpenMM simulation object
+        main_info : bool 
+            specifies whether to return the topology of the system
+        energy : bool 
+            spcifies whether to get the energy, returned in hartrees(a.u.), default is true.
+        positions : bool 
+            specifies whether to get the positions, returns in nanometers, default is true
+        velocity : bool 
+            specifies whether to get the velocities, default is false
+        forces : bool 
+            specifies whether to get the forces acting on the system, returns as numpy array in jk/mol/nm, 
+            as well as the gradients, in au/bohr, default is true
+        parameters : bool 
+            specifies whether to get the parameters of the state, default is false
+        param_deriv : bool 
+            specifies whether to get the parameter derivatives of the state, default is false
+        periodic_box : bool 
+            whether to translate the positions so the center of every molecule lies in the same periodic box, default is false
+        groups : list
+            a set of indices for which force groups to include when computing forces and energies. Default is all groups
 
         Returns
         -------
-        A dictionary with information specified by parameters.
-        Keys include 'energy', 'potential', 'kinetic', 'forces',
-        'gradients', 'topology'
+        dict
+            Information specified by parameters.
+            Keys include 'energy', 'potential', 'kinetic', 'forces',
+            'gradients', 'topology'
 
         Examples
         --------
@@ -572,11 +552,8 @@ class OpenMM_wrapper(MM_wrapper):
         Parameters
         ----------
         mod : OpenMM modeller object
-        filename : string of file to write to
-
-        Returns
-        -------
-        None
+        filename : str 
+            file to write to
 
         Examples
         --------
@@ -590,7 +567,8 @@ class OpenMM_wrapper(MM_wrapper):
 
             Parameters
             ----------
-            mm_pdb_file: string of pdb file name
+            mm_pdb_file : str 
+                pdb file name to read
 
             Returns
             -------
@@ -611,9 +589,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         Parameters
         ----------
-        keep_qm : a bool of whether to keep the qm atoms in the
-                modeller or delete them.
-                The default is to make a modeller without the qm atoms
+        keep_qm : bool 
+            whether to keep the qm atoms in the modeller or delete them.
+            The default is to make a modeller without the qm atoms
 
         Returns
         -------
@@ -640,11 +618,8 @@ class OpenMM_wrapper(MM_wrapper):
             Parameters
             ----------
             model : OpenMM Modeller object
-            atoms : list of atoms to keep in an OpenMM Modeller object
-
-            Returns
-            -------
-            None
+            atoms : list 
+                which atoms to keep in an OpenMM Modeller object
 
             Examples
             --------
@@ -670,12 +645,9 @@ class OpenMM_wrapper(MM_wrapper):
          Parameters
          ----------
          model : OpenMM Modeller object
-         atoms : list of atom IDs (int) or atom names (str) to delete
-                     an OpenMM Modeller object
-
-         Returns
-         -------
-         None
+         atoms : list 
+            which atom IDs (int) or atom names (str) to delete
+            an OpenMM Modeller object
 
          Examples
          --------
@@ -695,14 +667,11 @@ class OpenMM_wrapper(MM_wrapper):
     def get_main_charges(self):
         """
         Gets the MM point charges for the system of interest
-        
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        list of charges
+        list 
+            charges of system
     
         Examples
         --------
@@ -715,16 +684,16 @@ class OpenMM_wrapper(MM_wrapper):
         """
         Converts an OpenMM trajectory to get 
         topology and positions that are compatible with MDtraj
-        NOTE: with more programs need to expand
-
+        
         Parameters
         ----------
-        traj: an OpenMM trajectory object
+        traj : OpenMM trajectory object
 
         Returns
         -------
-        positions: a list of positions in nm
-        topology: a MDtraj topology object 
+        list
+            positions in nm
+        OpenMM topology object
                   
         Examples
         --------

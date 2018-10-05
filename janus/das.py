@@ -8,7 +8,7 @@ from collections import Counter
 
 class DAS(AQMMM):
 
-    def __init__(self, param, hl_wrapper, ll_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
         """
         Initializes the PAP class object
     
@@ -16,19 +16,12 @@ class DAS(AQMMM):
         ----------
         See parameters for AQMMM class 
 
-        Returns
-        -------
-        A PAP class object
-
-        Examples
-        --------
-        pap = PAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, hl_wrapper, ll_wrapper, 'DAS')
+        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program, 'DAS')
 
 
-    def partition(self, qm_center=None, info=None): 
+    def partition(self, qm_center=None): 
         """
         Finds the partitions as required by the PAP method 
         and saves each partition as a system object.
@@ -36,16 +29,9 @@ class DAS(AQMMM):
 
         Parameters
         ----------
-        qm_center: list of atoms that define the qm center, 
-                   default is None
+        qm_center : list 
+            atoms that define the qm center, default is None
 
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        partition([0])
         """
     
         if qm_center is None:
@@ -149,21 +135,18 @@ class DAS(AQMMM):
     def get_combos(self, items=None):
         """
         Gets all combinations of a given list of indices 
+        according to the DAS formulation
 
         Parameters
         ----------
-        items: list of indices to get combinations for
+        items : list 
+            indices to get combinations for
     
         Returns
         -------
-        List of all possible combinations 
+        list 
+            combinations
 
-        Examples    
-        --------
-        combos = get_combos([1,2])
-
-        In this case, combos will return 
-        [(1), (2), (1,2)]
         """
         
         all_combo = []
@@ -201,21 +184,20 @@ class DAS(AQMMM):
 
     def compute_lamda_i(self, r_i):
         """
-        Computes the switching function of the Hot-Spot method
+        Computes the switching function of the DAS method
         and overrides the compute_lamda_i function from the AQMMM class
         
         Parameters
         ----------
-        r_i: float in angstroms of the distance between the 
-             qm center and the COM 
+        r_i : float 
+            the distance between the qm center and the COM in angstroms 
 
         Returns
         -------
-        lamda_i as an unitless float, None for the value of d_lamda_i
+        float
+            lamda_i, unitless
+        None
 
-        Examples
-        --------
-        l, dl = compute_lamda_i(0.234)
         """
 
         if r_i <= self.Rmin:

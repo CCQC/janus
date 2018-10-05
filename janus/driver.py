@@ -6,20 +6,16 @@ from .initializer import Initializer
 
 def run_simulation(filename='input.json', equilibrate=5000):
     """
-    Function that drives the running of janus
+    Drives QM/MM with MD time step integration
     
     Parameters
     ----------
-    filename: a string containing the filename of the input file,
-              default is 'input.json'
+    filename : str 
+        contains the filename of the input file, default is 'input.json'
 
-    Returns
-    -------
-    None
+    equilibrate : int
+        number of steps to run MD steps before QM/MM, default is 5000
 
-    Examples
-    --------
-    run_janus('input.json')
     """
 
     initializer = Initializer(filename)
@@ -45,7 +41,15 @@ def run_simulation(filename='input.json', equilibrate=5000):
         md_simulation_wrapper.take_step(force=forces)
 
 def run_single_point(filename='input.json'):
+    """
+    Drives single QM/MM computation
 
+    Parameters
+    ----------
+    filename : str 
+        contains the filename of the input file, default is 'input.json'
+
+    """
     initializer = Initializer(filename)
     ll_wrapper, qmmm = initializer.initialize_wrappers()
 

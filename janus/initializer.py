@@ -21,19 +21,11 @@ class Initializer(object):
 
         Parameters
         ----------
-        param: a string of a filename containing a json input file
-               If as_file is False, param is a dict
-        as_file: a bool specifying whether param is a file or dict,
-                 default is True
+        param : str 
+            filename containing a json input file, if as_file is False, param is a dict
+        as_file : bool
+             param is a file if True, dict if False
 
-        Returns
-        -------
-        An initializer object
-
-        Examples
-        --------
-        init = Initializer('input.dat')
-        init = Initializer(param, as_file=False)
         """
 
         if as_file is True:
@@ -84,17 +76,6 @@ class Initializer(object):
         """
         updates default parameters with user defined parameters
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        update_param()
         """
 
         if self.hl_program == "Psi4":
@@ -147,17 +128,12 @@ class Initializer(object):
         Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects 
         used for computation based on input parameters
 
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        mm_wrapper object, qmmm object
+        MM_wrapper object
+        QMMM_wrapper object
 
-        Examples
-        --------
-        mm_wrapper, qmmm = initialize_wrapers()
         """
 
         # create qm_wrapper object
@@ -212,15 +188,14 @@ class Initializer(object):
     
         Parameters
         ----------
-        filename: string of json file
+        filename : str
+            name of json file
 
         Returns
         -------
-        a dictionary
+        dict
+            parameters contained in filename
 
-        Examples
-        --------
-        dict = load_param('input.json')
         """
 
         with open(filename) as parameter_file:

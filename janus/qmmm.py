@@ -13,30 +13,26 @@ class QMMM(object):
 
         Parameters
         ----------
-        param: a dict containing parameters for QM/MM and adaptive QM/MM computations
-               Individual parameters include:
-                - qmmm_scheme: str of scheme for computing QM/MM energies and gradients, 
-                               only substractive available(default)
-                - embedding_method: str of embedding method to use for QM/MM. 
-                                    Mechanical(default) and Electrostatic available
-                - boundary_treatment: str of method for treating dangling bonds in the QM region,
-                                      link_atom(default), RC, and RCD available
-                - link_atom_element: str of element to use for link atom,
-                                     default is H. Beware of using others (not all functionality tested)
-                - qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations
-                - run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,
-                             default is True. Regular QM/MM run if False
+        param : dict
+            contains parameters for QM/MM and adaptive QM/MM computations
+            Individual parameters include:
+            - qmmm_scheme: str of scheme for computing QM/MM energies and gradients, 
+                            only substractive available(default)
+            - embedding_method: str of embedding method to use for QM/MM. 
+                                Mechanical(default) and Electrostatic available
+            - boundary_treatment: str of method for treating dangling bonds in the QM region,
+                                    link_atom(default), RC, and RCD available
+            - link_atom_element: str of element to use for link atom,
+                                    default is H. Beware of using others (not all functionality tested)
+            - qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations
+            - run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,
+                            default is True. Regular QM/MM run if False
 
-        qm_wrapper: a qm_wrapper object
-        mm_wrapper: a mm_wrapper object
+        hl_wrapper : a qm_wrapper or mm_wrapper object, depending on the user input
+        ll_wrapper : a mm_wrapper object only for now
+        md_simulation_program : str
+            The program that performs the MD time step integration
 
-        Returns
-        -------
-        A QMMM object
-
-        Examples
-        --------
-        qmmm = QMMM(param, psi4_wrapper, mm_wrapper)
         """
         
         self.class_type = 'QMMM'
@@ -65,16 +61,9 @@ class QMMM(object):
 
         Parameters
         ----------
-        main_info: a dictionary containing the energy and forces 
-                   for the whole system, obtained from mm_wrapper
+        main_info : dict 
+            contains the energy and forces for the whole system
 
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        run_qmmm(main_info)
         """
 
         self.update_traj(main_info['positions'], main_info['topology'])
@@ -106,19 +95,12 @@ class QMMM(object):
 
         Parameters
         ----------
-        positions: a list of positions in nm
-        topology: If the mm program is  OpenMM, this is a 
-                  OpenMM topology object
+        positions : list 
+            positions in nm
+        topology : OpenMM topology object
+            If the mm program is  OpenMM
 
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        update_traj(pos, top)
-        """
-        
+       """ 
         # later can think about saving instead of making new instance
         # convert openmm topology to mdtraj topology
         if self.md_simulation_program == 'OpenMM':
@@ -138,6 +120,13 @@ class QMMM(object):
         using the formula
 
         E(QM/MM) = E(MM)_entire_sys - E(MM)_primary_subsys + E(QM)_primary_subsys
+
+        Parameters
+        ----------
+        system : System object
+        main_info : dict 
+            contains the energy and forces for the whole system
+
         """
 
         if self.qmmm_scheme == 'subtractive':
@@ -170,6 +159,13 @@ class QMMM(object):
 
         E(QM/MM) = E(MM no coulomb)_entire_sys - E(MM no coulomb)_primary_subsys 
                  + E(QM)_primary_subsys + E(MM just coulomb)_secondary_subsys
+
+        Parameters
+        ----------
+        system : System object
+        main_info : dict 
+            contains the energy and forces for the whole system
+
         """ 
 
         if self.qmmm_scheme == 'subtractive':
@@ -209,18 +205,15 @@ class QMMM(object):
         Computes the QM/MM gradients 
         TODO:RCD gradients need work
 
+        Note
+        ----
+        RCD gradients currently not implemented
+
         Parameters
         ----------
-        system: a system object that contains the gradients 
-                of qm and mm regions
-        
-        Returns
-        -------
-        None
-        
-        Examples
-        --------
-        compute_gradients(system)
+        system : System object 
+            Contains the gradients at  high level and low level  
+
         """
         # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
         # NEED TO MAKE SURE UNITS CONSISTENT
@@ -277,12 +270,9 @@ class QMMM(object):
 
         Parameters
         ----------
-        qm_atoms: A list of atom indicies corresponding to the atoms in
-                  the primary subsystem. Default is None and uses self.qm_atoms
-
-        Returns
-        -------
-        None
+        qm_atoms : list 
+            atom indicies corresponding to the atoms in
+            the primary subsystem. Default is None and uses self.qm_atoms
 
         Examples
         --------
@@ -322,15 +312,18 @@ class QMMM(object):
 
         Parameters
         ----------
-        qm_atoms: A list of atom indicies corresponding to the atoms in
-                  the primary subsystem. Default is None and uses self.qm_atoms
+        qm_atoms : list 
+            atom indicies corresponding to the atoms in
+            the primary subsystem. Default is None and uses self.qm_atoms
 
-        solvent: A str that identifies what solvent needs to be edited.
-                 Only water supported for now(default)
+        solvent : str 
+            identifies what solvent needs to be edited.
+            Only water supported for now(default)
 
         Returns
         -------
-        edited list of qm_atoms
+        list
+            edited qm_atoms
 
         Examples
         --------
@@ -374,18 +367,6 @@ class QMMM(object):
         """
         Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary
         and computes the g scaling factor for the link atom.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        prepare_link_atom()
         """
 
         self.link_atoms = {}
@@ -436,14 +417,15 @@ class QMMM(object):
 
         Parameters
         ----------
-        qm_atoms: A list of atom indicies corresponding to the atoms in
-                  the primary subsystem. Default is None and uses self.qm_atoms
+        qm_atoms : list 
+            atom indicies corresponding to the atoms in
+            the primary subsystem. Default is None and uses self.qm_atoms
 
         Returns
         -------
-        traj, link_indicies
-        traj: MDtraj trajectory object
-        link_indices: list of the link atom indices in traj
+        MDtraj trajectory object
+        list
+            The link atom indices in traj
 
         Examples
         --------
@@ -487,12 +469,13 @@ class QMMM(object):
 
         Parameters
         ----------
-        qm_atoms: A list of atom indicies corresponding to the atoms in
-                  the primary subsystem. Default is None and uses self.qm_atoms
+        qm_atoms : list 
+            atom indicies corresponding to the atoms in
+            the primary subsystem. Default is None and uses self.qm_atoms
 
         Returns
         -------
-        a MDtraj trajectory object
+        MDtraj trajectory object
 
         Examples
         --------
@@ -512,15 +495,17 @@ class QMMM(object):
 
     def get_forces(self, run_ID=None):
         """
-        function to return qmmm forces
+        Function to return qmmm forces
 
         Parameters
         ----------
-        None
+        run_ID : int
+            identifies which step to get forces from
         
         Returns
         -------
-        qmmm forces: a dictionary of forces in au/bohr
+        dict
+            qmmm forces in au/bohr
 
         Examples
         --------
@@ -533,21 +518,19 @@ class QMMM(object):
 
 
     def get_external_charges(self, system):
+        #TODO: at some point maybe need to migrate this to mm_wrapper
         """
         Gets the point charges of atoms from secondary subsystem for electrostatic embedding 
 
         Parameters
         ----------
-        system: a system object that contains the gradients 
-                of qm and mm regions
+        system : System object 
 
         Returns
         -------
-        A list of charges and cooresponding positions in angstroms as xyz coordinates
+        list
+            charges and corresponding positions in angstroms as xyz coordinates
 
-        Examples
-        --------
-        get_external_charge(system)
         """
         charges = []
         # in angstroms
@@ -626,17 +609,17 @@ class QMMM(object):
 
         Parameters
         ----------
-        positions: a list of the positions
-        bonds: a list of indices of all atoms (in secondary subsystem) bonded to M1  
-        mm: the index of M1
+        positions : list 
+        bonds : list 
+            indices of all atoms (in secondary subsystem) bonded to M1  
+        mm : int 
+            the index of M1
 
         Returns
         -------
-        List of positions for the redistributed charges
+        list
+            positions for the redistributed charges
 
-        Examples
-        --------
-        get_redistributed_positions(positions=pos, bonds=bond, mm=mm_index)
         """
         
         pos = []

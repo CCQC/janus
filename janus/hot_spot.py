@@ -9,7 +9,7 @@ class HotSpot(AQMMM):
     Inherits from AQMMM class
     """
 
-    def __init__(self, param, hl_wrapper, ll_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
         """
         Initializes the HotSpot class object
     
@@ -17,16 +17,9 @@ class HotSpot(AQMMM):
         ----------
         See parameters for AQMMM class 
 
-        Returns
-        -------
-        A HotSpot class object
-
-        Examples
-        --------
-        hs = HotSpot(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, hl_wrapper, ll_wrapper, 'Hot-Spot')
+        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program, 'Hot-Spot')
 
     def partition(self, qm_center=None): 
         """
@@ -36,16 +29,9 @@ class HotSpot(AQMMM):
 
         Parameters
         ----------
-        qm_center: list of atoms that define the qm center, 
-                   default is None
+        qm_center : list 
+            atoms that define the qm center, default is None
 
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        partition([0])
         """
     
         if qm_center is None:
@@ -97,16 +83,15 @@ class HotSpot(AQMMM):
         
         Parameters
         ----------
-        r_i: float in angstroms of the distance between the 
-             qm center and the COM 
+        r_i : float 
+            the distance between the qm center and the COM in angstroms 
 
         Returns
         -------
-        lamda_i as an unitless float, None for the value of d_lamda_i
+        float
+            lamda_i, unitless
+        None
 
-        Examples
-        --------
-        l, dl = compute_lamda_i(0.234)
         """
 
         if r_i <= self.Rmin:

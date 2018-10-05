@@ -6,7 +6,7 @@ import numpy as np
 
 class PAP(AQMMM):
 
-    def __init__(self, param, hl_wrapper, ll_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
         """
         Initializes the PAP class object
     
@@ -14,20 +14,13 @@ class PAP(AQMMM):
         ----------
         See parameters for AQMMM class 
 
-        Returns
-        -------
-        A PAP class object
-
-        Examples
-        --------
-        pap = PAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, hl_wrapper, ll_wrapper, 'PAP')
+        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program, 'PAP')
         self.modified_variant = param['modified_variant']
 
 
-    def partition(self, qm_center=None, info=None): 
+    def partition(self, qm_center=None): 
         """
         Finds the partitions as required by the PAP method 
         and saves each partition as a system object.
@@ -35,16 +28,9 @@ class PAP(AQMMM):
 
         Parameters
         ----------
-        qm_center: list of atoms that define the qm center, 
-                   default is None
+        qm_center : list 
+            atoms that define the qm center, default is None
 
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        partition([0])
         """
     
         if qm_center is None:
@@ -145,17 +131,11 @@ class PAP(AQMMM):
         """
         Computes forces due to the gradient of the switching function
         
-        Parameters
-        ----------
-        None
-        
         Returns
         -------
-        Forces due to gradient of switching function as a dictionary
+        dict
+            Forces due to gradient of switching function 
 
-        Examples
-        --------
-        forces = compute_sf_gradient
         """
 
         forces_sf = {self.qm_center[0]: np.zeros((3))}
@@ -190,11 +170,13 @@ class PAP(AQMMM):
 
         Parameters
         ----------
-        items: list of indices to get combinations for
+        items : list 
+            indices to get combinations for
     
         Returns
         -------
-        List of all possible combinations 
+        list 
+            all possible combinations
 
         Examples    
         --------

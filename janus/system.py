@@ -16,19 +16,13 @@ class System(object):
 
         Parameters
         ----------
-        qm indices: list of indices of the atoms of the QM region
-        run_ID: an int with the current step of the MD simulation
-        partition_ID: An identifier for the specfic partition in aqmmm computations,
-                      default is 'qm'
+        qm indices : list 
+            indices of the atoms of the QM region
+        run_ID : int 
+            the current step of the MD simulation
+        partition_ID : int 
+            An identifier for the specfic partition in aqmmm computations, default is 'qm'
 
-        Returns
-        -------
-        A system object
-
-        Examples
-        --------
-        system = System(qm_indices=[0,1,2], run_ID = 0)
-        system = System(qm_indices=[0,1,2], run_ID = 0, partition_ID=0)
         """
         self.qm_atoms = deepcopy(qm_indices)
         self.qm_residues = deepcopy(qm_residues)
@@ -47,26 +41,29 @@ class System(object):
         self.aqmmm_energy= 1.0
 
     def compute_scale_factor_g(qm, mm, link):
-        '''
+        """
         Computes scale factor g for link atom, RC, and RCD schemes. 
-        Note: r given in pmm but don't need to convert because it is a ratio
-              need functionality for link atoms != 'H'
+
+        Note
+        ----
+        r given in pmm but don't need to convert because it is a ratio
+        need functionality for link atoms != 'H'
 
         Parameters
         ----------
-        qm: string of element symbol of the QM atom involved in broken bond 
-        mm: string of element symbol of the MM atom involved in broken bond 
-        link: string of element symbol for link atom
+        qm : str
+            element symbol of the QM atom involved in broken bond 
+        mm : str
+            element symbol of the MM atom involved in broken bond 
+        link : str
+            element symbol for link atom
 
         Returns
         -------
-        g, the scaling factor
+        float
+            g, the scaling factor
 
-        Examples
-        --------
-        g = compute_scale_factor(qm='C', mm='C', link='H')
         """
-        '''
         
         r_qm = element(qm).covalent_radius_pyykko
         r_mm = element(mm).covalent_radius_pyykko
@@ -89,17 +86,9 @@ class Buffer(object):
 
         Parameters
         ----------
-        ID: an int that serves as the identifer for the 
-            buffer group
+        ID : int 
+            the identifer for the buffer group
         
-        Returns
-        -------
-        A Buffer object
-
-        Examples
-        --------
-        buf1 = Buffer(ID=1)
-        buf1 = Buffer(ID=2)
         """
 
         self.ID = ID

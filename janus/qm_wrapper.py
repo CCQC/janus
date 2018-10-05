@@ -1,12 +1,21 @@
 from abc import ABC, abstractmethod
 import mendeleev as mdlv
-"""
-QM wrapper super class
-"""
 
 class QM_wrapper(ABC):
 
     def __init__(self, param, program):
+        """
+        QM wrapper super class
+
+        Parameters
+        ----------
+        param : dict 
+            parameters for QM computations
+
+        program : str
+            what program to use for QM computations
+
+        """
         self.program = program
         self.param = param
 
@@ -39,10 +48,15 @@ class QM_wrapper(ABC):
 
         Parameters
         ----------
-        geometry : str
-            Geometry information for the QM region
-        total_elec : int 
-            The total number of electrons present in the QM region
+        traj : MDtraj trajectory object
+        include_coulomb : str
+            whether to include coulombic interactions. Not applicable for QM programs
+        link_atoms : list
+            indices of link_atoms
+        minimize : bool
+            whether to return the geometry optimized energy 
+        charges : list
+            charges and corresponding positions in angstroms as xyz coordinates
 
         Returns
         -------
@@ -56,7 +70,7 @@ class QM_wrapper(ABC):
         self.get_qm_geometry(traj)
 
         if charges is not None:
-            self.set_external_charges(charges)
+            self.external_charges = charges
 
         if not self.qm_param:
             self.build_qm_param()
@@ -73,28 +87,6 @@ class QM_wrapper(ABC):
         return self.info
 
             
-    def set_external_charges(self, charges):
-        """
-        Sets the charges due to the MM point charges
-        as self.external_charges
-
-        Parameters
-        ----------
-        charges: a list with the charge and position(in angstroms) for all 
-                 particles outside the QM region 
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        set_external_charges([[-.45, 0.0, 0.0, 0.0]])
-        set_external_charges(charges)
-        """
-        
-        self.external_charges = charges
-
     def get_qm_geometry(self, qm_traj=None):
         """
         Uses the atoms and positions from a MDtraj trajectory object
@@ -102,18 +94,16 @@ class QM_wrapper(ABC):
 
         Parameters
         ----------
-        qm_traj: a MDtraj object describing just the primary subsystem,
-                 default is None
+        qm_traj : MDtraj object
+             describes just the primary subsystem, default is None
 
         Returns
         -------
-        out, total
-        out: the str with geometry information in angstroms
-        total: total number of electrons in the primary subsystem
+        str
+        geometry information in angstroms
+        int
+        total number of electrons in the primary subsystem
 
-        Examples
-        --------
-        geom, total_elec = qm_positions()
         """
 
         out = ""
