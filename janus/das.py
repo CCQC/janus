@@ -8,7 +8,7 @@ from collections import Counter
 
 class DAS(AQMMM):
 
-    def __init__(self, param, qm_wrapper, mm_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper):
         """
         Initializes the PAP class object
     
@@ -25,7 +25,7 @@ class DAS(AQMMM):
         pap = PAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper, 'DAS')
+        super().__init__(param, hl_wrapper, ll_wrapper, 'DAS')
 
 
     def partition(self, qm_center=None, info=None): 

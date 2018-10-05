@@ -9,7 +9,7 @@ class HotSpot(AQMMM):
     Inherits from AQMMM class
     """
 
-    def __init__(self, param, qm_wrapper, mm_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper):
         """
         Initializes the HotSpot class object
     
@@ -26,7 +26,7 @@ class HotSpot(AQMMM):
         hs = HotSpot(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper, 'Hot-Spot')
+        super().__init__(param, hl_wrapper, ll_wrapper, 'Hot-Spot')
 
     def partition(self, qm_center=None): 
         """

@@ -76,9 +76,11 @@ class OpenMM_wrapper(MM_wrapper):
         self.step_size = eval(param['step_size'])
         self.fric_coeff = eval(param['fric_coeff'])
 
-        # instantiate OpenMM pdb object
-        self.pdb = OpenMM_wrapper.create_pdb(self.pdb_file)
         self.positions = None
+
+        # instantiate OpenMM pdb object
+        if self.pdb_file:
+            self.pdb = OpenMM_wrapper.create_pdb(self.pdb_file)
 
         # instantiate OpenMM forcefield object
         self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
@@ -470,7 +472,9 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         if self.param['integrator'] == 'Langevin':
+            print(self.step_size)
             integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
+            print(integrator.getStepSize())
         else:
             print('only Langevin integrator supported currently')
 
@@ -706,4 +710,29 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         return self.main_charges
+
+    def convert_trajectory(self, traj):
+        """
+        Converts an OpenMM trajectory to get 
+        topology and positions that are compatible with MDtraj
+        NOTE: with more programs need to expand
+
+        Parameters
+        ----------
+        traj: an OpenMM trajectory object
+
+        Returns
+        -------
+        positions: a list of positions in nm
+        topology: a MDtraj topology object 
+                  
+        Examples
+        --------
+        positions, topology = convert_trajectory(OpenMM_traj)
+        """
+
+        topology = traj.topology.to_openmm()
+        positions = traj.openmm_positions((0))
+        
+        return topology, positions
 

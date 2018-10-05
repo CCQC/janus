@@ -4,7 +4,7 @@ import numpy as np
 
 class ONIOM_XS(AQMMM):
 
-    def __init__(self, param, qm_wrapper, mm_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper):
         """
         Initializes the ONIOM_XS class object
     
@@ -21,7 +21,7 @@ class ONIOM_XS(AQMMM):
         ox = ONIOM_XS(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper, 'ONIOM-XS')
+        super().__init__(param, hl_wrapper, ll_wrapper, 'ONIOM-XS')
 
     def partition(self, qm_center=None, info=None): 
         """

@@ -6,7 +6,7 @@ import numpy as np
 
 class SAP(AQMMM):
 
-    def __init__(self, param, qm_wrapper, mm_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper):
         """
         Initializes the SAP class object
     
@@ -23,7 +23,7 @@ class SAP(AQMMM):
         sap = SAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper, 'SAP')
+        super().__init__(param, hl_wrapper, ll_wrapper, 'SAP')
         self.modified_variant = param['modified_variant']
 
     def partition(self, qm_center=None, info=None): 

@@ -6,7 +6,7 @@ import numpy as np
 
 class PAP(AQMMM):
 
-    def __init__(self, param, qm_wrapper, mm_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper):
         """
         Initializes the PAP class object
     
@@ -23,7 +23,7 @@ class PAP(AQMMM):
         pap = PAP(param, psi4_wrapper, openmm_wrapper)
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper, 'PAP')
+        super().__init__(param, hl_wrapper, ll_wrapper, 'PAP')
         self.modified_variant = param['modified_variant']
 
 

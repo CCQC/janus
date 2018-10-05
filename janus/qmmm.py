@@ -1,14 +1,13 @@
 from copy import deepcopy
 import numpy as np
 import mdtraj as md
-import mendeleev as mdlv
 from .system import System
 """
 QMMM class for QMMM computations
 """
 class QMMM(object):
 
-    def __init__(self, param, qm_wrapper, mm_wrapper):
+    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program=None):
         """
         Initializes QMMM class with parameters given in param
 
@@ -41,8 +40,9 @@ class QMMM(object):
         """
         
         self.class_type = 'QMMM'
-        self.qm_wrapper = qm_wrapper
-        self.mm_wrapper = mm_wrapper
+        self.hl_wrapper = hl_wrapper
+        self.ll_wrapper = ll_wrapper
+        self.md_simulation_program = md_simulation_program
         self.qm_geometry = None
         self.run_ID = 0
 
@@ -121,7 +121,7 @@ class QMMM(object):
         
         # later can think about saving instead of making new instance
         # convert openmm topology to mdtraj topology
-        if self.mm_wrapper.program == 'OpenMM':
+        if self.md_simulation_program == 'OpenMM':
             top = md.Topology.from_openmm(topology)
         for atom in top.atoms:
             atom.serial = atom.index + 1
@@ -147,22 +147,17 @@ class QMMM(object):
             #print(system.entire_sys['energy'])
             # Get MM energy on QM region
             traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
-            topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
-            system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb='no_link', link_atoms=link_indices)
-            #print(system.primary_subsys['mm']['energy'])
+            system.primary_subsys['ll'] = self.ll_wrapper.get_energy_and_gradient(traj_ps, include_coulomb='no_link', link_atoms=link_indices)
 
             # Get QM energy
-            self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
-            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
-            #print(system.qm_info['energy'])
+            system.primary_subsys['hl'] = self.hl_wrapper.get_energy_and_gradient(traj_ps)
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
             system.qmmm_energy = system.entire_sys['energy']\
-                        - system.primary_subsys['mm']['energy']\
-                        + system.qm_info['energy']
-
+                        - system.primary_subsys['ll']['energy']\
+                        + system.primary_subsys['hl']['energy']
 
             self.compute_gradients(system)
         else:
@@ -185,33 +180,24 @@ class QMMM(object):
 
             # Get MM energy on QM region
             traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
-            topology, positions = self.convert_trajectory(traj_ps)
             system.primary_subsys['trajectory'] = traj_ps
-            system.primary_subsys['mm'] = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=None)
-
-            #print(system.primary_subsys['mm']['energy'])
-
+            system.primary_subsys['ll'] = self.ll_wrapper.get_energy_and_gradient(traj_ps, include_coulomb=None)
 
             # Get MM coulomb energy on secondary subsystem
             traj_ss = self.make_second_subsys_trajectory()
-            topology_ss, positions_ss = self.convert_trajectory(traj_ss)
             system.second_subsys['trajectory'] = traj_ss
-            system.second_subsys['mm'] = self.mm_wrapper.compute_mm(topology_ss, positions_ss, include_coulomb='only')
-            #print(system.second_subsys['mm']['energy'])
+            system.second_subsys['ll'] = self.ll_wrapper.get_energy_and_gradient(traj_ss, include_coulomb='only')
 
             # Get QM energy
-            self.qm_geometry, total_elec = self.get_qm_geometry(traj_ps)
             charges = self.get_external_charges(system)
-            self.qm_wrapper.set_external_charges(charges)
-            system.qm_info = self.qm_wrapper.run_qm(self.qm_geometry, total_elec)
-            #print(system.qm_info['energy'])
+            system.primary_subsys['hl'] = self.hl_wrapper.get_energy_and_gradient(traj_ps, charges=charges)
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
             system.qmmm_energy = system.entire_sys['energy']\
-                        - system.primary_subsys['mm']['energy']\
-                        + system.second_subsys['mm']['energy']\
-                        + system.qm_info['energy']
+                        - system.primary_subsys['ll']['energy']\
+                        + system.second_subsys['ll']['energy']\
+                        + system.primary_subsys['hl']['energy']
 
             self.compute_gradients(system)
 
@@ -241,7 +227,7 @@ class QMMM(object):
 
         if self.qmmm_scheme == 'subtractive':
 
-            ps_mm_grad, qm_grad = system.primary_subsys['mm']['gradients'], system.qm_info['gradients']
+            ps_mm_grad, qm_grad = system.primary_subsys['ll']['gradients'], system.primary_subsys['hl']
            # print('ps_mm', ps_mm_grad)
            # print('qm', qm_grad)
             qmmm_force = {}
@@ -277,54 +263,13 @@ class QMMM(object):
                             #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
 
-            if 'mm' in system.second_subsys:
+            if 'll' in system.second_subsys:
                 # iterate over list of mm atoms
                 for i, atom in enumerate(self.mm_atoms):
-                    qmmm_force[atom] = -1 * system.second_subsys['mm']['gradients'][i]
+                    qmmm_force[atom] = -1 * system.second_subsys['ll']['gradients'][i]
 
             system.qmmm_forces = qmmm_force
         
-
-    def get_qm_geometry(self, qm_traj=None):
-        """
-        Uses the atoms and positions from a MDtraj trajectory object
-        with just the qm region to obtain the geometry information
-
-        Parameters
-        ----------
-        qm_traj: a MDtraj object describing just the primary subsystem,
-                 default is None
-
-        Returns
-        -------
-        out, total
-        out: the str with geometry information in angstroms
-        total: total number of electrons in the primary subsystem
-
-        Examples
-        --------
-        geom, total_elec = qm_positions()
-        """
-        if qm_traj is None:
-            qm_traj = self.qm_trajectory
-
-        out = ""
-        line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
-        total = 0.0
-
-        for i in range(qm_traj.n_atoms):
-            x, y, z =   qm_traj.xyz[0][i][0],\
-                        qm_traj.xyz[0][i][1],\
-                        qm_traj.xyz[0][i][2]
-
-            symbol = qm_traj.topology.atom(i).element.symbol
-            n = mdlv.element(symbol).atomic_number
-            total += n
-            
-            out += line.format(symbol, x*10, y*10, z*10)
-
-        return out, total
-
 
     def find_boundary_bonds(self, qm_atoms=None):
         """
@@ -607,7 +552,7 @@ class QMMM(object):
         charges = []
         # in angstroms
         es_pos = 10*system.entire_sys['positions']
-        charge = self.mm_wrapper.get_main_charges()
+        charge = self.ll_wrapper.get_main_charges()
 
         if self.embedding_method == 'Mechanical':
             return None
@@ -702,29 +647,4 @@ class QMMM(object):
         
         return pos
 
-    def convert_trajectory(self, traj):
-        """
-        Converts an OpenMM trajectory to get 
-        topology and positions that are compatible with MDtraj
-        NOTE: with more programs need to expand
-
-        Parameters
-        ----------
-        traj: an OpenMM trajectory object
-
-        Returns
-        -------
-        positions: a list of positions in nm
-        topology: a MDtraj topology object 
-                  
-        Examples
-        --------
-        positions, topology = convert_trajectory(OpenMM_traj)
-        """
-
-        if self.mm_wrapper.program == 'OpenMM':
-            topology = traj.topology.to_openmm()
-            positions = traj.openmm_positions((0))
-        
-        return topology, positions
             

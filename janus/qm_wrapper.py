@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import mendeleev as mdlv
 """
 QM wrapper super class
 """
@@ -17,28 +18,46 @@ class QM_wrapper(ABC):
     @abstractmethod
     def build_qm_param(self):
         pass
+    @abstractmethod
+    def optimize_geometry(self):
+        pass
+    @abstractmethod
+    def compute_energy_and_gradient(self):
+        pass
 
-    def run_qm(self, geometry, total_elec, minimize=False):
+    @abstractmethod
+    def equilibrate(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def get_main_info(self):
+        raise Exception('method not implemented for class')
+
+    def get_energy_and_gradient(self, traj, include_coulomb='all', link_atoms=None, minimize=False, charges=None):
         """
         Gets the energy and gradient from a QM computation of the primary subsystem 
 
         Parameters
         ----------
-        geometry: A string with the geometry information 
-                  for the QM region
-        total_elec: An int of the total number of electrons 
-                    present in the QM region
+        geometry : str
+            Geometry information for the QM region
+        total_elec : int 
+            The total number of electrons present in the QM region
 
         Returns
         -------
-        A dictionary with energy('energy') and gradient('gradients') information
+        dict
+            A dictionary with energy('energy') and gradient('gradients') information
 
         Examples
         --------
-        run_qm(geom, 10)
+        >>> run_qm(geom, 10)
         """
+        self.get_qm_geometry(traj)
 
-        self.set_qm_geometry(geometry, total_elec)
+        if charges is not None:
+            self.set_external_charges(charges)
+
         if not self.qm_param:
             self.build_qm_param()
 
@@ -53,35 +72,6 @@ class QM_wrapper(ABC):
         
         return self.info
 
-    def set_qm_geometry(self, qm_geometry, total_elec):
-        """
-        Sets the geometry for the QM region as 
-        self.qm_geometry. Also determines if the system is open shelled
-        based on the number of electrons
-
-        Parameters
-        ----------
-        geometry: A string with the geometry information 
-                  for the QM region
-        total_elec: An int of the total number of electrons 
-                    present in the QM region
-
-        Returns
-        -------
-        None
-        
-        Examples
-        --------
-        set_qm_geometry(geom, 10)
-        """
-
-        self.qm_geometry = qm_geometry
-        self.total_elec = total_elec
-
-        if self.total_elec % 2 != 0:
-            self.total_elec += self.charge   # takes charge into account
-            if self.total_elec % 2 != 0:
-                self.is_open_shelled = True
             
     def set_external_charges(self, charges):
         """
@@ -104,4 +94,47 @@ class QM_wrapper(ABC):
         """
         
         self.external_charges = charges
+
+    def get_qm_geometry(self, qm_traj=None):
+        """
+        Uses the atoms and positions from a MDtraj trajectory object
+        with just the qm region to obtain the geometry information
+
+        Parameters
+        ----------
+        qm_traj: a MDtraj object describing just the primary subsystem,
+                 default is None
+
+        Returns
+        -------
+        out, total
+        out: the str with geometry information in angstroms
+        total: total number of electrons in the primary subsystem
+
+        Examples
+        --------
+        geom, total_elec = qm_positions()
+        """
+
+        out = ""
+        line = '{:3} {: > 7.3f} {: > 7.3f} {: > 7.3f} \n '
+        self.total_elec = 0.0
+
+        for i in range(qm_traj.n_atoms):
+            x, y, z =   qm_traj.xyz[0][i][0],\
+                        qm_traj.xyz[0][i][1],\
+                        qm_traj.xyz[0][i][2]
+
+            symbol = qm_traj.topology.atom(i).element.symbol
+            n = mdlv.element(symbol).atomic_number
+            self.total_elec += n
+            
+            out += line.format(symbol, x*10, y*10, z*10)
+
+        self.qm_geometry = out
+
+        if self.total_elec % 2 != 0:
+            self.total_elec += self.charge   # takes charge into account
+            if self.total_elec % 2 != 0:
+                self.is_open_shelled = True
 

@@ -14,7 +14,7 @@ class AQMMM(ABC, QMMM):
 
     nm_to_angstrom = 10.0000000
 
-    def __init__(self, param, qm_wrapper, mm_wrapper, class_type):
+    def __init__(self, param, hl_wrapper, ll_wrapper, class_type):
         """
         Initializes AQMMM class with parameters given in param
 
@@ -50,7 +50,7 @@ class AQMMM(ABC, QMMM):
         cannot actually instantiate AQMMM object, but only its child objects
         """
         
-        super().__init__(param, qm_wrapper, mm_wrapper)
+        super().__init__(param, hl_wrapper, ll_wrapper)
         self.class_type = class_type
 
         self.aqmmm_scheme = param['aqmmm_scheme']
@@ -370,14 +370,13 @@ class AQMMM(ABC, QMMM):
         self.qm_zero_energies = {}
         self.mm_zero_energies = {}
         for res in residues:
+
             traj = self.traj.atom_slice((residues[res]))
 
-            topology, positions = self.convert_trajectory(traj)
-            mm = self.mm_wrapper.compute_mm(topology, positions, minimize=True)
+            mm = self.ll_wrapper.get_energy_and_gradient(traj, minimize=True)
             self.mm_zero_energies[res] = mm['energy']
 
-            qm_geom, tot_elec = self.get_qm_geometry(traj)
-            qm = self.qm_wrapper.run_qm(qm_geom, tot_elec, minimize=True)
+            qm = self.hl_wrapper.get_energy_and_gradient(traj, minimize=True)
             self.qm_zero_energies[res] = qm['energy']
     
     def get_zero_energy(self):

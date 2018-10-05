@@ -13,7 +13,8 @@ class MM_wrapper(ABC):
 
     def __init__(self, param, program):
 
-        self.pdb_file = param['mm_pdb_file']
+        if param['mm_pdb_file']
+            self.pdb_file = param['mm_pdb_file']
         self.param = param
         self.program = program
         self.main_info = None
@@ -21,6 +22,20 @@ class MM_wrapper(ABC):
 
         super().__init__()
 
+    def get_energy_and_gradient(self, traj, include_coulomb='all', link_atoms=None, minimize=False):
+
+        topology, positions = self.convert_trajectory(traj)
+
+        if charges is not None:
+            self.set_external_charges(charges)
+
+        info = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=include_coulomb, link_atoms=link_atoms, minimize=minimize)
+
+        return info
+
+    @abstractmethod
+    def set_external_charges(self):
+        pass
 
     @abstractmethod
     def initialize(self):
@@ -42,6 +57,11 @@ class MM_wrapper(ABC):
     def get_main_charges(self):
         pass
 
+    @abstract_method
+    def convert_trajectory(self):
+        pass
+
+    @abstract_method
+    def equilibrate(self):
+        pass
     
-    
-# still need to implement make zero function?
