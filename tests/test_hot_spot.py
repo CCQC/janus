@@ -7,16 +7,16 @@ water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 param = {"system" : {"mm_pdb_file" : water}}
 config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
+psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
+openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-hs =   hot_spot.HotSpot(config.aqmmm_param, psi4, openmm)
-hs_0 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm)
-hs_1 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm)
-hs_2 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm)
+hs =   hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs_0 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs_1 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs_2 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
 
 hs_0.set_Rmin(0.26)
 hs_0.set_Rmax(0.28)
@@ -68,8 +68,8 @@ def test_run_qmmm():
     hs_0.run_qmmm(main_info_m)
     hs_1.run_qmmm(main_info_m)
 
-    assert np.allclose(hs_0.systems[0]['qmmm_forces'][0], np.array([ 0.01126955,  0.04914971, -0.03767929]))
-    assert np.allclose(hs_1.systems[0]['qmmm_forces'][0], np.array([ 0.00991884,  0.0502005 , -0.03556846]))
-    assert np.allclose(hs_1.systems[0]['qmmm_forces'][3], np.array([ -5.17581192e-04,   3.47310529e-05,   4.92908048e-03]))
+    assert np.allclose(hs_0.systems[0]['qmmm_forces'][0], np.array([-0.00317575, 0.04869594,-0.02960086]))
+    assert np.allclose(hs_1.systems[0]['qmmm_forces'][0], np.array([-0.00317575, 0.04869594,-0.02960086]))
+    assert np.allclose(hs_1.systems[0]['qmmm_forces'][3], np.array([ 0.00236948,-0.04619824,-0.022704]))
     assert hs_0.run_ID == 1
     assert hs_1.run_ID == 1

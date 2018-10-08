@@ -8,7 +8,7 @@ class MM_wrapper(ABC):
     kjmol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
     au_bohr_to_kjmol_nm = 1/kjmol_nm_to_au_bohr
 
-    def __init__(self, param, program):
+    def __init__(self, param, class_type):
         """
         A super class for all molecular mechanics wrappers
 
@@ -22,7 +22,7 @@ class MM_wrapper(ABC):
         if param['mm_pdb_file']:
             self.pdb_file = param['mm_pdb_file']
         self.param = param
-        self.program = program
+        self.class_type = class_type
         self.main_info = None
         self.main_charges = None
 
@@ -62,7 +62,7 @@ class MM_wrapper(ABC):
         if charges is not None:
             self.set_external_charges(charges)
 
-        info = self.mm_wrapper.compute_info(topology, positions, include_coulomb=include_coulomb, link_atoms=link_atoms, minimize=minimize)
+        info = self.compute_info(topology, positions, include_coulomb=include_coulomb, link_atoms=link_atoms, minimize=minimize)
 
         return info
 
@@ -99,13 +99,11 @@ class MM_wrapper(ABC):
     def equilibrate(self):
         pass
     
-    @abstractmethod
     def get_qm_geometry(self):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
     def build_qm_param(self):
         raise Exception('method not implemented for class')
-    @abstractmethod
+
     def optimize_geometry(self):
         raise Exception('method not implemented for class')

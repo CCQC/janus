@@ -1,8 +1,9 @@
 {
-"system" : {"mm_pdb_file" : "tests/files/test_openmm/water.pdb" },
+"system" : {"mm_pdb_file" : "tests/files/test_openmm/water.pdb",
+            "md_simulation_program" : "OpenMM" },
 
 "qmmm" : {"embedding_method" : "Electrostatic",
-          "qm_program" : "Psi4",
+          "qm_program" : "OpenMM",
           "qm_atoms" : [0,1,2],
           "run_aqmmm" : false,
           "mm_program" : "OpenMM"},

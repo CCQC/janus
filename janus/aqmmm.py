@@ -88,7 +88,6 @@ class AQMMM(ABC, QMMM):
         self.update_traj(main_info['positions'], main_info['topology'])
         self.partition()
             
-        self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
         for i, system in self.systems[self.run_ID].items():
 
             self.qm_atoms = deepcopy(system.qm_atoms)
@@ -102,6 +101,7 @@ class AQMMM(ABC, QMMM):
 
         self.get_zero_energy()
         self.run_aqmmm()
+        self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
         # updates current step count
         self.run_ID += 1
 

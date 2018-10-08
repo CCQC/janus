@@ -92,12 +92,14 @@ class Initializer(object):
 
         self.ll_param.update(self.param['system'])
 
-        if self.md_sim_prog == "OpenMM":
-            self.md_sim_param = self.load_param(self.openmm_paramfile)
-        else:
-            print("Only OpenMM currently available")
+        if self.md_sim_prog is not None:
 
-        self.md_sim_param.update(self.param['system'])
+            if self.md_sim_prog == "OpenMM":
+                self.md_sim_param = self.load_param(self.openmm_paramfile)
+            else:
+                print("Only OpenMM currently available")
+
+            self.md_sim_param.update(self.param['system'])
 
         try:
             self.hl_param.update(self.param['hl'])
@@ -123,7 +125,7 @@ class Initializer(object):
         self.aqmmm_param.update(self.qmmm_param)
         
 
-    def initialize_wrappers(self, simulation=True):
+    def initialize_wrappers(self, simulation=False):
         """
         Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects 
         used for computation based on input parameters
@@ -136,18 +138,18 @@ class Initializer(object):
 
         """
 
-        # create qm_wrapper object
+        # create hl_wrapper object
         if self.hl_program == "Psi4":
-            hl_wrapper = Psi4_wrapper(self.qm_param)
+            hl_wrapper = Psi4_wrapper(self.hl_param)
         if self.hl_program == "OpenMM":
-            hl_wrapper = OpenMM_wrapper(self.qm_param)
+            hl_wrapper = OpenMM_wrapper(self.hl_param)
         else:
         # add other options for qm program here
             print("Only Psi4 and OpenMM currently available")
 
-        # create mm_wrapper object
-        if self.mm_program == "OpenMM":
-            ll_wrapper = OpenMM_wrapper(self.mm_param)
+        # create ll_wrapper object
+        if self.ll_program == "OpenMM":
+            ll_wrapper = OpenMM_wrapper(self.ll_param)
         else:
         # add other options for mm program here
             print("Only OpenMM currently available")
@@ -159,17 +161,17 @@ class Initializer(object):
 
 
         if self.qmmm_param['run_aqmmm'] is False: 
-            qmmm = QMMM(self.qmmm_param, hl_wrapper, ll_wrapper)
+            qmmm = QMMM(self.qmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'ONIOM-XS':
-            qmmm = ONIOM_XS(self.aqmmm_param, hl_wrapper, ll_wrapper)
+            qmmm = ONIOM_XS(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'Hot-Spot':
-            qmmm = HotSpot(self.aqmmm_param, hl_wrapper, ll_wrapper)
+            qmmm = HotSpot(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'PAP':
-            qmmm = PAP(self.aqmmm_param, hl_wrapper, ll_wrapper)
+            qmmm = PAP(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'SAP':
-            qmmm = SAP(self.aqmmm_param, hl_wrapper, ll_wrapper)
+            qmmm = SAP(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'DAS':
-            qmmm = SAP(self.aqmmm_param, hl_wrapper, ll_wrapper)
+            qmmm = SAP(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         else:
             print("Only ONIOM_XS, Hot Spot, PAP, SAP, and DAS currently implemented")
 
@@ -179,7 +181,7 @@ class Initializer(object):
             return md_sim_wrapper, qmmm
 
         else:
-            return mm_wrapper, qmmm
+            return ll_wrapper, qmmm
         
 
     def load_param(self, filename):

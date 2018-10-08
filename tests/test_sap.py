@@ -11,14 +11,14 @@ param = {"system" : {"mm_pdb_file": water},
          "qmmm" : {"embedding_scheme" : "Electrostatic"}}
 
 config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
+psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
+openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-sap_1 = sap.SAP(config.aqmmm_param, psi4, openmm)
-sap_2 = sap.SAP(config.aqmmm_param, psi4, openmm)
+sap_1 = sap.SAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
+sap_2 = sap.SAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
 
 sap_1.set_Rmin(0.26)
 sap_1.set_Rmax(0.32)
@@ -116,11 +116,15 @@ def test_run_qmmm():
     sap_1.run_qmmm(main_info_m)
     sap_2.run_qmmm(main_info_m)
 
-    assert sap_1.systems[0]['qmmm_energy'] == -0.007546624178395548
-    assert sap_2.systems[0]['qmmm_energy'] ==  -0.0075445843523419725
-    assert np.allclose(sap_1.systems[0]['qmmm_forces'][0], np.array([ 0.0112712 ,  0.04962946, -0.03713465]))
-    assert np.allclose(sap_2.systems[0]['qmmm_forces'][0], np.array([ 0.01183133,  0.22534988,  0.1608678 ]))
-    assert len(sap_1.systems[0]['qmmm_forces']) == 6
+    print(sap_1.systems[0]['qmmm_energy'])
+    print(sap_2.systems[0]['qmmm_energy'])
+    print(sap_1.systems[0]['qmmm_forces'][0])
+    print(sap_2.systems[0]['qmmm_forces'][0])
+    assert sap_1.systems[0]['qmmm_energy'] == -0.02926774770488531 
+    assert sap_2.systems[0]['qmmm_energy'] == -0.03066988296157528 
+    assert np.allclose(sap_1.systems[0]['qmmm_forces'][0], np.array([1.91476321e-02, 5.77438451e+01, 5.49196637e+01]))
+    assert np.allclose(sap_2.systems[0]['qmmm_forces'][0], np.array([ -0.17353223, 117.9511188, 107.91283519 ]))
+    assert len(sap_1.systems[0]['qmmm_forces']) == 9
     assert len(sap_2.systems[0]['qmmm_forces']) == 9
 
 

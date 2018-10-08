@@ -28,8 +28,11 @@ def test_initialize_wrappers():
 
     mm1, qmmm1 = init1.initialize_wrappers()
     mm2, qmmm2 = init2.initialize_wrappers()
-    mm3, qmmm3 = init3.initialize_wrappers()
+    mm3, qmmm3 = init3.initialize_wrappers(simulation=True)
 
     assert qmmm1.class_type == 'ONIOM-XS'
     assert qmmm2.class_type == 'Hot-Spot'
     assert qmmm3.class_type == 'QMMM'
+    assert mm1.class_type == 'OpenMM' 
+    assert mm2.class_type == 'OpenMM' 
+    assert mm3.class_type == 'OpenMM' 

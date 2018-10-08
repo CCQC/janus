@@ -16,21 +16,21 @@ param_ala = {"system" : {"mm_pdb_file" : ala},
 config_m = initializer.Initializer(param_m, as_file=False)
 config_ala = initializer.Initializer(param_ala, as_file=False)
 
-psi4 = psi4_wrapper.Psi4_wrapper(config_m.qm_param)
-psi4_ala = psi4_wrapper.Psi4_wrapper(config_ala.qm_param)
+psi4 = psi4_wrapper.Psi4_wrapper(config_m.hl_param)
+psi4_ala = psi4_wrapper.Psi4_wrapper(config_ala.hl_param)
 
-om_m = openmm_wrapper.OpenMM_wrapper(config_m.mm_param)
+om_m = openmm_wrapper.OpenMM_wrapper(config_m.ll_param)
 om_m.initialize('Mechanical')
 main_info_m = om_m.get_main_info()
 
-om_ala = openmm_wrapper.OpenMM_wrapper(config_ala.mm_param)
+om_ala = openmm_wrapper.OpenMM_wrapper(config_ala.ll_param)
 om_ala.initialize('Electrostatic')
 main_info_ala = om_ala.get_main_info()
 
-mech = qmmm.QMMM(config_m.qmmm_param, psi4, om_m)
-ala_link = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala)
-ala_RC = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala)
-ala_RCD = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala)
+mech = qmmm.QMMM(config_m.qmmm_param, psi4, om_m, 'OpenMM')
+ala_link = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala, 'OpenMM')
+ala_RC = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala, 'OpenMM',)
+ala_RCD = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala, 'OpenMM')
 ala_RC.boundary_treatment = 'RC'
 ala_RCD.boundary_treatment = 'RCD'
 
@@ -43,12 +43,6 @@ sys_mech.entire_sys = main_info_m
 sys_ala_link.entire_sys = main_info_ala
 sys_ala_RC.entire_sys = main_info_ala
 sys_ala_RCD.entire_sys = main_info_ala
-
-def test_convert_trajectory():
-
-    top, pos = mech.convert_trajectory(mech.traj)
-    assert type(top) is openmm_wrapper.OM_app.Topology
-    assert type(pos) is openmm_wrapper.OM_unit.Quantity
 
 def test_edit_qm_atoms():
 
@@ -93,8 +87,8 @@ def test_get_redistributed_positions():
     pos1 = ala_RC.get_redistributed_positions(positions, ala_RC.link_atoms['all_outer_bonds'][0], ala_RC.link_atoms['all_mm'][0])
     pos2 = ala_RC.get_redistributed_positions(positions, [], ala_RC.link_atoms['all_mm'][0])
     
-    pos = np.array([[ 0.15875,  0.2052 , -0.00825],
-                    [ 0.26225001, 0.1605, -0.0083]])
+    pos = np.array([[ 0.17042224,  0.1955063 ,  0.0170204 ],
+                    [ 0.27181732,  0.15053827, -0.00442697]])
 
     assert len(pos2) == 0
     assert np.allclose(np.array(pos1), pos)
@@ -124,34 +118,6 @@ def test_make_primary_subsys_trajectory():
     assert len(traj_mech.xyz[0]) == 3
     assert len(traj_ala.xyz[0]) == 8
     
-def test_get_qm_geometry():
-    """
-    Function to test get_qmmm_energy function
-    of systems class given the mm energy and the mm energy
-    of the qm region
-    """
-    qm_mol = """O     0.123   3.593   5.841 
- H    -0.022   2.679   5.599 
- H     0.059   3.601   6.796 
- """
-    qm_link_mol = """N     0.024  -0.103  -0.101 
- H     0.027  -1.132  -0.239 
- H    -0.805   0.163   0.471 
- H    -0.059   0.384  -1.019 
- C     1.247   0.375   0.636 
- H     0.814   0.861   1.495 
- H     1.753   1.234   0.208 
- H     1.825  -0.443   1.102 
- """
-    out, elec = mech.get_qm_geometry(mech.traj_ps)
-    out2, elec2 = ala_RC.get_qm_geometry(ala_RC.traj_ps)
-
-    assert out == qm_mol
-    assert out2 == qm_link_mol
-    assert elec == 10
-    assert elec2 == 19
-
-   
 def test_make_second_subsys_trajectory():
 
     traj_mech = mech.make_second_subsys_trajectory()
@@ -167,27 +133,35 @@ def test_mechanical():
     
     assert len(sys_mech.qmmm_forces) == 3
     assert len(sys_ala_link.qmmm_forces) == 5
-    assert sys_mech.entire_sys['energy'] == -0.010562891563767518
-    assert sys_mech.primary_subsys['mm']['energy'] == 0.0
-    assert sys_mech.qm_info['energy'] == -74.96297372571573
-    assert sys_ala_link.entire_sys['energy'] == 0.4511258275881568
-    assert sys_ala_link.primary_subsys['mm']['energy'] == 0.02109665357308523
-    assert sys_ala_link.qm_info['energy'] == -55.86812550986576
+    assert sys_mech.entire_sys['energy'] == -0.027789337360217735
+    assert sys_mech.primary_subsys['ll']['energy'] == 0.0
+    assert sys_mech.primary_subsys['hl']['energy'] == -74.96297372571573
+    assert sys_ala_link.entire_sys['energy'] == -0.03512682903232768
+    assert sys_ala_link.primary_subsys['ll']['energy'] == 0.02107866334070054
+    assert sys_ala_link.primary_subsys['hl']['energy'] == -55.684475328036896
 
 def test_electrostatic():
     ala_link.electrostatic(sys_ala_link, main_info_ala)
     ala_RCD.electrostatic(sys_ala_RCD, main_info_ala)
 
+    print(sys_ala_link.second_subsys['ll']['energy'])
+    print(sys_ala_link.primary_subsys['hl']['energy'])
+    print(sys_ala_RCD.entire_sys['energy'])
+    print(sys_ala_RCD.primary_subsys['ll']['energy'])
+    print(sys_ala_RCD.second_subsys['ll']['energy'] )
+    print(sys_ala_RCD.primary_subsys['hl']['energy'])
+
     assert len(sys_ala_link.qmmm_forces) == 33
     assert len(sys_ala_RCD.qmmm_forces) == 33
-    assert sys_ala_link.entire_sys['energy'] == 0.4511258275881568
-    assert sys_ala_link.primary_subsys['mm']['energy'] == 0.02109665357308523
-    assert sys_ala_link.second_subsys['mm']['energy'] == -0.04867360210802038
-    assert sys_ala_link.qm_info['energy'] == -55.81153697205511
-    assert sys_ala_RCD.entire_sys['energy'] == 0.4511258275881568
-    assert sys_ala_RCD.primary_subsys['mm']['energy'] == 0.02121477274357972
-    assert sys_ala_RCD.second_subsys['mm']['energy'] == -0.04867360210802038
-    assert sys_ala_RCD.qm_info['energy'] == -55.83972081949333
+    assert sys_ala_link.entire_sys['energy'] == -0.03512682903232768
+    assert sys_ala_link.primary_subsys['ll']['energy'] == 0.02107866334070054
+    assert sys_ala_link.second_subsys['ll']['energy'] == -0.04884654076021316
+    assert sys_ala_link.primary_subsys['hl']['energy'] == -55.70399957201144
+    assert sys_ala_RCD.entire_sys['energy'] == -0.03512682903232768
+    assert sys_ala_RCD.primary_subsys['ll']['energy'] == 0.021188479175053232
+    assert sys_ala_RCD.second_subsys['ll']['energy'] == -0.04884654076021316
+    assert sys_ala_RCD.primary_subsys['hl']['energy'] == -55.707295905495776
+
 
 def test_update_traj():
 
@@ -209,8 +183,8 @@ def test_run_qmmm():
     assert 'qm' in ala_link.systems[0]
     assert len(mech.systems[0]['qmmm_forces']) == 3
     assert len(ala_link.systems[0]['qmmm_forces']) == 33
-    assert mech.systems[0]['qmmm_energy'] == -74.97353661727949
-    assert ala_link.systems[0]['qmmm_energy'] == -55.37058880492839
+    assert mech.systems[0]['qmmm_energy'] == -74.99077533004528
+    assert ala_link.systems[0]['qmmm_energy'] ==  -55.72526692759818 
     assert mech.run_ID == 1
     assert ala_link.run_ID == 1
     

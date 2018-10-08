@@ -2,8 +2,14 @@
 Testing for psi4_wrapper.py module
 """
 from janus import psi4_wrapper
+import mdtraj as md
 import numpy as np
+import os
 from copy import deepcopy
+
+water = os.path.join(str('tests/files/test_openmm/water.pdb'))
+traj = md.load(water)
+qm_traj = traj.atom_slice([0,1,2,3,4,5])
 
 config2 = {
         "basis_set" : "3-21G",
@@ -35,12 +41,12 @@ qm_sys2 = psi4_wrapper.Psi4_wrapper(config2)
 qm_sys3 = psi4_wrapper.Psi4_wrapper(config2)
 
 qm_mol = """O     0.123   3.593   5.841 
-H    -0.022   2.679   5.599 
-H     0.059   3.601   6.796 
-O     0.017   6.369   7.293 
-H    -0.561   5.928   6.669 
-H     0.695   6.771   6.749 
-"""
+ H    -0.022   2.679   5.599 
+ H     0.059   3.601   6.796 
+ O     0.017   6.369   7.293 
+ H    -0.561   5.928   6.669 
+ H     0.695   6.771   6.749 
+ """
 gradient1 = np.array([[-0.00995519, -0.04924799,  0.03606667],  
                         [ 0.00685005,  0.0390004 ,  0.00096903],
                         [ 0.00308006,  0.00941025, -0.03776953],
@@ -86,28 +92,24 @@ def test_build_qm_param():
     assert qm_sys2.qm_param['e_convergence'] == 1e-8
     assert qm_sys2.qm_param['d_convergence'] == 1e-8 
 
-def test_set_external_charges():
 
-    qm_sys2.set_external_charges(charges)
+def test_get_qm_geometry():
     
-    assert qm_sys2.external_charges == charges
-
-def test_set_qm_geometry():
+    qm_sys1.get_qm_geometry(qm_traj)
+    qm_sys2.get_qm_geometry(qm_traj)
+    qm_sys3.get_qm_geometry(qm_traj)
     
-    qm_sys1.set_qm_geometry(qm_mol,10)
-    qm_sys2.set_qm_geometry(qm_mol,10)
-    qm_sys3.set_qm_geometry(qm_mol,10)
-    
-
     assert qm_sys1.qm_geometry == qm_mol
     assert qm_sys2.qm_geometry == qm_mol
     assert qm_sys3.qm_geometry == qm_mol
     assert qm_sys1.is_open_shelled is False
 
+
 def test_compute_energy():
     """
     Function to test get_psi4_energy is getting energy correctly
     """
+    qm_sys2.external_charges = charges
 
     qm_sys1.compute_energy()
     qm_sys2.compute_energy()
@@ -127,10 +129,10 @@ def test_compute_gradient():
     assert np.allclose(qm_sys2.gradient, gradient2)
     assert np.allclose(qm_sys3.gradient, gradient3)
 
-def test_compute_energy_and_gradient():
+def test_compute_info():
     
-    qm_sys1.compute_energy_and_gradient()
-    qm_sys2.compute_energy_and_gradient()
+    qm_sys1.compute_info()
+    qm_sys2.compute_info()
 
     assert np.allclose(qm_sys1.energy, -149.92882700815)
     assert np.allclose(qm_sys1.gradient, gradient1)
@@ -162,16 +164,16 @@ def test_optimize_geometry():
                         [ -0.04741611,  5.03618555, 10.59775698],
                         [  0.10599186,  6.78195172, 12.86366798]])
 
-    qm_sys1.set_qm_geometry(mol, 10)
+    qm_sys1.qm_geometry = mol
     geom = qm_sys1.optimize_geometry()
 
     assert np.allclose(geom, opt_mol)
     assert qm_sys1.energy == -74.96598998934344
 
-def test_run_qm():
+def test_get_energy_and_gradient():
 
-    info2 = qm_sys2.run_qm(qm_mol,20)
-    info3 = qm_sys3.run_qm(qm_mol,20)
+    info2 = qm_sys2.get_energy_and_gradient(qm_traj,charges=charges) 
+    info3 = qm_sys3.get_energy_and_gradient(qm_traj,charges=None)
 
     assert np.allclose(info2['energy'],-151.18483039002274)
     assert np.allclose(info3['energy'],-151.17927491846075)

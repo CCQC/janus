@@ -123,38 +123,24 @@ class QM_wrapper(ABC):
     def optimize_geometry(self):
         pass
 
-    @abstractmethod
     def equilibrate(self):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
     def get_main_info(self):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
     def set_external_charges(self):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
     def initialize(self):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
     def take_step(self, force):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
-    def get_main_info(self):
-        raise Exception('method not implemented for class')
-
-    @abstractmethod
     def get_main_charges(self):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
     def convert_trajectory(self):
         raise Exception('method not implemented for class')
 
-    @abstractmethod
-    def equilibrate(self):
-        raise Exception('method not implemented for class')

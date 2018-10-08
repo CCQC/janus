@@ -220,9 +220,9 @@ class QMMM(object):
 
         if self.qmmm_scheme == 'subtractive':
 
-            ps_mm_grad, qm_grad = system.primary_subsys['ll']['gradients'], system.primary_subsys['hl']
-           # print('ps_mm', ps_mm_grad)
-           # print('qm', qm_grad)
+            ps_mm_grad, qm_grad = system.primary_subsys['ll']['gradients'], system.primary_subsys['hl']['gradients']
+            print('ps_mm', ps_mm_grad)
+            print('qm', qm_grad)
             qmmm_force = {}
            # print('sys qm_atom', system.qm_atoms)
                 

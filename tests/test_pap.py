@@ -10,14 +10,14 @@ param = {"system" : {"mm_pdb_file": water},
          "qmmm" : {"embedding_scheme" : "Electrostatic"}}
 
 config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
+psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
+openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-pap_1 = pap.PAP(config.aqmmm_param, psi4, openmm)
-pap_2 = pap.PAP(config.aqmmm_param, psi4, openmm)
+pap_1 = pap.PAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
+pap_2 = pap.PAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
 
 pap_1.set_Rmin(0.26)
 pap_1.set_Rmax(0.32)
@@ -99,9 +99,9 @@ def test_run_qmmm():
     pap_1.run_qmmm(main_info_m)
     pap_2.run_qmmm(main_info_m)
 
-    assert pap_1.systems[0]['qmmm_energy'] == -0.007543160121869773
-    assert pap_2.systems[0]['qmmm_energy'] == -0.007518680464338515
-    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([ 0.01123216,  0.05117862, -0.03534585]))
-    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([ 0.01091057,  0.05383476, -0.03246386]))
-    assert len(pap_1.systems[0]['qmmm_forces']) == 6
+    assert pap_1.systems[0]['qmmm_energy'] == -0.03977812308047926
+    assert pap_2.systems[0]['qmmm_energy'] == -0.041810966263750866
+    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([-0.03073274,-0.47845509,-1.07936284]))
+    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([-0.01825466,-0.234095  ,-0.59877961 ]))
+    assert len(pap_1.systems[0]['qmmm_forces']) == 9
     assert len(pap_2.systems[0]['qmmm_forces']) == 9

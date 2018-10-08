@@ -706,3 +706,6 @@ class OpenMM_wrapper(MM_wrapper):
         
         return topology, positions
 
+
+    def set_external_charges(self):
+        pass

@@ -21,7 +21,7 @@ def run_simulation(filename='input.json', equilibrate=5000):
     initializer = Initializer(filename)
 
     # initialize wrappers
-    md_simulation_wrapper, qmmm = initializer.initialize_wrappers()
+    md_simulation_wrapper, qmmm = initializer.initialize_wrappers(simulation=True)
 
     md_simulation_wrapper.equilibrate(equilibrate)
 

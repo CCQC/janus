@@ -19,8 +19,8 @@ config_ala = {"system" : {"mm_pdb_file" : ala_pdb_file}}
 config1 = initializer.Initializer(config_water, as_file=False)
 config2 = initializer.Initializer(config_ala, as_file=False)
 
-wrapper = openmm_wrapper.OpenMM_wrapper(config1.mm_param)
-wrapper_ala = openmm_wrapper.OpenMM_wrapper(config2.mm_param)
+wrapper = openmm_wrapper.OpenMM_wrapper(config1.ll_param)
+wrapper_ala = openmm_wrapper.OpenMM_wrapper(config2.ll_param)
 #openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 #openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
@@ -66,25 +66,29 @@ def test_create_openmm_system():
     assert sys_2.getNumForces() == 6
     assert sys_3.getNumForces() == 2
 
-def test_compute_mm():
-    state1 = wrapper.compute_mm(wrapper.pdb.topology, wrapper.pdb.positions, minimize=True)
-    state2 = wrapper.compute_mm(wrapper.pdb.topology, wrapper.pdb.positions)
+def test_compute_info():
+    state1 = wrapper.compute_info(wrapper.pdb.topology, wrapper.pdb.positions, minimize=True)
+    state2 = wrapper.compute_info(wrapper.pdb.topology, wrapper.pdb.positions)
 
-    state1['energy'] == -0.027789330729325913
-    state2['energy'] == -0.010562891563767518
+    assert state1['kinetic'] + state1['potential'] == -0.027789330729325913
+    assert state2['kinetic'] + state2['potential'] == -0.010562891563767518
 
 def test_initialize():
     wrapper.initialize('Mechanical')
     wrapper_ala.initialize('Electrostatic')
-    assert wrapper.main_info['energy'] ==  -0.010562891563767518
-    assert wrapper_ala.main_info['energy'] == 0.4511258275881568
+    print(wrapper.main_info['kinetic'] + wrapper.main_info['potential'])
+    print(wrapper_ala.main_info['kinetic'] + wrapper_ala.main_info['potential'])
+    assert wrapper.main_info['kinetic'] + wrapper.main_info['potential'] ==  -0.027789330729325913
+    assert wrapper_ala.main_info['kinetic'] + wrapper_ala.main_info['potential'] == -0.035126792644987366
 
 def test_get_main_info():
     state1 = wrapper.get_main_info()
     state2 = wrapper_ala.get_main_info()
     
-    assert state1['energy'] == -0.010562891563767518
-    assert state2['energy'] == 0.4511258275881568
+    print(state1['kinetic'] + state1['potential'])
+    print(state2['kinetic'] + state2['potential'])
+    assert state1['kinetic'] + state1['potential'] == -0.027789330729325913
+    assert state2['kinetic'] + state2['potential'] == -0.035126792644987366
     assert 'topology' in state1
     assert 'topology' in state2
 
@@ -92,16 +96,18 @@ def test_take_step():
     force1 = {0 : np.array([0.0,0.0,0.0]), 1 : np.array([0.0, 0.0, 0.0])}
     force2 = {0 : np.array([0.0,0.0,0.0]), 1 : np.array([-0.0001, -0.0001, -0.0001])}
     wrapper.take_step(force1)
-    energy1 = wrapper.main_info['energy']
+    energy1 = wrapper.main_info['kinetic'] + wrapper.main_info['potential']
     forces1 = wrapper.main_info['forces'][1]
+    print(forces1)
     wrapper.take_step(force2)
-    energy2 = wrapper.main_info['energy']
+    energy2 = wrapper.main_info['kinetic'] + wrapper.main_info['potential']
     forces2 = wrapper.main_info['forces'][1]
+    print(forces2)
 
-    assert energy1 == -0.010513594177180294
-    assert energy2 == -0.008889338698293133
-    assert np.allclose(np.array([ -10.19753551,-243.79458618, 215.38574219]), forces1)
-    assert np.allclose(np.array([ -14.37304115,-255.77798462, 208.98927307]), forces2)
+    assert energy1 == -0.027756743159817597
+    assert energy2 == -0.02581537517928049
+    assert np.allclose(np.array([ 31.84484291,-745.71618652,-415.50253296]), forces1)
+    assert np.allclose(np.array([ 28.39440727,-746.68914795,-423.17053223]), forces2)
 
 def test_create_modeller():
     mod1 = wrapper_ala.create_modeller(qm_atoms=[0,1,2,3], keep_qm=True)

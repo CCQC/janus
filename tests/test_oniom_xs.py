@@ -7,16 +7,16 @@ water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 param = {"system" : {"mm_pdb_file" : water}}
 config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.qm_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.mm_param)
+psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
+openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-oxs =   oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
-oxs_0 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
-oxs_1 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
-oxs_2 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm)
+oxs =   oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs_0 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs_1 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs_2 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
 
 def test_set_Rmin():
 
@@ -146,10 +146,10 @@ def test_run_qmmm():
     oxs_0.run_qmmm(main_info_m)
     oxs_1.run_qmmm(main_info_m)
 
-    assert oxs_0.systems[0]['qmmm_energy'] == -0.007546627936051209
-    assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([ 0.01126955,  0.04914971, -0.03767929]))
-    assert oxs_1.systems[0]['qmmm_energy'] ==  -0.007543160121869773
-    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([ 0.01123216,  0.05117862, -0.03534585]))
+    assert oxs_0.systems[0]['qmmm_energy'] == -0.027006342896513776
+    assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([-0.0185327, -1.17240646,-1.48047266]))
+    assert oxs_1.systems[0]['qmmm_energy'] ==  -0.04110507067214367
+    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([-0.0222685, -0.33163886,-0.77062603]))
     assert oxs_0.run_ID == 1
     assert oxs_1.run_ID == 1
     
