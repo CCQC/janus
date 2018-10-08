@@ -62,9 +62,14 @@ class MM_wrapper(ABC):
         if charges is not None:
             self.set_external_charges(charges)
 
-        info = self.mm_wrapper.compute_mm(topology, positions, include_coulomb=include_coulomb, link_atoms=link_atoms, minimize=minimize)
+        info = self.mm_wrapper.compute_info(topology, positions, include_coulomb=include_coulomb, link_atoms=link_atoms, minimize=minimize)
 
         return info
+
+
+    @abstractmethod
+    def compute_info(self):
+        pass
 
     @abstractmethod
     def set_external_charges(self):
@@ -83,10 +88,6 @@ class MM_wrapper(ABC):
         pass
 
     @abstractmethod
-    def compute_mm(self):
-        pass
-
-    @abstractmethod
     def get_main_charges(self):
         pass
 
@@ -98,3 +99,13 @@ class MM_wrapper(ABC):
     def equilibrate(self):
         pass
     
+    @abstractmethod
+    def get_qm_geometry(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def build_qm_param(self):
+        raise Exception('method not implemented for class')
+    @abstractmethod
+    def optimize_geometry(self):
+        raise Exception('method not implemented for class')

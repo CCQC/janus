@@ -67,7 +67,7 @@ class Psi4_wrapper(QM_wrapper):
         G = psi4.gradient(self.method)
         self.gradient = np.asarray(G)
 
-    def compute_energy_and_gradient(self):
+    def compute_info(self):
         """
         Calls Psi4 to obtain the energy, Psi4 wavefunction object, and 
         gradient of the QM region and saves as self.energy, self.wavefuction,

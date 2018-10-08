@@ -24,23 +24,6 @@ class QM_wrapper(ABC):
         self.charges = None
         self.is_open_shelled = False
 
-    @abstractmethod
-    def build_qm_param(self):
-        pass
-    @abstractmethod
-    def optimize_geometry(self):
-        pass
-    @abstractmethod
-    def compute_energy_and_gradient(self):
-        pass
-
-    @abstractmethod
-    def equilibrate(self):
-        raise Exception('method not implemented for class')
-
-    @abstractmethod
-    def get_main_info(self):
-        raise Exception('method not implemented for class')
 
     def get_energy_and_gradient(self, traj, include_coulomb='all', link_atoms=None, minimize=False, charges=None):
         """
@@ -79,7 +62,7 @@ class QM_wrapper(ABC):
         if minimize is True:
             geom = self.optimize_geometry()
         else:
-            self.compute_energy_and_gradient()
+            self.compute_info()
 
         self.info = {}
         self.info['energy'] = self.energy
@@ -129,3 +112,49 @@ class QM_wrapper(ABC):
             if self.total_elec % 2 != 0:
                 self.is_open_shelled = True
 
+    @abstractmethod
+    def compute_info(self):
+        pass
+
+    @abstractmethod
+    def build_qm_param(self):
+        pass
+    @abstractmethod
+    def optimize_geometry(self):
+        pass
+
+    @abstractmethod
+    def equilibrate(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def get_main_info(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def set_external_charges(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def initialize(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def take_step(self, force):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def get_main_info(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def get_main_charges(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def convert_trajectory(self):
+        raise Exception('method not implemented for class')
+
+    @abstractmethod
+    def equilibrate(self):
+        raise Exception('method not implemented for class')

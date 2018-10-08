@@ -80,9 +80,9 @@ class OpenMM_wrapper(MM_wrapper):
 
     def initialize(self, embedding_method):
         """
-        Calls compute_mm to get information for the system
+        Calls compute_info to get information for the system
         of interest in its initial state and saves the simulation 
-        object and information dictionary returned by compute_mm
+        object and information dictionary returned by compute_info
     
         Parameters
         ----------
@@ -96,11 +96,11 @@ class OpenMM_wrapper(MM_wrapper):
         # should I minimize energy here? If so, need to return new positions
         if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, minimize=True)
+            self.compute_info(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, minimize=True)
 
         elif embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
-            self.compute_mm(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, minimize=True)
+            self.compute_info(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, minimize=True)
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
@@ -152,7 +152,7 @@ class OpenMM_wrapper(MM_wrapper):
         
         return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
 
-    def compute_mm(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, link_atoms=None, minimize=False):
+    def compute_info(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, link_atoms=None, minimize=False):
         """
         Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
 
@@ -190,8 +190,8 @@ class OpenMM_wrapper(MM_wrapper):
 
         Examples
         --------
-        system, simulation, state = compute_mm(top, pos)
-        state = compute_mm(top, pos, return_simulation=False, return_system=False)
+        system, simulation, state = compute_info(top, pos)
+        state = compute_info(top, pos, return_simulation=False, return_system=False)
         """
 
         # Create an OpenMM system from an object's topology
