@@ -1,5 +1,5 @@
-janus
-=====
+janus code documentation
+========================
 
 .. toctree::
    :maxdepth: 4

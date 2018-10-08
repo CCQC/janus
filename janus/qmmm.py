@@ -409,11 +409,13 @@ class QMMM(object):
         '''
         Creates a MDtraj trajectory object with just the 
         primary subsystem, and adds in any link atoms
-        Note: Currently adds just H as link atom, need to expand. Also, H is added
-              as a very specific H1 atom, or else the connectivity in the create_new_residue_templates
-              function in openmm gets messed up and gives a "set of atoms match but bonds are different
-               error"
-        
+
+        Note
+        ----
+        Currently adds just H as link atom, need to expand. Also, H is added
+        as a very specific H1 atom, or else the connectivity in the create_new_residue_templates
+        function in openmm gets messed up and gives a "set of atoms match but bonds are different
+        error"
 
         Parameters
         ----------

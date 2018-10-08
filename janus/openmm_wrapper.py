@@ -231,6 +231,10 @@ class OpenMM_wrapper(MM_wrapper):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
         forcefield, and other paramters as given in input
+        TODO: need to put nonbond and nonbond_cutoff back but not doing for now
+        because need non-periodic system. Other parameters are also needed
+        also, expand forcefield to take not openmm built in
+        but customized as well
 
         Parameters
         ----------
@@ -248,11 +252,6 @@ class OpenMM_wrapper(MM_wrapper):
             atoms to remove coulombic forces from. Default is None.
         initialize : bool 
             Whether the main system is being initialized.
-
-        TODO: need to put nonbond and nonbond_cutoff back but not doing for now
-            because need non-periodic system. Other parameters are also needed
-            also, expand forcefield to take not openmm built in
-                but customized as well
 
         Returns
         -------

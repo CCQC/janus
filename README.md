@@ -16,3 +16,4 @@ A Python library for adaptive QM/MM methods
 * Adding mendeleev package: `pip install mendeleev` 
 * To add MDtraj: `conda install -c conda-forge mdtraj`
 * To add sphinx : `pip install Sphinx`
+* To add napoleon extension to sphinx `pip install sphinxcontrib-napoleon`

@@ -15,8 +15,6 @@ janus
    source/modules
 
 
-
-
 Indices and tables
 ==================
 
