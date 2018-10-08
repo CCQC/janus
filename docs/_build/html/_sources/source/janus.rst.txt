@@ -1,8 +1,3 @@
-janus package
-=============
-
-Submodules
-----------
 
 janus.aqmmm module
 ------------------
