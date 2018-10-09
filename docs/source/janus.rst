@@ -1,21 +1,5 @@
 
-janus.aqmmm module
-------------------
-
-.. automodule:: janus.aqmmm
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.das module
-----------------
-
-.. automodule:: janus.das
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.driver module
+driver
 -------------------
 
 .. automodule:: janus.driver
@@ -23,15 +7,7 @@ janus.driver module
     :undoc-members:
     :show-inheritance:
 
-janus.hot\_spot module
-----------------------
-
-.. automodule:: janus.hot_spot
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.initializer module
+initializer 
 ------------------------
 
 .. automodule:: janus.initializer
@@ -39,7 +15,15 @@ janus.initializer module
     :undoc-members:
     :show-inheritance:
 
-janus.mm\_wrapper module
+system 
+-------------------
+
+.. automodule:: janus.system
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+mm\_wrapper 
 ------------------------
 
 .. automodule:: janus.mm_wrapper
@@ -47,15 +31,8 @@ janus.mm\_wrapper module
     :undoc-members:
     :show-inheritance:
 
-janus.oniom\_xs module
-----------------------
 
-.. automodule:: janus.oniom_xs
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.openmm\_wrapper module
+openmm\_wrapper
 ----------------------------
 
 .. automodule:: janus.openmm_wrapper
@@ -63,23 +40,7 @@ janus.openmm\_wrapper module
     :undoc-members:
     :show-inheritance:
 
-janus.pap module
-----------------
-
-.. automodule:: janus.pap
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.psi4\_wrapper module
---------------------------
-
-.. automodule:: janus.psi4_wrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.qm\_wrapper module
+qm\_wrapper 
 ------------------------
 
 .. automodule:: janus.qm_wrapper
@@ -87,7 +48,15 @@ janus.qm\_wrapper module
     :undoc-members:
     :show-inheritance:
 
-janus.qmmm module
+psi4\_wrapper 
+--------------------------
+
+.. automodule:: janus.psi4_wrapper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+qmmm 
 -----------------
 
 .. automodule:: janus.qmmm
@@ -95,18 +64,52 @@ janus.qmmm module
     :undoc-members:
     :show-inheritance:
 
-janus.sap module
-----------------
+aqmmm
+------------------
 
-.. automodule:: janus.sap
+.. automodule:: janus.aqmmm
     :members:
     :undoc-members:
     :show-inheritance:
 
-janus.system module
--------------------
+oniom\_xs 
+----------------------
 
-.. automodule:: janus.system
+.. automodule:: janus.oniom_xs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+hot\_spot 
+----------------------
+
+.. automodule:: janus.hot_spot
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+das 
+----------------
+
+.. automodule:: janus.das
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+pap 
+----------------
+
+.. automodule:: janus.pap
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+sap 
+----------------
+
+.. automodule:: janus.sap
     :members:
     :undoc-members:
     :show-inheritance:
