@@ -96,11 +96,11 @@ class OpenMM_wrapper(MM_wrapper):
         # should I minimize energy here? If so, need to return new positions
         if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
-            self.compute_info(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, minimize=True)
+            self.compute_info(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, minimize=False)
 
         elif embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
-            self.compute_info(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, minimize=True)
+            self.compute_info(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, minimize=False)
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
@@ -452,14 +452,19 @@ class OpenMM_wrapper(MM_wrapper):
         if self.param['integrator'] == 'Langevin':
             print(self.step_size)
             integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
-            print(integrator.getStepSize())
+        elif self.param['integrator'] == 'Verlet':
+            integrator = OM.VerletIntegrator(self.step_size)
+
         else:
             print('only Langevin integrator supported currently')
 
-        integrator.setRandomNumberSeed(1)
+        #integrator.setRandomNumberSeed(1)
 
         simulation = OM_app.Simulation(topology, openmm_system, integrator)
         simulation.context.setPositions(positions)
+
+        if self.param['integrator'] == 'Verlet':
+            simulation.context.setVelocitiesToTemperature(self.temp)
 
         return simulation
 
