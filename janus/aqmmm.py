@@ -124,7 +124,10 @@ class AQMMM(ABC, QMMM):
         """
 
         self.qm_center = qm_center
-        self.qm_center_xyz = self.traj.xyz[0][qm_center]
+        if len(qm_center) == 1:
+            self.qm_center_xyz = self.traj.xyz[0][qm_center]
+        else:
+            self.qm_center_xyz, atom_weights, weight_ratio = self.compute_COM(qm_center)
 
         self.find_buffer_atoms(qm_center)
         
