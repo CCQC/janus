@@ -104,25 +104,24 @@ class Initializer(object):
         try:
             self.hl_param.update(self.param['hl'])
         except:
-            print("No QM parameters given. Using defaults")
+            print("No high level parameters given. Using Psi4 defaults")
         try:
             self.ll_param.update(self.param['ll'])
         except:
-            print("No MM parameters given. Using defaults")
+            print("No low level parameters given. Using OpenMM defaults")
 
         try:
             self.qmmm_param.update(self.param['qmmm'])
+            self.qmmm_param.update(self.param['system'])
         except: 
-            print("No QMMM parameters given. Using defaults")
-
-        self.qmmm_param.update(self.param['system'])
+            print("No QMMM parameters given.")
 
         try:
             self.aqmmm_param.update(self.param['aqmmm'])
+            self.aqmmm_param.update(self.qmmm_param)
         except: 
-            print("No AQMMM parameters given. Using defaults")
+            print("No AQMMM parameters given")
 
-        self.aqmmm_param.update(self.qmmm_param)
         
 
     def initialize_wrappers(self, simulation=False):
@@ -160,7 +159,7 @@ class Initializer(object):
             print("Only OpenMM currently available")
 
 
-        if self.qmmm_param['run_aqmmm'] is False: 
+        if not self.param['aqmmm']:
             qmmm = QMMM(self.qmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'ONIOM-XS':
             qmmm = ONIOM_XS(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)

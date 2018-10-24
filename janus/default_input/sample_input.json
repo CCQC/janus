@@ -1,0 +1,55 @@
+{
+"system" : {"mm_pdb_file" : "NMA.pdb"},
+
+"qmmm" : {"run_aqmmm" : false,
+          "embedding_method" : "Mechanical",
+          "qm_atoms" : [0,1,2,3,4,5,6,7,8,9,10,11],
+          "ll_program" : "OpenMM",
+          "hl_program" : "Psi4",
+          "qmmm_scheme" : "subtractive",
+          "boundary_treatment" : "link_atom",
+          "link_atom_element" : "H"},
+
+
+"aqmmm" : {
+            "aqmmm_scheme" : "ONIOM-XS",
+            "modified_variant" : false,
+            "partition_scheme" : "distance",
+            "Rmin" : 0.38,
+            "Rmax" : 0.45,
+            "qm_center" : [0]
+            },
+
+"md" : {
+         "md_simulation_program" : "OpenMM",
+         "start_qmmm" : 500,
+         "end_qmmm" : 1000, 
+         "step_size" : "0.002*OM_unit.picoseconds",
+         "md_steps" : [5,5],
+         "md_ensemble" : ["NVT", "NVE"],
+         },
+        }
+                                                                                                             
+"hl" : {
+         "qm_basis_set" : "STO-3G",
+         "qm_scf_type": "df",
+         "qm_guess": "sad",
+         "qm_reference": "rhf",
+         "qm_e_convergence": 1e-9,
+         "qm_method" : "scf",
+         "qm_charge_method" : "MULLIKEN_CHARGES" },
+"ll" : {
+         "mm_forcefield" : "amber99sb.xml",
+         "mm_water_forcefield" : "tip3p.xml",
+         "fric_coeff" : "1/OM_unit.picosecond",
+         "temp" : "300*OM_unit.kelvin",
+         "nonbondedCutoff" : "0.8*OM_unit.nanometer",
+         "nonbondedMethod" : "OM_app.CutoffNonPeriodic",
+         "rigid_water" : true,
+         "removeCMMotion" : true,
+         "ignoreExternalBonds" : true,
+         "is_periodic" : true}
+}
+
+
+
