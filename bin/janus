@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+from janus import driver
+import sys
+
+if len(sys.argv) != 2:
+    print("Run using: janus inputfile.json")
+    sys.exit(1)
+
+driver.run_janus(filename=sys.argv[1]))
+
