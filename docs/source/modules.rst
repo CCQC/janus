@@ -1,4 +1,4 @@
-janus code documentation
+Code Documentation
 ========================
 
 .. toctree::

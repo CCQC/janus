@@ -7,7 +7,19 @@ Structure of an input file
 System
 --------------------------
 
+QMMM
+--------------------------
+
+AQMMM
+--------------------------
+
 Molecular Dynamics
+--------------------------
+
+High Level 
+--------------------------
+
+Low Level
 --------------------------
 
 Required keywords
@@ -65,3 +77,5 @@ _________________
 
 Supported codes
 -----------------------
+Janus only supports Psi4 for quantum mechanics computations and
+OpenMM for molecular mechanics and molecular dynamics.

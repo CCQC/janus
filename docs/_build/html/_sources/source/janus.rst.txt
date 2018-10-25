@@ -115,10 +115,3 @@ sap
     :show-inheritance:
 
 
-Module contents
----------------
-
-.. automodule:: janus
-    :members:
-    :undoc-members:
-    :show-inheritance:

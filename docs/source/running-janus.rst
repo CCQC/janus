@@ -7,7 +7,19 @@ Structure of an input file
 System
 --------------------------
 
+QMMM
+--------------------------
+
+AQMMM
+--------------------------
+
 Molecular Dynamics
+--------------------------
+
+High Level 
+--------------------------
+
+Low Level
 --------------------------
 
 Required keywords
@@ -51,7 +63,7 @@ _________________
 **md_steps**
     :Description: Specifies how many total steps to take for the MD simulation
     :DataType: Int or List of Ints
-    :Default: end_qmmm - start_qmmm 
+    :Default: end_qmmm 
     :Notes: If more than one md_ensemble is desired, the steps for each can be specified in a list where
               each element will correspond to the steps run in each ensemble specified in md_ensemble. The step number specified 
               with start_qmmm will be taken as the step number of the last ensemble specified at which to start QM/MM
@@ -65,3 +77,5 @@ _________________
 
 Supported codes
 -----------------------
+Janus only supports Psi4 for quantum mechanics computations and
+OpenMM for molecular mechanics and molecular dynamics.
