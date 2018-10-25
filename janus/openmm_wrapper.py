@@ -65,9 +65,26 @@ class OpenMM_wrapper(MM_wrapper):
         self.ff_water = param['mm_water_forcefield']
         self.is_periodic = param['is_periodic']
 
-        self.temp = eval(param['temp'])
-        self.step_size = eval(param['step_size'])
-        self.fric_coeff = eval(param['fric_coeff'])
+        self.NVE_integrator = param['NVE_integrator']
+        self.NVT_integrator = param['NVT_integrator']
+
+        if (type(param['md_steps']) is list and type(param['md_ensemble']) is list):
+            self.md_ensemble = param['md_ensemble'][-1]
+            self.other_md_ensembles = param['md_ensemble'][0:-1]
+            self.other_ensemble_steps = param['md_steps'][0:-1]
+        elif (type(param['md_steps']) is int and type(param['md_ensemble']) is int):
+            self.md_ensemble = param['md_ensemble']
+            self.other_md_ensembles = None
+            self.other_ensemble_steps = None
+
+        self.temp = param['temp']*OM_unit.kelvin
+        self.step_size = param['step_size']*OM_unit.femtoseconds
+        self.fric_coeff = param['fric_coeff']/OM_unit.picosecond
+
+        if self.md_ensemble == 'NVT':
+            self.integrator = self.NVT_integrator
+        elif self.md_ensemble == 'NVE':
+            self.integrator = self.NVE_integrator
 
         self.positions = None
 
@@ -94,17 +111,38 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         # should I minimize energy here? If so, need to return new positions
+
+        if (self.other_md_ensembles is not None and self.other_ensemble_steps is not None):
+            for i, ensemble in enumerate(self.other_md_ensembles):
+                
+                if ensemble == 'NVT':
+                    integrator = self.NVT_integrator
+                elif ensemble == 'NVE':
+                    integrator = self.NVE_integrator
+
+                OM_system = self.create_openmm_system(self.pdb.topology)
+                simulation = self.create_openmm_simulation(OM_system, topology, positions, integrator, return_integrator=True)
+                simulation.minimizeEnergy()
+                simulation.step(self.other_ensemble_steps[i])
+                state = simulation.context.getState(getPositions=True)
+                pos = state.getPositions()
+                # also not sure if there should be option for returning information about these
+                # not sure if should save this
+                del simulation, state, system, integrator
+        else:
+            pos = self.pdb.positions
+
         if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
-            self.compute_info(self.pdb.topology, self.pdb.positions, initialize=True, return_simulation=True, minimize=False)
+            self.compute_info(self.pdb.topology, pos, initialize=True, return_simulation=True, minimize=False)
 
         elif embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
-            self.compute_info(self.pdb.topology, self.pdb.positions, include_coulomb=None, initialize=True, return_simulation=True, minimize=False)
+            self.compute_info(self.pdb.topology, pos, include_coulomb=None, initialize=True, return_simulation=True, minimize=False)
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
-    def take_step(self, force):
+    def take_updated_step(self, force):
         """
         Updates the system with forces from qmmm 
         and takes a simulation step
@@ -126,7 +164,7 @@ class OpenMM_wrapper(MM_wrapper):
         self.main_info = self.get_main_info()                                    # get the energy and gradients after step
         self.positions = self.main_info['positions']                             # get positions after step
 
-    def equilibrate(self, num):
+    def take_step(self, num):
         """
         Takes a specified num of steps in the MD simulation
         
@@ -136,7 +174,8 @@ class OpenMM_wrapper(MM_wrapper):
             the number of pure MD steps to take
         """
 
-        self.main_simulation.step(num)
+        if num != 0:
+            self.main_simulation.step(num)
 
     def get_main_info(self):
         """
@@ -195,18 +234,16 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         # Create an OpenMM system from an object's topology
-        if initialize is True:
-            OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=True)
-        else:
-            OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms)
+        OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=initialize)
 
         # Create an OpenMM simulation from the openmm system, topology, and positions.
-        simulation = self.create_openmm_simulation(OM_system, topology, positions)
+        simulation = self.create_openmm_simulation(OM_system, topology, positions, self.integrator)
 
         if minimize is True:
             simulation.minimizeEnergy()
 
         if initialize is True:
+        # need to add function to deal with this!!!!!!!!
             simulation.reporters.append(NetCDFReporter('output.nc', 50))
             simulation.reporters.append(OM_app.StateDataReporter('info.dat', 100, step=True,
             potentialEnergy=True, kineticEnergy=True, totalEnergy=True, temperature=True))
@@ -427,7 +464,7 @@ class OpenMM_wrapper(MM_wrapper):
             self.forcefield.registerResidueTemplate(template[i])
 
 
-    def create_openmm_simulation(self, openmm_system, topology, positions):
+    def create_openmm_simulation(self, openmm_system, topology, positions, integrator,  return_integrator=False):
         """
         Creates an OpenMM simulation object given
         an OpenMM system, topology, and positions
@@ -449,10 +486,9 @@ class OpenMM_wrapper(MM_wrapper):
         create_open_simulation(openmm_sys, pdb.topology. pdb.positions)
         """
 
-        if self.param['integrator'] == 'Langevin':
-            print(self.step_size)
+        if integrator == 'Langevin':
             integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
-        elif self.param['integrator'] == 'Verlet':
+        elif integrator == 'Verlet':
             integrator = OM.VerletIntegrator(self.step_size)
 
         else:
@@ -466,7 +502,10 @@ class OpenMM_wrapper(MM_wrapper):
         if self.param['integrator'] == 'Verlet':
             simulation.context.setVelocitiesToTemperature(self.temp)
 
-        return simulation
+        if return_integrator is False:
+            return simulation
+        else:
+            return simulation, integrator
 
     def get_state_info(simulation,
                        main_info=False,

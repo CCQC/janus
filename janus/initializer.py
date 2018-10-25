@@ -33,6 +33,57 @@ class Initializer(object):
         else:
             self.param = param
 
+        try:
+            print('System information read from {}'.format(self.param['system']['system_info']))
+        except KeyError:
+            print('No system info was specified')
+        
+        if 'md' in self.param:
+            self.run_md = True
+
+            try:
+                self.md_sim_prog = self.param['md']['md_simulation_program']
+            except KeyError:
+                print('MD simulation program needs to be specified')
+            try:
+                self.start_qmmm = self.param['md']['start_qmmm']
+            except KeyError:
+                print('step at which to start qmmm needs to be specified')
+            try:
+                self.end_qmmm = self.param['md']['end_qmmm']
+            except KeyError:
+                print('step at which to end qmmm needs to be specified')
+            try:
+                self.step_size = self.param['md']['step_size']
+            except:
+                self.step_size=1
+                print('Step size not specified, default of 1 femtosecond will be used')
+            try:
+                self.md_steps = self.param['md']['md_steps']
+            except:
+                self.md_steps = self.end_qmmm 
+                print('Number of steps not specified, taking {} total steps by default'.format(self.end_qmmm))
+            try:
+                self.md_ensemble = self.param['md']['md_ensemble']
+            except:
+                self.md_ensemble = 'NVE'
+                print('NVE ensemble used by default')
+
+
+            self.qmmm_steps = self.end_qmmm - self.start_qmmm
+
+            if type(self.md_steps) is int:
+                self.end_steps = self.md_steps - self.end_qmmm
+            elif type(self.md_steps) is list:
+                self.end_steps = self.md_steps[-1] - self.end_qmmm
+                
+                
+        else:
+            self.run_md = False
+            self.md_sim_prog = None
+            print("MD simulation not specified. Not performing a simulation")
+            
+
         self.qmmm_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/qmmm.json'
         self.aqmmm_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/aqmmm.json'
         self.psi4_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/psi4.json'
@@ -41,21 +92,6 @@ class Initializer(object):
         self.qmmm_param = self.load_param(self.qmmm_paramfile)
         self.aqmmm_param = self.load_param(self.aqmmm_paramfile)
 
-        try:
-            print('Using pdb file ', self.param['system']['mm_pdb_file'])
-        except KeyError:
-            print('No pdb file given')
-
-        try:
-            self.steps = self.param['system']['md_steps']
-        except:
-            print("Number of steps is not specified")
-
-        try:
-            self.md_sim_prog = self.param['system']['md_simulation_program']
-        except:
-            print("No program for an MD simulation is specified. Not performing a simulation")
-            self.md_sim_prog = None
             
         try:
             self.hl_program = self.param['qmmm']['hl_program']
@@ -77,22 +113,27 @@ class Initializer(object):
         updates default parameters with user defined parameters
 
         """
+        try:
+            self.qmmm_param.update(self.param['qmmm'])
+            self.qmmm_param.update(self.param['system'])
+        except KeyError: 
+            print("No QMMM parameters given.")
 
         if self.hl_program == "Psi4":
             self.hl_param = self.load_param(self.psi4_paramfile)
         elif self.hl_program == "OpenMM":
             self.hl_param = self.load_param(self.openmm_paramfile)
         else:
-            print("Only Psi4 and OpenMM currently available")
+            print("Only Psi4 and OpenMM currently available to be used in high level computations")
 
         if self.ll_program == "OpenMM":
             self.ll_param = self.load_param(self.openmm_paramfile)
         else:
-            print("Only OpenMM currently available")
+            print("Only OpenMM currently available to be used in low level computations")
 
         self.ll_param.update(self.param['system'])
 
-        if self.md_sim_prog is not None:
+        if self.run_md is True:
 
             if self.md_sim_prog == "OpenMM":
                 self.md_sim_param = self.load_param(self.openmm_paramfile)
@@ -100,6 +141,8 @@ class Initializer(object):
                 print("Only OpenMM currently available")
 
             self.md_sim_param.update(self.param['system'])
+            self.md_sim_param.update(self.param['md'])
+            self.ll_param.update(self.param['md'])
 
         try:
             self.hl_param.update(self.param['hl'])
@@ -111,16 +154,10 @@ class Initializer(object):
             print("No low level parameters given. Using OpenMM defaults")
 
         try:
-            self.qmmm_param.update(self.param['qmmm'])
-            self.qmmm_param.update(self.param['system'])
-        except: 
-            print("No QMMM parameters given.")
-
-        try:
             self.aqmmm_param.update(self.param['aqmmm'])
             self.aqmmm_param.update(self.qmmm_param)
         except: 
-            print("No AQMMM parameters given")
+            print("No AQMMM parameters given, running traditional QM/MM")
 
         
 
