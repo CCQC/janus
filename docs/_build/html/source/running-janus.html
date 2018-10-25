@@ -83,6 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Running janus</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#structure-of-an-input-file">Structure of an input file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#system">System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#molecular-dynamics">Molecular Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#supported-codes">Supported codes</a></li>
 </ul>
@@ -156,235 +157,122 @@
 <h1>Running janus<a class="headerlink" href="#running-janus" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="structure-of-an-input-file">
 <h2>Structure of an input file<a class="headerlink" href="#structure-of-an-input-file" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="system">
-<h3>System<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h3>
 </div>
+<div class="section" id="system">
+<h2>System<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="molecular-dynamics">
 <h2>Molecular Dynamics<a class="headerlink" href="#molecular-dynamics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="required-keywords">
+<h3>Required keywords<a class="headerlink" href="#required-keywords" title="Permalink to this headline">¶</a></h3>
+<hr class="docutils" />
 <dl class="docutils">
 <dt><strong>md_simulation_program</strong></dt>
-<dd><ul class="first last simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
+<dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies what program to use for MD simulation</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">DataType:</th><td class="field-body">String</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">OpenMM</td>
 </tr>
 </tbody>
 </table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Possible Values:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">OpenMM</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
 </dd>
 <dt><strong>start_qmmm</strong></dt>
-<dd><ul class="first last simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
+<dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies at which step to start the QM/MM or adaptive QM/MM approach</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Notes:</th><td class="field-body">QM/MM can be started after taking some MD steps so the system can equilibrate</td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
 </dd>
 <dt><strong>end_qmmm</strong></dt>
-<dd><ul class="first last simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
+<dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies how many</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Notes:</th><td class="field-body">end_qmmm - start_qmmm = total number of MD steps that will use QM/MM forces</td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
 </dd>
 </dl>
+</div>
+<div class="section" id="optional-keywords">
+<h3>Optional keywords<a class="headerlink" href="#optional-keywords" title="Permalink to this headline">¶</a></h3>
+<hr class="docutils" />
 <dl class="docutils">
 <dt><strong>step_size</strong></dt>
-<dd><ul class="first last simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
+<dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">The step size of the MD simulation in femtoseconds</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">1</td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
 </dd>
 <dt><strong>md_ensemble</strong></dt>
-<dd><ul class="first last simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
+<dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Ensemble of MD simulation</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">DataType:</th><td class="field-body">String or List of Strings</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String or List of Strings</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Possible Values:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">NVT, NVE</td>
+<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">NVT, NVE</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">NVE</td>
+<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">NVE</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Notes:</th><td class="field-body">If more than one ensemble is desired (i.e., NVT run before NVE) a list can be created in the
 order of what is run</td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
 </dd>
 <dt><strong>md_steps</strong></dt>
-<dd><ul class="first last simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
+<dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies how many total steps to take for the MD simulation</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">DataType:</th><td class="field-body">Int or List of Ints</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Int or List of Ints</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">end_qmmm - start_qmmm</td>
 </tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Notes:</th><td class="field-body">If more than one md_ensemble is desired, the steps for each can be specified in a list where
+<tr class="field-even field"><th class="field-name">Notes:</th><td class="field-body">If more than one md_ensemble is desired, the steps for each can be specified in a list where
 each element will correspond to the steps run in each ensemble specified in md_ensemble. The step number specified
 with start_qmmm will be taken as the step number of the last ensemble specified at which to start QM/MM</td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
 </dd>
 </dl>
 </div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<hr class="docutils" />
 <div class="section" id="supported-codes">
 <h2>Supported codes<a class="headerlink" href="#supported-codes" title="Permalink to this headline">¶</a></h2>
 </div>
