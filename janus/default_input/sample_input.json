@@ -26,7 +26,7 @@
          "md_simulation_program" : "OpenMM",
          "start_qmmm" : 500,
          "end_qmmm" : 1000, 
-         "step_size" : "2*OM_unit.femtoseconds",
+         "step_size" : 1,
          "md_steps" : [5,5],
          "md_ensemble" : ["NVT", "NVE"],
          "return_trajectory" : 50,
@@ -46,11 +46,12 @@
          "qm_e_convergence": 1e-9,
          "qm_method" : "scf",
          "qm_charge_method" : "MULLIKEN_CHARGES" },
+
 "openmm" : {
          "mm_forcefield" : "amber99sb.xml",
          "mm_water_forcefield" : "tip3p.xml",
-         "fric_coeff" : "1/OM_unit.picosecond",
-         "temp" : "300*OM_unit.kelvin",
+         "fric_coeff" : 1,
+         "temp" : 300,
          "nonbondedCutoff" : "0.8*OM_unit.nanometer",
          "nonbondedMethod" : "OM_app.CutoffNonPeriodic",
          "rigid_water" : true,

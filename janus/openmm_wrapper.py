@@ -313,12 +313,12 @@ class OpenMM_wrapper(MM_wrapper):
         #                                    constraints=self.constraints)
         #else:
         openmm_system = self.forcefield.createSystem(topology,
-                                        nonbondedMethod=eval(self.param['nonbondedMethod']),
-                                        nonbondedCutoff=eval(self.param['nonbondedCutoff']),
-                                        constraints=eval(self.param['constraints']),
-                                        residueTemplates=self.param['residueTemplates'],
+                                        nonbondedMethod=OM_app.eval(self.param['nonbondedMethod']),
+                                        constraints=OM_app.eval(self.param['constraints']),
                                         hydrogenMass=eval(self.param['hydrogenMass']),
                                         switchDistance=eval(self.param['switchDistance']),
+                                        residueTemplates=self.param['residueTemplates'],
+                                        nonbondedCutoff=self.param['nonbondedCutoff']*OM_unit.nanometer,
                                         rigid_water=self.param['rigid_water'],
                                         removeCMMotion=self.param['removeCMMotion'],
                                         flexibleConstraints=self.param['flexibleConstraints'],
