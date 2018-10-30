@@ -174,7 +174,7 @@
 
 <dl class="function">
 <dt id="janus.driver.run_simulation">
-<code class="descclassname">janus.driver.</code><code class="descname">run_simulation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_simulation" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">janus.driver.</code><code class="descname">run_simulation</code><span class="sig-paren">(</span><em>initializer</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_simulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drives QM/MM with MD time step integration</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -188,7 +188,7 @@
 
 <dl class="function">
 <dt id="janus.driver.run_single_point">
-<code class="descclassname">janus.driver.</code><code class="descname">run_single_point</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_single_point" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">janus.driver.</code><code class="descname">run_single_point</code><span class="sig-paren">(</span><em>initializer</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_single_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drives single QM/MM computation</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -547,7 +547,7 @@ This may not be robust.</p>
 
 <dl class="method">
 <dt id="janus.openmm_wrapper.OpenMM_wrapper.create_openmm_simulation">
-<code class="descname">create_openmm_simulation</code><span class="sig-paren">(</span><em>openmm_system</em>, <em>topology</em>, <em>positions</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_openmm_simulation" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_openmm_simulation</code><span class="sig-paren">(</span><em>openmm_system</em>, <em>topology</em>, <em>positions</em>, <em>integrator</em>, <em>return_integrator=False</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_openmm_simulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an OpenMM simulation object given
 an OpenMM system, topology, and positions</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -655,20 +655,6 @@ an OpenMM Modeller object</li>
 <p class="rubric">Examples</p>
 <p>delete_atoms(model, [0, 3, 5])
 delete_atoms(model, [‘Cl’])</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="janus.openmm_wrapper.OpenMM_wrapper.equilibrate">
-<code class="descname">equilibrate</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.equilibrate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes a specified num of steps in the MD simulation</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> (<em>int</em>) – the number of pure MD steps to take</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -832,7 +818,21 @@ set_charge_zero(system, link_atoms=[0,1,2])</p>
 
 <dl class="method">
 <dt id="janus.openmm_wrapper.OpenMM_wrapper.take_step">
-<code class="descname">take_step</code><span class="sig-paren">(</span><em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.take_step" title="Permalink to this definition">¶</a></dt>
+<code class="descname">take_step</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.take_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a specified num of steps in the MD simulation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> (<em>int</em>) – the number of pure MD steps to take</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.take_updated_step">
+<code class="descname">take_updated_step</code><span class="sig-paren">(</span><em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.take_updated_step" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the system with forces from qmmm
 and takes a simulation step</p>
 <table class="docutils field-list" frame="void" rules="none">

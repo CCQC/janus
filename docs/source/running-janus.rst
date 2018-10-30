@@ -16,9 +16,15 @@ _________________
     :Description: Files for describing the positions and topology of the initial system
     :DataType: List of strings
 
+Optional keywords
+_________________
+
+----------------------------
+
 **system_info_format**
     :Description: Specifies the format of the files given in system_info
     :DataType: List of strings
+    :Default: ['pdb']
     :Values: Janus current accepts pdb files
     
 QMMM
