@@ -196,7 +196,7 @@ class Initializer(object):
             print("Only OpenMM currently available")
 
 
-        if not self.param['aqmmm']:
+        if self.param['qmmm']['run_aqmmm'] is False:
             qmmm = QMMM(self.qmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'ONIOM-XS':
             qmmm = ONIOM_XS(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)

@@ -7,11 +7,131 @@ Structure of an input file
 System
 --------------------------
 
+Required keywords
+_________________
+
+----------------------------
+
+**system_info**
+    :Description: Files for describing the positions and topology of the initial system
+    :DataType: List of strings
+
+**system_info_format**
+    :Description: Specifies the format of the files given in system_info
+    :DataType: List of strings
+    :Values: Janus current accepts pdb files
+    
 QMMM
 --------------------------
 
+Required keywords
+_________________
+
+----------------------------
+
+**run_aqmmm**
+    :Description: Specifies whether to run adaptive QM/MM
+    :DataType: Bool
+
+**qm_atoms**
+    :Description: Specifies what atoms to treat with QM (or other high level treatment)
+    :DataType: List
+    :Notes: If run_aqmmm is true, the qm_atoms is the same as the qm_center
+
+Optional keywords
+_________________
+
+----------------------------
+
+**ll_program**
+    :Description: Specifies what program to use for the lower level computation
+    :DataType: String
+    :Values: OpenMM
+    :Default: OpenMM
+
+**hl_program**
+    :Description: Specifies what program to use for the high level computations
+    :DataType: String
+    :Values: OpenMM, Psi4
+    :Default: Psi4
+
+**embedding_method**
+    :Description: Specifies what QM/MM embedding method to use
+    :DataType: String
+    :Values: Electrostatic, Mechanical
+    :Default: Mechanical
+
+**qmmm_scheme**
+    :Description: Specifies what energy scheme to use for computing the QM/MM energy
+    :DataType: String
+    :Values: subtractive
+    :Default: subtractive
+
+**boundary_treatment**
+    :Description: Specifies the scheme to use for the treatment of dangling bonds 
+    :DataType: String
+    :Values: link_atom, RC, RCD
+    :Default: link_atom
+
+**link_atom_element**
+    :Description: Specifies what atom to use for the link atom
+    :DataType: String
+    :Values: H
+    :Default: H
+
+Examples
+_________________
+
+----------------------------
+
 AQMMM
 --------------------------
+
+Required keywords
+_________________
+
+----------------------------
+
+**qm_center**
+    :Description: Specifies what atoms to designate as the center for the high level treatment
+    :DataType: List
+
+Optional keywords
+_________________
+
+----------------------------
+
+**aqmmm_scheme**
+    :Description: Specifies what adaptive QM/MM approach to use
+    :DataType: String
+    :Values: ONIOM-XS, Hot-Spot, PAP, SAP, DAS
+    :Default: ONIOM-XS
+
+**partition_scheme**
+    :Description: Specifies how to define the buffer zone atoms
+    :DataType: String
+    :Values: distance
+    :Default: distance
+
+**Rmin**
+    :Description: Specifies the radius from the qm center to the inner boundary of the buffer zone in distance partitioning in angstroms
+    :DataType: Float
+    :Default: 4.0
+
+**Rmin**
+    :Description: Specifies the radius from the qm center to the outer boundary of the buffer zone in distance partitioning in angstroms
+    :DataType: Float
+    :Default: 4.5
+
+**modified_variant**
+    :Description: Specifies whether to use the modified variant of either the PAP or SAP schemes
+    :DataType: Bool
+    :Default: False
+
+Examples
+_________________
+
+----------------------------
 
 Molecular Dynamics
 --------------------------
@@ -68,6 +188,47 @@ _________________
               each element will correspond to the steps run in each ensemble specified in md_ensemble. The step number specified 
               with start_qmmm will be taken as the step number of the last ensemble specified at which to start QM/MM
 
+**return_trajectory**
+    :Description: Whether to return the trajectory of the MD simulation. Keyword value lists the frame interval to save.
+    :DataType: Int 
+    :Default: 0 (trajectory not returned)
+
+**return_trajectory_name**
+    :description: name of trajectory file to return
+    :datatype: string
+    :default: output
+
+**trajectory_format**
+    :Description: The format of the trajectory file to return
+    :DataType: String
+    :Values: NetCDF,
+    :Default: NetCDF
+
+**return_system**
+    :Description: Whether to return the final position and topology of the system
+    :DataType: Bool
+    :Default: False
+
+**return_system_name**
+    :description: name of inf file to return
+    :datatype: string
+    :default: final
+
+**return_system_format**
+    :Description: The format of the info file(s) to return
+    :DataType: String
+    :Values: pdb,
+    :Default: pdb
+
+**return_info_interval**
+    :Description: The frame interval for saving energy, temperature, velocity information.
+    :DataType: Int
+    :Default: 0 (info not returned)
+
+**return_info**
+    :Description: Options of what to return energy, temperature, velocity information.
+    :DataType: List of Bool
+    :Default: False
 
 Examples
 _________________
