@@ -21,8 +21,9 @@
             "Rmax" : 0.45,
             "qm_center" : [0]
             },
+"ll_md" : {},
 
-"md" : {
+"ll" : {
          "md_simulation_program" : "OpenMM",
          "start_qmmm" : 500,
          "end_qmmm" : 1000, 
@@ -38,7 +39,7 @@
          "return_info_interval" : 5
         },
                                                                                                              
-"psi4" : {
+"hl" : {
          "qm_basis_set" : "STO-3G",
          "qm_scf_type": "df",
          "qm_guess": "sad",
