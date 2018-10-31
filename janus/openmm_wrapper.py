@@ -88,12 +88,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         self.positions = None
 
-        # instantiate OpenMM pdb object
-        if self.pdb_file:
-            self.pdb = OpenMM_wrapper.create_pdb(self.pdb_file)
-
-        # instantiate OpenMM forcefield object
-        self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
+        self.convert_input()
 
     def initialize(self, embedding_method):
         """
@@ -244,9 +239,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         if initialize is True:
         # need to add function to deal with this!!!!!!!!
-            simulation.reporters.append(NetCDFReporter('output.nc', 50))
-            simulation.reporters.append(OM_app.StateDataReporter('info.dat', 100, step=True,
-            potentialEnergy=True, kineticEnergy=True, totalEnergy=True, temperature=True))
+            self.set_up_reporters(simulation) 
 
         # Calls openmm wrapper to get information specified
         state = OpenMM_wrapper.get_state_info(simulation,
@@ -590,43 +583,22 @@ class OpenMM_wrapper(MM_wrapper):
 
         return values
 
-    def write_pdb(mod, filename):
+    def write_pdb(self, info):
         """
         Write a pdb file from an OpenMM modeller
 
-        Parameters
-        ----------
-        mod : OpenMM modeller object
-        filename : str 
-            file to write to
-
-        Examples
-        --------
-        write_pdb(mod, 'input.pdb')
         """
-        OM.PDBFile.writeFile(mod.topology, mod.positions, open(filename, 'w'))
+        return_sys  = False
+        sys_file    = 'final.pdb'
+
+        if self.param['return_system']:
+            return_sys = self.param['return_system']
+        if self.param['return_system_filename']:
+            sys_file = self.param['return_system_filename']
+
+        if return_sys is True: 
+            OM.PDBFile.writeFile(info['topology'], info['positions'], open(sys_file, 'w'))
  
-    def create_pdb(mm_pdb_file):
-            """
-            Creates an OpenMM PDB object
-
-            Parameters
-            ----------
-            mm_pdb_file : str 
-                pdb file name to read
-
-            Returns
-            -------
-            OpenMM PDB object
-
-            Examples
-            --------
-            model = create_openmm_pdb('input.pdb')
-            """
-
-            pdb = OM_app.PDBFile(mm_pdb_file)
-            return pdb
-
 
     def create_modeller(self, qm_atoms, keep_qm=None):
         """
@@ -753,3 +725,80 @@ class OpenMM_wrapper(MM_wrapper):
 
     def set_external_charges(self):
         pass
+
+    def convert_input(self):
+
+        if self.system_info_format == 'pdb':
+            # instantiate OpenMM pdb object
+            self.pdb = OM_app.PDBFile(self.system_info[0])
+            # instantiate OpenMM forcefield object
+            self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
+            self.topology = self.pdb.topology
+
+        elif self.system_info_format == 'Amber':
+            for fil in self.system_info:
+                if 'prmtop' in fil:
+                    self.forcefield = OM_app.AmberPrmtopFile(fil)
+                    self.topology = self.forcefield.topology
+                elif 'inpcrd' in fil:
+                    self.pdb = OM_app.AmberInpcrdFile(fil)
+                    self.boxVectors = self.pdb.boxVectors
+
+        elif self.system_info_format == 'Gromacs':
+            for fil in self.system_info:
+                if 'gro' in fil:
+                    self.pdb = OM_app.GromacsGroFile(fil)
+            for fil in self.system_info:
+                if 'top' in fil:
+                    self.forcefield = OM_app.GromacsTopFile(fil, periodicBoxVectors=self.pdb.getPeriodicBoxVectors())
+                    self.topology = self.forcefield.topology
+
+
+    def set_up_reporters(self):
+
+        return_traj = 0
+        traj_file   = 'output.nc'
+        traj_format = 'NetCDF'
+        info_int    = 0
+        return_info = []
+        pot = False
+        kin = False
+        enrgy = False
+        temp = False
+        den = False
+    
+        if self.param['return_trajectory']:
+            return_traj = self.param['return_trajectory']
+        if self.param['return_trajectory_filename']:
+            traj_file = self.param['return_trajectory_filename']
+        if self.param['trajectory_format']:
+            traj_format = self.param['trajectory_format']
+        if self.param['return_info_interval']:
+            info_int = self.param['return_info_interval']
+        if self.param['return_info']:
+            return_info = self.param['return_info']
+
+        if return_traj != 0:
+            if traj_format == 'NetCDF':
+                simulation.reporters.append(NetCDFReporter(traj_file, return_traj))
+
+
+        if return_info:
+
+            if 'potentialEnergy' in return_info:
+                pot = True
+            if 'kineticEnergy' in return_info:
+                kin = True
+            if 'totalEnergy' in return_info:
+                enrgy = True
+            if 'temperature' in return_info:
+                temp = True
+            if 'density' in return_info:
+                den = True
+                
+            simulation.reporters.append(OM_app.StateDataReporter('info.dat', info_int, step=True,
+            potentialEnergy=pot, kineticEnergy=kin, totalEnergy=enrgy, temperature=temp, density=den))
+
+
+
+

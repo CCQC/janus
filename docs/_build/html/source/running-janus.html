@@ -177,6 +177,8 @@
 </tr>
 <tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">List of strings</td>
 </tr>
+<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">inpcrd and prmtop files needed for Amber files, gro and top files needed for Gromacs files</td>
+</tr>
 </tbody>
 </table>
 </dd>
@@ -193,11 +195,11 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies the format of the files given in system_info</td>
 </tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">List of strings</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">[‘pdb’]</td>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">pdb</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Values:</th><td class="field-body">Janus current accepts pdb files</td>
+<tr class="field-even field"><th class="field-name">Values:</th><td class="field-body">pdb, Amber, Gromacs</td>
 </tr>
 </tbody>
 </table>
@@ -576,7 +578,7 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 </tbody>
 </table>
 </dd>
-<dt><strong>return_trajectory_name</strong></dt>
+<dt><strong>return_trajectory_filename</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -611,7 +613,7 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Whether to return the final position and topology of the system</td>
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Whether to return the final position and topology of the system in a pdb file</td>
 </tr>
 <tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Bool</td>
 </tr>
@@ -620,46 +622,16 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 </tbody>
 </table>
 </dd>
-<dt><strong>return_system_name</strong></dt>
+<dt><strong>return_system_filename</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">description:</th><td class="field-body">name of inf file to return</td>
+<tr class="field-odd field"><th class="field-name">description:</th><td class="field-body">name of system file to return</td>
 </tr>
 <tr class="field-even field"><th class="field-name">datatype:</th><td class="field-body">string</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">default:</th><td class="field-body">final</td>
-</tr>
-</tbody>
-</table>
-</dd>
-<dt><strong>return_system_format</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">The format of the info file(s) to return</td>
-</tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">pdb,</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">pdb</td>
-</tr>
-</tbody>
-</table>
-</dd>
-<dt><strong>return_info_interval</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">The frame interval for saving energy, temperature, velocity information.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">0 (info not returned)</td>
+<tr class="field-odd field"><th class="field-name">default:</th><td class="field-body">final.pdb</td>
 </tr>
 </tbody>
 </table>
@@ -669,11 +641,27 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Options of what to return energy, temperature, velocity information.</td>
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Whether to return system information such as energy and temperature</td>
 </tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">List of Bool</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">List of strings with values to return, will be returned in file “info.dat”</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">False</td>
+<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">potentialEnergy, kineticEnergy, totalEnergy, temperature, density</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">[]</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>return_info_interval</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">The frame interval for saving energy, etc. information.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Int</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">0 (info not returned)</td>
 </tr>
 </tbody>
 </table>

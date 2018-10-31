@@ -144,3 +144,9 @@ class QM_wrapper(ABC):
     def convert_trajectory(self):
         raise Exception('method not implemented for class')
 
+    def convert_input(self):
+        raise Exception('method not implemented for class')
+
+    def set_up_reporters(self):
+        raise Exception('method not implemented for class')
+    

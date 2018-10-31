@@ -15,6 +15,7 @@ _________________
 **system_info**
     :Description: Files for describing the positions and topology of the initial system
     :DataType: List of strings
+    :Values: inpcrd and prmtop files needed for Amber files, gro and top files needed for Gromacs files
 
 Optional keywords
 _________________
@@ -23,9 +24,9 @@ _________________
 
 **system_info_format**
     :Description: Specifies the format of the files given in system_info
-    :DataType: List of strings
-    :Default: ['pdb']
-    :Values: Janus current accepts pdb files
+    :DataType: String
+    :Default: pdb
+    :Values: pdb, Amber, Gromacs
     
 QMMM
 --------------------------
@@ -199,7 +200,7 @@ _________________
     :DataType: Int 
     :Default: 0 (trajectory not returned)
 
-**return_trajectory_name**
+**return_trajectory_filename**
     :description: name of trajectory file to return
     :datatype: string
     :default: output
@@ -211,30 +212,27 @@ _________________
     :Default: NetCDF
 
 **return_system**
-    :Description: Whether to return the final position and topology of the system
+    :Description: Whether to return the final position and topology of the system in a pdb file
     :DataType: Bool
     :Default: False
 
-**return_system_name**
-    :description: name of inf file to return
+**return_system_filename**
+    :description: name of system file to return
     :datatype: string
-    :default: final
+    :default: final.pdb
 
-**return_system_format**
-    :Description: The format of the info file(s) to return
-    :DataType: String
-    :Values: pdb,
-    :Default: pdb
+**return_info**
+    :Description: Whether to return system information such as energy and temperature
+    :DataType: List of strings with values to return, will be returned in file "info.dat"
+    :Values: potentialEnergy, kineticEnergy, totalEnergy, temperature, density
+    :Default: []
 
 **return_info_interval**
-    :Description: The frame interval for saving energy, temperature, velocity information.
+    :Description: The frame interval for saving energy, etc. information.
     :DataType: Int
     :Default: 0 (info not returned)
 
-**return_info**
-    :Description: Options of what to return energy, temperature, velocity information.
-    :DataType: List of Bool
-    :Default: False
+
 
 Examples
 _________________

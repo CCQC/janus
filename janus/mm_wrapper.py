@@ -19,8 +19,8 @@ class MM_wrapper(ABC):
             what program to use for QM computations
 
         """
-        if param['mm_pdb_file']:
-            self.pdb_file = param['mm_pdb_file']
+        self.system_info = param['system_info']
+        self.system_info_format = param['system_info_format']
         self.param = param
         self.class_type = class_type
         self.main_info = None
@@ -98,7 +98,15 @@ class MM_wrapper(ABC):
     @abstractmethod
     def equilibrate(self):
         pass
+
+    @abstractmethod
+    def convert_input(self):
+        pass
     
+    @abstractmethod
+    def set_up_reporters(self):
+        pass
+
     def get_qm_geometry(self):
         raise Exception('method not implemented for class')
 

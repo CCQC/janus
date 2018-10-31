@@ -329,6 +329,11 @@ need functionality for link atoms != ‘H’</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="janus.mm_wrapper.MM_wrapper.convert_input">
+<code class="descname">convert_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.convert_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="janus.mm_wrapper.MM_wrapper.convert_trajectory">
 <code class="descname">convert_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.convert_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -420,6 +425,11 @@ need functionality for link atoms != ‘H’</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="janus.mm_wrapper.MM_wrapper.set_up_reporters">
+<code class="descname">set_up_reporters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.set_up_reporters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="janus.mm_wrapper.MM_wrapper.take_step">
 <code class="descname">take_step</code><span class="sig-paren">(</span><em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MM_wrapper.take_step" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -476,6 +486,11 @@ atoms to remove coulombic forces from. Default is None.</li>
 <p>system, simulation, state = compute_info(top, pos)
 state = compute_info(top, pos, return_simulation=False, return_system=False)</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.convert_input">
+<code class="descname">convert_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.convert_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="janus.openmm_wrapper.OpenMM_wrapper.convert_trajectory">
@@ -613,26 +628,6 @@ atoms to remove coulombic forces from. Default is None.</li>
 openmm_sys = create_openmm_system(top, include_coulomb=’no_link’, link_atoms=[0,1,2])
 openmm_sys = create_openmm_system(top, include_coulomb=’only’)
 openmm_sys = create_openmm_system(top, initialize=True)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="janus.openmm_wrapper.OpenMM_wrapper.create_pdb">
-<code class="descname">create_pdb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.create_pdb" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates an OpenMM PDB object</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mm_pdb_file</strong> (<em>str</em>) – pdb file name to read</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">OpenMM PDB object</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>model = create_openmm_pdb(‘input.pdb’)</p>
 </dd></dl>
 
 <dl class="method">
@@ -817,6 +812,11 @@ set_charge_zero(system, link_atoms=[0,1,2])</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="janus.openmm_wrapper.OpenMM_wrapper.set_up_reporters">
+<code class="descname">set_up_reporters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.set_up_reporters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="janus.openmm_wrapper.OpenMM_wrapper.take_step">
 <code class="descname">take_step</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.take_step" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a specified num of steps in the MD simulation</p>
@@ -848,22 +848,8 @@ be updated in custom qmmm force and fed into simulation</td>
 
 <dl class="method">
 <dt id="janus.openmm_wrapper.OpenMM_wrapper.write_pdb">
-<code class="descname">write_pdb</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.write_pdb" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write_pdb</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.openmm_wrapper.OpenMM_wrapper.write_pdb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a pdb file from an OpenMM modeller</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mod</strong> (<em>OpenMM modeller object</em>) – </li>
-<li><strong>filename</strong> (<em>str</em>) – file to write to</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>write_pdb(mod, ‘input.pdb’)</p>
 </dd></dl>
 
 </dd></dl>
@@ -883,6 +869,11 @@ be updated in custom qmmm force and fed into simulation</td>
 <dl class="method">
 <dt id="janus.qm_wrapper.QM_wrapper.compute_info">
 <code class="descname">compute_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.compute_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QM_wrapper.convert_input">
+<code class="descname">convert_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.convert_input" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -972,6 +963,11 @@ with just the qm region to obtain the geometry information</p>
 <dl class="method">
 <dt id="janus.qm_wrapper.QM_wrapper.set_external_charges">
 <code class="descname">set_external_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.set_external_charges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QM_wrapper.set_up_reporters">
+<code class="descname">set_up_reporters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QM_wrapper.set_up_reporters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

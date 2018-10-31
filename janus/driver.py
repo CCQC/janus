@@ -48,7 +48,9 @@ def run_simulation(initializer):
 
     md_simulation_wrapper.take_step(initializer.end_steps)
 
-    # here put return pdb??
+    main_info = md_simulation_wrapper.get_main_info()
+    md_simulation_wrapper.write_pdb(main_info)
+
 
 def run_single_point(initializer):
     """
