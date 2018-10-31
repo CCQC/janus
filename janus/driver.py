@@ -8,7 +8,7 @@ def run_janus(filename='input.json'):
 
     initializer = Initializer(filename)
 
-    if initialize.run_md is True:
+    if initializer.run_md is True:
         run_simulation(initializer)
 
     else:
@@ -26,16 +26,20 @@ def run_simulation(initializer):
 
     """
 
+    print('Initializing')
     # initialize wrappers
     md_simulation_wrapper, qmmm = initializer.initialize_wrappers(simulation=True)
 
+    print('Equilibrating with {} steps'.format(initializer.start_qmmm))
     md_simulation_wrapper.take_step(initializer.start_qmmm)
 
     for step in range(initializer.qmmm_steps):
 
+        print('Taking step {}'.format(initializer.qmmm_steps))
         #get MM information for entire system
         main_info = md_simulation_wrapper.get_main_info()
 
+        print('Running QMMM for step {}'.format(initializer.qmmm_steps))
         qmmm.run_qmmm(main_info)
         
         # get aqmmm forces 
@@ -45,6 +49,8 @@ def run_simulation(initializer):
         # make sure positions are updated so that when i get information on entire system 
         # getting it on the correct one
         md_simulation_wrapper.take_updated_step(force=forces)
+
+    print('QMMM finished')
 
     md_simulation_wrapper.take_step(initializer.end_steps)
 

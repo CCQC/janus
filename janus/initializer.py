@@ -38,6 +38,9 @@ class Initializer(object):
         except KeyError:
             print('No system info was specified')
         
+        if 'system_info_format' not in self.param['system']:
+            self.param['system']['system_info_format'] = 'pdb'
+        
         if 'md' in self.param:
             self.run_md = True
 
@@ -100,7 +103,7 @@ class Initializer(object):
             self.hl_program = 'Psi4'
 
         try:
-            self.mm_program = self.param['qmmm']['ll_program']
+            self.ll_program = self.param['qmmm']['ll_program']
         except:
             print("No MM program was specified. OpenMM will be used")
             self.ll_program = 'OpenMM'

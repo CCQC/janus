@@ -42,7 +42,7 @@ class QMMM(object):
         self.qm_geometry = None
         self.run_ID = 0
 
-        self.traj = md.load(param['mm_pdb_file'])
+        self.traj = self.convert_input(param['system_info'], param['system_info_format'])
         self.topology = self.traj.topology
         self.positions = self.traj.xyz[0]
 
@@ -633,3 +633,9 @@ class QMMM(object):
         return pos
 
             
+    def convert_input(self, fil, form):
+
+        if form == 'pdb':
+            traj = md.load(fil)
+
+        return traj

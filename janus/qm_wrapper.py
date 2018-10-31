@@ -123,9 +123,6 @@ class QM_wrapper(ABC):
     def optimize_geometry(self):
         pass
 
-    def equilibrate(self):
-        raise Exception('method not implemented for class')
-
     def get_main_info(self):
         raise Exception('method not implemented for class')
 

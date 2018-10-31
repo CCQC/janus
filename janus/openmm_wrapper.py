@@ -64,6 +64,10 @@ class OpenMM_wrapper(MM_wrapper):
         self.ff = param['mm_forcefield']
         self.ff_water = param['mm_water_forcefield']
         self.is_periodic = param['is_periodic']
+        self.nonbondMethod = eval(self.param['nonbondedMethod'])
+        self.constraint = eval(self.param['constraints'])
+        self.hMass = eval(self.param['hydrogenMass'])
+        self.switchDis = eval(self.param['switchDistance']),
 
         self.NVE_integrator = param['NVE_integrator']
         self.NVT_integrator = param['NVT_integrator']
@@ -115,25 +119,25 @@ class OpenMM_wrapper(MM_wrapper):
                 elif ensemble == 'NVE':
                     integrator = self.NVE_integrator
 
-                OM_system = self.create_openmm_system(self.pdb.topology)
-                simulation = self.create_openmm_simulation(OM_system, topology, positions, integrator, return_integrator=True)
+                OM_system = self.create_openmm_system(self.topology)
+                simulation, integrator_obj = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, integrator, return_integrator=True)
                 simulation.minimizeEnergy()
                 simulation.step(self.other_ensemble_steps[i])
                 state = simulation.context.getState(getPositions=True)
                 pos = state.getPositions()
                 # also not sure if there should be option for returning information about these
                 # not sure if should save this
-                del simulation, state, system, integrator
+                del simulation, state, OM_system, integrator_obj
         else:
             pos = self.pdb.positions
 
         if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
-            self.compute_info(self.pdb.topology, pos, initialize=True, return_simulation=True, minimize=False)
+            self.compute_info(self.topology, pos, initialize=True, return_simulation=True, minimize=False)
 
         elif embedding_method == 'Electrostatic':
             self.main_simulation, self.main_info =\
-            self.compute_info(self.pdb.topology, pos, include_coulomb=None, initialize=True, return_simulation=True, minimize=False)
+            self.compute_info(self.topology, pos, include_coulomb=None, initialize=True, return_simulation=True, minimize=False)
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
@@ -304,12 +308,11 @@ class OpenMM_wrapper(MM_wrapper):
         #    print("periodic")
         #    openmm_system = self.forcefield.createSystem(topology,
         #                                    constraints=self.constraints)
-        #else:
         openmm_system = self.forcefield.createSystem(topology,
-                                        nonbondedMethod=OM_app.eval(self.param['nonbondedMethod']),
-                                        constraints=OM_app.eval(self.param['constraints']),
-                                        hydrogenMass=eval(self.param['hydrogenMass']),
-                                        switchDistance=eval(self.param['switchDistance']),
+                                        nonbondedMethod=self.nonbondMethod,
+                                        constraints=self.constraint,
+                                        hydrogenMass=self.hMass,
+                                        switchDistance=self.switchDis,
                                         residueTemplates=self.param['residueTemplates'],
                                         nonbondedCutoff=self.param['nonbondedCutoff']*OM_unit.nanometer,
                                         rigid_water=self.param['rigid_water'],
@@ -479,9 +482,9 @@ class OpenMM_wrapper(MM_wrapper):
         create_open_simulation(openmm_sys, pdb.topology. pdb.positions)
         """
 
-        if integrator == 'Langevin':
+        if self.integrator == 'Langevin':
             integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
-        elif integrator == 'Verlet':
+        elif self.integrator == 'Verlet':
             integrator = OM.VerletIntegrator(self.step_size)
 
         else:
@@ -492,7 +495,7 @@ class OpenMM_wrapper(MM_wrapper):
         simulation = OM_app.Simulation(topology, openmm_system, integrator)
         simulation.context.setPositions(positions)
 
-        if self.param['integrator'] == 'Verlet':
+        if self.integrator == 'Verlet':
             simulation.context.setVelocitiesToTemperature(self.temp)
 
         if return_integrator is False:
@@ -620,7 +623,7 @@ class OpenMM_wrapper(MM_wrapper):
         modeller = self.make_modeller(keep_qm=True)
         """
 
-        modeller = OM_app.Modeller(self.pdb.topology, self.pdb.getPositions())
+        modeller = OM_app.Modeller(self.topology, self.pdb.getPositions())
         if keep_qm is False:
             OpenMM_wrapper.delete_atoms(modeller, qm_atoms)
         elif keep_qm is True:
@@ -754,7 +757,7 @@ class OpenMM_wrapper(MM_wrapper):
                     self.topology = self.forcefield.topology
 
 
-    def set_up_reporters(self):
+    def set_up_reporters(self, simulation):
 
         return_traj = 0
         traj_file   = 'output.nc'

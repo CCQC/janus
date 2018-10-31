@@ -30,12 +30,12 @@
          "md_steps" : [5,5],
          "md_ensemble" : ["NVT", "NVE"],
          "return_trajectory" : 50,
-         "return_trajectory_name" : "output.nc" ,
+         "return_trajectory_filename" : "output.nc" ,
          "trajectory_format" : "NetCDF",
-         "return_pdb" : true,
-         "return_name" : "final.pdb",
-         "return_format" : "pdb",
-         "return_info" : 50
+         "return_system" : true,
+         "return_system_filename" : "final.pdb",
+         "return_info" : ["potentialEnergy", "kineticEnergy", "totalEnergy", "temperature"],
+         "return_info_interval" : 5
         },
                                                                                                              
 "psi4" : {

@@ -96,10 +96,6 @@ class MM_wrapper(ABC):
         pass
 
     @abstractmethod
-    def equilibrate(self):
-        pass
-
-    @abstractmethod
     def convert_input(self):
         pass
     
