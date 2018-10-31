@@ -138,7 +138,9 @@ class SAP(AQMMM):
         """
 
         # computing forces due to gradient of switching function for SAP
-        forces_sf = {self.qm_center[0]: np.zeros((3))}
+        forces_sf = {}
+        for idx in self.qm_center:
+            forces_sf[idx] = np.zeros((3))
 
         for i, b_i in self.buffer_groups.items():
 
@@ -157,7 +159,8 @@ class SAP(AQMMM):
 
                 force_j = b_i.energy_scaler * b_j.d_s_i * b_j.COM_coord * b_i.d_phi_i[j] * b_i.d_phi_i_scaler
 
-                forces_sf[self.qm_center[0]] -= force_j
+                for idx, ratio in self.qm_center_weight_ratio.items():
+                    forces_sf[idx] -= ratio * force_j
 
                 for idx, ratio in b_j.weight_ratio.items():
 

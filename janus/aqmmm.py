@@ -123,12 +123,6 @@ class AQMMM(ABC, QMMM):
 
         """
 
-        self.qm_center = qm_center
-        if len(qm_center) == 1:
-            self.qm_center_xyz = self.traj.xyz[0][qm_center]
-        else:
-            self.qm_center_xyz, atom_weights, weight_ratio = self.compute_COM(qm_center)
-
         self.find_buffer_atoms(qm_center)
         
         self.edit_qm_atoms()
@@ -164,14 +158,34 @@ class AQMMM(ABC, QMMM):
 
         """
 
+        if len(qm_center) == 1:
+            self.COM_as_qm_center = False
+            self.qm_center_xyz = self.traj.xyz[0][qm_center[0]]
+            qm_center_idx = qm_center
+            traj = self.traj
+            self.qm_center_weight_ratio = {qm_center[0] : 1}
+        else:
+            self.COM_as_qm_center = True
+            self.qm_center_xyz, self.qm_center_atom_weights, self.qm_center_weight_ratio = self.compute_COM(qm_center)
+
+            t = deepcopy(self.traj)
+            t.topology.add_atom('DUM', md.element.Element.getBySymbol('H'), t.topology.atom(0).residue, 1)
+            for atom in t.topology.atoms:
+                if atom.name == 'DUM':
+                    qm_center_idx = [atom.index]
+            t.xyz = np.append(t.xyz[0], [xyz], axis=0)
+            traj = t
+
         if self.partition_scheme == 'distance': 
-            rmin_atoms = md.compute_neighbors(self.traj, self.Rmin, qm_center)
-            rmax_atoms = md.compute_neighbors(self.traj, self.Rmax, qm_center)
+
+            rmin_atoms = md.compute_neighbors(traj, self.Rmin, qm_center_idx)
+            rmax_atoms = md.compute_neighbors(traj, self.Rmax, qm_center_idx)
             self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
             self.qm_atoms = rmin_atoms[0].tolist()
-            self.qm_atoms.append(qm_center[0])
-        
 
+            if self.COM_as_qm_center is False:
+                self.qm_atoms.append(qm_center[0])
+        
     def get_buffer_info(self):
         """
         Computes the distance r_i for each buffer group i
@@ -185,8 +199,8 @@ class AQMMM(ABC, QMMM):
         for i, buf in self.buffer_groups.items():
 
             xyz, buf.atom_weights, buf.weight_ratio = self.compute_COM(buf.atoms)
-            buf.COM_coord = np.array(xyz)
-            buf.r_i = np.linalg.norm(buf.COM_coord - self.qm_center_xyz)
+            buf.COM_coord = xyz
+            buf.r_i = np.linalg.norm(buf.COM_coord - np.array(self.qm_center_xyz))
             self.buffer_distance[i] = buf.r_i
             buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
 

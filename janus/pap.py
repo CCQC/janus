@@ -138,7 +138,9 @@ class PAP(AQMMM):
 
         """
 
-        forces_sf = {self.qm_center[0]: np.zeros((3))}
+        forces_sf = {}
+        for idx in self.qm_center:
+            forces_sf[idx] = np.zeros((3))
 
         for i, buf in self.buffer_groups.items():
 
@@ -152,7 +154,8 @@ class PAP(AQMMM):
                 else:
                     buf.energy_scaler -= aqmmm_energy / (1 - buf.s_i)
             
-            forces_sf[self.qm_center[0]] -= buf.energy_scaler * buf.d_s_i * buf.COM_coord 
+            for idx, ratio in self.qm_center_weight_ratio.items():
+                forces_sf[idx] -= ratio * buf.energy_scaler * buf.d_s_i * buf.COM_coord 
 
             for idx, ratio in buf.weight_ratio.items():
 

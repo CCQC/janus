@@ -87,7 +87,8 @@ class ONIOM_XS(AQMMM):
             for i, buf in qm_bz.buffer_groups.items():
                 for idx, ratio in buf.weight_ratio.items():
                     forces[idx] += ratio * scaler * buf.d_s_i * buf.COM_coord
-                forces[self.qm_center[0]] -= scaler * buf.d_s_i * buf.COM_coord 
+                for idx, ratio in self.qm_center_weight_ratio.items():
+                    forces[idx] -= ratio * scaler * buf.d_s_i * buf.COM_coord
 
             self.systems[self.run_ID]['qmmm_forces'] = forces
 
