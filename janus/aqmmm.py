@@ -173,7 +173,7 @@ class AQMMM(ABC, QMMM):
             for atom in t.topology.atoms:
                 if atom.name == 'DUM':
                     qm_center_idx = [atom.index]
-            t.xyz = np.append(t.xyz[0], [xyz], axis=0)
+            t.xyz = np.append(t.xyz[0], [self.qm_center_xyz], axis=0)
             traj = t
 
         if self.partition_scheme == 'distance': 

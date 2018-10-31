@@ -221,8 +221,8 @@ class QMMM(object):
         if self.qmmm_scheme == 'subtractive':
 
             ps_mm_grad, qm_grad = system.primary_subsys['ll']['gradients'], system.primary_subsys['hl']['gradients']
-            print('ps_mm', ps_mm_grad)
-            print('qm', qm_grad)
+            #print('ps_mm', ps_mm_grad)
+            #print('qm', qm_grad)
             qmmm_force = {}
            # print('sys qm_atom', system.qm_atoms)
                 
@@ -437,7 +437,9 @@ class QMMM(object):
 
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
-        #print(qm_atoms)
+        
+        print('qm_atoms')
+        print(qm_atoms)
 
         self.find_boundary_bonds(qm_atoms)
         traj = self.traj.atom_slice(qm_atoms)

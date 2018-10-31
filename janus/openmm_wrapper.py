@@ -29,7 +29,6 @@ class OpenMM_wrapper(MM_wrapper):
             - mm_pdb_file : a pdb file that contains the system of interest
             - mm_forcefield : the name of the forcefield to use, default is amber99sb.xml
             - mm_water_forcefield : the name of the forcefield to use for water, default is tip3p.xml
-            - is_periodic : whether to treat the system periodically, default is False
             - step_size : step size to integrate system in picoseconds, 
                             default is 0.002*OM_unit.picoseconds
             - integrator" : which integrator to use for simulation, default is Langevin
@@ -63,9 +62,10 @@ class OpenMM_wrapper(MM_wrapper):
 
         self.ff = param['mm_forcefield']
         self.ff_water = param['mm_water_forcefield']
-        self.is_periodic = param['is_periodic']
         self.nonbondMethod = eval(self.param['nonbondedMethod'])
+        print(self.nonbondMethod)
         self.constraint = eval(self.param['constraints'])
+        print(self.constraint)
         self.hMass = eval(self.param['hydrogenMass'])
         self.switchDis = eval(self.param['switchDistance']),
 
@@ -111,8 +111,12 @@ class OpenMM_wrapper(MM_wrapper):
 
         # should I minimize energy here? If so, need to return new positions
 
+        print('testing')
+        print(self.other_md_ensembles)
+        print(self.other_ensemble_steps)
         if (self.other_md_ensembles is not None and self.other_ensemble_steps is not None):
             for i, ensemble in enumerate(self.other_md_ensembles):
+                print('running equilibrating ensemble {}'.format(ensemble))
                 
                 if ensemble == 'NVT':
                     integrator = self.NVT_integrator
@@ -131,6 +135,7 @@ class OpenMM_wrapper(MM_wrapper):
         else:
             pos = self.pdb.positions
 
+        print('starting main simulation')
         if embedding_method == 'Mechanical':
             self.main_simulation, self.main_info =\
             self.compute_info(self.topology, pos, initialize=True, return_simulation=True, minimize=False)
@@ -304,10 +309,6 @@ class OpenMM_wrapper(MM_wrapper):
         if unmatched:
             self.create_new_residue_template(topology)
 
-        #if self.is_periodic is True:
-        #    print("periodic")
-        #    openmm_system = self.forcefield.createSystem(topology,
-        #                                    constraints=self.constraints)
         openmm_system = self.forcefield.createSystem(topology,
                                         nonbondedMethod=self.nonbondMethod,
                                         constraints=self.constraint,
@@ -600,7 +601,7 @@ class OpenMM_wrapper(MM_wrapper):
             sys_file = self.param['return_system_filename']
 
         if return_sys is True: 
-            OM.PDBFile.writeFile(info['topology'], info['positions'], open(sys_file, 'w'))
+            OM_app.PDBFile.writeFile(info['topology'], info['positions'], open(sys_file, 'w'))
  
 
     def create_modeller(self, qm_atoms, keep_qm=None):
@@ -737,6 +738,8 @@ class OpenMM_wrapper(MM_wrapper):
             # instantiate OpenMM forcefield object
             self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
             self.topology = self.pdb.topology
+            print('testing box')
+            print(self.topology.getPeriodicBoxVectors())
 
         elif self.system_info_format == 'Amber':
             for fil in self.system_info:

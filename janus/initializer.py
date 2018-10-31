@@ -157,6 +157,10 @@ class Initializer(object):
             print("No low level parameters given. Using OpenMM defaults")
 
         try:
+            self.md_sim_param.update(self.param['ll_md'])
+        except:
+            print("No low level parameters given for md simulation. Using OpenMM defaults")
+        try:
             self.aqmmm_param.update(self.param['aqmmm'])
             self.aqmmm_param.update(self.qmmm_param)
         except: 
@@ -179,21 +183,25 @@ class Initializer(object):
 
         # create hl_wrapper object
         if self.hl_program == "Psi4":
+            print('using Psi4 for high level computation')
             hl_wrapper = Psi4_wrapper(self.hl_param)
-        if self.hl_program == "OpenMM":
+        elif self.hl_program == "OpenMM":
             hl_wrapper = OpenMM_wrapper(self.hl_param)
+            print('using OpenMM for high level computation')
         else:
         # add other options for qm program here
             print("Only Psi4 and OpenMM currently available")
 
         # create ll_wrapper object
         if self.ll_program == "OpenMM":
+            print('initializing low level wrapper')
             ll_wrapper = OpenMM_wrapper(self.ll_param)
         else:
         # add other options for mm program here
             print("Only OpenMM currently available")
 
         if self.md_sim_prog == "OpenMM":
+            print('initializing MD simulation wrapper')
             md_sim_wrapper = OpenMM_wrapper(self.md_sim_param)
         else:
             print("Only OpenMM currently available")

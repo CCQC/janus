@@ -6,15 +6,14 @@
 "step_size" : 1,
 "nonbondedCutoff" : 0.8,
 "nonbondedMethod" : "OM_app.NoCutoff",
-"constraints" : "OM_app.HBonds",
-"rigid_water" : true,
+"constraints" : "None",
+"rigid_water" : false,
 "removeCMMotion" : true,
 "ignoreExternalBonds" : true,
 "flexibleConstraints" : false,
 "residueTemplates" : {},
 "hydrogenMass" : "None",
 "switchDistance" : "None",
-"is_periodic" : false,
 "NVE_integrator" : "Verlet",
 "NVT_integrator" : "Langevin"
 }

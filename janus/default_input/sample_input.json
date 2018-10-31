@@ -54,12 +54,11 @@
          "temp" : 300,
          "nonbondedCutoff" : "0.8*OM_unit.nanometer",
          "nonbondedMethod" : "OM_app.CutoffNonPeriodic",
-         "rigid_water" : true,
+         "rigid_water" : false,
          "removeCMMotion" : true,
          "NVE_integrator" : "Verlet",
          "NVT_integrator" : "Langevin",
-         "ignoreExternalBonds" : true,
-         "is_periodic" : true}
+         "ignoreExternalBonds" : true}
 }
 
 

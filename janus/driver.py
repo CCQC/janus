@@ -35,11 +35,11 @@ def run_simulation(initializer):
 
     for step in range(initializer.qmmm_steps):
 
-        print('Taking step {}'.format(initializer.qmmm_steps))
+        print('Taking step {}'.format(step))
         #get MM information for entire system
         main_info = md_simulation_wrapper.get_main_info()
 
-        print('Running QMMM for step {}'.format(initializer.qmmm_steps))
+        print('Running QMMM for step {}'.format(step))
         qmmm.run_qmmm(main_info)
         
         # get aqmmm forces 
