@@ -3,3 +3,4 @@ __pycache__/
 *.nc
 .cache/
 *.swp
+*egg*

@@ -39,7 +39,11 @@ if __name__ == "__main__":
                                                'janus/default_input/psi4.json',
                                                'janus/default_input/openmm.json'])],
 
-        scripts=['bin/janus'],
+        entry_points={
+            'console_scripts': [
+                'janus = janus.janus:main',
+            ],
+        },
 
         classifiers=[
             'Development Status :: 4 - Beta',
