@@ -85,8 +85,13 @@ class QMMM(object):
 
         if self.run_ID % 10 == 0:
             print(self.run_ID, self.systems[self.run_ID]['qmmm_energy'])
+
         # updates current step count
         self.run_ID += 1
+        
+        # delete the information of 2 runs before, only save current run and previous run information at a time
+        if self.run_ID > 1:
+            del self.systems[self.run_ID - 2]
 
     def update_traj(self, position, topology):
         """

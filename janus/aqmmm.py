@@ -102,8 +102,13 @@ class AQMMM(ABC, QMMM):
         self.get_zero_energy()
         self.run_aqmmm()
         self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
+
         # updates current step count
         self.run_ID += 1
+
+        # delete the information of 2 runs before, only save current run and previous run information at a time
+        if self.run_ID > 1:
+            del self.systems[self.run_ID - 2]
 
     def define_buffer_zone(self, qm_center):
         """
