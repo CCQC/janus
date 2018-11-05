@@ -84,7 +84,8 @@ class QMMM(object):
         self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
 
         if self.run_ID % 10 == 0:
-            print(self.run_ID, self.systems[self.run_ID]['qmmm_energy'])
+            print('!', self.run_ID, self.systems[self.run_ID]['qmmm_energy'] + self.systems[self.run_ID]['kinetic_energy'])
+            # add kinetic in total qmmm_energy
 
         # updates current step count
         self.run_ID += 1
@@ -443,8 +444,8 @@ class QMMM(object):
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
         
-        print('qm_atoms')
-        print(qm_atoms)
+        #print('qm_atoms')
+        #print(qm_atoms)
 
         self.find_boundary_bonds(qm_atoms)
         traj = self.traj.atom_slice(qm_atoms)
