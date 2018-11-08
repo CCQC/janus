@@ -1,16 +1,16 @@
 import psi4
 import numpy as np
-from .qm_wrapper import QM_wrapper
+from .qm_wrapper import QMWrapper
 
-class Psi4_wrapper(QM_wrapper):
+class Psi4Wrapper(QMWrapper):
     """
     A wrapper class that calls Psi4 to obtain quantum mechanical
-    information. Class inherits from QM_wrapper.
+    information. Class inherits from QMWrapper.
     """
 
     def __init__(self, param):
         """
-        Initializes a Psi4_wrapper class with a set of 
+        Initializes a Psi4Wrapper class with a set of 
         parameters for running Psi4
 
         Parameters

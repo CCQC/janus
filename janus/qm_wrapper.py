@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import mendeleev as mdlv
 
-class QM_wrapper(ABC):
+class QMWrapper(ABC):
 
     def __init__(self, param, program):
         """

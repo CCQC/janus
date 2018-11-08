@@ -2,11 +2,11 @@ from .aqmmm import AQMMM
 from .system import System
 import numpy as np
 
-class ONIOM_XS(AQMMM):
+class OniomXS(AQMMM):
 
     def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
         """
-        Initializes the ONIOM_XS class object
+        Initializes the OniomXS class object
     
         Parameters
         ----------

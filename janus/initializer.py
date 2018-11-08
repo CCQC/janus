@@ -1,9 +1,9 @@
 import os
 import json
-from .psi4_wrapper import Psi4_wrapper 
-from .openmm_wrapper import OpenMM_wrapper 
+from .psi4_wrapper import Psi4Wrapper 
+from .openmm_wrapper import OpenMMWrapper 
 from .qmmm import QMMM
-from .oniom_xs import ONIOM_XS
+from .oniom_xs import OniomXS
 from .hot_spot import HotSpot
 from .pap import PAP
 from .sap import SAP
@@ -176,17 +176,17 @@ class Initializer(object):
 
         Returns
         -------
-        MM_wrapper object
-        QMMM_wrapper object
+        MMWrapper object
+        QMMM wrapper object
 
         """
 
         # create hl_wrapper object
         if self.hl_program == "Psi4":
             print('using Psi4 for high level computation')
-            hl_wrapper = Psi4_wrapper(self.hl_param)
+            hl_wrapper = Psi4Wrapper(self.hl_param)
         elif self.hl_program == "OpenMM":
-            hl_wrapper = OpenMM_wrapper(self.hl_param)
+            hl_wrapper = OpenMMWrapper(self.hl_param)
             print('using OpenMM for high level computation')
         else:
         # add other options for qm program here
@@ -195,14 +195,14 @@ class Initializer(object):
         # create ll_wrapper object
         if self.ll_program == "OpenMM":
             print('initializing low level wrapper')
-            ll_wrapper = OpenMM_wrapper(self.ll_param)
+            ll_wrapper = OpenMMWrapper(self.ll_param)
         else:
         # add other options for mm program here
             print("Only OpenMM currently available")
 
         if self.md_sim_prog == "OpenMM":
             print('initializing MD simulation wrapper')
-            md_sim_wrapper = OpenMM_wrapper(self.md_sim_param)
+            md_sim_wrapper = OpenMMWrapper(self.md_sim_param)
         else:
             print("Only OpenMM currently available")
 
@@ -210,7 +210,7 @@ class Initializer(object):
         if self.param['qmmm']['run_aqmmm'] is False:
             qmmm = QMMM(self.qmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'ONIOM-XS':
-            qmmm = ONIOM_XS(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
+            qmmm = OniomXS(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'Hot-Spot':
             qmmm = HotSpot(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'PAP':
@@ -220,7 +220,7 @@ class Initializer(object):
         elif self.aqmmm_param['aqmmm_scheme'] == 'DAS':
             qmmm = SAP(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         else:
-            print("Only ONIOM_XS, Hot Spot, PAP, SAP, and DAS currently implemented")
+            print("Only ONIOM-XS, Hot Spot, PAP, SAP, and DAS currently implemented")
 
         if simulation is True:
             # initialize mm_wrapper with information about initial system

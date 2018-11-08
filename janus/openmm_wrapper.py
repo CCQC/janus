@@ -2,17 +2,17 @@ import simtk.openmm.app as OM_app
 import simtk.openmm as OM
 import simtk.unit as OM_unit
 from mdtraj.reporters import NetCDFReporter
-from .mm_wrapper import MM_wrapper
+from .mm_wrapper import MMWrapper
 import numpy as np
 from copy import deepcopy
 
 
-class OpenMM_wrapper(MM_wrapper):
+class OpenMMWrapper(MMWrapper):
     """
     A wrapper class that calls OpenMM
     to obtain molecular mechanics information and 
     take steps in a molecular dynamics simulation. 
-    Class inherits from MM_wrapper.
+    Class inherits from MMWrapper.
     """
 
     def __init__(self, param):
@@ -160,7 +160,7 @@ class OpenMM_wrapper(MM_wrapper):
         """
 
         for f, coord in force.items():
-            coord *= MM_wrapper.au_bohr_to_kjmol_nm             # convert this back to openmm units
+            coord *= MMWrapper.au_bohr_to_kjmol_nm             # convert this back to openmm units
             self.qmmm_force.setParticleParameters(f, f, coord)  # need to figure out if the first 2 parameters always the same or not
 
         self.qmmm_force.updateParametersInContext(self.main_simulation.context)  # update forces with qmmm force
@@ -193,7 +193,7 @@ class OpenMM_wrapper(MM_wrapper):
     
         """
         
-        return OpenMM_wrapper.get_state_info(self.main_simulation, main_info=True)
+        return OpenMMWrapper.get_state_info(self.main_simulation, main_info=True)
 
     def compute_info(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, link_atoms=None, minimize=False):
         """
@@ -251,7 +251,7 @@ class OpenMM_wrapper(MM_wrapper):
             self.set_up_reporters(simulation) 
 
         # Calls openmm wrapper to get information specified
-        state = OpenMM_wrapper.get_state_info(simulation,
+        state = OpenMMWrapper.get_state_info(simulation,
                                       energy=True,
                                       positions=True,
                                       forces=True)
@@ -569,9 +569,9 @@ class OpenMM_wrapper(MM_wrapper):
         # divide by unit to give value without units, then convert value to atomic units
         if energy is True:
             values['potential'] = state.getPotentialEnergy()/OM_unit.kilojoule_per_mole
-            values['potential'] *= MM_wrapper.kjmol_to_au
+            values['potential'] *= MMWrapper.kjmol_to_au
             values['kinetic'] = state.getKineticEnergy()/OM_unit.kilojoule_per_mole
-            values['kinetic'] *= MM_wrapper.kjmol_to_au
+            values['kinetic'] *= MMWrapper.kjmol_to_au
             values['energy'] = values['potential'] 
 
         if positions is True:
@@ -579,7 +579,7 @@ class OpenMM_wrapper(MM_wrapper):
 
         if forces is True:
             values['forces'] = state.getForces(asNumpy=True)/(OM_unit.kilojoule_per_mole/OM_unit.nanometer)
-            values['gradients'] = (-1) * values['forces'] * MM_wrapper.kjmol_nm_to_au_bohr   
+            values['gradients'] = (-1) * values['forces'] * MMWrapper.kjmol_nm_to_au_bohr   
 
         if main_info is True:
             # need to check if the topology actually updates 
@@ -626,9 +626,9 @@ class OpenMM_wrapper(MM_wrapper):
 
         modeller = OM_app.Modeller(self.topology, self.pdb.getPositions())
         if keep_qm is False:
-            OpenMM_wrapper.delete_atoms(modeller, qm_atoms)
+            OpenMMWrapper.delete_atoms(modeller, qm_atoms)
         elif keep_qm is True:
-            OpenMM_wrapper.keep_atoms(modeller, qm_atoms)
+            OpenMMWrapper.keep_atoms(modeller, qm_atoms)
         return modeller
 
     def keep_atoms(model, atoms):

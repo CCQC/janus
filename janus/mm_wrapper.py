@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class MM_wrapper(ABC):
+class MMWrapper(ABC):
 
     kjmol_to_au = 1/2625.5002 
     nm_to_angstrom = 10.0000000
