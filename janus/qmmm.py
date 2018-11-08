@@ -141,11 +141,14 @@ class QMMM(object):
 
             #print(system.entire_sys['energy'])
             # Get MM energy on QM region
+            print('calling make primary subsys trajectory')
             traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
             system.primary_subsys['trajectory'] = traj_ps
+            print('getting mm energy and gradient of qm region')
             system.primary_subsys['ll'] = self.ll_wrapper.get_energy_and_gradient(traj_ps, include_coulomb='no_link', link_atoms=link_indices)
 
             # Get QM energy
+            print('getting qm energy and gradient of qm region')
             system.primary_subsys['hl'] = self.hl_wrapper.get_energy_and_gradient(traj_ps)
 
             # Compute the total QM/MM energy based on
@@ -444,8 +447,8 @@ class QMMM(object):
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
         
-        #print('qm_atoms')
-        #print(qm_atoms)
+        print('qm_atoms fed into make primary trajectory', qm_atoms)
+        print('number atoms in self.traj',self.traj.n_atoms)
 
         self.find_boundary_bonds(qm_atoms)
         traj = self.traj.atom_slice(qm_atoms)

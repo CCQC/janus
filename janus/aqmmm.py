@@ -102,6 +102,9 @@ class AQMMM(ABC, QMMM):
         self.get_zero_energy()
         self.run_aqmmm()
         self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
+        print(self.run_ID)
+        print('!qmmm_energy', self.systems[self.run_ID]['qmmm_energy'])
+        print('qm_atoms', self.qm_atoms)
 
         # updates current step count
         self.run_ID += 1
