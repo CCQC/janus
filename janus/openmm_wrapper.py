@@ -76,7 +76,7 @@ class OpenMMWrapper(MMWrapper):
             self.md_ensemble = param['md_ensemble'][-1]
             self.other_md_ensembles = param['md_ensemble'][0:-1]
             self.other_ensemble_steps = param['md_steps'][0:-1]
-        elif (type(param['md_steps']) is int and type(param['md_ensemble']) is int):
+        elif (type(param['md_steps']) is int and type(param['md_ensemble']) is str):
             self.md_ensemble = param['md_ensemble']
             self.other_md_ensembles = None
             self.other_ensemble_steps = None

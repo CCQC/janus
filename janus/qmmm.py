@@ -83,8 +83,8 @@ class QMMM(object):
         self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy 
         self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
 
-        if self.run_ID % 10 == 0:
-            print('!', self.run_ID, self.systems[self.run_ID]['qmmm_energy'] + self.systems[self.run_ID]['kinetic_energy'])
+        #if self.run_ID % 10 == 0:
+        print('!', self.run_ID, self.systems[self.run_ID]['qmmm_energy'] + self.systems[self.run_ID]['kinetic_energy'])
             # add kinetic in total qmmm_energy
 
         # updates current step count
@@ -447,31 +447,30 @@ class QMMM(object):
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
         
-        print('qm_atoms fed into make primary trajectory', qm_atoms)
-        print('number atoms in self.traj',self.traj.n_atoms)
+        print('number of qm_atoms fed into make primary trajectory', len(qm_atoms))
 
         self.find_boundary_bonds(qm_atoms)
         traj = self.traj.atom_slice(qm_atoms)
 
         link_indices = []
-        if self.qmmm_boundary_bonds:
-            self.prepare_link_atom()
+        #if self.qmmm_boundary_bonds:
+        #    self.prepare_link_atom()
 
-            for i, link in self.link_atoms.items():
-                if isinstance(i, int):
-                
-                    link_element = md.element.Element.getBySymbol(link['link_atom'])
+        #    for i, link in self.link_atoms.items():
+        #        if isinstance(i, int):
+        #        
+        #            link_element = md.element.Element.getBySymbol(link['link_atom'])
 
-                    for atom in traj.topology.atoms:
-                        if atom.serial == link['qm_atom'].serial:
-                            traj.topology.add_atom(name='H1', element=link_element, residue=atom.residue, serial='link')
-                            for atom2 in traj.topology.atoms:
-                                if atom2.serial == 'link':
-                                    traj.topology.add_bond(atom2, atom)
-                                    link['link_atom_index'] = atom2.index
+        #            for atom in traj.topology.atoms:
+        #                if atom.serial == link['qm_atom'].serial:
+        #                    traj.topology.add_atom(name='H1', element=link_element, residue=atom.residue, serial='link')
+        #                    for atom2 in traj.topology.atoms:
+        #                        if atom2.serial == 'link':
+        #                            traj.topology.add_bond(atom2, atom)
+        #                            link['link_atom_index'] = atom2.index
 
-                    link_indices.append(link['link_atom_index'])
-                    traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
+        #            link_indices.append(link['link_atom_index'])
+        #            traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
         
         return traj, link_indices
 

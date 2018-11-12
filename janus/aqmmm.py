@@ -88,7 +88,11 @@ class AQMMM(ABC, QMMM):
         self.update_traj(main_info['positions'], main_info['topology'])
         self.partition()
             
+        print('Running QM/MM partitions')
+        counter = 0
         for i, system in self.systems[self.run_ID].items():
+            print('Running QM/MM partition {}'.format(counter))
+            print('Number of QM atoms for partition {} is {}'.format(counter,len(system.qm_atoms)))
 
             self.qm_atoms = deepcopy(system.qm_atoms)
 
@@ -98,13 +102,16 @@ class AQMMM(ABC, QMMM):
                 self.electrostatic(system, main_info)
             else:
                 print('only mechanical and electrostatic embedding schemes implemented at this time')
+            counter += 1
 
+        print('QM/MM partitions done. Getting zero energies')
         self.get_zero_energy()
+        print('Interpolating QM/MM partitions')
         self.run_aqmmm()
         self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
-        print(self.run_ID)
-        print('!qmmm_energy', self.systems[self.run_ID]['qmmm_energy'])
-        print('qm_atoms', self.qm_atoms)
+        #print('!qmmm_energy', self.systems[self.run_ID]['qmmm_energy'])
+        #if self.run_ID % 10 == 0:
+        print('!', self.run_ID, self.systems[self.run_ID]['qmmm_energy'] + self.systems[self.run_ID]['kinetic_energy'])
 
         # updates current step count
         self.run_ID += 1
@@ -134,22 +141,27 @@ class AQMMM(ABC, QMMM):
         self.find_buffer_atoms(qm_center)
         
         self.edit_qm_atoms()
+        print('edited qm atoms:')
+        print(self.qm_atoms)
 
         # for adding identifying water buffer groups
         top = self.topology
 
+        self.buffer_groups = {}
+        print('buffer atoms',self.buffer_atoms)
         for i in self.buffer_atoms:
+            print('processing buffer atom {}'.format(i))
             # since if a hydrogen is in buffer zone with link atoms the qm would be the same as qm_bz, and the center 
              # of mass would not be in the buffer zone
             # only if oxygen in buffer zone
             if (top.atom(i).residue.is_water and top.atom(i).element.symbol == 'O'):
+                print('{} is O, adding to buffer groups'.format(i))
                 idx = top.atom(i).residue.index
                 if idx not in self.buffer_groups.keys():
                     buf = Buffer(ID=idx)
                     for a in top.residue(idx).atoms:
                         if a.index not in buf.atoms:
                             buf.atoms.append(a.index)
-
                     self.buffer_groups[idx] = buf
 
         if self.buffer_groups:
@@ -170,7 +182,7 @@ class AQMMM(ABC, QMMM):
             self.COM_as_qm_center = False
             self.qm_center_xyz = self.traj.xyz[0][qm_center[0]]
             qm_center_idx = qm_center
-            traj = self.traj
+            temp_traj = self.traj
             self.qm_center_weight_ratio = {qm_center[0] : 1}
         else:
             self.COM_as_qm_center = True
@@ -182,17 +194,22 @@ class AQMMM(ABC, QMMM):
                 if atom.name == 'DUM':
                     qm_center_idx = [atom.index]
             t.xyz = np.append(t.xyz[0], [self.qm_center_xyz], axis=0)
-            traj = t
+            temp_traj = t
 
         if self.partition_scheme == 'distance': 
 
-            rmin_atoms = md.compute_neighbors(traj, self.Rmin, qm_center_idx)
-            rmax_atoms = md.compute_neighbors(traj, self.Rmax, qm_center_idx)
+            rmin_atoms = md.compute_neighbors(temp_traj, self.Rmin, qm_center_idx)
+            rmax_atoms = md.compute_neighbors(temp_traj, self.Rmax, qm_center_idx)
             self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
+            print('buffer atoms identified by find_buffer_atom function:')
+            print(self.buffer_atoms)
             self.qm_atoms = rmin_atoms[0].tolist()
 
             if self.COM_as_qm_center is False:
                 self.qm_atoms.append(qm_center[0])
+
+            print('qm_atoms identified by the find_buffer_atom function: ' )
+            print(self.qm_atoms)
         
     def get_buffer_info(self):
         """
