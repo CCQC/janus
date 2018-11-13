@@ -153,6 +153,7 @@ class Initializer(object):
             print("No high level parameters given. Using Psi4 defaults")
         try:
             self.ll_param.update(self.param['ll'])
+            self.md_sim_param.update(self.param['ll'])
         except:
             print("No low level parameters given. Using OpenMM defaults")
 

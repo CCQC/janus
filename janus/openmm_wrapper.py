@@ -113,17 +113,24 @@ class OpenMMWrapper(MMWrapper):
 
         if (self.other_md_ensembles is not None and self.other_ensemble_steps is not None):
             for i, ensemble in enumerate(self.other_md_ensembles):
-                print('running equilibrating ensemble {}'.format(ensemble))
+                print('running equilibrating ensemble {} for {} steps'.format(ensemble,self.other_ensemble_steps[i]))
                 
                 if ensemble == 'NVT':
                     integrator = self.NVT_integrator
                 elif ensemble == 'NVE':
                     integrator = self.NVE_integrator
 
-                OM_system = self.create_openmm_system(self.topology)
+                #OM_system = self.create_openmm_system(self.topology)
+                OM_system = self.forcefield.createSystem(self.topology, nonbondedMethod=OM_app.CutoffPeriodic, nonbondedCutoff=0.8*OM_unit.nanometer, rigidWater=False)
                 simulation, integrator_obj = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, integrator, return_integrator=True)
                 simulation.minimizeEnergy()
+
+                simulation.reporters.append(NetCDFReporter('output_nvt.nc', 50))
+                simulation.reporters.append(OM_app.StateDataReporter('info_nvt.dat', 100, step=True,
+                potentialEnergy=True, kineticEnergy=True, totalEnergy=True,temperature=True))
+
                 simulation.step(self.other_ensemble_steps[i])
+
                 state = simulation.context.getState(getPositions=True)
                 pos = state.getPositions()
                 # also not sure if there should be option for returning information about these
@@ -315,7 +322,7 @@ class OpenMMWrapper(MMWrapper):
                                         switchDistance=self.switchDis,
                                         residueTemplates=self.param['residueTemplates'],
                                         nonbondedCutoff=self.param['nonbondedCutoff']*OM_unit.nanometer,
-                                        rigid_water=self.param['rigid_water'],
+                                        rigidWater=self.param['rigid_water'],
                                         removeCMMotion=self.param['removeCMMotion'],
                                         flexibleConstraints=self.param['flexibleConstraints'],
                                         ignoreExternalBonds=self.param['ignoreExternalBonds'])
@@ -482,26 +489,26 @@ class OpenMMWrapper(MMWrapper):
         create_open_simulation(openmm_sys, pdb.topology. pdb.positions)
         """
 
-        if self.integrator == 'Langevin':
-            integrator = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
-        elif self.integrator == 'Verlet':
-            integrator = OM.VerletIntegrator(self.step_size)
+        print('using {} integrator'.format(integrator))
+        if integrator == 'Langevin':
+            integrator_obj = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
+            integrator_obj.setRandomNumberSeed(1)
+        elif integrator == 'Verlet':
+            integrator_obj = OM.VerletIntegrator(self.step_size)
 
         else:
             print('only Langevin integrator supported currently')
 
-        #integrator.setRandomNumberSeed(1)
-
-        simulation = OM_app.Simulation(topology, openmm_system, integrator)
+        simulation = OM_app.Simulation(topology, openmm_system, integrator_obj)
         simulation.context.setPositions(positions)
 
-        if self.integrator == 'Verlet':
+        if integrator == 'Verlet':
             simulation.context.setVelocitiesToTemperature(self.temp)
 
         if return_integrator is False:
             return simulation
         else:
-            return simulation, integrator
+            return simulation, integrator_obj
 
     def get_state_info(simulation,
                        main_info=False,

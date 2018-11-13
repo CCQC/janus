@@ -9,7 +9,7 @@
 "constraints" : "None",
 "rigid_water" : false,
 "removeCMMotion" : true,
-"ignoreExternalBonds" : true,
+"ignoreExternalBonds" : false,
 "flexibleConstraints" : false,
 "residueTemplates" : {},
 "hydrogenMass" : "None",
