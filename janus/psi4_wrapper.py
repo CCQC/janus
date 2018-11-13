@@ -42,8 +42,13 @@ class Psi4Wrapper(QMWrapper):
         self.wavefunction = None
         self.gradient = None
 
+        if param['method'] == 'low':
+            self.method = 'scf'
+        elif param['method'] == 'high':
+            self.method = 'mp2'
+        else:
+            self.method = param['method']
         self.reference = param['reference']
-        self.method = param['method']
         self.charge_method = param['charge_method']
         self.charge = param['charge']
         self.multiplicity = param['multiplicity']

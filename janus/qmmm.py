@@ -453,24 +453,24 @@ class QMMM(object):
         traj = self.traj.atom_slice(qm_atoms)
 
         link_indices = []
-        #if self.qmmm_boundary_bonds:
-        #    self.prepare_link_atom()
+        if self.qmmm_boundary_bonds:
+            self.prepare_link_atom()
 
-        #    for i, link in self.link_atoms.items():
-        #        if isinstance(i, int):
-        #        
-        #            link_element = md.element.Element.getBySymbol(link['link_atom'])
+            for i, link in self.link_atoms.items():
+                if isinstance(i, int):
+                
+                    link_element = md.element.Element.getBySymbol(link['link_atom'])
 
-        #            for atom in traj.topology.atoms:
-        #                if atom.serial == link['qm_atom'].serial:
-        #                    traj.topology.add_atom(name='H1', element=link_element, residue=atom.residue, serial='link')
-        #                    for atom2 in traj.topology.atoms:
-        #                        if atom2.serial == 'link':
-        #                            traj.topology.add_bond(atom2, atom)
-        #                            link['link_atom_index'] = atom2.index
+                    for atom in traj.topology.atoms:
+                        if atom.serial == link['qm_atom'].serial:
+                            traj.topology.add_atom(name='H1', element=link_element, residue=atom.residue, serial='link')
+                            for atom2 in traj.topology.atoms:
+                                if atom2.serial == 'link':
+                                    traj.topology.add_bond(atom2, atom)
+                                    link['link_atom_index'] = atom2.index
 
-        #            link_indices.append(link['link_atom_index'])
-        #            traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
+                    link_indices.append(link['link_atom_index'])
+                    traj.xyz = np.append(traj.xyz[0], [link['link_positions']], axis=0)
         
         return traj, link_indices
 

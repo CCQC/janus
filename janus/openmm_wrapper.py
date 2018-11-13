@@ -111,9 +111,6 @@ class OpenMMWrapper(MMWrapper):
 
         # should I minimize energy here? If so, need to return new positions
 
-        print('testing')
-        print(self.other_md_ensembles)
-        print(self.other_ensemble_steps)
         if (self.other_md_ensembles is not None and self.other_ensemble_steps is not None):
             for i, ensemble in enumerate(self.other_md_ensembles):
                 print('running equilibrating ensemble {}'.format(ensemble))
@@ -237,6 +234,8 @@ class OpenMMWrapper(MMWrapper):
         state = compute_info(top, pos, return_simulation=False, return_system=False)
         """
 
+        # ensure every computation has same periodic box vector parameters
+        topology.setPeriodicBoxVectors(self.PeriodicBoxVector)
         # Create an OpenMM system from an object's topology
         OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=initialize)
 
@@ -247,7 +246,7 @@ class OpenMMWrapper(MMWrapper):
             simulation.minimizeEnergy()
 
         if initialize is True:
-        # need to add function to deal with this!!!!!!!!
+        # set up reporters
             self.set_up_reporters(simulation) 
 
         # Calls openmm wrapper to get information specified
@@ -738,8 +737,8 @@ class OpenMMWrapper(MMWrapper):
             # instantiate OpenMM forcefield object
             self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
             self.topology = self.pdb.topology
-            print('testing box')
-            print(self.topology.getPeriodicBoxVectors())
+            
+            self.PeriodicBoxVector = self.topology.getPeriodicBoxVectors()
 
         elif self.system_info_format == 'Amber':
             for fil in self.system_info:
