@@ -4,6 +4,7 @@ import simtk.unit as OM_unit
 from mdtraj.reporters import NetCDFReporter
 from .mm_wrapper import MMWrapper
 import numpy as np
+import pickle
 from copy import deepcopy
 
 
@@ -153,31 +154,43 @@ class OpenMMWrapper(MMWrapper):
     def restart(self, embedding_method, chkpt_file, restart_forces):
 
         # ensure every computation has same periodic box vector parameters
-        topology.setPeriodicBoxVectors(self.PeriodicBoxVector)
+        self.topology.setPeriodicBoxVectors(self.PeriodicBoxVector)
 
         if embedding_method == 'Mechanical':
             # Create an OpenMM system from an object's topology
-            OM_system = self.create_openmm_system(topology, initialize=initialize)
+            OM_system = self.create_openmm_system(self.topology, initialize=True)
         elif embedding_method == 'Electrostatic':
-            OM_system = self.create_openmm_system(topology, include_coulomb=None, initialize=initialize)
+            OM_system = self.create_openmm_system(self.topology, include_coulomb=None, initialize=True)
 
         # Create an OpenMM simulation from the openmm system, topology, and positions.
-        self.main_simulation = self.create_openmm_simulation(OM_system, topology, positions, self.integrator)
+        self.main_simulation = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, self.integrator)
 
         with open(chkpt_file, 'rb') as f:
             self.main_simulation.context.loadCheckpoint(f.read())
 
-        with open(restart_forces) as force_file:
-            force = json.load(force_file)
+        with open(restart_forces, 'rb') as force_file:
+            force = pickle.load(force_file)
 
-        self.update_forces(self, force, self.qmmm_force, self.main_simulation)
         
         self.set_up_reporters(self.main_simulation)
         # Calls openmm wrapper to get information specified
-        self.main_info = OpenMMWrapper.get_state_info(simulation,
+        self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
                                       energy=True,
                                       positions=True,
                                       forces=True)
+        #print('before loading forces')
+        #print(self.main_info)
+
+        self.update_forces(force, self.qmmm_force, self.main_simulation)
+        
+        self.set_up_reporters(self.main_simulation)
+        # Calls openmm wrapper to get information specified
+        self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
+                                      energy=True,
+                                      positions=True,
+                                      forces=True)
+        #print('after loading forces')
+        #print(self.main_info)
 
     def take_updated_step(self, force):
         """
@@ -196,10 +209,13 @@ class OpenMMWrapper(MMWrapper):
         self.main_simulation.step(1)                                             # take a step
         self.main_info = self.get_main_info()                                    # get the energy and gradients after step
         self.positions = self.main_info['positions']                             # get positions after step
+    
+        #print('main info after step')
+        #print(self.main_info)
 
     def update_forces(self, forces, force_obj, simulation):
 
-        for f, coord in force.items():
+        for f, coord in forces.items():
             coord *= MMWrapper.au_bohr_to_kjmol_nm             # convert this back to openmm units
             force_obj.setParticleParameters(f, f, coord)  # need to figure out if the first 2 parameters always the same or not
 
@@ -801,13 +817,6 @@ class OpenMMWrapper(MMWrapper):
 
     def set_up_reporters(self, simulation):
 
-        return_traj_int = 0
-        traj_file   = 'output.nc'
-        traj_format = 'NetCDF'
-        info_int    = 0
-        return_info = []
-        return_chkpt_int = 0
-        chkpt_file = 0
         pot = False
         kin = False
         enrgy = False
@@ -816,18 +825,32 @@ class OpenMMWrapper(MMWrapper):
 
         if self.param['return_checkpoint_interval']:
             return_chkpt_int = self.param['return_checkpoint_interval']
+        else:
+            return_chkpt_int = 0
         if self.param['return_checkpoint_filename']:
             chkpt_file = self.param['return_checkpoint_filename']
+        else:
+            chkpt_file = 'checkpoint.chk'
         if self.param['return_trajectory_interval']:
             return_traj_int = self.param['return_trajectory_interval']
+        else:
+            return_traj_int = 0
         if self.param['return_trajectory_filename']:
             traj_file = self.param['return_trajectory_filename']
+        else:
+            traj_file   = 'output.nc'
         if self.param['trajectory_format']:
             traj_format = self.param['trajectory_format']
+        else:
+            traj_format = 'NetCDF'
         if self.param['return_info_interval']:
             info_int = self.param['return_info_interval']
+        else:
+            info_int    = 0
         if self.param['return_info']:
             return_info = self.param['return_info']
+        else:
+            return_info = []
 
         if return_traj_int != 0:
             if traj_format == 'NetCDF':

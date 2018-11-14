@@ -1,7 +1,7 @@
 """
 This is the qmmm driver module
 """
-import json
+import pickle
 from .initializer import Initializer
     
 def run_janus(filename='input.json'):
@@ -44,6 +44,11 @@ def run_simulation(initializer, restart):
         
         # get aqmmm forces 
         forces = qmmm.get_forces()
+
+        if (step + 1) % initializer.return_forces_interval == 0:
+            with open(initializer.return_forces_filename, 'wb') as f:
+                pickle.dump(forces, f)
+
     
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 

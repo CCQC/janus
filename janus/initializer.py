@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from .psi4_wrapper import Psi4Wrapper 
 from .openmm_wrapper import OpenMMWrapper 
 from .qmmm import QMMM
@@ -89,9 +89,21 @@ class Initializer(object):
                     self.restart_forces_filename = self.param['md']['restart_forces_filename']
                 except KeyError:
                     print('restart forces filename needs to be specified')
+
+                try:
+                    self.return_forces_interval = self.param['md']['return_checkpoint_interval']
+                except KeyError:
+                    print('return checkpoint interval needs to be specified')
                      
             else:   
                 self.md_restart = False
+
+            try:
+                self.return_forces_filename = self.param['md']['return_forces_filename']
+            except:
+                self.return_forces_filename = 'forces.pkl'
+                print('forces printed to forces.json')
+
                 
                 
         else:

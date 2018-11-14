@@ -34,6 +34,7 @@
          "trajectory_format" : "NetCDF",
          "return_checkpoint_interval" : 0,
          "return_checkpoint_filename" : true,
+         "return_forces_filename" : true,
          "restart_checkpoint_filename" : true,
          "restart_forces_filename" : true,
          "return_system" : true,
