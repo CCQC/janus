@@ -9,12 +9,12 @@ def run_janus(filename='input.json'):
     initializer = Initializer(filename)
 
     if initializer.run_md is True:
-        run_simulation(initializer)
+        run_simulation(initializer, restart=initializer.md_restart)
 
     else:
         run_single_point(initializer)
 
-def run_simulation(initializer):
+def run_simulation(initializer, restart):
     """
     Drives QM/MM with MD time step integration
     
@@ -28,7 +28,7 @@ def run_simulation(initializer):
 
     print('Initializing')
     # initialize wrappers
-    md_simulation_wrapper, qmmm = initializer.initialize_wrappers(simulation=True)
+    md_simulation_wrapper, qmmm = initializer.initialize_wrappers(simulation=True, restart=restart)
 
     print('Equilibrating with {} steps'.format(initializer.start_qmmm))
     md_simulation_wrapper.take_step(initializer.start_qmmm)

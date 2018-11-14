@@ -21,7 +21,27 @@
             "Rmax" : 0.45,
             "qm_center" : [0]
             },
-"ll_md" : {},
+"md" : {
+         "md_simulation_program" : "OpenMM",
+         "restart": false,
+         "start_qmmm" : 15000,
+         "end_qmmm" : 20000,
+         "step_size" : 0.5,
+         "md_steps" : [50000, 20000],
+         "md_ensemble" : ["NVT", "NVE"],
+         "return_trajectory_interval" : 50,
+         "return_trajectory_filename" : "output.nc" ,
+         "trajectory_format" : "NetCDF",
+         "return_checkpoint_interval" : 0,
+         "return_checkpoint_filename" : true,
+         "restart_checkpoint_filename" : true,
+         "restart_forces_filename" : true,
+         "return_system" : true,
+         "return_system_filename" : "final.pdb",
+         "return_info" : ["potentialEnergy", "kineticEnergy", "totalEnergy", "temperature"],
+         "return_info_interval" : 100
+        },
+
 
 "ll" : {
          "md_simulation_program" : "OpenMM",
@@ -46,21 +66,8 @@
          "qm_reference": "rhf",
          "qm_e_convergence": 1e-9,
          "qm_method" : "scf",
-         "qm_charge_method" : "MULLIKEN_CHARGES" },
+         "qm_charge_method" : "MULLIKEN_CHARGES" }
 
-"openmm" : {
-         "mm_forcefield" : "amber99sb.xml",
-         "mm_water_forcefield" : "tip3p.xml",
-         "fric_coeff" : 1,
-         "temp" : 300,
-         "nonbondedCutoff" : "0.8*OM_unit.nanometer",
-         "nonbondedMethod" : "OM_app.CutoffNonPeriodic",
-         "rigid_water" : false,
-         "removeCMMotion" : true,
-         "NVE_integrator" : "Verlet",
-         "NVT_integrator" : "Langevin",
-         "ignoreExternalBonds" : true}
 }
-
 
 

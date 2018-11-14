@@ -72,13 +72,26 @@ class Initializer(object):
                 self.md_ensemble = 'NVE'
                 print('NVE ensemble used by default')
 
-
             self.qmmm_steps = self.end_qmmm - self.start_qmmm
 
             if type(self.md_steps) is int:
                 self.end_steps = self.md_steps - self.end_qmmm
             elif type(self.md_steps) is list:
                 self.end_steps = self.md_steps[-1] - self.end_qmmm
+
+            if 'restart' in self.param['md']:
+                self.md_restart = self.param['md']['restart']
+                try:
+                    self.restart_chkpt_filename = self.param['md']['restart_checkpoint_filename']
+                except KeyError:
+                    print('restart checkpoint filename needs to be specified')
+                try:
+                    self.restart_forces_filename = self.param['md']['restart_forces_filename']
+                except KeyError:
+                    print('restart forces filename needs to be specified')
+                     
+            else:   
+                self.md_restart = False
                 
                 
         else:
@@ -169,7 +182,7 @@ class Initializer(object):
 
         
 
-    def initialize_wrappers(self, simulation=False):
+    def initialize_wrappers(self, simulation=False, restart=False):
         """
         Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects 
         used for computation based on input parameters
@@ -223,9 +236,14 @@ class Initializer(object):
         else:
             print("Only ONIOM-XS, Hot Spot, PAP, SAP, and DAS currently implemented")
 
-        if simulation is True:
+        if (simulation is True and restart is False):
             # initialize mm_wrapper with information about initial system
             md_sim_wrapper.initialize(self.qmmm_param['embedding_method'])
+            return md_sim_wrapper, qmmm
+ 
+        elif (simulation is True and restart is True):
+            # initialize mm_wrapper with information about initial system
+            md_sim_wrapper.restart(self.qmmm_param['embedding_method'], self.restart_chkpt_filename, self.restart_forces_filename)
             return md_sim_wrapper, qmmm
 
         else:
