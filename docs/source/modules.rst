@@ -1,15 +1,12 @@
-janus
-=====
+API Documentation
+===================
 
 .. autosummary::
     :toctree: _autosummary
     
-    janus.aqmmm
-    janus.das
-    janus.driver
+    janus
+    janus.qmmm
+    janus.qm_wrapper
+    janus.qm_wrapper
 
 
-.. toctree::
-   :maxdepth: 4
-
-   janus

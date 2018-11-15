@@ -1,33 +1,7 @@
-janus package
+janus
 =============
 
-janus.aqmmm module
-------------------
-
-
-.. autoclass:: janus.aqmmm.AQMMM
-    :members:
-    :undoc-members:
-    :show-inheritance:
-     .. rubric:: Methods
-
-     .. autoautosummary:: janus.aqmmm.AQMMM
-         :methods:
-
-     .. rubric:: Attributes
-
-     .. autoautosummary:: janus.aqmmm.AQMMM
-         :attributes:
-
-janus.das module
-----------------
-
-.. autoclass:: janus.das.DAS
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.driver module
+driver
 -------------------
 
 .. automodule:: janus.driver
@@ -35,95 +9,53 @@ janus.driver module
     :undoc-members:
     :show-inheritance:
 
-janus.hot\_spot module
-----------------------
+system
+-------------------
 
-.. autoclass:: janus.hot_spot.HotSpot
+.. autoclass:: janus.system.System
     :members:
     :undoc-members:
     :show-inheritance:
+     .. rubric:: Methods
 
-janus.initializer module
+     .. autoautosummary:: janus.system.System
+         :methods:
+
+     .. rubric:: Attributes
+
+     .. autoautosummary:: janus.system.System
+         :attributes:
+
+.. autoclass:: janus.system.Buffer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+     .. rubric:: Methods
+
+     .. autoautosummary:: janus.system.Buffer
+         :methods:
+
+     .. rubric:: Attributes
+
+     .. autoautosummary:: janus.system.Buffer
+         :attributes:
+
+Initializer
 ------------------------
 
 .. autoclass:: janus.initializer.Initializer
     :members:
     :undoc-members:
     :show-inheritance:
+     .. rubric:: Methods
 
+     .. autoautosummary:: janus.initializer.Initializer
+         :methods:
 
-janus.mm\_wrapper module
-------------------------
+     .. rubric:: Attributes
 
-.. autoclass:: janus.mm_wrapper.MMWrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.oniom\_xs module
-----------------------
-
-.. automodule:: janus.oniom_xs
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.openmm\_wrapper module
-----------------------------
-
-.. automodule:: janus.openmm_wrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.pap module
-----------------
-
-.. automodule:: janus.pap
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.psi4\_wrapper module
---------------------------
-
-.. automodule:: janus.psi4_wrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.qm\_wrapper module
-------------------------
-
-.. automodule:: janus.qm_wrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.qmmm module
------------------
-
-.. automodule:: janus.qmmm
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.sap module
-----------------
-
-.. automodule:: janus.sap
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-janus.system module
--------------------
-
-.. automodule:: janus.system
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+     .. autoautosummary:: janus.initializer.Initializer
+         :attributes:
 
 Module contents
 ---------------
