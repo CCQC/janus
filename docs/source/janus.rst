@@ -1,21 +1,28 @@
 janus package
 =============
 
-Submodules
-----------
-
 janus.aqmmm module
 ------------------
 
-.. automodule:: janus.aqmmm
+
+.. autoclass:: janus.aqmmm.AQMMM
     :members:
     :undoc-members:
     :show-inheritance:
+     .. rubric:: Methods
+
+     .. autoautosummary:: janus.aqmmm.AQMMM
+         :methods:
+
+     .. rubric:: Attributes
+
+     .. autoautosummary:: janus.aqmmm.AQMMM
+         :attributes:
 
 janus.das module
 ----------------
 
-.. automodule:: janus.das
+.. autoclass:: janus.das.DAS
     :members:
     :undoc-members:
     :show-inheritance:
@@ -31,7 +38,7 @@ janus.driver module
 janus.hot\_spot module
 ----------------------
 
-.. automodule:: janus.hot_spot
+.. autoclass:: janus.hot_spot.HotSpot
     :members:
     :undoc-members:
     :show-inheritance:
@@ -39,23 +46,16 @@ janus.hot\_spot module
 janus.initializer module
 ------------------------
 
-.. automodule:: janus.initializer
+.. autoclass:: janus.initializer.Initializer
     :members:
     :undoc-members:
     :show-inheritance:
 
-janus.janus module
-------------------
-
-.. automodule:: janus.janus
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 janus.mm\_wrapper module
 ------------------------
 
-.. automodule:: janus.mm_wrapper
+.. autoclass:: janus.mm_wrapper.MMWrapper
     :members:
     :undoc-members:
     :show-inheritance:

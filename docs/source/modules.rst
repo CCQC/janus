@@ -3,9 +3,11 @@ janus
 
 .. autosummary::
     :toctree: _autosummary
-
-    janus
+    
+    janus.aqmmm
     janus.das
+    janus.driver
+
 
 .. toctree::
    :maxdepth: 4

@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="janus" href="modules.html" /> 
+    <link rel="prev" title="janus.driver" href="_autosummary/janus.driver.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -82,6 +82,9 @@
 <li class="toctree-l1"><a class="reference internal" href="setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="running-janus.html">Running janus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">janus</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/janus.aqmmm.html">janus.aqmmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/janus.das.html">janus.das</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/janus.driver.html">janus.driver</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">janus package</a></li>
 </ul>
 </li>
@@ -153,17 +156,117 @@
             
   <div class="section" id="janus-package">
 <h1>janus package<a class="headerlink" href="#janus-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-janus.aqmmm">
-<span id="janus-aqmmm-module"></span><h2>janus.aqmmm module<a class="headerlink" href="#module-janus.aqmmm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="janus-aqmmm-module">
+<h2>janus.aqmmm module<a class="headerlink" href="#janus-aqmmm-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.aqmmm.AQMMM">
 <em class="property">class </em><code class="descclassname">janus.aqmmm.</code><code class="descname">AQMMM</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code>, <a class="reference internal" href="#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.QMMM</span></code></a></p>
 <p>AQMMM super class for adaptive QMMM computations.
 Inherits from QMMM class.</p>
+<blockquote>
+<div><table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.compute_COM" title="janus.aqmmm.AQMMM.compute_COM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code></a>(atoms)</td>
+<td>Computes the center of mass of a specified group</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
+<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.compute_lamda_i" title="janus.aqmmm.AQMMM.compute_lamda_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code></a>(r_i)</td>
+<td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.compute_zero_energy" title="janus.aqmmm.AQMMM.compute_zero_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code></a>()</td>
+<td>Compute the energy of the isolated groups at their minimum geometry</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.define_buffer_zone" title="janus.aqmmm.AQMMM.define_buffer_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code></a>(qm_center)</td>
+<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
+<td>Cleans up the qm_atoms.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
+<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
+<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.find_buffer_atoms" title="janus.aqmmm.AQMMM.find_buffer_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code></a>(qm_center)</td>
+<td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.get_Rmax" title="janus.aqmmm.AQMMM.get_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code></a>()</td>
+<td>Function to return self.Rmin</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.get_Rmin" title="janus.aqmmm.AQMMM.get_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code></a>()</td>
+<td>Function to return self.Rmin</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.get_buffer_info" title="janus.aqmmm.AQMMM.get_buffer_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code></a>()</td>
+<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
+<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
+<td>Function to return qmmm forces</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
+<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.get_zero_energy" title="janus.aqmmm.AQMMM.get_zero_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code></a>()</td>
+<td>Incorporates the zero energy of groups to the total qmmm energy</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
+<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code>([qm_atoms])</td>
+<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
+<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.partition" title="janus.aqmmm.AQMMM.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>(info)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
+<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.run_aqmmm" title="janus.aqmmm.AQMMM.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.run_qmmm" title="janus.aqmmm.AQMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
+<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.set_Rmax" title="janus.aqmmm.AQMMM.set_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code></a>(Rmax)</td>
+<td>Function to set self.Rmax</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.set_Rmin" title="janus.aqmmm.AQMMM.set_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code></a>(Rmin)</td>
+<td>Function to set self.Rmin</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
+<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#janus.aqmmm.AQMMM.nm_to_angstrom" title="janus.aqmmm.AQMMM.nm_to_angstrom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 <dl class="method">
 <dt id="janus.aqmmm.AQMMM.compute_COM">
 <code class="descname">compute_COM</code><span class="sig-paren">(</span><em>atoms</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.aqmmm.AQMMM.compute_COM" title="Permalink to this definition">¶</a></dt>
@@ -361,8 +464,8 @@ partitions using specified adaptive QM/MM scheme</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-janus.das">
-<span id="janus-das-module"></span><h2>janus.das module<a class="headerlink" href="#module-janus.das" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="janus-das-module">
+<h2>janus.das module<a class="headerlink" href="#janus-das-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.das.DAS">
 <em class="property">class </em><code class="descclassname">janus.das.</code><code class="descname">DAS</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.das.DAS" title="Permalink to this definition">¶</a></dt>
@@ -470,8 +573,8 @@ according to the PAP method</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-janus.hot_spot">
-<span id="janus-hot-spot-module"></span><h2>janus.hot_spot module<a class="headerlink" href="#module-janus.hot_spot" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="janus-hot-spot-module">
+<h2>janus.hot_spot module<a class="headerlink" href="#janus-hot-spot-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.hot_spot.HotSpot">
 <em class="property">class </em><code class="descclassname">janus.hot_spot.</code><code class="descname">HotSpot</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.hot_spot.HotSpot" title="Permalink to this definition">¶</a></dt>
@@ -525,8 +628,8 @@ according to the Hot-Spot method</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-janus.initializer">
-<span id="janus-initializer-module"></span><h2>janus.initializer module<a class="headerlink" href="#module-janus.initializer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="janus-initializer-module">
+<h2>janus.initializer module<a class="headerlink" href="#janus-initializer-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.initializer.Initializer">
 <em class="property">class </em><code class="descclassname">janus.initializer.</code><code class="descname">Initializer</code><span class="sig-paren">(</span><em>param</em>, <em>as_file=True</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer" title="Permalink to this definition">¶</a></dt>
@@ -579,16 +682,8 @@ used for computation based on input parameters</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-janus.janus">
-<span id="janus-janus-module"></span><h2>janus.janus module<a class="headerlink" href="#module-janus.janus" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="janus.janus.main">
-<code class="descclassname">janus.janus.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.janus.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-janus.mm_wrapper">
-<span id="janus-mm-wrapper-module"></span><h2>janus.mm_wrapper module<a class="headerlink" href="#module-janus.mm_wrapper" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="janus-mm-wrapper-module">
+<h2>janus.mm_wrapper module<a class="headerlink" href="#janus-mm-wrapper-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.mm_wrapper.MMWrapper">
 <em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">MMWrapper</code><span class="sig-paren">(</span><em>param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MMWrapper" title="Permalink to this definition">¶</a></dt>
@@ -1899,7 +1994,7 @@ need functionality for link atoms != ‘H’</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="modules.html" class="btn btn-neutral" title="janus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="_autosummary/janus.driver.html" class="btn btn-neutral" title="janus.driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
