@@ -1,6 +1,10 @@
 Running janus
 =================================
 
+.. code-block:: python
+
+    janus input.json
+
 Structure of an input file
 --------------------------
 
