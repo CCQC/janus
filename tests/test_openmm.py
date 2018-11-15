@@ -2,7 +2,7 @@
 Testing for the openmm_wrapper module
 """
 import pytest
-from janus import openmm_wrapper 
+from janus import mm_wrapper 
 from janus import initializer
 import simtk.unit as OM_unit
 import numpy as np
@@ -19,8 +19,8 @@ config_ala = {"system" : {"mm_pdb_file" : ala_pdb_file}}
 config1 = initializer.Initializer(config_water, as_file=False)
 config2 = initializer.Initializer(config_ala, as_file=False)
 
-wrapper = openmm_wrapper.OpenMM_wrapper(config1.ll_param)
-wrapper_ala = openmm_wrapper.OpenMM_wrapper(config2.ll_param)
+wrapper = mm_wrapper.OpenMMWrapper(config1.ll_param)
+wrapper_ala = mm_wrapper.OpenMMWrapper(config2.ll_param)
 #openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 #openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)

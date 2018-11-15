@@ -1,5 +1,5 @@
-from .aqmmm import AQMMM
-from .system import System
+from janus.qmmm import AQMMM
+from janus.system import System
 import itertools as it
 from copy import deepcopy
 import numpy as np

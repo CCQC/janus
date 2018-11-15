@@ -1,5 +1,5 @@
 import pytest
-from janus import oniom_xs, psi4_wrapper, openmm_wrapper, initializer
+from janus import qm_wrapper, mm_wrapper, qmmm, initializer
 import numpy as np
 import os
 
@@ -7,16 +7,16 @@ water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 param = {"system" : {"mm_pdb_file" : water}}
 config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
+psi4 = qm_wrapper.Psi4Wrapper(config.hl_param)
+openmm = mm_wrapper.OpenMMWrapper(config.ll_param)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-oxs =   oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_0 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_1 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_2 = oniom_xs.ONIOM_XS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs =   qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs_0 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs_1 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs_2 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
 
 def test_set_Rmin():
 

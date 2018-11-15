@@ -2,7 +2,7 @@ import simtk.openmm.app as OM_app
 import simtk.openmm as OM
 import simtk.unit as OM_unit
 from mdtraj.reporters import NetCDFReporter
-from .mm_wrapper import MMWrapper
+from janus.mm_wrapper import MMWrapper
 import numpy as np
 import pickle
 from copy import deepcopy
@@ -650,12 +650,17 @@ class OpenMMWrapper(MMWrapper):
         return_sys  = False
         sys_file    = 'final.pdb'
 
-        if self.param['return_system']:
+        try:
             return_sys = self.param['return_system']
-        if self.param['return_system_filename']:
-            sys_file = self.param['return_system_filename']
+        except:
+            print("Will not return final pdb")
 
         if return_sys is True: 
+            try:
+                sys_file = self.param['return_system_filename']
+            except:
+                print('writing final pdb to final.pdb')
+                
             OM_app.PDBFile.writeFile(info['topology'], info['positions'], open(sys_file, 'w'))
  
 

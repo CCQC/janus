@@ -1,5 +1,5 @@
 import pytest
-from janus import pap, psi4_wrapper, openmm_wrapper, initializer
+from janus import qm_wrapper, mm_wrapper, qmmm, initializer
 from copy import deepcopy
 import numpy as np
 import os
@@ -10,14 +10,14 @@ param = {"system" : {"mm_pdb_file": water},
          "qmmm" : {"embedding_scheme" : "Electrostatic"}}
 
 config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
+psi4 = qm_wrapper.Psi4Wrapper(config.hl_param)
+openmm = mm_wrapper.OpenMMWrapper(config.ll_param)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-pap_1 = pap.PAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
-pap_2 = pap.PAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
+pap_1 = qmmm.PAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
+pap_2 = qmmm.PAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
 
 pap_1.set_Rmin(0.26)
 pap_1.set_Rmax(0.32)

@@ -1,7 +1,7 @@
 from copy import deepcopy
 import numpy as np
 import mdtraj as md
-from .system import System
+from janus.system import System
 """
 QMMM class for QMMM computations
 """

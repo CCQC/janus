@@ -3,8 +3,8 @@ from copy import deepcopy
 import mdtraj as md
 import numpy as np
 import mendeleev as mdlv
-from .qmmm import QMMM
-from .system import Buffer
+from janus.qmmm import QMMM
+from janus.system import Buffer
 
 class AQMMM(ABC, QMMM):
     """

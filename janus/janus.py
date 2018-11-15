@@ -1,4 +1,4 @@
-from .driver import run_janus
+from janus.driver import run_janus
 import argparse
 import sys
 

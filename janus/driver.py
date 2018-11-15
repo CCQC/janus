@@ -2,7 +2,7 @@
 This is the qmmm driver module
 """
 import pickle
-from .initializer import Initializer
+from janus import Initializer
     
 def run_janus(filename='input.json'):
 

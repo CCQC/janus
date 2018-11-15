@@ -1,22 +1,25 @@
 import pytest
-from janus import hot_spot, psi4_wrapper, openmm_wrapper, initializer
+from janus.qmmm import HotSpot
+from janus.qm_wrapper import Psi4Wrapper
+from janus.mm_wrapper import OpenMMWrapper
+from janus.initializer import Initializer
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 param = {"system" : {"mm_pdb_file" : water}}
-config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
+config = Initializer(param, as_file=False)
+psi4 = Psi4Wrapper(config.hl_param)
+openmm = OpenMMWrapper(config.ll_param)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-hs =   hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_0 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_1 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_2 = hot_spot.HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs =   HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs_0 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs_1 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs_2 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
 
 hs_0.set_Rmin(0.26)
 hs_0.set_Rmax(0.28)

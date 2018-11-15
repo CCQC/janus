@@ -1,6 +1,6 @@
 import psi4
 import numpy as np
-from .qm_wrapper import QMWrapper
+from janus.qm_wrapper import QMWrapper
 
 class Psi4Wrapper(QMWrapper):
     """

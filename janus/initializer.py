@@ -1,12 +1,12 @@
 import json
 import os
-from .psi4_wrapper import Psi4Wrapper 
-from .openmm_wrapper import OpenMMWrapper 
-from .qmmm import QMMM
-from .oniom_xs import OniomXS
-from .hot_spot import HotSpot
-from .pap import PAP
-from .sap import SAP
+from janus.qm_wrapper import Psi4Wrapper 
+from janus.mm_wrapper import OpenMMWrapper 
+from janus.qmmm import QMMM
+from janus.qmmm import OniomXS
+from janus.qmmm import HotSpot
+from janus.qmmm import PAP
+from janus.qmmm import SAP
 
 class Initializer(object):
     """
