@@ -1,6 +1,17 @@
 QMMM Submodule
 ==================
 
+.. autosummary::
+    :toctree: _autosummary
+    
+    janus.qmmm.QMMM
+    janus.qmmm.AQMMM
+    janus.qmmm.OniomXS
+    janus.qmmm.HotSpot
+    janus.qmmm.PAP
+    janus.qmmm.SAP
+    janus.qmmm.DAS
+
 QMMM
 -----------------
 
@@ -121,10 +132,3 @@ DAS
      .. autoautosummary:: janus.qmmm.DAS
          :attributes:
 
-Module contents
----------------
-
-.. automodule:: janus.qmmm
-    :members:
-    :undoc-members:
-    :show-inheritance:

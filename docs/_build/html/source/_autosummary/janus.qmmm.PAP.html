@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>janus.qmmm.PAP &mdash; janus 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="janus.qmmm.SAP" href="janus.qmmm.SAP.html" />
+    <link rel="prev" title="janus.qmmm.HotSpot" href="janus.qmmm.HotSpot.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> janus
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="janus.html">janus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qmmm.html">janus.qmmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus.qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">janus</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="../janus.qmmm.html">QMMM Submodule</a> &raquo;</li>
+        
+      <li>janus.qmmm.PAP</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/source/_autosummary/janus.qmmm.PAP.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="janus-qmmm-pap">
+<h1>janus.qmmm.PAP<a class="headerlink" href="#janus-qmmm-pap" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="janus.qmmm.PAP">
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">PAP</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.PAP" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="janus.qmmm.PAP.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.PAP.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the PAP class object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameters for AQMMM class</strong> (<em>See</em>) – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.PAP.__init__" title="janus.qmmm.PAP.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper,&nbsp;…)</td>
+<td>Initializes the PAP class object</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
+<td>Computes the center of mass of a specified group</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
+<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code>(r_i)</td>
+<td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.PAP.compute_sf_gradient" title="janus.qmmm.PAP.compute_sf_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_sf_gradient</span></code></a>()</td>
+<td>Computes forces due to the gradient of the switching function</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code>()</td>
+<td>Compute the energy of the isolated groups at their minimum geometry</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code>(qm_center)</td>
+<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
+<td>Cleans up the qm_atoms.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
+<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
+<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code>(qm_center)</td>
+<td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code>()</td>
+<td>Function to return self.Rmin</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code>()</td>
+<td>Function to return self.Rmin</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
+<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.PAP.get_combos" title="janus.qmmm.PAP.get_combos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_combos</span></code></a>([items])</td>
+<td>Gets all combinations of a given list of indices</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
+<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
+<td>Function to return qmmm forces</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
+<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
+<td>Incorporates the zero energy of groups to the total qmmm energy</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
+<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code>([qm_atoms])</td>
+<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
+<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.PAP.partition" title="janus.qmmm.PAP.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
+<td>Finds the partitions as required by the PAP method and saves each partition as a system object.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
+<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.PAP.run_aqmmm" title="janus.qmmm.PAP.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
+<td>Interpolates the energy and gradients from each partition according to the PAP method</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
+<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
+<td>Function to set self.Rmax</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
+<td>Function to set self.Rmin</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
+<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="janus.qmmm.SAP.html" class="btn btn-neutral float-right" title="janus.qmmm.SAP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="janus.qmmm.HotSpot.html" class="btn btn-neutral" title="janus.qmmm.HotSpot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Boyi Zhang.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

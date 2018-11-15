@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>janus.mm_wrapper.MMWrapper &mdash; janus 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> janus
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">janus</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>janus.mm_wrapper.MMWrapper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/source/_autosummary/janus.mm_wrapper.MMWrapper.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="janus-mm-wrapper-mmwrapper">
+<h1>janus.mm_wrapper.MMWrapper<a class="headerlink" href="#janus-mm-wrapper-mmwrapper" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="janus.mm_wrapper.MMWrapper">
+<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">MMWrapper</code><span class="sig-paren">(</span><em>param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MMWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="janus.mm_wrapper.MMWrapper.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A super class for all molecular mechanics wrappers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>param</strong> (<em>dict</em>) – </li>
+<li><strong>program</strong> (<em>str</em>) – what program to use for QM computations</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#janus.mm_wrapper.MMWrapper.__init__" title="janus.mm_wrapper.MMWrapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;class_type)</td>
+<td>A super class for all molecular mechanics wrappers</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.build_qm_param" title="janus.mm_wrapper.MMWrapper.build_qm_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_qm_param</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.compute_info" title="janus.mm_wrapper.MMWrapper.compute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_info</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.convert_input" title="janus.mm_wrapper.MMWrapper.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.convert_trajectory" title="janus.mm_wrapper.MMWrapper.convert_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_trajectory</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_energy_and_gradient" title="janus.mm_wrapper.MMWrapper.get_energy_and_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code></a>(traj[,&nbsp;…])</td>
+<td>Gets the energy and gradient from a MM computation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_charges" title="janus.mm_wrapper.MMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_info" title="janus.mm_wrapper.MMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_qm_geometry" title="janus.mm_wrapper.MMWrapper.get_qm_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_qm_geometry</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.initialize" title="janus.mm_wrapper.MMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.optimize_geometry" title="janus.mm_wrapper.MMWrapper.optimize_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_external_charges" title="janus.mm_wrapper.MMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_up_reporters" title="janus.mm_wrapper.MMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.take_step" title="janus.mm_wrapper.MMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(force)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.au_bohr_to_kjmol_nm" title="janus.mm_wrapper.MMWrapper.au_bohr_to_kjmol_nm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">au_bohr_to_kjmol_nm</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.kjmol_nm_to_au_bohr" title="janus.mm_wrapper.MMWrapper.kjmol_nm_to_au_bohr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kjmol_nm_to_au_bohr</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.kjmol_to_au" title="janus.mm_wrapper.MMWrapper.kjmol_to_au"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kjmol_to_au</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.nm_to_angstrom" title="janus.mm_wrapper.MMWrapper.nm_to_angstrom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.MMWrapper.nm_to_bohr" title="janus.mm_wrapper.MMWrapper.nm_to_bohr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_bohr</span></code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Boyi Zhang.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

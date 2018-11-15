@@ -1,6 +1,13 @@
 janus
 =============
 
+.. autosummary::
+    :toctree: _autosummary
+    
+    janus.driver
+    janus.system
+    janus.initializer
+
 driver
 -------------------
 
@@ -57,10 +64,3 @@ Initializer
      .. autoautosummary:: janus.initializer.Initializer
          :attributes:
 
-Module contents
----------------
-
-.. automodule:: janus
-    :members:
-    :undoc-members:
-    :show-inheritance:

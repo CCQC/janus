@@ -2,10 +2,11 @@ from copy import deepcopy
 import numpy as np
 import mdtraj as md
 from janus.system import System
-"""
-QMMM class for QMMM computations
-"""
+
 class QMMM(object):
+    """
+    QMMM class for QMMM computations
+    """
 
     def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program=None):
         """

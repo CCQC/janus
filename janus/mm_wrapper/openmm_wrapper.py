@@ -7,7 +7,6 @@ import numpy as np
 import pickle
 from copy import deepcopy
 
-
 class OpenMMWrapper(MMWrapper):
     """
     A wrapper class that calls OpenMM

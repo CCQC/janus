@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>janus.qmmm.QMMM &mdash; janus 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="janus.qmmm.AQMMM" href="janus.qmmm.AQMMM.html" />
+    <link rel="prev" title="QMMM Submodule" href="../janus.qmmm.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> janus
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="janus.html">janus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qmmm.html">janus.qmmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus.qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">janus</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="../janus.qmmm.html">QMMM Submodule</a> &raquo;</li>
+        
+      <li>janus.qmmm.QMMM</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/source/_autosummary/janus.qmmm.QMMM.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="janus-qmmm-qmmm">
+<h1>janus.qmmm.QMMM<a class="headerlink" href="#janus-qmmm-qmmm" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="janus.qmmm.QMMM">
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">QMMM</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>QMMM class for QMMM computations</p>
+<dl class="method">
+<dt id="janus.qmmm.QMMM.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes QMMM class with parameters given in param</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>param</strong> (<em>dict</em>) – <p>contains parameters for QM/MM and adaptive QM/MM computations
+Individual parameters include:
+- qmmm_scheme: str of scheme for computing QM/MM energies and gradients,</p>
+<blockquote>
+<div>only substractive available(default)</div></blockquote>
+<ul>
+<li><dl class="first docutils">
+<dt>embedding_method: str of embedding method to use for QM/MM.</dt>
+<dd>Mechanical(default) and Electrostatic available</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>boundary_treatment: str of method for treating dangling bonds in the QM region,</dt>
+<dd>link_atom(default), RC, and RCD available</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>link_atom_element: str of element to use for link atom,</dt>
+<dd>default is H. Beware of using others (not all functionality tested)</dd>
+</dl>
+</li>
+<li>qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations</li>
+<li><dl class="first docutils">
+<dt>run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,</dt>
+<dd>default is True. Regular QM/MM run if False</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li><strong>hl_wrapper</strong> (<em>a qm_wrapper</em><em> or </em><em>mm_wrapper object</em><em>, </em><em>depending on the user input</em>) – </li>
+<li><strong>ll_wrapper</strong> (<em>a mm_wrapper object only for now</em>) – </li>
+<li><strong>md_simulation_program</strong> (<em>str</em>) – The program that performs the MD time step integration</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.__init__" title="janus.qmmm.QMMM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper[,&nbsp;…])</td>
+<td>Initializes QMMM class with parameters given in param</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.compute_gradients" title="janus.qmmm.QMMM.compute_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code></a>(system)</td>
+<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.convert_input" title="janus.qmmm.QMMM.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>(fil,&nbsp;form)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.edit_qm_atoms" title="janus.qmmm.QMMM.edit_qm_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code></a>([qm_atoms,&nbsp;solvent])</td>
+<td>Cleans up the qm_atoms.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.electrostatic" title="janus.qmmm.QMMM.electrostatic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code></a>(system,&nbsp;main_info)</td>
+<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.find_boundary_bonds" title="janus.qmmm.QMMM.find_boundary_bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code></a>([qm_atoms])</td>
+<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.get_external_charges" title="janus.qmmm.QMMM.get_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code></a>(system)</td>
+<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.get_forces" title="janus.qmmm.QMMM.get_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code></a>([run_ID])</td>
+<td>Function to return qmmm forces</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.get_redistributed_positions" title="janus.qmmm.QMMM.get_redistributed_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code></a>(positions,&nbsp;bonds,&nbsp;mm)</td>
+<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.make_primary_subsys_trajectory" title="janus.qmmm.QMMM.make_primary_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code></a>([qm_atoms])</td>
+<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.make_second_subsys_trajectory" title="janus.qmmm.QMMM.make_second_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code></a>([qm_atoms])</td>
+<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.mechanical" title="janus.qmmm.QMMM.mechanical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code></a>(system,&nbsp;main_info)</td>
+<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.prepare_link_atom" title="janus.qmmm.QMMM.prepare_link_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code></a>()</td>
+<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.run_qmmm" title="janus.qmmm.QMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
+<td>Updates the positions and topology given in main_info, and determines the QM/MM energy and gradients</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.update_traj" title="janus.qmmm.QMMM.update_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code></a>(position,&nbsp;topology)</td>
+<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="janus.qmmm.AQMMM.html" class="btn btn-neutral float-right" title="janus.qmmm.AQMMM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../janus.qmmm.html" class="btn btn-neutral" title="QMMM Submodule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Boyi Zhang.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

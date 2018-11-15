@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>janus.mm_wrapper.OpenMMWrapper &mdash; janus 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> janus
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">janus</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>janus.mm_wrapper.OpenMMWrapper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/source/_autosummary/janus.mm_wrapper.OpenMMWrapper.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="janus-mm-wrapper-openmmwrapper">
+<h1>janus.mm_wrapper.OpenMMWrapper<a class="headerlink" href="#janus-mm-wrapper-openmmwrapper" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="janus.mm_wrapper.OpenMMWrapper">
+<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">OpenMMWrapper</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper class that calls OpenMM
+to obtain molecular mechanics information and
+take steps in a molecular dynamics simulation.
+Class inherits from MMWrapper.</p>
+<dl class="method">
+<dt id="janus.mm_wrapper.OpenMMWrapper.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes an OpenMM wrapper class with a set of parameters for
+running OpenMM. Creates an OpenMM pdb object using the given pdb_file
+and forcefield object using the given forcefield</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>param</strong> (<em>dict</em>) – <p>Parameters for molecular mechanics computations.
+Individual parameters include:
+- mm_pdb_file : a pdb file that contains the system of interest
+- mm_forcefield : the name of the forcefield to use, default is amber99sb.xml
+- mm_water_forcefield : the name of the forcefield to use for water, default is tip3p.xml
+- step_size : step size to integrate system in picoseconds,</p>
+<blockquote>
+<div>default is 0.002*OM_unit.picoseconds</div></blockquote>
+<ul class="simple">
+<li>integrator” : which integrator to use for simulation, default is Langevin</li>
+<li><dl class="first docutils">
+<dt>fric_coeff” <span class="classifier-delimiter">:</span> <span class="classifier">friction coefficient to couple the system to heat bath in inverse</span></dt>
+<dd>picoseconds, default is 1/OM_unit.picosecond</dd>
+</dl>
+</li>
+<li>temp: the temperature at which the simulation runs in kelvin, default is 300*OM_unit.kelvin</li>
+<li>nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff</li>
+<li><dl class="first docutils">
+<dt>nonbondedCutoff <span class="classifier-delimiter">:</span> <span class="classifier">cutoff distance for nonbonded interactions in nanometers,</span></dt>
+<dd>default is “1*OM_unit.nanometer”,</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>constraints <span class="classifier-delimiter">:</span> <span class="classifier">which bonds and angles implemented with constraints,</span></dt>
+<dd>default is OM_app.HBonds</dd>
+</dl>
+</li>
+<li>rigid_water : whether water is treated as rigid, default is True</li>
+<li>removeCMMotion : whether to include a CMMotionRemover, default is True</li>
+<li><dl class="first docutils">
+<dt>ignoreExternalBonds <span class="classifier-delimiter">:</span> <span class="classifier">whether to ignore external bonds when matching residues to templates,</span></dt>
+<dd>default is True</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>flexibleConstraints <span class="classifier-delimiter">:</span> <span class="classifier">whether to add parameters for constrained parameters,</span></dt>
+<dd>default is False</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>hydrogenMass <span class="classifier-delimiter">:</span> <span class="classifier">the mass to use for hydrogen atoms bonded to heavy atoms,</span></dt>
+<dd>default is False</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>residueTemplates <span class="classifier-delimiter">:</span> <span class="classifier">allows user to specify a template for a residue,</span></dt>
+<dd>default is empty dict {}</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>switchDistance <span class="classifier-delimiter">:</span> <span class="classifier">the distance to turn on potential energy switching function for</span></dt>
+<dd>Lennard-Jones interactions. Default is None</dd>
+</dl>
+</li>
+</ul>
+<p>For more information about these pararmeters and
+other possible parameter values consult docs.openmm.org</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="janus.mm_wrapper.OpenMMWrapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param)</td>
+<td>Initializes an OpenMM wrapper class with a set of parameters for running OpenMM.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_qm_param</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.compute_info" title="janus.mm_wrapper.OpenMMWrapper.compute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_info</span></code></a>(topology,&nbsp;positions[,&nbsp;…])</td>
+<td>Gets information about a set of molecules as defined in the pdb, including energy, positions, forces</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.convert_input" title="janus.mm_wrapper.OpenMMWrapper.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.convert_trajectory" title="janus.mm_wrapper.OpenMMWrapper.convert_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_trajectory</span></code></a>(traj)</td>
+<td>Converts an OpenMM trajectory to get topology and positions that are compatible with MDtraj</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_modeller" title="janus.mm_wrapper.OpenMMWrapper.create_modeller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_modeller</span></code></a>(qm_atoms[,&nbsp;keep_qm])</td>
+<td>Makes a OpenMM modeller object based on given geometry</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_new_residue_template" title="janus.mm_wrapper.OpenMMWrapper.create_new_residue_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_new_residue_template</span></code></a>(topology)</td>
+<td>Create a new OpeMM residue template when there is no matching residue and registers it into self.forcefield forcefield object.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_openmm_simulation" title="janus.mm_wrapper.OpenMMWrapper.create_openmm_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_openmm_simulation</span></code></a>(openmm_system,&nbsp;…)</td>
+<td>Creates an OpenMM simulation object given an OpenMM system, topology, and positions</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_openmm_system" title="janus.mm_wrapper.OpenMMWrapper.create_openmm_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_openmm_system</span></code></a>(topology[,&nbsp;…])</td>
+<td>Calls OpenMM to create an OpenMM System object give a topology, forcefield, and other paramters as given in input TODO: need to put nonbond and nonbond_cutoff back but not doing for now because need non-periodic system.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.delete_atoms" title="janus.mm_wrapper.OpenMMWrapper.delete_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_atoms</span></code></a>(atoms)</td>
+<td>Delete specified atoms from an OpenMM Modeller object</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code>(traj[,&nbsp;…])</td>
+<td>Gets the energy and gradient from a MM computation</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_charges" title="janus.mm_wrapper.OpenMMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
+<td>Gets the MM point charges for the system of interest</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_info" title="janus.mm_wrapper.OpenMMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td>Gets the information for the system of interest</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_qm_geometry</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_state_info" title="janus.mm_wrapper.OpenMMWrapper.get_state_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state_info</span></code></a>([main_info,&nbsp;energy,&nbsp;…])</td>
+<td>Gets information like the kinetic and potential energy, positions, forces, and topology from an OpenMM state.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.initialize" title="janus.mm_wrapper.OpenMMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(embedding_method)</td>
+<td>Calls compute_info to get information for the system of interest in its initial state and saves the simulation object and information dictionary returned by compute_info</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.keep_atoms" title="janus.mm_wrapper.OpenMMWrapper.keep_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keep_atoms</span></code></a>(atoms)</td>
+<td>Acts on an OpenMM Modeller object to keep the specified atoms in the MM system and deletes everything else</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.restart" title="janus.mm_wrapper.OpenMMWrapper.restart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart</span></code></a>(embedding_method,&nbsp;chkpt_file,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_LJ_zero" title="janus.mm_wrapper.OpenMMWrapper.set_LJ_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_LJ_zero</span></code></a>(OM_system)</td>
+<td>Removes the Lennard-Jones (van der Waals) force from the system</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_charge_zero" title="janus.mm_wrapper.OpenMMWrapper.set_charge_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_charge_zero</span></code></a>(OM_system[,&nbsp;link_atoms])</td>
+<td>Removes the coulombic forces by setting charges of specified atoms to zero</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_external_charges" title="janus.mm_wrapper.OpenMMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_up_reporters" title="janus.mm_wrapper.OpenMMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>(simulation)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.take_step" title="janus.mm_wrapper.OpenMMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(num)</td>
+<td>Takes a specified num of steps in the MD simulation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.take_updated_step" title="janus.mm_wrapper.OpenMMWrapper.take_updated_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_updated_step</span></code></a>(force)</td>
+<td>Updates the system with forces from qmmm and takes a simulation step</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.update_forces" title="janus.mm_wrapper.OpenMMWrapper.update_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_forces</span></code></a>(forces,&nbsp;force_obj,&nbsp;simulation)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.write_pdb" title="janus.mm_wrapper.OpenMMWrapper.write_pdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_pdb</span></code></a>(info)</td>
+<td>Write a pdb file from an OpenMM modeller</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">au_bohr_to_kjmol_nm</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">kjmol_nm_to_au_bohr</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">kjmol_to_au</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_bohr</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Boyi Zhang.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

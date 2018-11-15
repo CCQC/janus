@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>janus.qm_wrapper.QMWrapper &mdash; janus 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="janus.qm_wrapper.Psi4Wrapper" href="janus.qm_wrapper.Psi4Wrapper.html" />
+    <link rel="prev" title="QM_Wrapper Submodule" href="../janus.qm_wrapper.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> janus
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="janus.html">janus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qmmm.html">janus.qmmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus.qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">janus</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a> &raquo;</li>
+        
+      <li>janus.qm_wrapper.QMWrapper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/source/_autosummary/janus.qm_wrapper.QMWrapper.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="janus-qm-wrapper-qmwrapper">
+<h1>janus.qm_wrapper.QMWrapper<a class="headerlink" href="#janus-qm-wrapper-qmwrapper" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="janus.qm_wrapper.QMWrapper">
+<em class="property">class </em><code class="descclassname">janus.qm_wrapper.</code><code class="descname">QMWrapper</code><span class="sig-paren">(</span><em>param</em>, <em>program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="janus.qm_wrapper.QMWrapper.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>QM wrapper super class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>param</strong> (<em>dict</em>) – parameters for QM computations</li>
+<li><strong>program</strong> (<em>str</em>) – what program to use for QM computations</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.__init__" title="janus.qm_wrapper.QMWrapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;program)</td>
+<td>QM wrapper super class</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.build_qm_param" title="janus.qm_wrapper.QMWrapper.build_qm_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_qm_param</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.compute_info" title="janus.qm_wrapper.QMWrapper.compute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_info</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.convert_input" title="janus.qm_wrapper.QMWrapper.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.convert_trajectory" title="janus.qm_wrapper.QMWrapper.convert_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_trajectory</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.get_energy_and_gradient" title="janus.qm_wrapper.QMWrapper.get_energy_and_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code></a>(traj[,&nbsp;…])</td>
+<td>Gets the energy and gradient from a QM computation of the primary subsystem</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.get_main_charges" title="janus.qm_wrapper.QMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.get_main_info" title="janus.qm_wrapper.QMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.get_qm_geometry" title="janus.qm_wrapper.QMWrapper.get_qm_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_qm_geometry</span></code></a>([qm_traj])</td>
+<td>Uses the atoms and positions from a MDtraj trajectory object with just the qm region to obtain the geometry information</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.initialize" title="janus.qm_wrapper.QMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.optimize_geometry" title="janus.qm_wrapper.QMWrapper.optimize_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.set_external_charges" title="janus.qm_wrapper.QMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.set_up_reporters" title="janus.qm_wrapper.QMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus.qm_wrapper.html#janus.qm_wrapper.QMWrapper.take_step" title="janus.qm_wrapper.QMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(force)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="janus.qm_wrapper.Psi4Wrapper.html" class="btn btn-neutral float-right" title="janus.qm_wrapper.Psi4Wrapper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../janus.qm_wrapper.html" class="btn btn-neutral" title="QM_Wrapper Submodule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Boyi Zhang.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

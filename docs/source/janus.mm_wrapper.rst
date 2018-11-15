@@ -1,6 +1,12 @@
 MM\_Wrapper Submodule
 =========================
 
+.. autosummary::
+    :toctree: _autosummary
+    
+    janus.mm_wrapper.MMWrapper
+    janus.mm_wrapper.OpenMMWrapper
+
 MMWrapper
 ------------------------------------
 
@@ -35,11 +41,3 @@ OpenMMWrapper
      .. autoautosummary:: janus.mm_wrapper.OpenMMWrapper
          :attributes:
 
-
-Module contents
----------------
-
-.. automodule:: janus.mm_wrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:

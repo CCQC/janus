@@ -1,6 +1,12 @@
 QM\_Wrapper Submodule
 =========================
 
+.. autosummary::
+    :toctree: _autosummary
+    
+    janus.qm_wrapper.QMWrapper
+    janus.qm_wrapper.Psi4Wrapper
+
 QMWrapper
 ------------------------------------
 
@@ -35,10 +41,3 @@ Psi4Wrapper
      .. autoautosummary:: janus.qm_wrapper.Psi4Wrapper
          :attributes:
 
-Module contents
----------------
-
-.. automodule:: janus.qm_wrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
