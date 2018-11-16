@@ -648,20 +648,10 @@ class OpenMMWrapper(MMWrapper):
         Write a pdb file from an OpenMM modeller
 
         """
-        return_sys  = False
-        sys_file    = 'final.pdb'
-
-        try:
-            return_sys = self.param['return_system']
-        except:
-            print("Will not return final pdb")
+        return_sys = self.param['return_system']
+        sys_file = self.param['return_system_filename']
 
         if return_sys is True: 
-            try:
-                sys_file = self.param['return_system_filename']
-            except:
-                print('writing final pdb to final.pdb')
-                
             OM_app.PDBFile.writeFile(info['topology'], info['positions'], open(sys_file, 'w'))
  
 
