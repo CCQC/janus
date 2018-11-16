@@ -83,14 +83,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="janus.html">janus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qmmm.html">janus.qmmm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../janus.qmmm.html">QMMM Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
 </ul>
 </li>
 </ul>
@@ -140,7 +136,7 @@
         
           <li><a href="../modules.html">API Documentation</a> &raquo;</li>
         
-          <li><a href="../janus.qmmm.html">QMMM Submodule</a> &raquo;</li>
+          <li><a href="../janus_qmmm.html">QMMM Submodule</a> &raquo;</li>
         
       <li>janus.qmmm.OniomXS</li>
     
@@ -238,7 +234,7 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
 <td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.OniomXS.get_switching_function" title="janus.qmmm.OniomXS.get_switching_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_switching_function</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.OniomXS.get_switching_function" title="janus.qmmm.OniomXS.get_switching_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_switching_function</span></code></a>()</td>
 <td>Averages the individual switching functions of each buffer group</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
@@ -253,13 +249,13 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.OniomXS.partition" title="janus.qmmm.OniomXS.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.OniomXS.partition" title="janus.qmmm.OniomXS.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
 <td>Finds the partitions as required by the ONIOM-XS method and saves each partition as a system object.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
 <td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.OniomXS.run_aqmmm" title="janus.qmmm.OniomXS.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.OniomXS.run_aqmmm" title="janus.qmmm.OniomXS.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
 <td>Interpolates the energy and gradients from each partition according to the ONIOM-XS method</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>

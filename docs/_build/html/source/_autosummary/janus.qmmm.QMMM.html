@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="janus.qmmm.AQMMM" href="janus.qmmm.AQMMM.html" />
-    <link rel="prev" title="QMMM Submodule" href="../janus.qmmm.html" /> 
+    <link rel="prev" title="QMMM Submodule" href="../janus_qmmm.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -83,14 +83,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="janus.html">janus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qmmm.html">janus.qmmm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../janus.qmmm.html">QMMM Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
 </ul>
 </li>
 </ul>
@@ -140,7 +136,7 @@
         
           <li><a href="../modules.html">API Documentation</a> &raquo;</li>
         
-          <li><a href="../janus.qmmm.html">QMMM Submodule</a> &raquo;</li>
+          <li><a href="../janus_qmmm.html">QMMM Submodule</a> &raquo;</li>
         
       <li>janus.qmmm.QMMM</li>
     
@@ -225,46 +221,46 @@ Individual parameters include:
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.__init__" title="janus.qmmm.QMMM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper[,&nbsp;…])</td>
 <td>Initializes QMMM class with parameters given in param</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.compute_gradients" title="janus.qmmm.QMMM.compute_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code></a>(system)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.compute_gradients" title="janus.qmmm.QMMM.compute_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code></a>(system)</td>
 <td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.convert_input" title="janus.qmmm.QMMM.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>(fil,&nbsp;form)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.convert_input" title="janus.qmmm.QMMM.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>(fil,&nbsp;form)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.edit_qm_atoms" title="janus.qmmm.QMMM.edit_qm_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code></a>([qm_atoms,&nbsp;solvent])</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.edit_qm_atoms" title="janus.qmmm.QMMM.edit_qm_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code></a>([qm_atoms,&nbsp;solvent])</td>
 <td>Cleans up the qm_atoms.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.electrostatic" title="janus.qmmm.QMMM.electrostatic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code></a>(system,&nbsp;main_info)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.electrostatic" title="janus.qmmm.QMMM.electrostatic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code></a>(system,&nbsp;main_info)</td>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.find_boundary_bonds" title="janus.qmmm.QMMM.find_boundary_bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code></a>([qm_atoms])</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.find_boundary_bonds" title="janus.qmmm.QMMM.find_boundary_bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code></a>([qm_atoms])</td>
 <td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.get_external_charges" title="janus.qmmm.QMMM.get_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code></a>(system)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.get_external_charges" title="janus.qmmm.QMMM.get_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code></a>(system)</td>
 <td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.get_forces" title="janus.qmmm.QMMM.get_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code></a>([run_ID])</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.get_forces" title="janus.qmmm.QMMM.get_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code></a>([run_ID])</td>
 <td>Function to return qmmm forces</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.get_redistributed_positions" title="janus.qmmm.QMMM.get_redistributed_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code></a>(positions,&nbsp;bonds,&nbsp;mm)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.get_redistributed_positions" title="janus.qmmm.QMMM.get_redistributed_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code></a>(positions,&nbsp;bonds,&nbsp;mm)</td>
 <td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.make_primary_subsys_trajectory" title="janus.qmmm.QMMM.make_primary_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code></a>([qm_atoms])</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.make_primary_subsys_trajectory" title="janus.qmmm.QMMM.make_primary_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code></a>([qm_atoms])</td>
 <td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.make_second_subsys_trajectory" title="janus.qmmm.QMMM.make_second_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code></a>([qm_atoms])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.make_second_subsys_trajectory" title="janus.qmmm.QMMM.make_second_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code></a>([qm_atoms])</td>
 <td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.mechanical" title="janus.qmmm.QMMM.mechanical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code></a>(system,&nbsp;main_info)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.mechanical" title="janus.qmmm.QMMM.mechanical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code></a>(system,&nbsp;main_info)</td>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.prepare_link_atom" title="janus.qmmm.QMMM.prepare_link_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.prepare_link_atom" title="janus.qmmm.QMMM.prepare_link_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code></a>()</td>
 <td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.run_qmmm" title="janus.qmmm.QMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.run_qmmm" title="janus.qmmm.QMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
 <td>Updates the positions and topology given in main_info, and determines the QM/MM energy and gradients</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.QMMM.update_traj" title="janus.qmmm.QMMM.update_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code></a>(position,&nbsp;topology)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.update_traj" title="janus.qmmm.QMMM.update_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code></a>(position,&nbsp;topology)</td>
 <td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
 </tr>
 </tbody>
@@ -284,7 +280,7 @@ Individual parameters include:
         <a href="janus.qmmm.AQMMM.html" class="btn btn-neutral float-right" title="janus.qmmm.AQMMM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../janus.qmmm.html" class="btn btn-neutral" title="QMMM Submodule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../janus_qmmm.html" class="btn btn-neutral" title="QMMM Submodule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

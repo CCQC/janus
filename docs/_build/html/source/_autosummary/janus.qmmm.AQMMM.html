@@ -83,14 +83,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="janus.html">janus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qmmm.html">janus.qmmm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../janus.qmmm.html">QMMM Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
 </ul>
 </li>
 </ul>
@@ -140,7 +136,7 @@
         
           <li><a href="../modules.html">API Documentation</a> &raquo;</li>
         
-          <li><a href="../janus.qmmm.html">QMMM Submodule</a> &raquo;</li>
+          <li><a href="../janus_qmmm.html">QMMM Submodule</a> &raquo;</li>
         
       <li>janus.qmmm.AQMMM</li>
     
@@ -249,22 +245,22 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.__init__" title="janus.qmmm.AQMMM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper,&nbsp;…)</td>
 <td>Initializes AQMMM class with parameters given in param</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.compute_COM" title="janus.qmmm.AQMMM.compute_COM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code></a>(atoms)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.compute_COM" title="janus.qmmm.AQMMM.compute_COM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code></a>(atoms)</td>
 <td>Computes the center of mass of a specified group</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
 <td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.compute_lamda_i" title="janus.qmmm.AQMMM.compute_lamda_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code></a>(r_i)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.compute_lamda_i" title="janus.qmmm.AQMMM.compute_lamda_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code></a>(r_i)</td>
 <td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.compute_zero_energy" title="janus.qmmm.AQMMM.compute_zero_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.compute_zero_energy" title="janus.qmmm.AQMMM.compute_zero_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code></a>()</td>
 <td>Compute the energy of the isolated groups at their minimum geometry</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.define_buffer_zone" title="janus.qmmm.AQMMM.define_buffer_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code></a>(qm_center)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.define_buffer_zone" title="janus.qmmm.AQMMM.define_buffer_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code></a>(qm_center)</td>
 <td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
@@ -276,16 +272,16 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
 <td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.find_buffer_atoms" title="janus.qmmm.AQMMM.find_buffer_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code></a>(qm_center)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.find_buffer_atoms" title="janus.qmmm.AQMMM.find_buffer_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code></a>(qm_center)</td>
 <td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.get_Rmax" title="janus.qmmm.AQMMM.get_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.get_Rmax" title="janus.qmmm.AQMMM.get_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code></a>()</td>
 <td>Function to return self.Rmin</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.get_Rmin" title="janus.qmmm.AQMMM.get_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.get_Rmin" title="janus.qmmm.AQMMM.get_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code></a>()</td>
 <td>Function to return self.Rmin</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.get_buffer_info" title="janus.qmmm.AQMMM.get_buffer_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.get_buffer_info" title="janus.qmmm.AQMMM.get_buffer_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code></a>()</td>
 <td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
@@ -297,7 +293,7 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
 <td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.get_zero_energy" title="janus.qmmm.AQMMM.get_zero_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.get_zero_energy" title="janus.qmmm.AQMMM.get_zero_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code></a>()</td>
 <td>Incorporates the zero energy of groups to the total qmmm energy</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
@@ -309,22 +305,22 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.partition" title="janus.qmmm.AQMMM.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>(info)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.partition" title="janus.qmmm.AQMMM.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>(info)</td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
 <td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.run_aqmmm" title="janus.qmmm.AQMMM.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.run_aqmmm" title="janus.qmmm.AQMMM.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.run_qmmm" title="janus.qmmm.AQMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.run_qmmm" title="janus.qmmm.AQMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
 <td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.set_Rmax" title="janus.qmmm.AQMMM.set_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code></a>(Rmax)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.set_Rmax" title="janus.qmmm.AQMMM.set_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code></a>(Rmax)</td>
 <td>Function to set self.Rmax</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.set_Rmin" title="janus.qmmm.AQMMM.set_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code></a>(Rmin)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.set_Rmin" title="janus.qmmm.AQMMM.set_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code></a>(Rmin)</td>
 <td>Function to set self.Rmin</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
@@ -339,7 +335,7 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.AQMMM.nm_to_angstrom" title="janus.qmmm.AQMMM.nm_to_angstrom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.nm_to_angstrom" title="janus.qmmm.AQMMM.nm_to_angstrom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></a></td>
 <td></td>
 </tr>
 </tbody>

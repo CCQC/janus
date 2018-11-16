@@ -1,19 +1,11 @@
 API Documentation
 ===================
 
-.. autosummary::
-    :toctree: _autosummary
-    
-    janus
-    janus.qmmm
-    janus.qm_wrapper
-    janus.qm_wrapper
-
 .. toctree::
-  :maxdepth: 3
+  :maxdepth: 2
 
   janus
-  janus.qmmm
-  janus.qm_wrapper
-  janus.qm_wrapper
+  janus_qmmm
+  janus_qm_wrapper
+  janus_mm_wrapper
 

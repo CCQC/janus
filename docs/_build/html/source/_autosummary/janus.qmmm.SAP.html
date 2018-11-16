@@ -83,14 +83,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="janus.html">janus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qmmm.html">janus.qmmm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="janus.qm_wrapper.html">janus.qm_wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../janus.qmmm.html">QMMM Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus.qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
 </ul>
 </li>
 </ul>
@@ -140,7 +136,7 @@
         
           <li><a href="../modules.html">API Documentation</a> &raquo;</li>
         
-          <li><a href="../janus.qmmm.html">QMMM Submodule</a> &raquo;</li>
+          <li><a href="../janus_qmmm.html">QMMM Submodule</a> &raquo;</li>
         
       <li>janus.qmmm.SAP</li>
     
@@ -199,7 +195,7 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code>(r_i)</td>
 <td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.SAP.compute_sf_gradient" title="janus.qmmm.SAP.compute_sf_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_sf_gradient</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.compute_sf_gradient" title="janus.qmmm.SAP.compute_sf_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_sf_gradient</span></code></a>()</td>
 <td>Computes forces due to the gradient of the switching function</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code>()</td>
@@ -232,7 +228,7 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
 <td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.SAP.get_combos" title="janus.qmmm.SAP.get_combos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_combos</span></code></a>([items,&nbsp;buffer_distance])</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.get_combos" title="janus.qmmm.SAP.get_combos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_combos</span></code></a>([items,&nbsp;buffer_distance])</td>
 <td>A given list of indices is sorted by distance and the combinations is found based on distance order.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
@@ -244,7 +240,7 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
 <td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.SAP.get_switching_functions" title="janus.qmmm.SAP.get_switching_functions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_switching_functions</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.get_switching_functions" title="janus.qmmm.SAP.get_switching_functions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_switching_functions</span></code></a>()</td>
 <td>Computes switching function for SAP computations and saves to each buffer group object</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
@@ -259,13 +255,13 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.SAP.partition" title="janus.qmmm.SAP.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.partition" title="janus.qmmm.SAP.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
 <td>Finds the partitions as required by the SAP method and saves each partition as a system object.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
 <td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.qmmm.html#janus.qmmm.SAP.run_aqmmm" title="janus.qmmm.SAP.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.run_aqmmm" title="janus.qmmm.SAP.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
 <td>Interpolates the energy and gradients from each partition according to the SAP method</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>

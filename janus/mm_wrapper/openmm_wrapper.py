@@ -150,7 +150,9 @@ class OpenMMWrapper(MMWrapper):
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
-    def restart(self, embedding_method, chkpt_file, restart_forces):
+    def restart(self, embedding_method):
+        chkpt_file = self.param['restart_checkpoint_filename']
+        restart_forces = self.param['restart_forces_filename']
 
         # ensure every computation has same periodic box vector parameters
         self.topology.setPeriodicBoxVectors(self.PeriodicBoxVector)
@@ -646,20 +648,10 @@ class OpenMMWrapper(MMWrapper):
         Write a pdb file from an OpenMM modeller
 
         """
-        return_sys  = False
-        sys_file    = 'final.pdb'
-
-        try:
-            return_sys = self.param['return_system']
-        except:
-            print("Will not return final pdb")
+        return_sys = self.param['return_system']
+        sys_file = self.param['return_system_filename']
 
         if return_sys is True: 
-            try:
-                sys_file = self.param['return_system_filename']
-            except:
-                print('writing final pdb to final.pdb')
-                
             OM_app.PDBFile.writeFile(info['topology'], info['positions'], open(sys_file, 'w'))
  
 
@@ -827,34 +819,13 @@ class OpenMMWrapper(MMWrapper):
         temp = False
         den = False
 
-        if self.param['return_checkpoint_interval']:
-            return_chkpt_int = self.param['return_checkpoint_interval']
-        else:
-            return_chkpt_int = 0
-        if self.param['return_checkpoint_filename']:
-            chkpt_file = self.param['return_checkpoint_filename']
-        else:
-            chkpt_file = 'checkpoint.chk'
-        if self.param['return_trajectory_interval']:
-            return_traj_int = self.param['return_trajectory_interval']
-        else:
-            return_traj_int = 0
-        if self.param['return_trajectory_filename']:
-            traj_file = self.param['return_trajectory_filename']
-        else:
-            traj_file   = 'output.nc'
-        if self.param['trajectory_format']:
-            traj_format = self.param['trajectory_format']
-        else:
-            traj_format = 'NetCDF'
-        if self.param['return_info_interval']:
-            info_int = self.param['return_info_interval']
-        else:
-            info_int    = 0
-        if self.param['return_info']:
-            return_info = self.param['return_info']
-        else:
-            return_info = []
+        return_chkpt_int = self.param['return_checkpoint_interval']
+        chkpt_file = self.param['return_checkpoint_filename']
+        return_traj_int = self.param['return_trajectory_interval']
+        traj_file = self.param['return_trajectory_filename']
+        traj_format = self.param['trajectory_format']
+        info_int = self.param['return_info_interval']
+        return_info = self.param['return_info']
 
         if return_traj_int != 0:
             if traj_format == 'NetCDF':

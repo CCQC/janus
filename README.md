@@ -4,6 +4,7 @@
 
 # Janus
 A Python library for adaptive QM/MM methods 
+Documentation can be found [here](https://ccqc.github.io/janus/)
 
 ## Set up steps: 
 * Download miniconda [installer](https://conda.io/docs/user-guide/install/macos.html)
@@ -17,3 +18,5 @@ A Python library for adaptive QM/MM methods
 * To add MDtraj: `conda install -c conda-forge mdtraj`
 * To add sphinx : `pip install Sphinx`
 * To add napoleon extension to sphinx `pip install sphinxcontrib-napoleon`
+
+
