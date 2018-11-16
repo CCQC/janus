@@ -4,7 +4,7 @@
 
 # Janus
 A Python library for adaptive QM/MM methods 
-Documentation can be found [here] (https://ccqc.github.io/janus/)
+Documentation can be found [here](https://ccqc.github.io/janus/)
 
 ## Set up steps: 
 * Download miniconda [installer](https://conda.io/docs/user-guide/install/macos.html)

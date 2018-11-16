@@ -4,6 +4,8 @@
  "boundary_treatment" : "link_atom",
  "link_atom_element" : "H",
  "qm_atoms" : [],
+ "hl_program" : "Psi4",
+ "ll_program" : "OpenMM",
  "run_aqmmm" : true
 }
 
