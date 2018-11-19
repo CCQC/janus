@@ -49,7 +49,6 @@ def run_simulation(initializer, restart):
             with open(initializer.return_forces_filename, 'wb') as f:
                 pickle.dump(forces, f)
 
-    
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 
         # getting it on the correct one
