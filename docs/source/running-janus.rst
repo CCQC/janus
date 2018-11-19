@@ -147,16 +147,11 @@ _________________
 Molecular Dynamics
 --------------------------
 
-High Level 
---------------------------
-
-Low Level
---------------------------
-
 Required keywords
 _________________
 
 ----------------------------
+
 
 **md_simulation_program**
     :Description: Specifies what program to use for MD simulation
@@ -177,6 +172,11 @@ Optional keywords
 _________________
 
 ----------------------------
+
+**run_md**
+    :Description: Whether to run a MD simulation
+    :DataType: Bool
+    :Default: False
 
 **step_size**
     :Description: The step size of the MD simulation in femtoseconds
@@ -199,15 +199,15 @@ _________________
               each element will correspond to the steps run in each ensemble specified in md_ensemble. The step number specified 
               with start_qmmm will be taken as the step number of the last ensemble specified at which to start QM/MM
 
-**return_trajectory**
+**return_trajectory_interval**
     :Description: Whether to return the trajectory of the MD simulation. Keyword value lists the frame interval to save.
     :DataType: Int 
     :Default: 0 (trajectory not returned)
 
 **return_trajectory_filename**
-    :description: name of trajectory file to return
-    :datatype: string
-    :default: output
+    :Description: name of trajectory file to return
+    :Datatype: String
+    :Default: output
 
 **trajectory_format**
     :Description: The format of the trajectory file to return
@@ -221,9 +221,9 @@ _________________
     :Default: False
 
 **return_system_filename**
-    :description: name of system file to return
-    :datatype: string
-    :default: final.pdb
+    :Description: name of system file to return
+    :Datatype: String
+    :Default: final.pdb
 
 **return_info**
     :Description: Whether to return system information such as energy and temperature
@@ -236,7 +236,42 @@ _________________
     :DataType: Int
     :Default: 0 (info not returned)
 
+**return_checkpoint_interval**
+    :Description: Interval for forces
+    :DataType: Int
+    :Default: 0
 
+**return_checkpoint_filename**
+    :Description: Name of checkpoint file to return
+    :DataType: String
+    :Default: checkpoint.chk
+
+**return_forces_interval**
+    :Description: Interval to return forces at
+    :DataType: Int
+    :Default: same as return_checkpoint_interval
+
+**return_forces_filename**
+    :Description: Name of force file to return
+    :DataType: String
+    :Default: forces.pkl
+
+
+**restart_checkpoint_filename**
+    :Description: Name of checkpoint file to read for restart
+    :DataType: String
+    :Default: checkpoint.chk
+
+**restart_forces_filename**
+    :Description: Name of force file to read for restart
+    :DataType: String
+    :Default: forces.pkl
+
+High Level 
+--------------------------
+
+Low Level
+--------------------------
 
 Examples
 _________________

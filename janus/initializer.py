@@ -34,7 +34,7 @@ class Initializer(object):
         self.system_param = self.load_param(self.system_paramfile)
         self.qmmm_param = self.load_param(self.qmmm_paramfile)
         self.aqmmm_param = self.load_param(self.aqmmm_paramfile)
-        self.md_param = self.load_param(self.md_param)
+        self.md_sim_param = self.load_param(self.md_paramfile)
 
         if as_file is True:
             self.param = self.load_param(param)
@@ -71,7 +71,7 @@ class Initializer(object):
         else:
             print("Only Psi4 and OpenMM currently available to be used in high level computations")
 
-        if self.ll_program == "OpenMM":
+        if self.qmmm_param['ll_program'] == "OpenMM":
             self.ll_param = self.load_param(self.openmm_paramfile)
             self.ll_wrapper = OpenMMWrapper
         else:
@@ -83,34 +83,43 @@ class Initializer(object):
         if 'll' in self.param:
             self.ll_param.update(self.param['ll'])
 
-        if 'md' in self.parm:
-            self.md_param.update(self.param['md'])
+        if 'md' in self.param:
+            self.md_sim_param.update(self.param['md'])
 
-        self.run_md = self.md_param['run_md']
+        self.run_md = self.md_sim_param['run_md']
+        self.md_restart = self.md_sim_param['restart']
+
+        if 'return_forces_interval' in self.md_sim_param:
+            self.return_forces_interval = self.md_sim_param['return_forces_interval']
+        else:
+            self.return_forces_interval = self.md_sim_param['return_checkpoint_interval']
+    
+        self.return_forces_filename = self.md_sim_param['return_forces_filename']
             
         self.md_sim_wrapper = None
 
         if self.run_md is True:
-            self.md_sim_prog = self.md_param['md_simulation_program']
-            self.start_qmmm = self.md_param['start_qmmm']
-            self.end_qmmm =   self.md_param['end_qmmm']
+            self.md_sim_prog = self.md_sim_param['md_simulation_program']
+            self.start_qmmm =  self.md_sim_param['start_qmmm']
+            self.end_qmmm =    self.md_sim_param['end_qmmm']
             self.qmmm_steps = self.end_qmmm - self.start_qmmm
 
-            if type(self.md_param['md_steps']) is int:
-                self.end_steps = self.md_param['md_steps'] - self.end_qmmm
-            elif type(self.md_param['md_steps']) is list:
-                self.end_steps = self.md_param['md_steps'][-1] - self.end_qmmm
+            if type(self.md_sim_param['md_steps']) is int:
+                self.end_steps = self.md_sim_param['md_steps'] - self.end_qmmm
+            elif type(self.md_sim_param['md_steps']) is list:
+                self.end_steps = self.md_sim_param['md_steps'][-1] - self.end_qmmm
 
             if self.md_sim_prog == "OpenMM":
+                print('reading openmm as md wrapper')
                 self.md_sim_wrapper = OpenMMWrapper
             else:
                 print("Only OpenMM currently available")
 
         self.qmmm_param.update(self.system_param)
         self.aqmmm_param.update(self.system_param)
-        self.md_param.update(self.system_param)
-        self.md_param.update(self.ll_param)
-        self.ll_param.update(self.md_param)
+        self.md_sim_param.update(self.system_param)
+        self.md_sim_param.update(self.ll_param)
+        self.ll_param.update(self.md_sim_param)
 
         #print('System information read from {}'.format(self.param['system']['system_info']))
 
@@ -132,10 +141,11 @@ class Initializer(object):
         # create ll_wrapper object
         ll_wrapper = self.ll_wrapper(self.ll_param)
         
-        # create md wrapper
-        md_sim_wrapper = self.md_sim_wrapper(self.md_sim_param)
+        if self.run_md is True:
+            # create md wrapper
+            md_sim_wrapper = self.md_sim_wrapper(self.md_sim_param)
 
-        if self.qmmm['run_aqmmm'] is False:
+        if self.qmmm_param['run_aqmmm'] is False:
             qmmm = QMMM(self.qmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
         elif self.aqmmm_param['aqmmm_scheme'] == 'ONIOM-XS':
             qmmm = OniomXS(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
@@ -180,14 +190,12 @@ class Initializer(object):
 
         """
 
-        if fname.endswith(".yaml") or fname.endswith(".yml"):
-            rfunc = yaml.load
-        elif fname.endswith(".json"):
+        if fname.endswith(".json"):
             rfunc = json.load
         else:
             raise TypeError("Did not understand file type {}.".format(fname))
 
-        with open(fname, "r") as handle:
+        with open(fname, 'r') as handle:
             ret = rfunc(handle)
 
         return ret
