@@ -8,7 +8,15 @@ class QMMM(object):
     QMMM class for QMMM computations
     """
 
-    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program=None):
+    def __init__(self, hl_wrapper, 
+                       ll_wrapper, 
+                       system_info,
+                       system_info_format,
+                       qm_atoms,
+                       qmmm_scheme='subtractive', 
+                       embedding_method='Mechanical', 
+                       boundary_treatment='link_atom',
+                       link_atom_element='H'):
         """
         Initializes QMMM class with parameters given in param
 
@@ -31,31 +39,28 @@ class QMMM(object):
 
         hl_wrapper : a qm_wrapper or mm_wrapper object, depending on the user input
         ll_wrapper : a mm_wrapper object only for now
-        md_simulation_program : str
-            The program that performs the MD time step integration
 
         """
         
         self.class_type = 'QMMM'
         self.hl_wrapper = hl_wrapper
         self.ll_wrapper = ll_wrapper
-        self.md_simulation_program = md_simulation_program
         self.qm_geometry = None
         self.run_ID = 0
 
-        self.traj = self.convert_input(param['system_info'], param['system_info_format'])
+        self.traj = self.convert_input(system_info, system_info_format)
         self.topology = self.traj.topology
         self.positions = self.traj.xyz[0]
 
-        self.qm_atoms = param['qm_atoms']
-        self.qmmm_scheme = param['qmmm_scheme']
-        self.embedding_method = param['embedding_method']
-        self.boundary_treatment = param['boundary_treatment']
-        self.link_atom_element = param['link_atom_element']
+        self.qm_atoms = qm_atoms
+        self.qmmm_scheme = qmmm_scheme
+        self.embedding_method = embedding_method
+        self.boundary_treatment = boundary_treatment
+        self.link_atom_element = link_atom_element
 
         self.systems = {}
 
-    def run_qmmm(self, main_info):
+    def run_qmmm(self, main_info, wrapper_type):
         """
         Updates the positions and topology given in main_info,
         and determines the QM/MM energy and gradients
@@ -67,7 +72,7 @@ class QMMM(object):
 
         """
 
-        self.update_traj(main_info['positions'], main_info['topology'])
+        self.update_traj(main_info['positions'], main_info['topology'], wrapper_type)
 
         system = System(qm_indices=self.qm_atoms, qm_residues=None, run_ID=self.run_ID)
 
@@ -95,7 +100,7 @@ class QMMM(object):
         if self.run_ID > 1:
             del self.systems[self.run_ID - 2]
 
-    def update_traj(self, position, topology):
+    def update_traj(self, position, topology, wrapper_type):
         """
         Updates the positions and topology of self.traj,
         a MDtraj trajectory object
@@ -110,7 +115,7 @@ class QMMM(object):
        """ 
         # later can think about saving instead of making new instance
         # convert openmm topology to mdtraj topology
-        if self.md_simulation_program == 'OpenMM':
+        if wrapper_type == 'OpenMM':
             top = md.Topology.from_openmm(topology)
         for atom in top.atoms:
             atom.serial = atom.index + 1

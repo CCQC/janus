@@ -6,7 +6,11 @@ import numpy as np
 
 class PAP(AQMMM):
 
-    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
+    def __init__(self, hl_wrapper, 
+                       ll_wrapper, 
+                       system_info,
+                       system_info_format,
+                       aqmmm_param={}):
         """
         Initializes the PAP class object
     
@@ -16,8 +20,7 @@ class PAP(AQMMM):
 
         """
         
-        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program, 'PAP')
-        self.modified_variant = param['modified_variant']
+        super().__init__(hl_wrapper, ll_wrapper, system_info, system_info_format, 'PAP', **aqmmm_param)
 
 
     def partition(self, qm_center=None): 

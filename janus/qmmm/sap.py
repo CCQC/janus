@@ -6,7 +6,11 @@ import numpy as np
 
 class SAP(AQMMM):
 
-    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
+    def __init__(self, hl_wrapper, 
+                       ll_wrapper, 
+                       system_info,
+                       system_info_format,
+                       aqmmm_param={}):
         """
         Initializes the SAP class object
     
@@ -16,8 +20,7 @@ class SAP(AQMMM):
 
         """
         
-        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program, 'SAP')
-        self.modified_variant = param['modified_variant']
+        super().__init__(hl_wrapper, ll_wrapper, system_info, system_info_format, 'SAP', **aqmmm_param)
 
     def partition(self, qm_center=None): 
         """

@@ -14,7 +14,18 @@ class AQMMM(ABC, QMMM):
 
     nm_to_angstrom = 10.0000000
 
-    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program, class_type):
+    def __init__(self, hl_wrapper, 
+                       ll_wrapper, 
+                       system_info,
+                       system_info_format,
+                       class_type,
+                       qm_center,
+                       modified_variant=False,
+                       partition_scheme='distance',
+                       Rmin=0.38,
+                       Rmax=0.45,
+                       qmmm_param={}):
+                       
         """
         Initializes AQMMM class with parameters given in param
 
@@ -44,8 +55,6 @@ class AQMMM(ABC, QMMM):
 
         hl_wrapper : a qm_wrapper or mm_wrapper object, depending on the user input
         ll_wrapper : a mm_wrapper object only for now
-        md_simulation_program : str
-            The program that performs the MD time step integration
         class_type : str
             Which adaptive method class is used
             
@@ -56,16 +65,16 @@ class AQMMM(ABC, QMMM):
         cannot actually instantiate AQMMM object, but only its child objects
         """
         
-        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program)
-        self.class_type = class_type
+        super().__init__(hl_wrapper, ll_wrapper, system_info, system_info_format, **qmmm_param)
 
-        self.aqmmm_scheme = param['aqmmm_scheme']
-        self.partition_scheme = param['partition_scheme']
-        self.Rmin = param['Rmin']
-        self.Rmax = param['Rmax']
+        self.class_type = class_type
+        self.qm_center = qm_center
+        self.partition_scheme = partition_scheme
+        self.modified_variant = modified_variant
+        self.Rmin = Rmin
+        self.Rmax = Rmax
         # do not include options of computing the qm center with the program - 
         # might need this functionality later
-        self.qm_center = param['qm_center']
 
         self.buffer_groups = {}
 

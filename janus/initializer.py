@@ -10,7 +10,7 @@ class Initializer(object):
     and necessary wrapppers
     """
 
-    def __init__(self, param, as_file=True):
+    def __init__(self, parameters, as_file=True):
         """
         Initializes the Initializer class with parameters and updates 
         defaults with user defined parameters
@@ -24,106 +24,69 @@ class Initializer(object):
 
         """
 
-        self.qmmm_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/qmmm.json'
-        self.aqmmm_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/aqmmm.json'
-        self.md_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/md.json'
-        self.system_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/system.json'
-        self.psi4_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/psi4.json'
-        self.openmm_paramfile = os.path.abspath(os.path.dirname(__file__)) + '/default_input/openmm.json'
+        self.system = None
+        self.qmmm = None
+        self.aqmmm = None
+        self.md = None
+        self.ll = None
+        self.hl = None
 
-        self.system_param = self.load_param(self.system_paramfile)
-        self.qmmm_param = self.load_param(self.qmmm_paramfile)
-        self.aqmmm_param = self.load_param(self.aqmmm_paramfile)
-        self.md_sim_param = self.load_param(self.md_paramfile)
+        self.system_info_format = 'pdb'
+        self.run_qmmm = True
+        self.run_aqmmm = False
+        self.run_md = False
+        self.aqmmm_scheme = None
+        self.md_restart = False
+        self.ll_program = 'OpenMM'
+        self.hl_program = 'Psi4'
+        self.md_simulation_program = "OpenMM"
 
         if as_file is True:
             self.param = self.load_param(param)
         else:
             self.param = param
 
-        self.update_param()
+        self.set_attributes(self.param, self)
+        self.aqmmm['qmmm_param'] = self.qmmm
+
+        if self.system is not None and 'system_info' in self.system:
+            self.set_attributes(self.system, self)
+        else:
+            raise KeyError("system_info needs to be specified")
+
+        self.get_wrappers()
     
-    def update_param(self):
+    def get_wrappers(self):
         """
         updates default parameters with user defined parameters
 
         """
 
-        if ('system' in self.param and 'system_info' in self.param['system']):
-            self.system_param.update(self.param['system'])
-        else:
-            raise KeyError("system_info needs to be specified")
-            
-        if 'qmmm' in self.param:
-            self.qmmm_param.update(self.param['qmmm'])
-
-        if 'aqmmm' in self.param:
-            self.aqmmm_param.update(self.param['aqmmm'])
-            self.aqmmm_param.update(self.qmmm_param)
-            #print("No AQMMM parameters given, running traditional QM/MM")
-
-        if self.qmmm_param['hl_program'] == "Psi4":
-            self.hl_param = self.load_param(self.psi4_paramfile)
+        if self.hl_program == "Psi4":
             self.hl_wrapper = Psi4Wrapper
-        elif self.qmmm_param['hl_program'] == "OpenMM":
-            self.hl_param = self.load_param(self.openmm_paramfile)
+        elif self.hl_program == "OpenMM":
             self.hl_wrapper = OpenMMWrapper
         else:
-            print("Only Psi4 and OpenMM currently available to be used in high level computations")
+            raise ValueError("Only Psi4 and OpenMM currently available to be used in high level computations")
 
-        if self.qmmm_param['ll_program'] == "OpenMM":
-            self.ll_param = self.load_param(self.openmm_paramfile)
+        if self.ll_program == "OpenMM":
             self.ll_wrapper = OpenMMWrapper
         else:
-            print("Only OpenMM currently available to be used in low level computations")
-
-        if 'hl' in self.param:
-            self.hl_param.update(self.param['hl'])
-
-        if 'll' in self.param:
-            self.ll_param.update(self.param['ll'])
-
-        if 'md' in self.param:
-            self.md_sim_param.update(self.param['md'])
-
-        self.run_md = self.md_sim_param['run_md']
-        self.md_restart = self.md_sim_param['restart']
-
-        if 'return_forces_interval' in self.md_sim_param:
-            self.return_forces_interval = self.md_sim_param['return_forces_interval']
-        else:
-            self.return_forces_interval = self.md_sim_param['return_checkpoint_interval']
-    
-        self.return_forces_filename = self.md_sim_param['return_forces_filename']
-            
-        self.md_sim_wrapper = None
+            raise ValueError("Only OpenMM currently available to be used in low level computations")
 
         if self.run_md is True:
-            self.md_sim_prog = self.md_sim_param['md_simulation_program']
-            self.start_qmmm =  self.md_sim_param['start_qmmm']
-            self.end_qmmm =    self.md_sim_param['end_qmmm']
-            self.qmmm_steps = self.end_qmmm - self.start_qmmm
 
-            if type(self.md_sim_param['md_steps']) is int:
-                self.end_steps = self.md_sim_param['md_steps'] - self.end_qmmm
-            elif type(self.md_sim_param['md_steps']) is list:
-                self.end_steps = self.md_sim_param['md_steps'][-1] - self.end_qmmm
-
-            if self.md_sim_prog == "OpenMM":
-                print('reading openmm as md wrapper')
+            if self.md_simulation_program == "OpenMM":
                 self.md_sim_wrapper = OpenMMWrapper
             else:
-                print("Only OpenMM currently available")
+                raise ValueError("Only OpenMM currently available")
 
-        self.qmmm_param.update(self.system_param)
-        self.aqmmm_param.update(self.system_param)
-        self.md_sim_param.update(self.system_param)
-        self.md_sim_param.update(self.ll_param)
-        self.ll_param.update(self.md_sim_param)
+        #self.qmmm_param.update(self.system_param)
+        #self.aqmmm_param.update(self.system_param)
+        #self.md_sim_param.update(self.system_param)
 
-        #print('System information read from {}'.format(self.param['system']['system_info']))
 
-    def initialize_wrappers(self, simulation=False, restart=False):
+    def initialize_wrappers(self):
         """
         Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects 
         used for computation based on input parameters
@@ -136,40 +99,39 @@ class Initializer(object):
 
         """
 
+        "TODO: figure out input for software wrappers"
         # create hl_wrapper object
         hl_wrapper = self.hl_wrapper(self.hl_param)
         # create ll_wrapper object
         ll_wrapper = self.ll_wrapper(self.ll_param)
         
+        if self.aqmmm_scheme is None:
+            qmmm = QMMM(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.qmmm)
+        elif self.aqmmm_scheme == 'ONIOM-XS':
+            qmmm = OniomXS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+        elif self.aqmmm_scheme == 'Hot-Spot':
+            qmmm = HotSpot(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+        elif self.aqmmm_scheme == 'PAP':
+            qmmm = PAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+        elif self.aqmmm_scheme == 'SAP':
+            qmmm = SAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+        elif self.aqmmm_scheme == 'DAS':
+            qmmm = DAS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+        else:
+            raise ValueError("{} not recognized as a currently implemented method".format(self.aqmmm_param['aqmmm_scheme']))
+
         if self.run_md is True:
-            # create md wrapper
+
             md_sim_wrapper = self.md_sim_wrapper(self.md_sim_param)
 
-        if self.qmmm_param['run_aqmmm'] is False:
-            qmmm = QMMM(self.qmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
-        elif self.aqmmm_param['aqmmm_scheme'] == 'ONIOM-XS':
-            qmmm = OniomXS(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
-        elif self.aqmmm_param['aqmmm_scheme'] == 'Hot-Spot':
-            qmmm = HotSpot(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
-        elif self.aqmmm_param['aqmmm_scheme'] == 'PAP':
-            qmmm = PAP(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
-        elif self.aqmmm_param['aqmmm_scheme'] == 'SAP':
-            qmmm = SAP(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
-        elif self.aqmmm_param['aqmmm_scheme'] == 'DAS':
-            qmmm = SAP(self.aqmmm_param, hl_wrapper, ll_wrapper, self.md_sim_prog)
-        else:
-            print("Only ONIOM-XS, Hot Spot, PAP, SAP, and DAS currently implemented")
+            if self.md_restart is True:
+                # initialize mm_wrapper with information about initial system
+                md_sim_wrapper.initialize(self.qmmm_param['embedding_method'])
+            elif self.md_restart is False:
+                md_sim_wrapper.restart(self.qmmm_param['embedding_method'])
 
-        if (simulation is True and restart is False):
-            # initialize mm_wrapper with information about initial system
-            md_sim_wrapper.initialize(self.qmmm_param['embedding_method'])
             return md_sim_wrapper, qmmm
  
-        elif (simulation is True and restart is True):
-            # initialize mm_wrapper with information about initial system
-            md_sim_wrapper.restart(self.qmmm_param['embedding_method'])
-            return md_sim_wrapper, qmmm
-
         else:
             return ll_wrapper, qmmm
         
@@ -199,5 +161,11 @@ class Initializer(object):
             ret = rfunc(handle)
 
         return ret
+
+
+    def set_attributes(self, dictionary, obj):
+
+        for k, v in dictionary.items():
+            setattr(obj, k, v)
 
 

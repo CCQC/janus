@@ -4,7 +4,11 @@ import numpy as np
 
 class OniomXS(AQMMM):
 
-    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
+    def __init__(self, hl_wrapper, 
+                       ll_wrapper, 
+                       system_info,
+                       system_info_format,
+                       aqmmm_param={}):
         """
         Initializes the OniomXS class object
     
@@ -14,7 +18,7 @@ class OniomXS(AQMMM):
 
         """
         
-        super().__init__(param, hl_wrapper, ll_wrapper,md_simulation_program,'ONIOM-XS')
+        super().__init__(hl_wrapper, ll_wrapper, system_info, system_info_format, 'ONIOM-XS', **aqmmm_param)
 
     def partition(self, qm_center=None): 
         """

@@ -8,13 +8,16 @@ def run_janus(filename='input.json'):
 
     initializer = Initializer(filename)
 
+    print('Initializing')
+    # initialize wrappers
+    ll_wrapper, qmmm_wrapper = initializer.initialize_wrappers()
+
     if initializer.run_md is True:
-        run_simulation(initializer, restart=initializer.md_restart)
-
+        run_simulation(ll_wrapper, qmmm_wrapper)
     else:
-        run_single_point(initializer)
+        run_single_point(ll_wrapper, qmmm_wrapper)
 
-def run_simulation(initializer, restart):
+def run_simulation(md_sim_wrapper, qmmm_wrapper):
     """
     Drives QM/MM with MD time step integration
     
@@ -26,43 +29,35 @@ def run_simulation(initializer, restart):
 
     """
 
-    print('Initializing')
-    # initialize wrappers
-    md_simulation_wrapper, qmmm = initializer.initialize_wrappers(simulation=True, restart=restart)
+    print('Equilibrating with {} steps'.format(md_sim_wrapper.start_qmmm))
+    md_sim_wrapper.take_step(mm_sim_wrapper.start_qmmm)
 
-    print('Equilibrating with {} steps'.format(initializer.start_qmmm))
-    md_simulation_wrapper.take_step(initializer.start_qmmm)
-
-    for step in range(initializer.qmmm_steps):
+    for step in range(md_sim_wrapper.qmmm_steps):
 
         print('Taking step {}'.format(step + 1))
-        #get MM information for entire system
-        main_info = md_simulation_wrapper.get_main_info()
-
-        print('Running QMMM for step {}'.format(step + 1))
-        qmmm.run_qmmm(main_info)
+        run_single_point(md_sim_wrapper, qmmm_wrapper)
         
         # get aqmmm forces 
-        forces = qmmm.get_forces()
+        forces = qmmm_wrapper.get_forces()
 
-        if (step + 1) % initializer.return_forces_interval == 0:
-            with open(initializer.return_forces_filename, 'wb') as f:
+        if (step + 1) % md_sim_wrapper.return_forces_interval == 0:
+            with open(md_sim_wrapper.return_forces_filename, 'wb') as f:
                 pickle.dump(forces, f)
 
         # feed forces into md simulation and take a step
         # make sure positions are updated so that when i get information on entire system 
         # getting it on the correct one
-        md_simulation_wrapper.take_updated_step(force=forces)
+        md_sim_wrapper.take_updated_step(force=forces)
 
     print('QMMM finished')
 
-    md_simulation_wrapper.take_step(initializer.end_steps)
+    md_sim_wrapper.take_step(md_sim_wrapper.end_steps)
 
-    main_info = md_simulation_wrapper.get_main_info()
-    md_simulation_wrapper.write_pdb(main_info)
+    main_info = md_sim_wrapper.get_main_info()
+    md_sim_wrapper.write_pdb(main_info)
 
 
-def run_single_point(initializer):
+def run_single_point(ll_wrapper, qmmm_wrapper):
     """
     Drives single QM/MM computation
 
@@ -72,11 +67,9 @@ def run_single_point(initializer):
         contains the filename of the input file, default is 'input.json'
 
     """
-    ll_wrapper, qmmm = initializer.initialize_wrappers()
-
     #get MM information for entire system
     main_info = ll_wrapper.get_main_info()
 
-    qmmm.run_qmmm(main_info)
+    qmmm_wrapper.run_qmmm(main_info, ll_wrapper.class_type)
 
 
