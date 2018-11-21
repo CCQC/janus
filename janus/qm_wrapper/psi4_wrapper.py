@@ -140,7 +140,7 @@ class Psi4Wrapper(QMWrapper):
             psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
 
             
-    def compute_scf_charges(self, charge_method):
+    def compute_scf_charges(self, charge_method='MULLIKEN_CHARGES'):
         """
         Calls Psi4 to obtain the self.charges on each atom given and saves it as a numpy array.
         This method works well for SCF wavefunctions. For correlated levels of theory (e.g., MP2),
@@ -152,7 +152,7 @@ class Psi4Wrapper(QMWrapper):
             self.charges = self.charges 
 
 
-    def compute_energy_and_charges(self, charge_method):
+    def compute_energy_and_charges(self, charge_method='MULLIKEN_CHARGES'):
         """
         Calls Psi4 to obtain the self.energy, self.wavefunction, 
         and self.charges on each atom. This method for correlated methods.

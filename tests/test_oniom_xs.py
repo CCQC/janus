@@ -1,22 +1,20 @@
 import pytest
-from janus import qm_wrapper, mm_wrapper, qmmm, initializer
+from janus import qm_wrapper, mm_wrapper, qmmm
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
-param = {"system" : {"mm_pdb_file" : water}}
-config = initializer.Initializer(param, as_file=False)
-psi4 = qm_wrapper.Psi4Wrapper(config.hl_param)
-openmm = mm_wrapper.OpenMMWrapper(config.ll_param)
+psi4 = qm_wrapper.Psi4Wrapper()
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-oxs =   qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_0 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_1 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_2 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs =   qmmm.OniomXS(psi4, openmm, sys_info=water)
+oxs_0 = qmmm.OniomXS(psi4, openmm, sys_info=water)
+oxs_1 = qmmm.OniomXS(psi4, openmm, sys_info=water)
+oxs_2 = qmmm.OniomXS(psi4, openmm, sys_info=water)
 
 def test_set_Rmin():
 
@@ -108,12 +106,12 @@ def test_compute_zero_energy():
     oxs_1.compute_zero_energy()
     oxs_2.compute_zero_energy()
 
-    assert oxs_0.qm_zero_energies['HOH'] == -74.96598998934344
-    assert oxs_0.mm_zero_energies['HOH'] == 0.0
-    assert oxs_1.qm_zero_energies['HOH'] == -74.96598998934344
-    assert oxs_1.mm_zero_energies['HOH'] == 0.0
-    assert oxs_2.qm_zero_energies['HOH'] == -74.96598998934344
-    assert oxs_2.mm_zero_energies['HOH'] == 0.0
+    assert np.allclose(oxs_0.qm_zero_energies['HOH'], -74.96598998934344 ) 
+    assert np.allclose(oxs_0.mm_zero_energies['HOH'], 3.5887724974514855e-08)
+    assert np.allclose(oxs_1.qm_zero_energies['HOH'], -74.96598998934344 )
+    assert np.allclose(oxs_1.mm_zero_energies['HOH'], 3.5887724974514855e-08)
+    assert np.allclose(oxs_2.qm_zero_energies['HOH'], -74.96598998934344 )
+    assert np.allclose(oxs_2.mm_zero_energies['HOH'], 3.5887724974514855e-08)
     
 def test_get_zero_energy():
 
@@ -121,11 +119,11 @@ def test_get_zero_energy():
     oxs_1.get_zero_energy()
     oxs_2.get_zero_energy()
 
-    assert oxs_0.systems[0]['qm'].qmmm_energy == 74.96598998934344 
-    assert oxs_1.systems[0]['qm'].qmmm_energy == 74.96598998934344
-    assert oxs_2.systems[0]['qm'].qmmm_energy == 74.96598998934344
-    assert oxs_1.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 2
-    assert oxs_2.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 3
+    assert np.allclose(oxs_0.systems[0]['qm'].qmmm_energy, 74.96598998934344) 
+    assert np.allclose(oxs_1.systems[0]['qm'].qmmm_energy, 74.96598998934344)
+    assert np.allclose(oxs_2.systems[0]['qm'].qmmm_energy, 74.96598998934344)
+    assert np.allclose(oxs_1.systems[0]['qm_bz'].qmmm_energy, 74.96598998934344 * 2) 
+    assert np.allclose(oxs_2.systems[0]['qm_bz'].qmmm_energy, 74.96598998934344 * 3)
 
 def test_run_aqmmm():
 
@@ -138,17 +136,17 @@ def test_run_aqmmm():
 
     assert oxs_0.systems[0]['qmmm_energy'] == oxs_0.systems[0]['qm'].qmmm_energy
     assert oxs_0.systems[0]['qmmm_forces'] == oxs_0.systems[0]['qm'].qmmm_forces
-    assert oxs_1.systems[0]['qmmm_energy'] == 77.43370419740786
+    assert np.allclose(oxs_1.systems[0]['qmmm_energy'],77.43370419740786)
     assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.ones((1,3))) is False
 
 def test_run_qmmm():
 
-    oxs_0.run_qmmm(main_info_m)
-    oxs_1.run_qmmm(main_info_m)
+    oxs_0.run_qmmm(main_info_m, 'OpenMM')
+    oxs_1.run_qmmm(main_info_m, 'OpenMM')
 
-    assert oxs_0.systems[0]['qmmm_energy'] == -0.027006342896513776
+    assert np.allclose(oxs_0.systems[0]['qmmm_energy'],-0.027006342896513776)
     assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([-0.0185327, -1.17240646,-1.48047266]))
-    assert oxs_1.systems[0]['qmmm_energy'] ==  -0.04110507067214367
+    assert np.allclose(oxs_1.systems[0]['qmmm_energy'],-0.04110507067214367)
     assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([-0.0222685, -0.33163886,-0.77062603]))
     assert oxs_0.run_ID == 1
     assert oxs_1.run_ID == 1

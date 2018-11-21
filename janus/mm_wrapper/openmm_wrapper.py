@@ -16,7 +16,7 @@ class OpenMMWrapper(MMWrapper):
     """
 
     def __init__(self, sys_info=None, 
-                       sys_info_format=None, 
+                       sys_info_format='pdb', 
                        mm_forcefield='amber99sb.xml',
                        mm_water_forcefield='tip3p.xml',
                        NVE_integrator='Verlet',

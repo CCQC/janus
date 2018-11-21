@@ -2,8 +2,7 @@
 Testing for the openmm_wrapper module
 """
 import pytest
-from janus import mm_wrapper 
-from janus import initializer
+from janus.mm_wrapper import OpenMMWrapper
 import simtk.unit as OM_unit
 import numpy as np
 import os
@@ -12,20 +11,12 @@ import os
 water_pdb_file = os.path.join(str('tests/files/test_openmm/water.pdb'))
 ala_pdb_file = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 
-config_water = {"system" : {"mm_pdb_file" : water_pdb_file}}
-config_ala = {"system" : {"mm_pdb_file" : ala_pdb_file}}
-          #"embedding_method" : "Electrostatic"}
-
-config1 = initializer.Initializer(config_water, as_file=False)
-config2 = initializer.Initializer(config_ala, as_file=False)
-
-wrapper = mm_wrapper.OpenMMWrapper(config1.ll_param)
-wrapper_ala = mm_wrapper.OpenMMWrapper(config2.ll_param)
+wrapper = OpenMMWrapper(sys_info=water_pdb_file)
+wrapper_ala = OpenMMWrapper(sys_info=ala_pdb_file)
 #openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 #openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
 #openmm_ala_link_2 = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
-
 
 def test_create_new_residue_template():
 
@@ -70,29 +61,27 @@ def test_compute_info():
     state1 = wrapper.compute_info(wrapper.pdb.topology, wrapper.pdb.positions, minimize=True)
     state2 = wrapper.compute_info(wrapper.pdb.topology, wrapper.pdb.positions)
 
-    assert state1['kinetic'] + state1['potential'] == -0.027789330729325913
-    assert state2['kinetic'] + state2['potential'] == -0.010562891563767518
+    print(state1['kinetic'] + state1['potential'])
+    print(state2['kinetic'] + state2['potential'])
+    assert np.allclose(state1['kinetic'] + state1['potential'],-0.00983662375228967)
+    assert np.allclose(state2['kinetic'] + state2['potential'],0.0007602655805810932)
 
 def test_initialize():
     wrapper.initialize('Mechanical')
     wrapper_ala.initialize('Electrostatic')
-    print(wrapper.main_info['kinetic'] + wrapper.main_info['potential'])
-    print(wrapper_ala.main_info['kinetic'] + wrapper_ala.main_info['potential'])
-    assert wrapper.main_info['kinetic'] + wrapper.main_info['potential'] ==  -0.027789330729325913
-    assert wrapper_ala.main_info['kinetic'] + wrapper_ala.main_info['potential'] == -0.035126792644987366
+    assert np.allclose(wrapper.main_info['kinetic'] + wrapper.main_info['potential'], 0.0036018512057598567)
+    assert np.allclose(wrapper_ala.main_info['kinetic'] + wrapper_ala.main_info['potential'], 0.06341919877193788)
 
 def test_get_main_info():
     state1 = wrapper.get_main_info()
     state2 = wrapper_ala.get_main_info()
     
-    print(state1['kinetic'] + state1['potential'])
-    print(state2['kinetic'] + state2['potential'])
-    assert state1['kinetic'] + state1['potential'] == -0.027789330729325913
-    assert state2['kinetic'] + state2['potential'] == -0.035126792644987366
+    assert np.allclose(state1['kinetic'] + state1['potential'],0.0036018512057598567)
+    assert np.allclose(state2['kinetic'] + state2['potential'],0.06341919877193788)
     assert 'topology' in state1
     assert 'topology' in state2
 
-def test_take_step():
+def test_take_updated_step():
     force1 = {0 : np.array([0.0,0.0,0.0]), 1 : np.array([0.0, 0.0, 0.0])}
     force2 = {0 : np.array([0.0,0.0,0.0]), 1 : np.array([-0.0001, -0.0001, -0.0001])}
     wrapper.take_step(force1)

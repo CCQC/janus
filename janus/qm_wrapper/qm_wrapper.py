@@ -55,7 +55,7 @@ class QMWrapper(ABC):
         
         if (geometry is None and traj is not None):
             self.get_geom_from_trajectory(traj)
-        elif (geometry is not None and trah is None):
+        elif (geometry is not None and traj is None):
             self.set_qm_geometry(geometry)
 
         if charges is not None:

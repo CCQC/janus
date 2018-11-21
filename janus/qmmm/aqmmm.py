@@ -16,10 +16,10 @@ class AQMMM(ABC, QMMM):
 
     def __init__(self, hl_wrapper, 
                        ll_wrapper, 
-                       system_info,
-                       system_info_format,
+                       sys_info,
+                       sys_info_format,
                        class_type,
-                       qm_center,
+                       qm_center=[0],
                        modified_variant=False,
                        partition_scheme='distance',
                        Rmin=0.38,
@@ -65,7 +65,7 @@ class AQMMM(ABC, QMMM):
         cannot actually instantiate AQMMM object, but only its child objects
         """
         
-        super().__init__(hl_wrapper, ll_wrapper, system_info, system_info_format, **qmmm_param)
+        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, **qmmm_param)
 
         self.class_type = class_type
         self.qm_center = qm_center
@@ -80,7 +80,7 @@ class AQMMM(ABC, QMMM):
 
         self.compute_zero_energy()
 
-    def run_qmmm(self, main_info):
+    def run_qmmm(self, main_info, wrapper_type):
         """
         Updates the positions and topology given in main_info,
         determines the partitions to be computed, for each partition,
@@ -94,7 +94,7 @@ class AQMMM(ABC, QMMM):
 
         """
 
-        self.update_traj(main_info['positions'], main_info['topology'])
+        self.update_traj(main_info['positions'], main_info['topology'], wrapper_type)
         self.partition()
             
         print('Running QM/MM partitions')

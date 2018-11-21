@@ -1,7 +1,7 @@
 """
 Testing for psi4_wrapper.py module
 """
-from janus import psi4_wrapper
+from janus.qm_wrapper import Psi4Wrapper
 import mdtraj as md
 import numpy as np
 import os
@@ -11,34 +11,31 @@ water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 traj = md.load(water)
 qm_traj = traj.atom_slice([0,1,2,3,4,5])
 
-config2 = {
-        "basis_set" : "3-21G",
-        "scf_type" : "pk",
-        "guess_orbitals" : "sad",
-        "reference" : "uhf",
-        "e_convergence" : 1e-8,
-        "d_convergence" : 1e-8,
-        "method" : "scf",
-        "charge_method" : "MULLIKEN_CHARGES",
-        "charge" : 0,
-        "multiplicity" : 1
-        }
 config1 = {
-        "basis_set" : "STO-3G",
-        "scf_type" : "df",
-        "guess_orbitals" : "sad",
+        "basis" : "STO-3G",
         "reference" : "rhf",
         "e_convergence" : 1e-8,
         "d_convergence" : 1e-8,
         "method" : "scf",
-        "charge_method" : "MULLIKEN_CHARGES",
         "charge" : 0,
         "multiplicity" : 1
         }
 
-qm_sys1 = psi4_wrapper.Psi4_wrapper(config1)
-qm_sys2 = psi4_wrapper.Psi4_wrapper(config2)
-qm_sys3 = psi4_wrapper.Psi4_wrapper(config2)
+config2 = {
+        "basis" : "3-21G",
+        "scf_type" : "pk",
+        "guess" : "sad",
+        "reference" : "uhf",
+        "e_convergence" : 1e-8,
+        "d_convergence" : 1e-8,
+        "method" : "scf",
+        "charge" : 0,
+        "multiplicity" : 1
+        }
+
+qm_sys1 = Psi4Wrapper(**config1)
+qm_sys2 = Psi4Wrapper(**config2)
+qm_sys3 = Psi4Wrapper(**config2)
 
 qm_mol = """O     0.123   3.593   5.841 
  H    -0.022   2.679   5.599 
@@ -74,32 +71,32 @@ charges = [[-0.834, 0.115 ,  0.313, 6.148],
 
 def test_build_qm_param():
     
-    qm_sys1.build_qm_param()
-    qm_sys2.build_qm_param()
-    qm_sys3.build_qm_param()
+    param1 = qm_sys1.build_qm_param()
+    param2 = qm_sys2.build_qm_param()
 
-    assert qm_sys1.qm_param['basis'] == 'STO-3G'
-    assert qm_sys1.qm_param['scf_type'] == 'df' 
-    assert qm_sys1.qm_param['guess'] == 'sad' 
-    assert qm_sys1.qm_param['reference'] == 'rhf'
-    assert qm_sys1.qm_param['e_convergence'] == 1e-8
-    assert qm_sys1.qm_param['d_convergence'] == 1e-8 
+    assert param1['basis'] == 'STO-3G'
+    assert param1['reference'] == 'rhf'
+    assert param1['e_convergence'] == 1e-8
+    assert param1['d_convergence'] == 1e-8 
 
-    assert qm_sys2.qm_param['basis'] == '3-21G'
-    assert qm_sys2.qm_param['scf_type'] == 'pk' 
-    assert qm_sys2.qm_param['guess'] == 'sad' 
-    assert qm_sys2.qm_param['reference'] == 'uhf'
-    assert qm_sys2.qm_param['e_convergence'] == 1e-8
-    assert qm_sys2.qm_param['d_convergence'] == 1e-8 
+    assert param2['basis'] == '3-21G'
+    assert param2['reference'] == 'uhf'
+    assert param2['e_convergence'] == 1e-8
+    assert param2['d_convergence'] == 1e-8 
+    assert param2['scf_type'] == 'pk' 
+    assert param2['guess'] == 'sad' 
 
 
-def test_get_qm_geometry():
-    
-    qm_sys1.get_qm_geometry(qm_traj)
-    qm_sys2.get_qm_geometry(qm_traj)
-    qm_sys3.get_qm_geometry(qm_traj)
-    
+def test_set_qm_geometry():
+
+    qm_sys1.set_qm_geometry(qm_mol)
     assert qm_sys1.qm_geometry == qm_mol
+    
+def test_get_geom_from_trajectory():
+    
+    qm_sys2.get_geom_from_trajectory(qm_traj)
+    qm_sys3.get_geom_from_trajectory(qm_traj)
+    
     assert qm_sys2.qm_geometry == qm_mol
     assert qm_sys3.qm_geometry == qm_mol
     assert qm_sys1.is_open_shelled is False
@@ -170,10 +167,11 @@ def test_optimize_geometry():
     assert np.allclose(geom, opt_mol)
     assert qm_sys1.energy == -74.96598998934344
 
+
 def test_get_energy_and_gradient():
 
-    info2 = qm_sys2.get_energy_and_gradient(qm_traj,charges=charges) 
-    info3 = qm_sys3.get_energy_and_gradient(qm_traj,charges=None)
+    info2 = qm_sys2.get_energy_and_gradient(traj=qm_traj,charges=charges) 
+    info3 = qm_sys3.get_energy_and_gradient(geometry=qm_mol,charges=None)
 
     assert np.allclose(info2['energy'],-151.18483039002274)
     assert np.allclose(info3['energy'],-151.17927491846075)

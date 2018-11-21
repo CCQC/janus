@@ -8,8 +8,8 @@ class SAP(AQMMM):
 
     def __init__(self, hl_wrapper, 
                        ll_wrapper, 
-                       system_info,
-                       system_info_format,
+                       sys_info,
+                       sys_info_format='pdb',
                        aqmmm_param={}):
         """
         Initializes the SAP class object
@@ -20,7 +20,7 @@ class SAP(AQMMM):
 
         """
         
-        super().__init__(hl_wrapper, ll_wrapper, system_info, system_info_format, 'SAP', **aqmmm_param)
+        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, 'SAP', **aqmmm_param)
 
     def partition(self, qm_center=None): 
         """

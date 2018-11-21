@@ -10,9 +10,9 @@ class QMMM(object):
 
     def __init__(self, hl_wrapper, 
                        ll_wrapper, 
-                       system_info,
-                       system_info_format,
+                       sys_info,
                        qm_atoms,
+                       sys_info_format='pdb',
                        qmmm_scheme='subtractive', 
                        embedding_method='Mechanical', 
                        boundary_treatment='link_atom',
@@ -48,7 +48,7 @@ class QMMM(object):
         self.qm_geometry = None
         self.run_ID = 0
 
-        self.traj = self.convert_input(system_info, system_info_format)
+        self.traj = self.convert_input(sys_info, sys_info_format)
         self.topology = self.traj.topology
         self.positions = self.traj.xyz[0]
 
