@@ -24,12 +24,12 @@ class Initializer(object):
 
         """
 
-        self.system = None
-        self.qmmm = None
-        self.aqmmm = None
-        self.md = None
-        self.ll = None
-        self.hl = None
+        self.system = {}
+        self.qmmm = {}
+        self.aqmmm = {}
+        self.md = {} 
+        self.ll = {} 
+        self.hl = {} 
 
         self.system_info_format = 'pdb'
         self.run_qmmm = True
@@ -44,9 +44,9 @@ class Initializer(object):
         self.md_restart_forces_filename = 'forces.pkl'
 
         if as_file is True:
-            self.param = self.load_param(param)
+            self.param = self.load_param(parameters)
         else:
-            self.param = param
+            self.param = parameters
 
         self.set_attributes(self.param, self)
         self.aqmmm['qmmm_param'] = self.qmmm
@@ -100,10 +100,12 @@ class Initializer(object):
         """
 
         # create hl_wrapper object
-        hl_wrapper = self.hl_wrapper(sys_info=self.system_info, sys_info_format=sys_info_format, **self.hl_param)
+        hl_wrapper = self.hl_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, **self.hl)
         # create ll_wrapper object
-        ll_wrapper = self.ll_wrapper(sys_info=self.system_info, sys_info_format=sys_info_format, md_param=self.md, **self.ll_param)
+        print("ll wrapper")
+        ll_wrapper = self.ll_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, md_param=self.md, **self.ll)
         
+        print("qmmm wrapper")
         if self.aqmmm_scheme is None:
             qmmm_wrapper = QMMM(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.qmmm)
         elif self.aqmmm_scheme == 'ONIOM-XS':
@@ -121,12 +123,12 @@ class Initializer(object):
 
         if self.run_md is True:
 
-            md_sim_wrapper = self.md_sim_wrapper(sys_info=self.system_info, sys_info_format=sys_info_format, md_param=self.md, **self.ll_param)
+            md_sim_wrapper = self.md_sim_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, md_param=self.md, **self.ll)
 
-            if self.md_restart is True:
+            if self.md_restart is False:
                 # initialize mm_wrapper with information about initial system
                 md_sim_wrapper.initialize(qmmm_wrapper.embedding_method)
-            elif self.md_restart is False:
+            else:
                 md_sim_wrapper.restart(qmmm_wrapper.embedding_method, 
                                        self.md_restart_checkpoint_filename,
                                        self.md_restart_forces_filename)

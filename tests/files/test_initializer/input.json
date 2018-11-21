@@ -1,17 +1,15 @@
 {
-"system" : {"mm_pdb_file" : "tests/files/test_openmm/water.pdb",
+"system" : {"system_info" : "tests/files/test_openmm/water.pdb",
+            "run_md" : true,
+            "run_aqmmm" : false,
             "md_simulation_program" : "OpenMM" },
 
-"qmmm" : {"embedding_method" : "Electrostatic",
-          "qm_program" : "OpenMM",
-          "qm_atoms" : [0,1,2],
-          "run_aqmmm" : false,
-          "mm_program" : "OpenMM"},
+"qmmm" : {"qm_atoms" : [0,1,2]},
 
-"qm" : {},
-"mm" : {
+"hl" : {},
+"ll" : {
          "mm_forcefield" :  "amber99sb.xml",
-         "mm_step_size" : 0.005}
+         "step_size" : 0.005}
 }
 
 

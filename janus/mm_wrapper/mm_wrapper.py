@@ -11,7 +11,7 @@ class MMWrapper(ABC):
     def __init__(self, class_type,
                        sys_info=None, 
                        sys_info_format=None, 
-                       **kwargs)
+                       **kwargs):
         """
         A super class for all molecular mechanics wrappers
 
@@ -24,7 +24,6 @@ class MMWrapper(ABC):
         """
         self.system_info = sys_info
         self.system_info_format = sys_info_format
-        self.param = param
         self.class_type = class_type
         self.main_info = None
         self.main_charges = None
@@ -52,11 +51,11 @@ class MMWrapper(ABC):
 
         self.qmmm_steps = self.end_qmmm - self.start_qmmm
 
-        if (type(self.md_steps) is list and type(self.md_ensemble) is list)):
+        if (type(self.md_steps) is list and type(self.md_ensemble) is list):
             self.md_ensemble = self.md_ensemble[-1]
             self.other_md_ensembles = self.md_ensemble[0:-1]
             self.other_ensemble_steps = self.md_steps[0:-1]
-        elif (type(self.md_steps) is int and type(self.md_ensemble) is str)):
+        elif (type(self.md_steps) is int and type(self.md_ensemble) is str):
             self.other_md_ensembles = None
             self.other_ensemble_steps = None
 

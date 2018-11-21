@@ -25,7 +25,7 @@ class OpenMMWrapper(MMWrapper):
                        step_size = 1,
                        fric_coeff = 1,
                        nonbondedCutoff=0.8,
-                       md_param={}
+                       md_param={},
                        **kwargs):
         """
         Initializes an OpenMM wrapper class with a set of parameters for 
@@ -81,7 +81,7 @@ class OpenMMWrapper(MMWrapper):
         self.temp = temp*OM_unit.kelvin
         self.step_size = step_size*OM_unit.femtoseconds
         self.fric_coeff = fric_coeff/OM_unit.picosecond
-        self.nonbondedCutoff=nonbondedCutoff*OM_unit.nanometer,
+        self.nonbondedCutoff=nonbondedCutoff*OM_unit.nanometer
 
         self.nonbondMethod = OM_app.NoCutoff
         self.constraints = None
@@ -181,20 +181,20 @@ class OpenMMWrapper(MMWrapper):
             force = pickle.load(force_file)
 
         
-        self.set_up_reporters(self.main_simulation)
+        #self.set_up_reporters(self.main_simulation)
         # Calls openmm wrapper to get information specified
-        self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
-                                      energy=True,
-                                      positions=True,
-                                      forces=True)
+        #self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
+        #                              energy=True,
+        #                              positions=True,
+        #                              forces=True)
         #print('before loading forces')
         #print(self.main_info)
 
         self.update_forces(force, self.qmmm_force, self.main_simulation)
         
-        #self.set_up_reporters(self.main_simulation)
+        self.set_up_reporters(self.main_simulation)
         ## Calls openmm wrapper to get information specified
-        #self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
+        self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
                                       energy=True,
                                       positions=True,
                                       forces=True)
