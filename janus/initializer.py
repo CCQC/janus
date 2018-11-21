@@ -40,6 +40,8 @@ class Initializer(object):
         self.ll_program = 'OpenMM'
         self.hl_program = 'Psi4'
         self.md_simulation_program = "OpenMM"
+        self.md_restart_checkpoint_filename = 'checkpoint.chk'
+        self.md_restart_forces_filename = 'forces.pkl'
 
         if as_file is True:
             self.param = self.load_param(param)
@@ -81,8 +83,6 @@ class Initializer(object):
             else:
                 raise ValueError("Only OpenMM currently available")
 
-        #self.qmmm_param.update(self.system_param)
-        #self.aqmmm_param.update(self.system_param)
         #self.md_sim_param.update(self.system_param)
 
 
@@ -99,41 +99,42 @@ class Initializer(object):
 
         """
 
-        "TODO: figure out input for software wrappers"
         # create hl_wrapper object
-        hl_wrapper = self.hl_wrapper(self.hl_param)
+        hl_wrapper = self.hl_wrapper(sys_info=self.system_info, sys_info_format=sys_info_format, **self.hl_param)
         # create ll_wrapper object
-        ll_wrapper = self.ll_wrapper(self.ll_param)
+        ll_wrapper = self.ll_wrapper(sys_info=self.system_info, sys_info_format=sys_info_format, md_param=self.md, **self.ll_param)
         
         if self.aqmmm_scheme is None:
-            qmmm = QMMM(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.qmmm)
+            qmmm_wrapper = QMMM(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.qmmm)
         elif self.aqmmm_scheme == 'ONIOM-XS':
-            qmmm = OniomXS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+            qmmm_wrapper = OniomXS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
         elif self.aqmmm_scheme == 'Hot-Spot':
-            qmmm = HotSpot(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+            qmmm_wrapper = HotSpot(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
         elif self.aqmmm_scheme == 'PAP':
-            qmmm = PAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+            qmmm_wrapper = PAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
         elif self.aqmmm_scheme == 'SAP':
-            qmmm = SAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+            qmmm_wrapper = SAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
         elif self.aqmmm_scheme == 'DAS':
-            qmmm = DAS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
+            qmmm_wrapper = DAS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
         else:
             raise ValueError("{} not recognized as a currently implemented method".format(self.aqmmm_param['aqmmm_scheme']))
 
         if self.run_md is True:
 
-            md_sim_wrapper = self.md_sim_wrapper(self.md_sim_param)
+            md_sim_wrapper = self.md_sim_wrapper(sys_info=self.system_info, sys_info_format=sys_info_format, md_param=self.md, **self.ll_param)
 
             if self.md_restart is True:
                 # initialize mm_wrapper with information about initial system
-                md_sim_wrapper.initialize(self.qmmm_param['embedding_method'])
+                md_sim_wrapper.initialize(qmmm_wrapper.embedding_method)
             elif self.md_restart is False:
-                md_sim_wrapper.restart(self.qmmm_param['embedding_method'])
+                md_sim_wrapper.restart(qmmm_wrapper.embedding_method, 
+                                       self.md_restart_checkpoint_filename,
+                                       self.md_restart_forces_filename)
 
-            return md_sim_wrapper, qmmm
+            return md_sim_wrapper, qmmm_wrapper
  
         else:
-            return ll_wrapper, qmmm
+            return ll_wrapper, qmmm_wrapper
         
 
     def load_param(self, fname):

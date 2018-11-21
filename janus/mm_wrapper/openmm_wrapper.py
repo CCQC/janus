@@ -15,7 +15,18 @@ class OpenMMWrapper(MMWrapper):
     Class inherits from MMWrapper.
     """
 
-    def __init__(self, param):
+    def __init__(self, sys_info=None, 
+                       sys_info_format=None, 
+                       mm_forcefield='amber99sb.xml',
+                       mm_water_forcefield='tip3p.xml',
+                       NVE_integrator='Verlet',
+                       NVT_integrator='Langevin',
+                       temp = 300,
+                       step_size = 1,
+                       fric_coeff = 1,
+                       nonbondedCutoff=0.8,
+                       md_param={}
+                       **kwargs):
         """
         Initializes an OpenMM wrapper class with a set of parameters for 
         running OpenMM. Creates an OpenMM pdb object using the given pdb_file
@@ -58,37 +69,37 @@ class OpenMMWrapper(MMWrapper):
 
         """
 
-        super().__init__(param, "OpenMM")
+        super().__init__(class_type="OpenMM",
+                         sys_info=sys_info,
+                         sys_info_format=sys_info_format,
+                         **md_param)
 
-        self.ff = param['mm_forcefield']
-        self.ff_water = param['mm_water_forcefield']
-        self.nonbondMethod = eval(self.param['nonbondedMethod'])
-        print(self.nonbondMethod)
-        self.constraint = eval(self.param['constraints'])
-        print(self.constraint)
-        self.hMass = eval(self.param['hydrogenMass'])
-        self.switchDis = eval(self.param['switchDistance']),
+        self.ff = mm_forcefield
+        self.ff_water = mm_water_forcefield
+        self.NVE_integrator = NVE_integrator
+        self.NVT_integrator = NVT_integrator
+        self.temp = temp*OM_unit.kelvin
+        self.step_size = step_size*OM_unit.femtoseconds
+        self.fric_coeff = fric_coeff/OM_unit.picosecond
+        self.nonbondedCutoff=nonbondedCutoff*OM_unit.nanometer,
 
-        self.NVE_integrator = param['NVE_integrator']
-        self.NVT_integrator = param['NVT_integrator']
-
-        if (type(param['md_steps']) is list and type(param['md_ensemble']) is list):
-            self.md_ensemble = param['md_ensemble'][-1]
-            self.other_md_ensembles = param['md_ensemble'][0:-1]
-            self.other_ensemble_steps = param['md_steps'][0:-1]
-        elif (type(param['md_steps']) is int and type(param['md_ensemble']) is str):
-            self.md_ensemble = param['md_ensemble']
-            self.other_md_ensembles = None
-            self.other_ensemble_steps = None
-
-        self.temp = param['temp']*OM_unit.kelvin
-        self.step_size = param['step_size']*OM_unit.femtoseconds
-        self.fric_coeff = param['fric_coeff']/OM_unit.picosecond
+        self.nonbondMethod = OM_app.NoCutoff
+        self.constraints = None
+        self.hydrogenMass = None
+        self.switchDistance = None
+        self.residueTemplates={}
+        self.rigid_water=False
+        self.removeCMMotion=True
+        self.flexibleConstraints=False 
+        self.ignoreExternalBonds=False
 
         if self.md_ensemble == 'NVT':
             self.integrator = self.NVT_integrator
         elif self.md_ensemble == 'NVE':
             self.integrator = self.NVE_integrator
+
+        for k, v in kwargs.items():
+            setattr(self, k, eval(v))
 
         self.positions = None
 
@@ -121,7 +132,6 @@ class OpenMMWrapper(MMWrapper):
                     integrator = self.NVE_integrator
 
                 OM_system = self.create_openmm_system(self.topology)
-                #OM_system = self.forcefield.createSystem(self.topology, nonbondedMethod=OM_app.CutoffPeriodic, nonbondedCutoff=0.8*OM_unit.nanometer, rigidWater=False)
                 simulation, integrator_obj = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, integrator, return_integrator=True)
                 simulation.minimizeEnergy()
 
@@ -150,9 +160,7 @@ class OpenMMWrapper(MMWrapper):
         else:
             print('only mechanical and electrostatic embedding schemes implemented at this time')
 
-    def restart(self, embedding_method):
-        chkpt_file = self.param['restart_checkpoint_filename']
-        restart_forces = self.param['restart_forces_filename']
+    def restart(self, embedding_method, chkpt_file, restart_forces):
 
         # ensure every computation has same periodic box vector parameters
         self.topology.setPeriodicBoxVectors(self.PeriodicBoxVector)
@@ -184,9 +192,9 @@ class OpenMMWrapper(MMWrapper):
 
         self.update_forces(force, self.qmmm_force, self.main_simulation)
         
-        self.set_up_reporters(self.main_simulation)
-        # Calls openmm wrapper to get information specified
-        self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
+        #self.set_up_reporters(self.main_simulation)
+        ## Calls openmm wrapper to get information specified
+        #self.main_info = OpenMMWrapper.get_state_info(self.main_simulation,
                                       energy=True,
                                       positions=True,
                                       forces=True)
@@ -367,16 +375,15 @@ class OpenMMWrapper(MMWrapper):
 
         openmm_system = self.forcefield.createSystem(topology,
                                         nonbondedMethod=self.nonbondMethod,
-                                        constraints=self.constraint,
-                                        hydrogenMass=self.hMass,
-                                        switchDistance=self.switchDis,
-                                        residueTemplates=self.param['residueTemplates'],
-                                        nonbondedCutoff=self.param['nonbondedCutoff']*OM_unit.nanometer,
-                                        rigidWater=self.param['rigid_water'],
-                                        removeCMMotion=self.param['removeCMMotion'],
-                                        flexibleConstraints=self.param['flexibleConstraints'],
-                                        ignoreExternalBonds=self.param['ignoreExternalBonds'])
-
+                                        constraints=self.constraints,
+                                        hydrogenMass=self.hydrogenMass,
+                                        switchDistance=self.switchDistance,
+                                        residueTemplates=self.residueTemplates,
+                                        nonbondedCutoff=self.nonbondedCutoff,
+                                        rigidWater=self.rigid_water,
+                                        removeCMMotion=self.removeCMMotion,
+                                        flexibleConstraints=self.flexibleConstraints,
+                                        ignoreExternalBonds=self.ignoreExternalBonds)
 
         if initialize is True:                                             # this is for the initialization of the entire system
             self.qmmm_force = OM.CustomExternalForce("-x*fx-y*fy-z*fz")    # define a custom force for adding qmmm gradients
@@ -648,11 +655,9 @@ class OpenMMWrapper(MMWrapper):
         Write a pdb file from an OpenMM modeller
 
         """
-        return_sys = self.param['return_system']
-        sys_file = self.param['return_system_filename']
 
-        if return_sys is True: 
-            OM_app.PDBFile.writeFile(info['topology'], info['positions'], open(sys_file, 'w'))
+        if self.return_system is True: 
+            OM_app.PDBFile.writeFile(info['topology'], info['positions'], open(self.return_system_filename, 'w'))
  
 
     def create_modeller(self, qm_atoms, keep_qm=None):
@@ -785,7 +790,10 @@ class OpenMMWrapper(MMWrapper):
 
         if self.system_info_format == 'pdb':
             # instantiate OpenMM pdb object
-            self.pdb = OM_app.PDBFile(self.system_info[0])
+            if type(self.system_info) is list:
+                self.pdb = OM_app.PDBFile(self.system_info[0])
+            elif type(self.system_info) is str:
+                self.pdb = OM_app.PDBFile(self.system_info)
             # instantiate OpenMM forcefield object
             self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
             self.topology = self.pdb.topology
@@ -819,35 +827,27 @@ class OpenMMWrapper(MMWrapper):
         temp = False
         den = False
 
-        return_chkpt_int = self.param['return_checkpoint_interval']
-        chkpt_file = self.param['return_checkpoint_filename']
-        return_traj_int = self.param['return_trajectory_interval']
-        traj_file = self.param['return_trajectory_filename']
-        traj_format = self.param['trajectory_format']
-        info_int = self.param['return_info_interval']
-        return_info = self.param['return_info']
+        if self.return_trajectory_interval != 0:
+            if self.trajectory_format == 'NetCDF':
+                simulation.reporters.append(NetCDFReporter(self.return_trajectory_filename, self.return_trajectory_interval))
 
-        if return_traj_int != 0:
-            if traj_format == 'NetCDF':
-                simulation.reporters.append(NetCDFReporter(traj_file, return_traj_int))
-
-        if return_chkpt_int != 0:
-            simulation.reporters.append(OM_app.CheckpointReporter(chkpt_file, return_chkpt_int))
-
-        if return_info:
-
-            if 'potentialEnergy' in return_info:
-                pot = True
-            if 'kineticEnergy' in return_info:
-                kin = True
-            if 'totalEnergy' in return_info:
-                enrgy = True
-            if 'temperature' in return_info:
-                temp = True
-            if 'density' in return_info:
-                den = True
+        if self.return_checkpoint_interval != 0:
+            simulation.reporters.append(OM_app.CheckpointReporter(self.return_checkpoint_filename, self.return_checkpoint_interval))
                 
-            simulation.reporters.append(OM_app.StateDataReporter('info.dat', info_int, step=True,
+        if self.return_info:
+
+            if 'potentialEnergy' in self.return_info:
+                pot = True
+            if 'kineticEnergy' in self.return_info:
+                kin = True
+            if 'totalEnergy' in self.return_info:
+                enrgy = True
+            if 'temperature' in self.return_info:
+                temp = True
+            if 'density' in self.return_info:
+                den = True
+
+            simulation.reporters.append(OM_app.StateDataReporter(self.return_info_filename, self.return_info_interval, step=True,
             potentialEnergy=pot, kineticEnergy=kin, totalEnergy=enrgy, temperature=temp, density=den))
 
 

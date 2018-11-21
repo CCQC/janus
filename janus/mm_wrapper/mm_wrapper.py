@@ -8,7 +8,10 @@ class MMWrapper(ABC):
     kjmol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
     au_bohr_to_kjmol_nm = 1/kjmol_nm_to_au_bohr
 
-    def __init__(self, param, class_type):
+    def __init__(self, class_type,
+                       sys_info=None, 
+                       sys_info_format=None, 
+                       **kwargs)
         """
         A super class for all molecular mechanics wrappers
 
@@ -19,12 +22,48 @@ class MMWrapper(ABC):
             what program to use for QM computations
 
         """
-        self.system_info = param['system_info']
-        self.system_info_format = param['system_info_format']
+        self.system_info = sys_info
+        self.system_info_format = sys_info_format
         self.param = param
         self.class_type = class_type
         self.main_info = None
         self.main_charges = None
+
+        self.start_qmmm =  0
+        self.end_qmmm   =  0
+        self.md_steps = 0
+        self.md_ensemble = 'NVE'
+
+        self.return_trajectory_interval = 0
+        self.return_trajectory_filename = 'output.nc'
+        self.trajectory_format = 'NetCDF'                                                              
+        self.return_checkpoint_interval = 0                                                                     
+        self.return_checkpoint_filename = 'checkpoint.chk'                                                      
+        self.return_system = True,                                                                               
+        self.return_system_filename = 'final.pdb'                                                               
+        self.return_info = ["potentialEnergy", "kineticEnergy", "totalEnergy", "temperature"]
+        self.return_info_interval = 0                                                                         
+        self.return_info_filename = 'info.dat'                                                                         
+        self.return_forces_filename = 'forces.pkl'                                                              
+        self.return_forces_interval = 0                                                                         
+
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+        self.qmmm_steps = self.end_qmmm - self.start_qmmm
+
+        if (type(self.md_steps) is list and type(self.md_ensemble) is list)):
+            self.md_ensemble = self.md_ensemble[-1]
+            self.other_md_ensembles = self.md_ensemble[0:-1]
+            self.other_ensemble_steps = self.md_steps[0:-1]
+        elif (type(self.md_steps) is int and type(self.md_ensemble) is str)):
+            self.other_md_ensembles = None
+            self.other_ensemble_steps = None
+
+        if type(self.md_steps) is int:
+            self.end_steps = self.md_steps - self.end_qmmm
+        elif type(self.md_steps) is list:
+            self.end_steps = self.md_steps[-1] - self.end_qmmm
 
         super().__init__()
 
@@ -103,7 +142,10 @@ class MMWrapper(ABC):
     def set_up_reporters(self):
         pass
 
-    def get_qm_geometry(self):
+    def get_geom_from_trajectory(self):
+        raise Exception('method not implemented for class')
+
+    def set_qm_geometry(self):
         raise Exception('method not implemented for class')
 
     def build_qm_param(self):

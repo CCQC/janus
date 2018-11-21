@@ -8,7 +8,17 @@ class Psi4Wrapper(QMWrapper):
     information. Class inherits from QMWrapper.
     """
 
-    def __init__(self, param):
+    def __init__(self,
+                 method='scf',
+                 charge=0,
+                 multiplicity=1,
+                 reference='rhf',
+                 basis='STO-3G',
+                 e_convergence=1e-8,
+                 d_convergence=1e-8,
+                 sys_info=None,
+                 sys_info_format=None,
+                 **kwargs):
         """
         Initializes a Psi4Wrapper class with a set of 
         parameters for running Psi4
@@ -37,22 +47,20 @@ class Psi4Wrapper(QMWrapper):
 
         """
 
-        super().__init__(param, "Psi4")
+        super().__init__("Psi4")
         self.energy = None
         self.wavefunction = None
         self.gradient = None
 
-        if param['method'] == 'low':
-            self.method = 'scf'
-        elif param['method'] == 'high':
-            self.method = 'mp2'
-        else:
-            self.method = param['method']
-        self.reference = param['reference']
-        self.charge_method = param['charge_method']
-        self.charge = param['charge']
-        self.multiplicity = param['multiplicity']
+        self.method = method
+        self.charge = charge
+        self.multiplicity = multiplicity
 
+        self.qm_param = kwargs
+        self.qm_param['reference'] = reference
+        self.qm_param['basis'] = basis
+        self.qm_param['e_convergence'] = e_convergence
+        self.qm_param['d_convergence'] = d_convergence
 
     def compute_energy(self):
         """
@@ -132,19 +140,19 @@ class Psi4Wrapper(QMWrapper):
             psi4.core.set_global_option_python('EXTERN', Chrgfield.extern)
 
             
-    def compute_scf_charges(self):
+    def compute_scf_charges(self, charge_method):
         """
         Calls Psi4 to obtain the self.charges on each atom given and saves it as a numpy array.
         This method works well for SCF wavefunctions. For correlated levels of theory (e.g., MP2),
         it is advised that compute_energy_and_charges() be used instead.
         """
         if self.wavefunction is not None:
-            psi4.oeprop(self.wavefunction, self.charge_method)
+            psi4.oeprop(self.wavefunction, charge_method)
             self.charges = np.asarray(self.wavefunction.atomic_point_charges())
             self.charges = self.charges 
 
 
-    def compute_energy_and_charges(self):
+    def compute_energy_and_charges(self, charge_method):
         """
         Calls Psi4 to obtain the self.energy, self.wavefunction, 
         and self.charges on each atom. This method for correlated methods.
@@ -155,7 +163,7 @@ class Psi4Wrapper(QMWrapper):
         """
         self.set_up_psi4()
         self.energy, self.wavefunction = psi4.prop(self.method,
-                                properties=[self.charge_method],
+                                properties=[charge_method],
                                 return_wfn=True)
         self.charges = np.asarray(self.wavefunction.atomic_point_charges())
 
@@ -165,17 +173,13 @@ class Psi4Wrapper(QMWrapper):
         Builds a dictionary of QM parameters from input options
         and saves as self.param
         """
-        qm_param = {}
-        qm_param['scf_type'] = self.param['scf_type']
-        qm_param['basis'] = self.param['basis_set']
-        qm_param['guess'] = self.param['guess_orbitals']
-        qm_param['e_convergence'] = self.param['e_convergence']  
-        qm_param['d_convergence'] = self.param['d_convergence']
-        
-        if self.is_open_shelled is True and self.reference == 'rhf':
-            qm_param['reference'] = 'uhf'
-            self.multiplicity = 2
-        else:
-            qm_param['reference'] = self.reference
 
-        self.qm_param = qm_param
+        #if self.is_open_shelled is True and self.reference == 'rhf':
+        #    qm_param['reference'] = 'uhf'
+        #    self.multiplicity = 2
+        #else:
+        #    qm_param['reference'] = self.reference
+        return self.qm_param
+
+
+
