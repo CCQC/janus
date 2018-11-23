@@ -1,25 +1,20 @@
 import pytest
-from janus.qmmm import HotSpot
-from janus.qm_wrapper import Psi4Wrapper
-from janus.mm_wrapper import OpenMMWrapper
-from janus.initializer import Initializer
+from janus import qm_wrapper, mm_wrapper, qmmm
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
-param = {"system" : {"mm_pdb_file" : water}}
-config = Initializer(param, as_file=False)
-psi4 = Psi4Wrapper(config.hl_param)
-openmm = OpenMMWrapper(config.ll_param)
+psi4 = qm_wrapper.Psi4Wrapper()
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-hs =   HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_0 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_1 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_2 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs =   qmmm.HotSpot(psi4, openmm, sys_info=water)
+hs_0 = qmmm.HotSpot(psi4, openmm, sys_info=water)
+hs_1 = qmmm.HotSpot(psi4, openmm, sys_info=water)
+hs_2 = qmmm.HotSpot(psi4, openmm, sys_info=water)
 
 hs_0.set_Rmin(0.26)
 hs_0.set_Rmax(0.28)
@@ -68,8 +63,8 @@ def test_run_aqmmm():
     
 def test_run_qmmm():
 
-    hs_0.run_qmmm(main_info_m)
-    hs_1.run_qmmm(main_info_m)
+    hs_0.run_qmmm(main_info_m, 'OpenMM')
+    hs_1.run_qmmm(main_info_m, 'OpenMM')
 
     assert np.allclose(hs_0.systems[0]['qmmm_forces'][0], np.array([-0.00317575, 0.04869594,-0.02960086]))
     assert np.allclose(hs_1.systems[0]['qmmm_forces'][0], np.array([-0.00317575, 0.04869594,-0.02960086]))

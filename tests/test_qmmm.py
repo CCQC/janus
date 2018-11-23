@@ -1,4 +1,4 @@
-from janus import qmmm, psi4_wrapper, openmm_wrapper, system, initializer
+from janus import qm_wrapper, mm_wrapper, qmmm, system
 import numpy as np
 import pytest
 import os
@@ -6,33 +6,21 @@ import os
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 ala = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 
-param_m = {"system" : {"mm_pdb_file" : water},
-            "qmmm" : {"qm_atoms" : [0,1,2]}}
-param_ala = {"system" : {"mm_pdb_file" : ala},
-              "qmmm" : {"embedding_method" : "Electrostatic"},
-              "qm" : {"charge" : +1}}
+psi4 = qm_wrapper.Psi4Wrapper()
+psi4_ala = qm_wrapper.Psi4Wrapper(charge=1)
 
-
-config_m = initializer.Initializer(param_m, as_file=False)
-config_ala = initializer.Initializer(param_ala, as_file=False)
-
-psi4 = psi4_wrapper.Psi4_wrapper(config_m.hl_param)
-psi4_ala = psi4_wrapper.Psi4_wrapper(config_ala.hl_param)
-
-om_m = openmm_wrapper.OpenMM_wrapper(config_m.ll_param)
+om_m = mm_wrapper.OpenMMWrapper(sys_info=water)
 om_m.initialize('Mechanical')
 main_info_m = om_m.get_main_info()
 
-om_ala = openmm_wrapper.OpenMM_wrapper(config_ala.ll_param)
+om_ala = mm_wrapper.OpenMMWrapper(sys_info=ala)
 om_ala.initialize('Electrostatic')
 main_info_ala = om_ala.get_main_info()
 
-mech = qmmm.QMMM(config_m.qmmm_param, psi4, om_m, 'OpenMM')
-ala_link = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala, 'OpenMM')
-ala_RC = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala, 'OpenMM',)
-ala_RCD = qmmm.QMMM(config_ala.qmmm_param, psi4_ala, om_ala, 'OpenMM')
-ala_RC.boundary_treatment = 'RC'
-ala_RCD.boundary_treatment = 'RCD'
+mech     = qmmm.QMMM(psi4,     om_m,sys_info=water, qm_atoms=[0,1,2], embedding_method='Mechanical' )
+ala_link = qmmm.QMMM(psi4_ala, om_ala,sys_info=ala, qm_atoms=[0,1,2], embedding_method='Electrostatic' )
+ala_RC   = qmmm.QMMM(psi4_ala, om_ala,sys_info=ala, qm_atoms=[0,1,2], embedding_method='Electrostatic', boundary_treatment='RC' )
+ala_RCD  = qmmm.QMMM(psi4_ala, om_ala,sys_info=ala, qm_atoms=[0,1,2], embedding_method='Electrostatic', boundary_treatment='RCD')
 
 sys_mech = system.System([0,1,2], [0],  0)
 sys_ala_link = system.System([0,1,2,3],[0],  0)
@@ -167,7 +155,7 @@ def test_update_traj():
 
     mech.traj.xyz[0] = np.zeros((9,3))
     pos1 = mech.traj.xyz[0]
-    mech.update_traj(main_info_m['positions'], main_info_m['topology'])
+    mech.update_traj(main_info_m['positions'], main_info_m['topology'], 'OpenMM')
     
     assert np.allclose(pos1, np.zeros((9,3)))
     assert np.allclose(mech.traj.xyz[0], main_info_m['positions'])
@@ -176,8 +164,8 @@ def test_run_qmmm():
     mech.qm_atoms = [0,1,2]
     ala_link.qm_atoms = [0,1,2,3]
 
-    mech.run_qmmm(main_info_m)
-    ala_link.run_qmmm(main_info_ala)
+    mech.run_qmmm(main_info_m, 'OpenMM')
+    ala_link.run_qmmm(main_info_ala, 'OpenMM')
 
     assert 'qm' in mech.systems[0]
     assert 'qm' in ala_link.systems[0]

@@ -64,6 +64,7 @@ class AQMMM(ABC, QMMM):
         Since AQMMM is a super class and has abstract methods
         cannot actually instantiate AQMMM object, but only its child objects
         """
+        print(qmmm_param)
         
         super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, **qmmm_param)
 

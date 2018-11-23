@@ -1,24 +1,19 @@
 import pytest
-from janus import sap, psi4_wrapper, openmm_wrapper, initializer
+from janus import qm_wrapper, mm_wrapper, qmmm
 from copy import deepcopy
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
-
-param = {"system" : {"mm_pdb_file": water},
-         "qmmm" : {"embedding_scheme" : "Electrostatic"}}
-
-config = initializer.Initializer(param, as_file=False)
-psi4 = psi4_wrapper.Psi4_wrapper(config.hl_param)
-openmm = openmm_wrapper.OpenMM_wrapper(config.ll_param)
+psi4 = qm_wrapper.Psi4Wrapper()
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water)
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-sap_1 = sap.SAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
-sap_2 = sap.SAP(config.aqmmm_param, psi4, openmm, 'OpenMM')
+sap_1 = qmmm.SAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'electrostatic'}})
+sap_2 = qmmm.SAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'electrostatic'}})
 
 sap_1.set_Rmin(0.26)
 sap_1.set_Rmax(0.32)
@@ -102,8 +97,8 @@ def test_run_aqmmm():
     sap_1.run_aqmmm()
     sap_2.run_aqmmm()
 
-    assert sap_1.systems[0]['qmmm_energy'] == 74.96866395622227
-    assert sap_2.systems[0]['qmmm_energy'] == 76.42022722434459
+    assert np.allclose(sap_1.systems[0]['qmmm_energy'],74.96866395622227)
+    assert np.allclose(sap_2.systems[0]['qmmm_energy'],76.42022722434459)
     assert np.allclose(sap_1.systems[0]['qmmm_forces'][0], np.array([ 0.98310642, -3.76020004, -4.40380521]))
     assert np.allclose(sap_2.systems[0]['qmmm_forces'][0], np.array([-4.50578712, -1648.70920742, -1857.76955754]))
     assert np.allclose(sap_1.systems[0]['qmmm_forces'][1], np.ones((3))) 
@@ -113,8 +108,8 @@ def test_run_aqmmm():
 
 def test_run_qmmm():
 
-    sap_1.run_qmmm(main_info_m)
-    sap_2.run_qmmm(main_info_m)
+    sap_1.run_qmmm(main_info_m, 'OpenMM')
+    sap_2.run_qmmm(main_info_m, 'OpenMM')
 
     print(sap_1.systems[0]['qmmm_energy'])
     print(sap_2.systems[0]['qmmm_energy'])

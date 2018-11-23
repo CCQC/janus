@@ -65,10 +65,10 @@ class HotSpot(AQMMM):
         """
         
         qm = self.systems[self.run_ID]['qm']
+        self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_energy
 
         # do I need to do deepcopy?
         if not self.buffer_groups:
-            self.systems[self.run_ID]['qmmm_energy'] = qm.qmmm_energy
             self.systems[self.run_ID]['qmmm_forces'] = qm.qmmm_forces
 
         else:
