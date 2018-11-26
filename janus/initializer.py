@@ -107,7 +107,7 @@ class Initializer(object):
         
         print("qmmm wrapper")
         if self.aqmmm_scheme is None:
-            qmmm_wrapper = QMMM(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.qmmm)
+            qmmm_wrapper = QMMM(hl_wrapper, ll_wrapper, self.system_info, sys_info_format=self.system_info_format, **self.qmmm)
         elif self.aqmmm_scheme == 'ONIOM-XS':
             qmmm_wrapper = OniomXS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, aqmmm_param=self.aqmmm)
         elif self.aqmmm_scheme == 'Hot-Spot':

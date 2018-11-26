@@ -6,7 +6,7 @@ import os
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 psi4 = qm_wrapper.Psi4Wrapper()
-openmm = mm_wrapper.OpenMMWrapper(sys_info=water)
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
@@ -144,10 +144,10 @@ def test_run_qmmm():
     oxs_0.run_qmmm(main_info_m, 'OpenMM')
     oxs_1.run_qmmm(main_info_m, 'OpenMM')
 
-    assert np.allclose(oxs_0.systems[0]['qmmm_energy'],-0.027006342896513776)
-    assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([-0.0185327, -1.17240646,-1.48047266]))
-    assert np.allclose(oxs_1.systems[0]['qmmm_energy'],-0.04110507067214367)
-    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([-0.0222685, -0.33163886,-0.77062603]))
+    assert np.allclose(oxs_0.systems[0]['qmmm_energy'], -0.007553844392873543)
+    assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([ 0.01119897, 0.04866929,-0.03788886]))
+    assert np.allclose(oxs_1.systems[0]['qmmm_energy'],-0.007550404996134019)
+    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([ 0.01116153, 0.05068185,-0.03557397]))
     assert oxs_0.run_ID == 1
     assert oxs_1.run_ID == 1
     

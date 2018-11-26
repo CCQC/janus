@@ -11,7 +11,7 @@ class QMMM(object):
     def __init__(self, hl_wrapper, 
                        ll_wrapper, 
                        sys_info,
-                       qm_atoms,
+                       qm_atoms=[],
                        sys_info_format='pdb',
                        qmmm_scheme='subtractive', 
                        embedding_method='Mechanical', 

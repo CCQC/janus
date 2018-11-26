@@ -66,7 +66,7 @@ class AQMMM(ABC, QMMM):
         """
         print(qmmm_param)
         
-        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, **qmmm_param)
+        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format=sys_info_format, **qmmm_param)
 
         self.class_type = class_type
         self.qm_center = qm_center
@@ -106,6 +106,7 @@ class AQMMM(ABC, QMMM):
 
             self.qm_atoms = deepcopy(system.qm_atoms)
 
+            print(self.embedding_method)
             if self.embedding_method =='Mechanical':
                 self.mechanical(system, main_info)
             elif self.embedding_method =='Electrostatic':

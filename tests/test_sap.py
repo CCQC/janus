@@ -7,13 +7,13 @@ import os
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 psi4 = qm_wrapper.Psi4Wrapper()
-openmm = mm_wrapper.OpenMMWrapper(sys_info=water)
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-sap_1 = qmmm.SAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'electrostatic'}})
-sap_2 = qmmm.SAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'electrostatic'}})
+sap_1 = qmmm.SAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
+sap_2 = qmmm.SAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
 
 sap_1.set_Rmin(0.26)
 sap_1.set_Rmax(0.32)
@@ -108,18 +108,15 @@ def test_run_aqmmm():
 
 def test_run_qmmm():
 
+
     sap_1.run_qmmm(main_info_m, 'OpenMM')
     sap_2.run_qmmm(main_info_m, 'OpenMM')
 
-    print(sap_1.systems[0]['qmmm_energy'])
-    print(sap_2.systems[0]['qmmm_energy'])
-    print(sap_1.systems[0]['qmmm_forces'][0])
-    print(sap_2.systems[0]['qmmm_forces'][0])
-    assert sap_1.systems[0]['qmmm_energy'] == -0.02926774770488531 
-    assert sap_2.systems[0]['qmmm_energy'] == -0.03066988296157528 
-    assert np.allclose(sap_1.systems[0]['qmmm_forces'][0], np.array([1.91476321e-02, 5.77438451e+01, 5.49196637e+01]))
-    assert np.allclose(sap_2.systems[0]['qmmm_forces'][0], np.array([ -0.17353223, 117.9511188, 107.91283519 ]))
-    assert len(sap_1.systems[0]['qmmm_forces']) == 9
+    assert sap_1.systems[0]['qmmm_energy'] == -0.007553840666010467
+    assert sap_2.systems[0]['qmmm_energy'] == -0.007551817555662193
+    assert np.allclose(sap_1.systems[0]['qmmm_forces'][0], np.array([ 0.01120063, 0.04914949,-0.0373437 ]))
+    assert np.allclose(sap_2.systems[0]['qmmm_forces'][0], np.array([ 0.01176131, 0.22503665, 0.16084661]))
+    assert len(sap_1.systems[0]['qmmm_forces']) == 6
     assert len(sap_2.systems[0]['qmmm_forces']) == 9
 
 

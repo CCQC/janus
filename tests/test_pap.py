@@ -7,13 +7,13 @@ import os
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 psi4 = qm_wrapper.Psi4Wrapper()
-openmm = mm_wrapper.OpenMMWrapper(sys_info=water)
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-pap_1 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'electrostatic'}})
-pap_2 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'electrostatic'}})
+pap_1 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
+pap_2 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
 
 pap_1.set_Rmin(0.26)
 pap_1.set_Rmax(0.32)
@@ -92,12 +92,20 @@ def test_run_aqmmm():
 
 def test_run_qmmm():
 
+    pap_1.systems[0]['qm'].qmmm_forces = {key: np.ones((3)) for key in range(3)}
+    pap_1.systems[0][0].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    pap_2.systems[0]['qm'].qmmm_forces = {key: np.ones((3)) for key in range(3)}
+    pap_2.systems[0][0].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    pap_2.systems[0][1].qmmm_forces = {key: np.ones((3)) for key in range(6)}
+    pap_2.systems[0][2].qmmm_forces = {key: np.ones((3)) for key in range(9)}
+
     pap_1.run_qmmm(main_info_m, 'OpenMM')
     pap_2.run_qmmm(main_info_m, 'OpenMM')
 
-    assert pap_1.systems[0]['qmmm_energy'] == -0.03977812308047926
-    assert pap_2.systems[0]['qmmm_energy'] == -0.041810966263750866
-    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([-0.03073274,-0.47845509,-1.07936284]))
-    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([-0.01825466,-0.234095  ,-0.59877961 ]))
-    assert len(pap_1.systems[0]['qmmm_forces']) == 9
+    assert pap_1.systems[0]['qmmm_energy'] ==  -0.007550404996134019
+    assert pap_2.systems[0]['qmmm_energy'] == -0.007526130891361977
+    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([ 0.01116153, 0.05068185,-0.03557397]))
+    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([ 0.01083984, 0.05331806,-0.03271556]))
+    assert len(pap_1.systems[0]['qmmm_forces']) == 6
     assert len(pap_2.systems[0]['qmmm_forces']) == 9
+

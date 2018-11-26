@@ -91,7 +91,7 @@ class OpenMMWrapper(MMWrapper):
         self.rigid_water=False
         self.removeCMMotion=True
         self.flexibleConstraints=False 
-        self.ignoreExternalBonds=False
+        self.ignoreExternalBonds=True
 
         if self.md_ensemble == 'NVT':
             self.integrator = self.NVT_integrator
@@ -373,6 +373,7 @@ class OpenMMWrapper(MMWrapper):
         if unmatched:
             self.create_new_residue_template(topology)
 
+        print(self.ignoreExternalBonds)
         openmm_system = self.forcefield.createSystem(topology,
                                         nonbondedMethod=self.nonbondMethod,
                                         constraints=self.constraints,
@@ -514,9 +515,8 @@ class OpenMMWrapper(MMWrapper):
                             atom.type = atom4.type
 
             # override existing modified residues with same name
-            print(name)
             if name in self.forcefield._templates:
-                print('override existing modified residues with same name')
+                print('override existing modified residues with name {}'.format(name))
                 template[i].overrideLevel = self.forcefield._templates[name].overrideLevel + 1
 
             # register the new template to the forcefield object
@@ -524,7 +524,7 @@ class OpenMMWrapper(MMWrapper):
             self.forcefield.registerResidueTemplate(template[i])
 
 
-    def create_openmm_simulation(self, openmm_system, topology, positions, integrator,  return_integrator=False):
+    def create_openmm_simulation(self, openmm_system, topology, positions, integrator,  return_integrator=False, seed=0):
         """
         Creates an OpenMM simulation object given
         an OpenMM system, topology, and positions
@@ -549,12 +549,12 @@ class OpenMMWrapper(MMWrapper):
         print('using {} integrator'.format(integrator))
         if integrator == 'Langevin':
             integrator_obj = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
-            integrator_obj.setRandomNumberSeed(1)
+            integrator_obj.setRandomNumberSeed(seed)
         elif integrator == 'Verlet':
             integrator_obj = OM.VerletIntegrator(self.step_size)
-
         else:
             print('only Langevin integrator supported currently')
+
 
         simulation = OM_app.Simulation(topology, openmm_system, integrator_obj)
         simulation.context.setPositions(positions)
