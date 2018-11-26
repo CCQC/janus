@@ -27,9 +27,7 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="janus.qmmm.AQMMM" href="janus.qmmm.AQMMM.html" />
-    <link rel="prev" title="QMMM Submodule" href="../janus_qmmm.html" /> 
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -78,17 +76,11 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
 </ul>
 
             
@@ -134,10 +126,6 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
-        
-          <li><a href="../janus_qmmm.html">QMMM Submodule</a> &raquo;</li>
-        
       <li>janus.qmmm.QMMM</li>
     
     
@@ -161,11 +149,11 @@
 <h1>janus.qmmm.QMMM<a class="headerlink" href="#janus-qmmm-qmmm" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="janus.qmmm.QMMM">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">QMMM</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">QMMM</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>qm_atoms=[]</em>, <em>sys_info_format='pdb'</em>, <em>qmmm_scheme='subtractive'</em>, <em>embedding_method='Mechanical'</em>, <em>boundary_treatment='link_atom'</em>, <em>link_atom_element='H'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM" title="Permalink to this definition">¶</a></dt>
 <dd><p>QMMM class for QMMM computations</p>
 <dl class="method">
 <dt id="janus.qmmm.QMMM.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>qm_atoms=[]</em>, <em>sys_info_format='pdb'</em>, <em>qmmm_scheme='subtractive'</em>, <em>embedding_method='Mechanical'</em>, <em>boundary_treatment='link_atom'</em>, <em>link_atom_element='H'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes QMMM class with parameters given in param</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -203,7 +191,6 @@ Individual parameters include:
 </li>
 <li><strong>hl_wrapper</strong> (<em>a qm_wrapper</em><em> or </em><em>mm_wrapper object</em><em>, </em><em>depending on the user input</em>) – </li>
 <li><strong>ll_wrapper</strong> (<em>a mm_wrapper object only for now</em>) – </li>
-<li><strong>md_simulation_program</strong> (<em>str</em>) – The program that performs the MD time step integration</li>
 </ul>
 </td>
 </tr>
@@ -218,7 +205,7 @@ Individual parameters include:
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.__init__" title="janus.qmmm.QMMM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper[,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.__init__" title="janus.qmmm.QMMM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info[,&nbsp;…])</td>
 <td>Initializes QMMM class with parameters given in param</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.compute_gradients" title="janus.qmmm.QMMM.compute_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code></a>(system)</td>
@@ -257,10 +244,10 @@ Individual parameters include:
 <tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.prepare_link_atom" title="janus.qmmm.QMMM.prepare_link_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code></a>()</td>
 <td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.run_qmmm" title="janus.qmmm.QMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.run_qmmm" title="janus.qmmm.QMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info,&nbsp;wrapper_type)</td>
 <td>Updates the positions and topology given in main_info, and determines the QM/MM energy and gradients</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.update_traj" title="janus.qmmm.QMMM.update_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code></a>(position,&nbsp;topology)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.QMMM.update_traj" title="janus.qmmm.QMMM.update_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code></a>(position,&nbsp;topology,&nbsp;wrapper_type)</td>
 <td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
 </tr>
 </tbody>
@@ -274,15 +261,6 @@ Individual parameters include:
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="janus.qmmm.AQMMM.html" class="btn btn-neutral float-right" title="janus.qmmm.AQMMM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../janus_qmmm.html" class="btn btn-neutral" title="QMMM Submodule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

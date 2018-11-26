@@ -1,6 +1,14 @@
 from abc import ABC, abstractmethod
 
 class MMWrapper(ABC):
+    """
+    A super class for all molecular mechanics wrappers
+
+    Note
+    ----
+    Since MMWrapper is a super class and has abstract methods
+    the user cannot actually instantiate a MMWrapper object, but only its child objects
+    """
 
     kjmol_to_au = 1/2625.5002 
     nm_to_angstrom = 10.0000000
@@ -12,16 +20,6 @@ class MMWrapper(ABC):
                        sys_info=None, 
                        sys_info_format=None, 
                        **kwargs):
-        """
-        A super class for all molecular mechanics wrappers
-
-        Parameters
-        ----------
-        param : dict 
-        program : str
-            what program to use for QM computations
-
-        """
         self.system_info = sys_info
         self.system_info_format = sys_info_format
         self.class_type = class_type
@@ -66,13 +64,15 @@ class MMWrapper(ABC):
 
         super().__init__()
 
-    def get_energy_and_gradient(self, traj, include_coulomb='all', link_atoms=None, minimize=False, charges=None):
+    def get_energy_and_gradient(self, traj, geometry=None, include_coulomb='all', link_atoms=None, minimize=False, charges=None):
         """
         Gets the energy and gradient from a MM computation
 
         Parameters
         ----------
         traj : MDtraj trajectory object
+        geometry : str
+            A string containing geometry information as XYZ coordinates. Not applicable for MM programs
         include_coulomb : str
 
             whether to include coulombic interactions. 
@@ -107,48 +107,87 @@ class MMWrapper(ABC):
 
     @abstractmethod
     def compute_info(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def set_external_charges(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def initialize(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def take_step(self, force):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def get_main_info(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def get_main_charges(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def convert_trajectory(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def convert_input(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
     
     @abstractmethod
     def set_up_reporters(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     def get_geom_from_trajectory(self):
+        """
+        Function not implemented for MM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def set_qm_geometry(self):
+        """
+        Function not implemented for MM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def build_qm_param(self):
+        """
+        Function not implemented for MM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def optimize_geometry(self):
+        """
+        Function not implemented for MM wrappers
+        """
         raise Exception('method not implemented for class')

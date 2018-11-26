@@ -9,10 +9,62 @@ from copy import deepcopy
 
 class OpenMMWrapper(MMWrapper):
     """
-    A wrapper class that calls OpenMM
-    to obtain molecular mechanics information and 
-    take steps in a molecular dynamics simulation. 
+    A MM wrapper class that calls OpenMM
+    to obtain molecular mechanics information. 
+    Also can be used to take steps in a molecular dynamics simulation. 
     Class inherits from MMWrapper.
+
+    Parameters
+    ----------
+    sys_info : str 
+        A string with the filename or a list with multiple filenames 
+        that contain position and topology information. Default is None.
+    sys_info_format : str 
+        A str describing what kind of input is contained in sys_info. Default is pdb.
+        Possible values also include Amber and Gromacs.
+    mm_forcefield : str
+        The name of the forcefield to use, default is amber99sb.xml.
+    mm_water_forcefield : str
+        The name of the forcefield to use for water, default is tip3p.xml.
+    NVE_integrator : str
+        What type of integrator to use for a NVE ensemble, default is Verlet.
+    NVT_integrator : str
+        What type of integrator to use for a NVT ensemble, default is Langevin.
+    temp : Int
+        The temperature at which to run a simulation in kelvin, default is 300.
+    step_size : float
+        The step size to integrate system in femtoseconds, default is 1.
+    fric_coeff : float
+        friction coefficient to couple the system to heat bath in a NVT ensemble in inverse
+        picoseconds, default is 1.
+    nonbondedCutoff : float 
+        The cutoff distance for nonbonded interactions in nanometers,
+        default is 1.
+    md_param : dict
+        Dictionary of parameters for an MD simulation. For possible keywords consult the 
+        Molecular Dynamics section of the manual. Default is empty dictionary.
+    **kwargs : dict
+        Other parameters for OpenMM, which include:
+        - nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff
+        - constraints : which bonds and angles implemented with constraints,
+                        default is None
+        - rigid_water : whether water is treated as rigid, default is True
+        - removeCMMotion : whether to include a CMMotionRemover, default is True
+        - ignoreExternalBonds : whether to ignore external bonds when matching residues to templates,
+                                default is True
+        - flexibleConstraints : whether to add parameters for constrained parameters,
+                                default is False
+        - hydrogenMass : the mass to use for hydrogen atoms bonded to heavy atoms,
+                        default is False
+        - residueTemplates : allows user to specify a template for a residue,
+                            default is empty dict {}
+        - switchDistance : the distance to turn on potential energy switching function for 
+                            Lennard-Jones interactions. Default is None
+
+        Each pair of key:value in the dictionary is given as a string.
+        For more information about these pararmeters and 
+        other possible parameter values consult docs.openmm.org
+
     """
 
     def __init__(self, sys_info=None, 
@@ -27,47 +79,6 @@ class OpenMMWrapper(MMWrapper):
                        nonbondedCutoff=0.8,
                        md_param={},
                        **kwargs):
-        """
-        Initializes an OpenMM wrapper class with a set of parameters for 
-        running OpenMM. Creates an OpenMM pdb object using the given pdb_file
-        and forcefield object using the given forcefield
-
-        Parameters
-        ----------
-        param : dict 
-            Parameters for molecular mechanics computations.
-            Individual parameters include:
-            - mm_pdb_file : a pdb file that contains the system of interest
-            - mm_forcefield : the name of the forcefield to use, default is amber99sb.xml
-            - mm_water_forcefield : the name of the forcefield to use for water, default is tip3p.xml
-            - step_size : step size to integrate system in picoseconds, 
-                            default is 0.002*OM_unit.picoseconds
-            - integrator" : which integrator to use for simulation, default is Langevin
-            - fric_coeff" : friction coefficient to couple the system to heat bath in inverse
-                            picoseconds, default is 1/OM_unit.picosecond
-            - temp: the temperature at which the simulation runs in kelvin, default is 300*OM_unit.kelvin
-            - nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff
-            - nonbondedCutoff : cutoff distance for nonbonded interactions in nanometers,
-                                default is "1*OM_unit.nanometer",
-            - constraints : which bonds and angles implemented with constraints,
-                            default is OM_app.HBonds
-            - rigid_water : whether water is treated as rigid, default is True
-            - removeCMMotion : whether to include a CMMotionRemover, default is True
-            - ignoreExternalBonds : whether to ignore external bonds when matching residues to templates,
-                                    default is True
-            - flexibleConstraints : whether to add parameters for constrained parameters,
-                                    default is False
-            - hydrogenMass : the mass to use for hydrogen atoms bonded to heavy atoms,
-                            default is False
-            - residueTemplates : allows user to specify a template for a residue,
-                                default is empty dict {}
-            - switchDistance : the distance to turn on potential energy switching function for 
-                                Lennard-Jones interactions. Default is None
-
-            For more information about these pararmeters and 
-            other possible parameter values consult docs.openmm.org
-
-        """
 
         super().__init__(class_type="OpenMM",
                          sys_info=sys_info,
@@ -107,17 +118,17 @@ class OpenMMWrapper(MMWrapper):
 
     def initialize(self, embedding_method):
         """
-        Calls compute_info to get information for the system
-        of interest in its initial state and saves the simulation 
-        object and information dictionary returned by compute_info
-    
+        Gets information for the system
+        of interest in its initial state.
+        The simulation object and information dictionary returned 
+        by :func:`~janus.mm_wrapper.OpenMMWrapper.compute_info` is saved.
+        
         Parameters
         ----------
         embedding_method : str
-            what embedding method to use for initialization.
+            what QM/MM embedding method to use for initialization.
             If 'Mechanical', all forces are included
-            If 'Electrostatic', all coulomic forces are excluded
-
+            If 'Electrostatic', all coulombic forces are excluded
         """
 
         # should I minimize energy here? If so, need to return new positions
@@ -223,6 +234,21 @@ class OpenMMWrapper(MMWrapper):
         #print(self.main_info)
 
     def update_forces(self, forces, force_obj, simulation):
+        """
+        Updates a simulation with external forces 
+
+        Parameters
+        ----------
+        force : dict 
+            forces(particle index : forces) in au/bohr to 
+            be updated in a force object  and fed into simulation
+        force_obj : OpenMM Force object
+            the force object to add the forces to. Can be built in or custom
+        simulation : OpenMM simulation object
+            where the forces are to be updated in
+        
+        """
+
 
         for f, coord in forces.items():
             coord *= MMWrapper.au_bohr_to_kjmol_nm             # convert this back to openmm units
@@ -245,7 +271,9 @@ class OpenMMWrapper(MMWrapper):
 
     def get_main_info(self):
         """
-        Gets the information for the system of interest
+        Gets the information for the system of interest.
+        Calls :func:`~janus.mm_wrapper.OpenMMWrapper.get_state_info`
+        to obtain information.
 
         Returns
         -------
@@ -259,7 +287,7 @@ class OpenMMWrapper(MMWrapper):
 
     def compute_info(self, topology, positions, include_coulomb='all', initialize=False, return_system=False, return_simulation=False, link_atoms=None, minimize=False):
         """
-        Gets information about a set of molecules as defined in the pdb, including energy, positions, forces
+        Gets information about a system. 
 
         Parameters
         ----------
@@ -295,8 +323,9 @@ class OpenMMWrapper(MMWrapper):
 
         Examples
         --------
-        system, simulation, state = compute_info(top, pos)
-        state = compute_info(top, pos, return_simulation=False, return_system=False)
+        >>> system, simulation, state = compute_info(top, pos)
+
+        >>> state = compute_info(top, pos, return_simulation=False, return_system=False)
         """
 
         # ensure every computation has same periodic box vector parameters
@@ -333,11 +362,11 @@ class OpenMMWrapper(MMWrapper):
     def create_openmm_system(self, topology, include_coulomb='all', link_atoms=None, initialize=False):
         """
         Calls OpenMM to create an OpenMM System object give a topology,
-        forcefield, and other paramters as given in input
-        TODO: need to put nonbond and nonbond_cutoff back but not doing for now
-        because need non-periodic system. Other parameters are also needed
-        also, expand forcefield to take not openmm built in
-        but customized as well
+        forcefield, and other parameters specified in the instantiation parameters.
+
+        Note
+        ----
+        Currently there is no support for customized forcefields
 
         Parameters
         ----------
@@ -362,7 +391,7 @@ class OpenMMWrapper(MMWrapper):
 
         Examples
         --------
-        openmm_sys = create_openmm_system(topology)
+        >>> openmm_sys = create_openmm_system(topology)
         openmm_sys = create_openmm_system(top, include_coulomb='no_link', link_atoms=[0,1,2])
         openmm_sys = create_openmm_system(top, include_coulomb='only')
         openmm_sys = create_openmm_system(top, initialize=True)
@@ -432,7 +461,7 @@ class OpenMMWrapper(MMWrapper):
     
         Examples
         --------
-        set_charge_zero(system)
+        >>> set_charge_zero(system)
         set_charge_zero(system, link_atoms=[0,1,2])
         """
 
@@ -483,7 +512,7 @@ class OpenMMWrapper(MMWrapper):
 
         Examples
         --------
-        create_new_residue_template(topology)
+        >>> create_new_residue_template(topology)
         """
         template, unmatched_res = self.forcefield.generateTemplatesForUnmatchedResidues(topology)
 
@@ -535,14 +564,24 @@ class OpenMMWrapper(MMWrapper):
         topology : OpenMM topology object
         positions : OpenMM Vec3 vector 
             contains the positions of the system in nm
+        integrator : str
+            What type of integrator to use. Currently support Langevin and Verlet.
+        return_integrator : bool
+            Whether to return the OpenMM integrator object
+        seed : int
+            Set a random seed number for the Langevin integrator. 
+            Default is 0, which means seed is randomized every time.
 
         Returns
         -------
         OpenMM simulation object
+        
+        OpenMM integrator object
+            Returned unless return_integrator is False
 
         Examples
         --------
-        create_open_simulation(openmm_sys, top, pos) 
+        >>> create_open_simulation(openmm_sys, top, pos) 
         create_open_simulation(openmm_sys, pdb.topology. pdb.positions)
         """
 
@@ -614,7 +653,7 @@ class OpenMMWrapper(MMWrapper):
 
         Examples
         --------
-        get_state_info(sim)
+        >>> get_state_info(sim)
         get_state_info(sim, groups_included=set{0,1,2})
         get_state_info(sim, positions=True, forces=True)
         """
@@ -652,23 +691,31 @@ class OpenMMWrapper(MMWrapper):
 
     def write_pdb(self, info):
         """
-        Write a pdb file from an OpenMM modeller
+        Write a pdb file 
 
+        Parameters
+        ----------
+        info : dict
+            dictionary containing the topology and positions of 
+            the system to write to file
+             
         """
 
         if self.return_system is True: 
             OM_app.PDBFile.writeFile(info['topology'], info['positions'], open(self.return_system_filename, 'w'))
  
 
-    def create_modeller(self, qm_atoms, keep_qm=None):
+    def create_modeller(self, atoms, keep_atoms=False):
         """
         Makes a OpenMM modeller object based on given geometry
 
         Parameters
         ----------
-        keep_qm : bool 
-            whether to keep the qm atoms in the modeller or delete them.
-            The default is to make a modeller without the qm atoms
+        atoms : list
+            The subset of atom indices to either keep or delete
+        keep_atoms : bool 
+            Whether to keep the atoms specified in the modeller or delete them.
+            Default is false.
 
         Returns
         -------
@@ -676,7 +723,7 @@ class OpenMMWrapper(MMWrapper):
 
         Examples
         --------
-        modeller = self.make_modeller()
+        >>> modeller = self.make_modeller()
         modeller = self.make_modeller(keep_qm=True)
         """
 
@@ -700,7 +747,7 @@ class OpenMMWrapper(MMWrapper):
 
             Examples
             --------
-            keep_atom(mod, [0,1])
+            >>> keep_atom(mod, [0,1])
             keep_atom(mod, ['O', 'H'])
             """
             lis = []
@@ -728,7 +775,7 @@ class OpenMMWrapper(MMWrapper):
 
          Examples
          --------
-         delete_atoms(model, [0, 3, 5])
+         >>> delete_atoms(model, [0, 3, 5])
          delete_atoms(model, ['Cl'])
          """
          lis = []
@@ -752,7 +799,7 @@ class OpenMMWrapper(MMWrapper):
     
         Examples
         --------
-        charges = get_main_charges()
+        >>> charges = get_main_charges()
         """
 
         return self.main_charges
@@ -774,7 +821,7 @@ class OpenMMWrapper(MMWrapper):
                   
         Examples
         --------
-        positions, topology = convert_trajectory(OpenMM_traj)
+        >>> positions, topology = convert_trajectory(OpenMM_traj)
         """
 
         topology = traj.topology.to_openmm()
@@ -783,10 +830,11 @@ class OpenMMWrapper(MMWrapper):
         return topology, positions
 
 
-    def set_external_charges(self):
-        pass
-
     def convert_input(self):
+        """
+        Converts inputs to OpenMM readable topologies and positions.
+        Currently supports pdb inputs as well as Amber and Gromacs input files.
+        """
 
         if self.system_info_format == 'pdb':
             # instantiate OpenMM pdb object
@@ -820,6 +868,17 @@ class OpenMMWrapper(MMWrapper):
 
 
     def set_up_reporters(self, simulation):
+        """
+        Sets up reporters according to options 
+        specified by arguments in md_param.
+        See keywords in the Molecular Dynamics section of 
+        the manual for more information.
+        
+        Parameters
+        ----------
+        simulation : OpenMM simulation object
+            Adds reporters to simulation object
+        """
 
         pot = False
         kin = False

@@ -186,10 +186,10 @@ class PAP(AQMMM):
 
         Examples    
         --------
-        combos = get_combos([1,2])
+        >>> combos = get_combos([1,2])
 
         In this case, combos will return 
-        [(1), (2), (1,2)]
+        >>> [(1), (2), (1,2)]
         """
         
         all_combo = []

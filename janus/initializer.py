@@ -7,22 +7,18 @@ from janus.qmmm import QMMM, OniomXS, HotSpot, PAP, SAP
 class Initializer(object):
     """
     Class that initializes the initial parameters 
-    and necessary wrapppers
+    and necessary wrapppers.
+
+    Parameters
+    ----------
+    paramaters : str 
+        filename of a json input file; if as_file is False, param is a dict
+    as_file : bool
+            param is a file if True, dict if False
+
     """
 
     def __init__(self, parameters, as_file=True):
-        """
-        Initializes the Initializer class with parameters and updates 
-        defaults with user defined parameters
-
-        Parameters
-        ----------
-        param : str 
-            filename containing a json input file, if as_file is False, param is a dict
-        as_file : bool
-             param is a file if True, dict if False
-
-        """
 
         self.system = {}
         self.qmmm = {}
@@ -60,7 +56,8 @@ class Initializer(object):
     
     def get_wrappers(self):
         """
-        updates default parameters with user defined parameters
+        Determines what type of wrapper object to instantiate 
+        based on input parameters
 
         """
 
@@ -88,14 +85,15 @@ class Initializer(object):
 
     def initialize_wrappers(self):
         """
-        Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects 
-        used for computation based on input parameters
-
+        Instantiates wrapper objects based on input parameters.
+        Create instances of appropriate wrappers for 
+        low and high level computations, QM/MM or adaptive QM/MM computations,
+        as well as MD simulations.
 
         Returns
         -------
-        MMWrapper object
-        QMMM wrapper object
+        :class:`~janus.mm_wrapper.MMWrapper` subclass
+        :class:`~janus.qmmm.QMMM` or :class:`~janus.qmmm.AQMMM` subclass
 
         """
 
@@ -145,7 +143,7 @@ class Initializer(object):
     
         Parameters
         ----------
-        filename : str
+        fname : str
             name of json file
 
         Returns
@@ -167,6 +165,30 @@ class Initializer(object):
 
 
     def set_attributes(self, dictionary, obj):
+        """
+        Sets values in the dicionary to be 
+        an attribute of the object given.
+        The key of the dictionary will be set as 
+        an attribute of the object given.
+
+        Parameters
+        ----------
+        dictionary : dict
+            Dictionary with relevant parameters
+        obj : obj
+            Object to have attributes set to.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------    
+        >>> set_attributes({'aqmmm' : False}, self)
+        
+        This sets self.aqmmm to be False.
+
+        """
 
         for k, v in dictionary.items():
             setattr(obj, k, v)

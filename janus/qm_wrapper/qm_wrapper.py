@@ -7,15 +7,10 @@ class QMWrapper(ABC):
         """
         QM wrapper super class
 
-
-        Parameters
-        ----------
-        param : dict 
-            parameters for QM computations
-
-        program : str
-            what program to use for QM computations
-
+        Note
+        ----
+        Since QMWrapper is a super class and has abstract methods
+        the user cannot actually instantiate a QMWrapper object, but only its child objects
         """
         self.class_type = class_type
 
@@ -33,9 +28,11 @@ class QMWrapper(ABC):
         Parameters
         ----------
         traj : MDtraj trajectory object
+            A trajectory object from which to extract geometry information if geometry is None
+        geometry : str
+            A string containing geometry information as XYZ coordinates. Default is None.
         include_coulomb : str
             whether to include coulombic interactions. Not applicable for QM programs
-
         link_atoms : list
             indices of link_atoms
         minimize : bool
@@ -50,7 +47,7 @@ class QMWrapper(ABC):
 
         Examples
         --------
-        >>> run_qm(geom, 10)
+        >>> get_energy_and_gradient(traj=mdtraj, geometry=None)
         """
         
         if (geometry is None and traj is not None):
@@ -78,20 +75,12 @@ class QMWrapper(ABC):
             
     def get_geom_from_trajectory(self, qm_traj=None):
         """
-        Uses the atoms and positions from a MDtraj trajectory object
-        with just the qm region to obtain the geometry information
+        Obtains geometry information from an MDtrah trajectory object.
 
         Parameters
         ----------
         qm_traj : MDtraj object
              describes just the primary subsystem, default is None
-
-        Returns
-        -------
-        str
-        geometry information in angstroms
-        int
-        total number of electrons in the primary subsystem
 
         """
 
@@ -118,41 +107,82 @@ class QMWrapper(ABC):
                 self.is_open_shelled = True
 
     def set_qm_geometry(self, geom):
+        """
+        Sets self.qm_geometry as geom
+        
+        Parameters
+        ----------
+        geom : str
+            A str containing an XYZ coordinate 
+        """
         self.qm_geometry = geom
 
     @abstractmethod
     def compute_info(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def build_qm_param(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def optimize_geometry(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     def get_main_info(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def set_external_charges(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def initialize(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def take_step(self, force):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def get_main_charges(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def convert_trajectory(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def convert_input(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def set_up_reporters(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
     

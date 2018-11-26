@@ -26,7 +26,6 @@ janus.mm\_wrapper.OpenMMWrapper
       ~OpenMMWrapper.get_energy_and_gradient
       ~OpenMMWrapper.get_main_charges
       ~OpenMMWrapper.get_main_info
-      ~OpenMMWrapper.get_qm_geometry
       ~OpenMMWrapper.get_state_info
       ~OpenMMWrapper.initialize
       ~OpenMMWrapper.keep_atoms

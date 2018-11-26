@@ -291,7 +291,7 @@ class QMMM(object):
 
         Examples
         --------
-        find_boundary_bonds()
+        >>> find_boundary_bonds()
         find_boundary_bonds(qm_atoms=[0,1,2,3])
         """
 
@@ -342,7 +342,7 @@ class QMMM(object):
 
         Examples
         --------
-        atoms = edit_qm_atoms()
+        >>> atoms = edit_qm_atoms()
         atoms = edit_qm_atoms(qm_atoms=[0,1,2])
         """
 
@@ -446,7 +446,7 @@ class QMMM(object):
 
         Examples
         --------
-        make_primary_subsys_trajectory([0,1,2])
+        >>> make_primary_subsys_trajectory([0,1,2])
         make_primary_subsys_trajectory()
         '''
 
@@ -497,7 +497,7 @@ class QMMM(object):
 
         Examples
         --------
-        make_second_subsys_trajectory([0,1,2])
+        >>> make_second_subsys_trajectory([0,1,2])
         make_second_subsys_trajectory()
         '''
 
@@ -527,7 +527,7 @@ class QMMM(object):
 
         Examples
         --------
-        forces = get_forces()
+        >>> forces = get_forces()
         """
         if run_ID is None:
             run_ID = self.run_ID - 1

@@ -27,9 +27,7 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="janus.qmmm.DAS" href="janus.qmmm.DAS.html" />
-    <link rel="prev" title="janus.qmmm.PAP" href="janus.qmmm.PAP.html" /> 
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -78,17 +76,11 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
 </ul>
 
             
@@ -134,10 +126,6 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
-        
-          <li><a href="../janus_qmmm.html">QMMM Submodule</a> &raquo;</li>
-        
       <li>janus.qmmm.SAP</li>
     
     
@@ -161,10 +149,10 @@
 <h1>janus.qmmm.SAP<a class="headerlink" href="#janus-qmmm-sap" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="janus.qmmm.SAP">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">SAP</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">SAP</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>sys_info_format='pdb'</em>, <em>aqmmm_param={}</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="janus.qmmm.SAP.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>sys_info_format='pdb'</em>, <em>aqmmm_param={}</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes the SAP class object</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -183,7 +171,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.SAP.__init__" title="janus.qmmm.SAP.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper,&nbsp;…)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.SAP.__init__" title="janus.qmmm.SAP.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info[,&nbsp;…])</td>
 <td>Initializes the SAP class object</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
@@ -264,7 +252,7 @@
 <tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.run_aqmmm" title="janus.qmmm.SAP.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
 <td>Interpolates the energy and gradients from each partition according to the SAP method</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info,&nbsp;wrapper_type)</td>
 <td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
@@ -273,7 +261,7 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
 <td>Function to set self.Rmin</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology,&nbsp;wrapper_type)</td>
 <td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
 </tr>
 </tbody>
@@ -299,15 +287,6 @@
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="janus.qmmm.DAS.html" class="btn btn-neutral float-right" title="janus.qmmm.DAS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="janus.qmmm.PAP.html" class="btn btn-neutral" title="janus.qmmm.PAP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

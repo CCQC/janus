@@ -21,7 +21,6 @@ janus.mm\_wrapper.MMWrapper
       ~MMWrapper.get_energy_and_gradient
       ~MMWrapper.get_main_charges
       ~MMWrapper.get_main_info
-      ~MMWrapper.get_qm_geometry
       ~MMWrapper.initialize
       ~MMWrapper.optimize_geometry
       ~MMWrapper.set_external_charges

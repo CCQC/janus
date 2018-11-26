@@ -3,6 +3,7 @@ API Documentation
 
 .. toctree::
   :maxdepth: 2
+  :noindex:
 
   janus
   janus_qmmm

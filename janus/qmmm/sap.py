@@ -195,11 +195,11 @@ class SAP(AQMMM):
 
         Examples    
         --------
-        combos = get_combos([1,2,3])
+        >>> combos = get_combos([1,2,3])
 
         If 1 was closer to the center than 2, and 2 closer to the center than 3,
         functions returns following:
-        [(1), (1,2), (1,2,3)]
+        >>> [(1), (1,2), (1,2,3)]
 
         """
         if buffer_distance is None:

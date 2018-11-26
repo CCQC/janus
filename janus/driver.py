@@ -5,6 +5,19 @@ import pickle
 from janus import Initializer
     
 def run_janus(filename='input.json'):
+    """
+    Drives the janus program.
+    Creates an instance of the Initializer class 
+    and feeds wrappers to either :func:`~janus.driver.run_simulation` or
+    :func:`~janus.driver.run_single_point` 
+    
+    Parameters
+    ----------
+
+    filename : str
+        Filename from which to read input parameters
+
+    """
 
     initializer = Initializer(filename)
 
@@ -23,10 +36,10 @@ def run_simulation(md_sim_wrapper, qmmm_wrapper):
     
     Parameters
     ----------
-
-    equilibrate : int
-        number of steps to run MD steps before QM/MM, default is 5000
-
+    md_sim_wrapper : :class:`~janus.mm_wrapper.MMWrapper`
+        A child class of MMWrapper that drives MD simulation
+    qmmm_wrapper: :class:`~janus.qmmm.QMMM`
+        A QMMM or AQMMM wrapper that drives the QM/MM computations
     """
 
     print('Equilibrating with {} steps'.format(md_sim_wrapper.start_qmmm))
@@ -63,8 +76,10 @@ def run_single_point(ll_wrapper, qmmm_wrapper):
 
     Parameters
     ----------
-    filename : str 
-        contains the filename of the input file, default is 'input.json'
+    ll_wrapper : :class:`~janus.mm_wrapper.MMWrapper`
+        A child class of MMWrapper that contains MM information on the whole system
+    qmmm_wrapper: :class:`~janus.qmmm.QMMM`
+        A QMMM or AQMMM wrapper that drives the QM/MM computations
 
     """
     #get MM information for entire system
