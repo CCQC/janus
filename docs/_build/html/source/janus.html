@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="janus.driver" href="_autosummary/janus.driver.html" />
+    <link rel="next" title="QMMM Submodule" href="janus_qmmm.html" />
     <link rel="prev" title="API Documentation" href="modules.html" /> 
 
   
@@ -157,40 +157,39 @@
             
   <div class="section" id="janus">
 <h1>janus<a class="headerlink" href="#janus" title="Permalink to this headline">¶</a></h1>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#module-janus.driver" title="janus.driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.driver</span></code></a></td>
-<td>This is the qmmm driver module</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="_autosummary/janus.system.html#module-janus.system" title="janus.system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.system</span></code></a></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="_autosummary/janus.initializer.html#module-janus.initializer" title="janus.initializer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.initializer</span></code></a></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 <div class="section" id="module-janus.driver">
 <span id="driver"></span><h2>driver<a class="headerlink" href="#module-janus.driver" title="Permalink to this headline">¶</a></h2>
 <p>This is the qmmm driver module</p>
 <dl class="function">
 <dt id="janus.driver.run_janus">
 <code class="descclassname">janus.driver.</code><code class="descname">run_janus</code><span class="sig-paren">(</span><em>filename='input.json'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_janus" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Drives the janus program.
+Creates an instance of the Initializer class
+and feeds wrappers to either <a class="reference internal" href="#janus.driver.run_simulation" title="janus.driver.run_simulation"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_simulation()</span></code></a> or
+<a class="reference internal" href="#janus.driver.run_single_point" title="janus.driver.run_single_point"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_single_point()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – Filename from which to read input parameters</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="janus.driver.run_simulation">
-<code class="descclassname">janus.driver.</code><code class="descname">run_simulation</code><span class="sig-paren">(</span><em>initializer</em>, <em>restart</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_simulation" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">janus.driver.</code><code class="descname">run_simulation</code><span class="sig-paren">(</span><em>md_sim_wrapper</em>, <em>qmmm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_simulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drives QM/MM with MD time step integration</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>equilibrate</strong> (<em>int</em>) – number of steps to run MD steps before QM/MM, default is 5000</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>md_sim_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a>) – A child class of MMWrapper that drives MD simulation</li>
+<li><strong>qmmm_wrapper</strong> (<a class="reference internal" href="janus_qmmm.html#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMMM</span></code></a>) – A QMMM or AQMMM wrapper that drives the QM/MM computations</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -198,13 +197,17 @@
 
 <dl class="function">
 <dt id="janus.driver.run_single_point">
-<code class="descclassname">janus.driver.</code><code class="descname">run_single_point</code><span class="sig-paren">(</span><em>initializer</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_single_point" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">janus.driver.</code><code class="descname">run_single_point</code><span class="sig-paren">(</span><em>ll_wrapper</em>, <em>qmmm_wrapper</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.driver.run_single_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drives single QM/MM computation</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – contains the filename of the input file, default is ‘input.json’</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a>) – A child class of MMWrapper that contains MM information on the whole system</li>
+<li><strong>qmmm_wrapper</strong> (<a class="reference internal" href="janus_qmmm.html#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMMM</span></code></a>) – A QMMM or AQMMM wrapper that drives the QM/MM computations</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -217,60 +220,51 @@
 <dt id="janus.system.System">
 <em class="property">class </em><code class="descclassname">janus.system.</code><code class="descname">System</code><span class="sig-paren">(</span><em>qm_indices</em>, <em>qm_residues</em>, <em>run_ID</em>, <em>partition_ID='qm'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.system.System" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A system class that stores system information
-such as energy, forces, and positions for each region
-of a system at a particular point
+<p>A class that stores system information.
+Holds information such as energy, forces, and positions for
+a QM/MM partition.
 Stores qmmm and aqmmm information as well.</p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.system.System.compute_scale_factor_g" title="janus.system.System.compute_scale_factor_g"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_scale_factor_g</span></code></a>(mm,&nbsp;link)</td>
-<td>Computes scale factor g for link atom, RC, and RCD schemes.</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-</tbody>
-</table>
-</div></blockquote>
-<dl class="method">
-<dt id="janus.system.System.compute_scale_factor_g">
-<code class="descname">compute_scale_factor_g</code><span class="sig-paren">(</span><em>mm</em>, <em>link</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.system.System.compute_scale_factor_g" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes scale factor g for link atom, RC, and RCD schemes.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">r given in pmm but don’t need to convert because it is a ratio
-need functionality for link atoms != ‘H’</p>
-</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>qm</strong> (<em>str</em>) – element symbol of the QM atom involved in broken bond</li>
-<li><strong>mm</strong> (<em>str</em>) – element symbol of the MM atom involved in broken bond</li>
-<li><strong>link</strong> (<em>str</em>) – element symbol for link atom</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>indices</strong> (<em>qm</em>) – indices of the atoms of the QM region</li>
+<li><strong>run_ID</strong> (<em>int</em>) – the current step of the MD simulation</li>
+<li><strong>partition_ID</strong> – An identifier for the specfic partition in aqmmm computations, default is ‘qm’</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">g, the scaling factor</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="janus.system.System.compute_scale_factor_g">
+<code class="descname">compute_scale_factor_g</code><span class="sig-paren">(</span><em>mm</em>, <em>link</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.system.System.compute_scale_factor_g" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Computes scale factor g for link atom, RC, and RCD schemes.
+The equation used to compute g is:</p>
+<div class="math">
+<p><span class="math"></span></p>
+</div></div></blockquote>
+<p>rac{R_{qm} + R_{link}}{R_{qm} + R_{mm}}</p>
+<blockquote>
+<div><p>where R is the pyykko covalent radius of an atom.</p>
+<dl class="docutils">
+<dt>qm <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>element symbol of the QM atom involved in broken bond</dd>
+<dt>mm <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>element symbol of the MM atom involved in broken bond</dd>
+<dt>link <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>element symbol for link atom</dd>
+</dl>
+<dl class="docutils">
+<dt>float</dt>
+<dd>g, the scaling factor</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compute_scale_factor_g</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>
@@ -280,27 +274,16 @@ need functionality for link atoms != ‘H’</p>
 <em class="property">class </em><code class="descclassname">janus.system.</code><code class="descname">Buffer</code><span class="sig-paren">(</span><em>ID</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.system.Buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class to store information for buffer groups
-from aqmmm computations such as what atoms are contained
+from aqmmm computations. This includes the atom indicies contained
 in the buffer group, the switching function, COM coordinates, etc.</p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ID</strong> – the identifer for the buffer group</td>
+</tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-</tbody>
-</table>
-</div></blockquote>
 </dd></dl>
 
 </div>
@@ -308,50 +291,43 @@ in the buffer group, the switching function, COM coordinates, etc.</p>
 <h2>Initializer<a class="headerlink" href="#initializer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.initializer.Initializer">
-<em class="property">class </em><code class="descclassname">janus.initializer.</code><code class="descname">Initializer</code><span class="sig-paren">(</span><em>param</em>, <em>as_file=True</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.initializer.</code><code class="descname">Initializer</code><span class="sig-paren">(</span><em>parameters</em>, <em>as_file=True</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class that initializes the initial parameters
-and necessary wrapppers</p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+and necessary wrapppers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.initializer.Initializer.initialize_wrappers" title="janus.initializer.Initializer.initialize_wrappers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_wrappers</span></code></a>([simulation,&nbsp;restart])</td>
-<td>Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects used for computation based on input parameters</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.initializer.Initializer.load_param" title="janus.initializer.Initializer.load_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_param</span></code></a>(fname)</td>
-<td>Converts a json file into a dictionary</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.initializer.Initializer.update_param" title="janus.initializer.Initializer.update_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_param</span></code></a>()</td>
-<td>updates default parameters with user defined parameters</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>paramaters</strong> (<em>str</em>) – filename of a json input file; if as_file is False, param is a dict</li>
+<li><strong>as_file</strong> – param is a file if True, dict if False</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-</tbody>
-</table>
-</div></blockquote>
+<dl class="method">
+<dt id="janus.initializer.Initializer.get_wrappers">
+<code class="descname">get_wrappers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.get_wrappers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines what type of wrapper object to instantiate
+based on input parameters</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="janus.initializer.Initializer.initialize_wrappers">
-<code class="descname">initialize_wrappers</code><span class="sig-paren">(</span><em>simulation=False</em>, <em>restart=False</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.initialize_wrappers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiates qm, mm, qmmm, and/or aqmmm wrapper objects
-used for computation based on input parameters</p>
+<code class="descname">initialize_wrappers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.initialize_wrappers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates wrapper objects based on input parameters.
+Create instances of appropriate wrappers for
+low and high level computations, QM/MM or adaptive QM/MM computations,
+as well as MD simulations.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
-<li><em>MMWrapper object</em></li>
-<li><em>QMMM wrapper object</em></li>
+<li><a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass</li>
+<li><a class="reference internal" href="janus_qmmm.html#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMMM</span></code></a> or <a class="reference internal" href="janus_qmmm.html#janus.qmmm.AQMMM" title="janus.qmmm.AQMMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AQMMM</span></code></a> subclass</li>
 </ul>
 </td>
 </tr>
@@ -367,7 +343,7 @@ used for computation based on input parameters</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – name of json file</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – name of json file</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">parameters contained in filename</td>
 </tr>
@@ -378,9 +354,35 @@ used for computation based on input parameters</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="janus.initializer.Initializer.update_param">
-<code class="descname">update_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.update_param" title="Permalink to this definition">¶</a></dt>
-<dd><p>updates default parameters with user defined parameters</p>
+<dt id="janus.initializer.Initializer.set_attributes">
+<code class="descname">set_attributes</code><span class="sig-paren">(</span><em>dictionary</em>, <em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.initializer.Initializer.set_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets values in the dicionary to be
+an attribute of the object given.
+The key of the dictionary will be set as
+an attribute of the object given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dictionary</strong> (<em>dict</em>) – Dictionary with relevant parameters</li>
+<li><strong>obj</strong> (<em>obj</em>) – Object to have attributes set to.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">set_attributes</span><span class="p">({</span><span class="s1">&#39;aqmmm&#39;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">},</span> <span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This sets self.aqmmm to be False.</p>
 </dd></dl>
 
 </dd></dl>
@@ -396,7 +398,7 @@ used for computation based on input parameters</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="_autosummary/janus.driver.html" class="btn btn-neutral float-right" title="janus.driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="janus_qmmm.html" class="btn btn-neutral float-right" title="QMMM Submodule" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="modules.html" class="btn btn-neutral" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

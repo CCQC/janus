@@ -161,19 +161,40 @@
 <h1>janus.qmmm.SAP<a class="headerlink" href="#janus-qmmm-sap" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="janus.qmmm.SAP">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">SAP</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="janus.qmmm.SAP.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes the SAP class object</p>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">SAP</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format='pdb', modified_variant=False, qm_center=[0], partition_scheme='distance', Rmin=3.8, Rmax=4.5, qmmm_param={}, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for the SAP adaptive QM/MM method.
+Inherits from AQMMM class</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameters for AQMMM class</strong> (<em>See</em>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hl_wrapper</strong> (<a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass or <a class="reference internal" href="../janus_qm_wrapper.html#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMWrapper</span></code></a> subclass) – Wrapper for performing the high-level computation.
+Traditionally QM but user can define MM.</li>
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass) – Wrapper for performing the low-level computation</li>
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+<li><strong>modified_variant</strong> (<em>bool</em>) – Whether to use the modified version mPAP, which disregards
+gradient terms that come from the switching function.
+Default is False.</li>
+<li><strong>qm_center</strong> (<em>list</em>) – Atoms that define the qm center, default is [0].
+If more than one index is given, COM is used as qm_center</li>
+<li><strong>partition_scheme</strong> (<em>str</em>) – Scheme to use to define buffer groups,
+default is distance (only scheme available as of now)</li>
+<li><strong>Rmin</strong> (<em>float</em>) – Inner radius for distance partition in angstroms, default is 3.8</li>
+<li><strong>Rmax</strong> (<em>float</em>) – Outer radius for distance partition in angstroms, default is 4.5</li>
+<li><strong>qmmm_param</strong> (<em>dict</em>) – A dictionary with any parameters to pass into the QMMM class.
+See QMMM class for specifics</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="janus.qmmm.SAP.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format='pdb', modified_variant=False, qm_center=[0], partition_scheme='distance', Rmin=3.8, Rmax=4.5, qmmm_param={}, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -183,14 +204,14 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.SAP.__init__" title="janus.qmmm.SAP.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper,&nbsp;…)</td>
-<td>Initializes the SAP class object</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.SAP.__init__" title="janus.qmmm.SAP.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info[,&nbsp;…])</td>
+<td>Initialize self.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
 <td>Computes the center of mass of a specified group</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
+<td>Computes the QM/MM gradients</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code>(r_i)</td>
 <td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
@@ -202,10 +223,10 @@
 <td>Compute the energy of the isolated groups at their minimum geometry</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
+<td>Converts a set of input files into a MD trajectory</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
+<td>Determines buffer group atoms.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
 <td>Cleans up the qm_atoms.</td>
@@ -226,7 +247,7 @@
 <td>Function to return self.Rmin</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
+<td>Computes switching function parameters for a particular buffer group.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.get_combos" title="janus.qmmm.SAP.get_combos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_combos</span></code></a>([items,&nbsp;buffer_distance])</td>
 <td>A given list of indices is sorted by distance and the combinations is found based on distance order.</td>
@@ -259,13 +280,13 @@
 <td>Finds the partitions as required by the SAP method and saves each partition as a system object.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
+<td>Identifies where to put link atom.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.SAP.run_aqmmm" title="janus.qmmm.SAP.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
 <td>Interpolates the energy and gradients from each partition according to the SAP method</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info,&nbsp;wrapper_type)</td>
+<td>Drives QM/MM computation.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
 <td>Function to set self.Rmax</td>
@@ -273,7 +294,7 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
 <td>Function to set self.Rmin</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology,&nbsp;wrapper_type)</td>
 <td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
 </tr>
 </tbody>

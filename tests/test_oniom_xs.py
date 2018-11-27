@@ -1,42 +1,40 @@
 import pytest
-from janus import qm_wrapper, mm_wrapper, qmmm, initializer
+from janus import qm_wrapper, mm_wrapper, qmmm
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
-param = {"system" : {"mm_pdb_file" : water}}
-config = initializer.Initializer(param, as_file=False)
-psi4 = qm_wrapper.Psi4Wrapper(config.hl_param)
-openmm = mm_wrapper.OpenMMWrapper(config.ll_param)
+psi4 = qm_wrapper.Psi4Wrapper()
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-oxs =   qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_0 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_1 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
-oxs_2 = qmmm.OniomXS(config.aqmmm_param, psi4, openmm, 'OpenMM')
+oxs =   qmmm.OniomXS(psi4, openmm, sys_info=water)
+oxs_0 = qmmm.OniomXS(psi4, openmm, sys_info=water)
+oxs_1 = qmmm.OniomXS(psi4, openmm, sys_info=water)
+oxs_2 = qmmm.OniomXS(psi4, openmm, sys_info=water)
 
 def test_set_Rmin():
 
-    oxs_0.set_Rmin(0.26)
-    oxs_1.set_Rmin(0.26)
-    oxs_2.set_Rmin(0.26)
-    assert oxs.get_Rmin() == 0.38
-    assert oxs_0.get_Rmin() == 0.26
-    assert oxs_1.get_Rmin() == 0.26
-    assert oxs_2.get_Rmin() == 0.26
+    oxs_0.set_Rmin(2.6)
+    oxs_1.set_Rmin(2.6)
+    oxs_2.set_Rmin(2.6)
+    assert oxs.get_Rmin() == 3.8
+    assert oxs_0.get_Rmin() == 2.6
+    assert oxs_1.get_Rmin() == 2.6
+    assert oxs_2.get_Rmin() == 2.6
 
 def test_set_Rmax():
 
-    oxs_0.set_Rmax(0.28)
-    oxs_1.set_Rmax(0.32)
-    oxs_2.set_Rmax(0.34)
-    assert oxs.get_Rmax() == 0.45
-    assert oxs_0.get_Rmax() == 0.28
-    assert oxs_1.get_Rmax() == 0.32
-    assert oxs_2.get_Rmax() == 0.34
+    oxs_0.set_Rmax(2.8)
+    oxs_1.set_Rmax(3.2)
+    oxs_2.set_Rmax(3.4)
+    assert oxs.get_Rmax() == 4.5
+    assert oxs_0.get_Rmax() == 2.8
+    assert oxs_1.get_Rmax() == 3.2
+    assert oxs_2.get_Rmax() == 3.4
 
 def test_define_buffer_zone():
     
@@ -68,8 +66,8 @@ def test_partition():
 
 def test_compute_lamda_i():
 
-    s, d = oxs_1.compute_lamda_i(0.30)
-    assert (np.allclose(s, 0.20987654320987748) and np.allclose(d, -82.30452674897127))
+    s, d = oxs_1.compute_lamda_i(3.0)
+    assert (np.allclose(s, 0.20987654320987748) and np.allclose(d, -.8230452674897127))
 
 def test_compute_COM():
 
@@ -88,14 +86,14 @@ def test_get_buffer_info():
     assert np.allclose(oxs_1.buffer_groups[1].s_i  , 0.0329177832296379)   
     assert np.allclose(oxs_2.buffer_groups[1].s_i  , 0.26960388601830587)
     assert np.allclose(oxs_2.buffer_groups[2].s_i  , 0.004565031092682581)
-    assert np.allclose(oxs_1.buffer_groups[1].d_s_i, -29.7335089104)
-    assert np.allclose(oxs_2.buffer_groups[1].d_s_i, -65.9020143551)
-    assert np.allclose(oxs_2.buffer_groups[2].d_s_i, -6.12352511059) 
+    assert np.allclose(oxs_1.buffer_groups[1].d_s_i, -.297335089104)
+    assert np.allclose(oxs_2.buffer_groups[1].d_s_i, -.659020143551)
+    assert np.allclose(oxs_2.buffer_groups[2].d_s_i, -.0612352511059) 
 
 
-    assert np.allclose(oxs_1.buffer_distance[1], 0.31027303118865379)
-    assert np.allclose(oxs_2.buffer_distance[1], 0.31027303118865379)
-    assert np.allclose(oxs_2.buffer_distance[2], 0.3335804762589481 )
+    assert np.allclose(oxs_1.buffer_distance[1], 3.1027303118865379)
+    assert np.allclose(oxs_2.buffer_distance[1], 3.1027303118865379)
+    assert np.allclose(oxs_2.buffer_distance[2], 3.335804762589481 )
 
 def test_get_switching_function():
 
@@ -108,12 +106,12 @@ def test_compute_zero_energy():
     oxs_1.compute_zero_energy()
     oxs_2.compute_zero_energy()
 
-    assert oxs_0.qm_zero_energies['HOH'] == -74.96598998934344
-    assert oxs_0.mm_zero_energies['HOH'] == 0.0
-    assert oxs_1.qm_zero_energies['HOH'] == -74.96598998934344
-    assert oxs_1.mm_zero_energies['HOH'] == 0.0
-    assert oxs_2.qm_zero_energies['HOH'] == -74.96598998934344
-    assert oxs_2.mm_zero_energies['HOH'] == 0.0
+    assert np.allclose(oxs_0.qm_zero_energies['HOH'], -74.96598998934344 ) 
+    assert np.allclose(oxs_0.mm_zero_energies['HOH'], 3.5887724974514855e-08)
+    assert np.allclose(oxs_1.qm_zero_energies['HOH'], -74.96598998934344 )
+    assert np.allclose(oxs_1.mm_zero_energies['HOH'], 3.5887724974514855e-08)
+    assert np.allclose(oxs_2.qm_zero_energies['HOH'], -74.96598998934344 )
+    assert np.allclose(oxs_2.mm_zero_energies['HOH'], 3.5887724974514855e-08)
     
 def test_get_zero_energy():
 
@@ -121,11 +119,11 @@ def test_get_zero_energy():
     oxs_1.get_zero_energy()
     oxs_2.get_zero_energy()
 
-    assert oxs_0.systems[0]['qm'].qmmm_energy == 74.96598998934344 
-    assert oxs_1.systems[0]['qm'].qmmm_energy == 74.96598998934344
-    assert oxs_2.systems[0]['qm'].qmmm_energy == 74.96598998934344
-    assert oxs_1.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 2
-    assert oxs_2.systems[0]['qm_bz'].qmmm_energy == 74.96598998934344 * 3
+    assert np.allclose(oxs_0.systems[0]['qm'].qmmm_energy, 74.96598998934344) 
+    assert np.allclose(oxs_1.systems[0]['qm'].qmmm_energy, 74.96598998934344)
+    assert np.allclose(oxs_2.systems[0]['qm'].qmmm_energy, 74.96598998934344)
+    assert np.allclose(oxs_1.systems[0]['qm_bz'].qmmm_energy, 74.96598998934344 * 2) 
+    assert np.allclose(oxs_2.systems[0]['qm_bz'].qmmm_energy, 74.96598998934344 * 3)
 
 def test_run_aqmmm():
 
@@ -138,18 +136,18 @@ def test_run_aqmmm():
 
     assert oxs_0.systems[0]['qmmm_energy'] == oxs_0.systems[0]['qm'].qmmm_energy
     assert oxs_0.systems[0]['qmmm_forces'] == oxs_0.systems[0]['qm'].qmmm_forces
-    assert oxs_1.systems[0]['qmmm_energy'] == 77.43370419740786
+    assert np.allclose(oxs_1.systems[0]['qmmm_energy'],77.43370419740786)
     assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.ones((1,3))) is False
 
 def test_run_qmmm():
 
-    oxs_0.run_qmmm(main_info_m)
-    oxs_1.run_qmmm(main_info_m)
+    oxs_0.run_qmmm(main_info_m, 'OpenMM')
+    oxs_1.run_qmmm(main_info_m, 'OpenMM')
 
-    assert oxs_0.systems[0]['qmmm_energy'] == -0.027006342896513776
-    assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([-0.0185327, -1.17240646,-1.48047266]))
-    assert oxs_1.systems[0]['qmmm_energy'] ==  -0.04110507067214367
-    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([-0.0222685, -0.33163886,-0.77062603]))
+    assert np.allclose(oxs_0.systems[0]['qmmm_energy'], -0.007553844392873543)
+    assert np.allclose(oxs_0.systems[0]['qmmm_forces'][0], np.array([ 0.01119897, 0.04866929,-0.03788886]))
+    assert np.allclose(oxs_1.systems[0]['qmmm_energy'],-0.007550404996134019)
+    assert np.allclose(oxs_1.systems[0]['qmmm_forces'][0], np.array([ 0.01115458,  0.04872366, -0.03779692]))
     assert oxs_0.run_ID == 1
     assert oxs_1.run_ID == 1
     

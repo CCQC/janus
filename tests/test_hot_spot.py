@@ -1,32 +1,27 @@
 import pytest
-from janus.qmmm import HotSpot
-from janus.qm_wrapper import Psi4Wrapper
-from janus.mm_wrapper import OpenMMWrapper
-from janus.initializer import Initializer
+from janus import qm_wrapper, mm_wrapper, qmmm
 import numpy as np
 import os
 
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
-param = {"system" : {"mm_pdb_file" : water}}
-config = Initializer(param, as_file=False)
-psi4 = Psi4Wrapper(config.hl_param)
-openmm = OpenMMWrapper(config.ll_param)
+psi4 = qm_wrapper.Psi4Wrapper()
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-hs =   HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_0 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_1 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
-hs_2 = HotSpot(config.aqmmm_param, psi4, openmm, 'OpenMM')
+hs =   qmmm.HotSpot(psi4, openmm, sys_info=water)
+hs_0 = qmmm.HotSpot(psi4, openmm, sys_info=water)
+hs_1 = qmmm.HotSpot(psi4, openmm, sys_info=water)
+hs_2 = qmmm.HotSpot(psi4, openmm, sys_info=water)
 
-hs_0.set_Rmin(0.26)
-hs_0.set_Rmax(0.28)
-hs_1.set_Rmin(0.26)
-hs_1.set_Rmax(0.32)
-hs_2.set_Rmin(0.26)
-hs_2.set_Rmax(0.34)
+hs_0.set_Rmin(2.6)
+hs_0.set_Rmax(2.8)
+hs_1.set_Rmin(2.6)
+hs_1.set_Rmax(3.2)
+hs_2.set_Rmin(2.6)
+hs_2.set_Rmax(3.4)
 
 def test_partition():
 
@@ -42,15 +37,15 @@ def test_partition():
 
 def test_compute_lamda_i():
 
-    lamda1 = hs.compute_lamda_i(0.30)
-    lamda2 = hs.compute_lamda_i(0.38)
-    lamda3 = hs.compute_lamda_i(0.40)
-    lamda4 = hs.compute_lamda_i(0.45)
-    lamda5 = hs.compute_lamda_i(0.50)
+    lamda1 = hs.compute_lamda_i(3.0)
+    lamda2 = hs.compute_lamda_i(3.8)
+    lamda3 = hs.compute_lamda_i(4.0)
+    lamda4 = hs.compute_lamda_i(4.5)
+    lamda5 = hs.compute_lamda_i(5.0)
 
     assert lamda1[0] == 1
     assert lamda2[0] == 1
-    assert lamda3[0] == 0.8224337457798975 
+    assert np.allclose(lamda3[0], 0.8224337457798981)
     assert lamda4[0] == 0
     assert lamda5[0] == 0
 
@@ -68,11 +63,16 @@ def test_run_aqmmm():
     
 def test_run_qmmm():
 
-    hs_0.run_qmmm(main_info_m)
-    hs_1.run_qmmm(main_info_m)
+    hs_0.run_qmmm(main_info_m, 'OpenMM')
+    hs_1.run_qmmm(main_info_m, 'OpenMM')
 
-    assert np.allclose(hs_0.systems[0]['qmmm_forces'][0], np.array([-0.00317575, 0.04869594,-0.02960086]))
-    assert np.allclose(hs_1.systems[0]['qmmm_forces'][0], np.array([-0.00317575, 0.04869594,-0.02960086]))
-    assert np.allclose(hs_1.systems[0]['qmmm_forces'][3], np.array([ 0.00236948,-0.04619824,-0.022704]))
+    print(hs_0.systems[0]['qmmm_forces'][0])  
+    print(hs_1.systems[0]['qmmm_forces'][0])
+    print(hs_1.systems[0]['qmmm_forces'][3])
+
+    assert np.allclose(hs_0.systems[0]['qmmm_forces'][0], np.array([ 0.01119897, 0.04866929,-0.03788886]))
+    assert np.allclose(hs_1.systems[0]['qmmm_forces'][0], np.array([ 0.00984826, 0.04972007,-0.03577803]))
+    assert np.allclose(hs_1.systems[0]['qmmm_forces'][3], np.array([-5.05189234e-04, 4.98408392e-05, 5.00504091e-03]))
+
     assert hs_0.run_ID == 1
     assert hs_1.run_ID == 1

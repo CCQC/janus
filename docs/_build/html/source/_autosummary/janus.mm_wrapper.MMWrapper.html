@@ -161,23 +161,17 @@
 <h1>janus.mm_wrapper.MMWrapper<a class="headerlink" href="#janus-mm-wrapper-mmwrapper" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="janus.mm_wrapper.MMWrapper">
-<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">MMWrapper</code><span class="sig-paren">(</span><em>param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MMWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="janus.mm_wrapper.MMWrapper.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">MMWrapper</code><span class="sig-paren">(</span><em>class_type</em>, <em>sys_info=None</em>, <em>sys_info_format=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MMWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>A super class for all molecular mechanics wrappers</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>param</strong> (<em>dict</em>) – </li>
-<li><strong>program</strong> (<em>str</em>) – what program to use for QM computations</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since MMWrapper is a super class and has abstract methods
+the user cannot actually instantiate a MMWrapper object, but only its child objects</p>
+</div>
+<dl class="method">
+<dt id="janus.mm_wrapper.MMWrapper.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>class_type</em>, <em>sys_info=None</em>, <em>sys_info_format=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.MMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -187,47 +181,50 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.mm_wrapper.MMWrapper.__init__" title="janus.mm_wrapper.MMWrapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param,&nbsp;class_type)</td>
-<td>A super class for all molecular mechanics wrappers</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.mm_wrapper.MMWrapper.__init__" title="janus.mm_wrapper.MMWrapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(class_type[,&nbsp;sys_info,&nbsp;sys_info_format])</td>
+<td>Initialize self.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.build_qm_param" title="janus.mm_wrapper.MMWrapper.build_qm_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_qm_param</span></code></a>()</td>
-<td></td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.compute_info" title="janus.mm_wrapper.MMWrapper.compute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_info</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.convert_input" title="janus.mm_wrapper.MMWrapper.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.convert_trajectory" title="janus.mm_wrapper.MMWrapper.convert_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_trajectory</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_energy_and_gradient" title="janus.mm_wrapper.MMWrapper.get_energy_and_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code></a>(traj[,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_energy_and_gradient" title="janus.mm_wrapper.MMWrapper.get_energy_and_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code></a>(traj[,&nbsp;geometry,&nbsp;…])</td>
 <td>Gets the energy and gradient from a MM computation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_charges" title="janus.mm_wrapper.MMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_geom_from_trajectory" title="janus.mm_wrapper.MMWrapper.get_geom_from_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geom_from_trajectory</span></code></a>()</td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_info" title="janus.mm_wrapper.MMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_charges" title="janus.mm_wrapper.MMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
+<td>Function implemented in individual child classes</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_qm_geometry" title="janus.mm_wrapper.MMWrapper.get_qm_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_qm_geometry</span></code></a>()</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_info" title="janus.mm_wrapper.MMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.initialize" title="janus.mm_wrapper.MMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.optimize_geometry" title="janus.mm_wrapper.MMWrapper.optimize_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code></a>()</td>
-<td></td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_external_charges" title="janus.mm_wrapper.MMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_up_reporters" title="janus.mm_wrapper.MMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>()</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_qm_geometry" title="janus.mm_wrapper.MMWrapper.set_qm_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_qm_geometry</span></code></a>()</td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.take_step" title="janus.mm_wrapper.MMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(force)</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_up_reporters" title="janus.mm_wrapper.MMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>()</td>
+<td>Function implemented in individual child classes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.take_step" title="janus.mm_wrapper.MMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(force)</td>
+<td>Function implemented in individual child classes</td>
 </tr>
 </tbody>
 </table>

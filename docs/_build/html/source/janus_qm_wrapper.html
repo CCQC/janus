@@ -163,10 +163,10 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qm_wrapper.QMWrapper</span></code></a>(param,&nbsp;program)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qm_wrapper.QMWrapper</span></code></a>(class_type)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper" title="janus.qm_wrapper.Psi4Wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qm_wrapper.Psi4Wrapper</span></code></a>(param)</td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper" title="janus.qm_wrapper.Psi4Wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qm_wrapper.Psi4Wrapper</span></code></a>([method,&nbsp;…])</td>
 <td>A wrapper class that calls Psi4 to obtain quantum mechanical information.</td>
 </tr>
 </tbody>
@@ -175,7 +175,7 @@
 <h2>QMWrapper<a class="headerlink" href="#qmwrapper" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qm_wrapper.QMWrapper">
-<em class="property">class </em><code class="descclassname">janus.qm_wrapper.</code><code class="descname">QMWrapper</code><span class="sig-paren">(</span><em>param</em>, <em>program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qm_wrapper.</code><code class="descname">QMWrapper</code><span class="sig-paren">(</span><em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <blockquote>
 <div><table border="1" class="longtable docutils">
@@ -185,43 +185,46 @@
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.build_qm_param" title="janus.qm_wrapper.QMWrapper.build_qm_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_qm_param</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.compute_info" title="janus.qm_wrapper.QMWrapper.compute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_info</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.convert_input" title="janus.qm_wrapper.QMWrapper.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.convert_trajectory" title="janus.qm_wrapper.QMWrapper.convert_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_trajectory</span></code></a>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_energy_and_gradient" title="janus.qm_wrapper.QMWrapper.get_energy_and_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code></a>(traj[,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_energy_and_gradient" title="janus.qm_wrapper.QMWrapper.get_energy_and_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code></a>([traj,&nbsp;geometry,&nbsp;…])</td>
 <td>Gets the energy and gradient from a QM computation of the primary subsystem</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_main_charges" title="janus.qm_wrapper.QMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_geom_from_trajectory" title="janus.qm_wrapper.QMWrapper.get_geom_from_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geom_from_trajectory</span></code></a>([qm_traj])</td>
+<td>Obtains geometry information from an MDtrah trajectory object.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_main_info" title="janus.qm_wrapper.QMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_main_charges" title="janus.qm_wrapper.QMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_qm_geometry" title="janus.qm_wrapper.QMWrapper.get_qm_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_qm_geometry</span></code></a>([qm_traj])</td>
-<td>Uses the atoms and positions from a MDtraj trajectory object with just the qm region to obtain the geometry information</td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.get_main_info" title="janus.qm_wrapper.QMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.initialize" title="janus.qm_wrapper.QMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.optimize_geometry" title="janus.qm_wrapper.QMWrapper.optimize_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.set_external_charges" title="janus.qm_wrapper.QMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.set_up_reporters" title="janus.qm_wrapper.QMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>()</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.set_qm_geometry" title="janus.qm_wrapper.QMWrapper.set_qm_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_qm_geometry</span></code></a>(geom)</td>
+<td>Sets self.qm_geometry as geom</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.take_step" title="janus.qm_wrapper.QMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(force)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.set_up_reporters" title="janus.qm_wrapper.QMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>()</td>
+<td>Function not implemented for QM wrappers</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.QMWrapper.take_step" title="janus.qm_wrapper.QMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(force)</td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 </tbody>
 </table>
@@ -238,33 +241,38 @@
 <dl class="method">
 <dt id="janus.qm_wrapper.QMWrapper.build_qm_param">
 <code class="descname">build_qm_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.build_qm_param" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function implemented in individual child classes</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qm_wrapper.QMWrapper.compute_info">
 <code class="descname">compute_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.compute_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function implemented in individual child classes</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qm_wrapper.QMWrapper.convert_input">
 <code class="descname">convert_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.convert_input" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qm_wrapper.QMWrapper.convert_trajectory">
 <code class="descname">convert_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.convert_trajectory" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qm_wrapper.QMWrapper.get_energy_and_gradient">
-<code class="descname">get_energy_and_gradient</code><span class="sig-paren">(</span><em>traj</em>, <em>include_coulomb='all'</em>, <em>link_atoms=None</em>, <em>minimize=False</em>, <em>charges=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_energy_and_gradient" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_energy_and_gradient</code><span class="sig-paren">(</span><em>traj=None</em>, <em>geometry=None</em>, <em>include_coulomb='all'</em>, <em>link_atoms=None</em>, <em>minimize=False</em>, <em>charges=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_energy_and_gradient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the energy and gradient from a QM computation of the primary subsystem</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>traj</strong> (<em>MDtraj trajectory object</em>) – </li>
+<li><strong>traj</strong> (<em>MDtraj trajectory object</em>) – A trajectory object from which to extract geometry information if geometry is None</li>
+<li><strong>geometry</strong> (<em>str</em>) – A string containing geometry information as XYZ coordinates. Default is None.</li>
 <li><strong>include_coulomb</strong> (<em>str</em>) – whether to include coulombic interactions. Not applicable for QM programs</li>
 <li><strong>link_atoms</strong> (<em>list</em>) – indices of link_atoms</li>
 <li><strong>minimize</strong> (<em>bool</em>) – whether to return the geometry optimized energy</li>
@@ -281,68 +289,80 @@
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_qm</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_energy_and_gradient</span><span class="p">(</span><span class="n">traj</span><span class="o">=</span><span class="n">mdtraj</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
-<dt id="janus.qm_wrapper.QMWrapper.get_main_charges">
-<code class="descname">get_main_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_main_charges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="janus.qm_wrapper.QMWrapper.get_main_info">
-<code class="descname">get_main_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_main_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="janus.qm_wrapper.QMWrapper.get_qm_geometry">
-<code class="descname">get_qm_geometry</code><span class="sig-paren">(</span><em>qm_traj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_qm_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uses the atoms and positions from a MDtraj trajectory object
-with just the qm region to obtain the geometry information</p>
+<dt id="janus.qm_wrapper.QMWrapper.get_geom_from_trajectory">
+<code class="descname">get_geom_from_trajectory</code><span class="sig-paren">(</span><em>qm_traj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_geom_from_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains geometry information from an MDtrah trajectory object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>qm_traj</strong> (<em>MDtraj object</em>) – describes just the primary subsystem, default is None</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
-<li><em>str</em></li>
-<li><em>geometry information in angstroms</em></li>
-<li><em>int</em></li>
-<li><em>total number of electrons in the primary subsystem</em></li>
-</ul>
-</td>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QMWrapper.get_main_charges">
+<code class="descname">get_main_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_main_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QMWrapper.get_main_info">
+<code class="descname">get_main_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.get_main_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QMWrapper.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QMWrapper.optimize_geometry">
+<code class="descname">optimize_geometry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.optimize_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function implemented in individual child classes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QMWrapper.set_external_charges">
+<code class="descname">set_external_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.set_external_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qm_wrapper.QMWrapper.set_qm_geometry">
+<code class="descname">set_qm_geometry</code><span class="sig-paren">(</span><em>geom</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.set_qm_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets self.qm_geometry as geom</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geom</strong> (<em>str</em>) – A str containing an XYZ coordinate</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="janus.qm_wrapper.QMWrapper.initialize">
-<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="janus.qm_wrapper.QMWrapper.optimize_geometry">
-<code class="descname">optimize_geometry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.optimize_geometry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="janus.qm_wrapper.QMWrapper.set_external_charges">
-<code class="descname">set_external_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.set_external_charges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="janus.qm_wrapper.QMWrapper.set_up_reporters">
 <code class="descname">set_up_reporters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.set_up_reporters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qm_wrapper.QMWrapper.take_step">
 <code class="descname">take_step</code><span class="sig-paren">(</span><em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.QMWrapper.take_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function not implemented for QM wrappers</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -351,7 +371,7 @@ with just the qm region to obtain the geometry information</p>
 <h2>Psi4Wrapper<a class="headerlink" href="#psi4wrapper" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qm_wrapper.Psi4Wrapper">
-<em class="property">class </em><code class="descclassname">janus.qm_wrapper.</code><code class="descname">Psi4Wrapper</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.Psi4Wrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qm_wrapper.</code><code class="descname">Psi4Wrapper</code><span class="sig-paren">(</span><em>method='scf'</em>, <em>charge=0</em>, <em>multiplicity=1</em>, <em>reference='rhf'</em>, <em>basis='STO-3G'</em>, <em>e_convergence=1e-08</em>, <em>d_convergence=1e-08</em>, <em>sys_info=None</em>, <em>sys_info_format=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.Psi4Wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qm_wrapper.qm_wrapper.QMWrapper</span></code></p>
 <p>A wrapper class that calls Psi4 to obtain quantum mechanical
 information. Class inherits from QMWrapper.</p>
@@ -368,7 +388,7 @@ information. Class inherits from QMWrapper.</p>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.compute_energy" title="janus.qm_wrapper.Psi4Wrapper.compute_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_energy</span></code></a>()</td>
 <td>Calls Psi4 to obtain the energy and Psi4 wavefunction object of the QM region and saves as self.energy and self.wavefunction</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.compute_energy_and_charges" title="janus.qm_wrapper.Psi4Wrapper.compute_energy_and_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_energy_and_charges</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.compute_energy_and_charges" title="janus.qm_wrapper.Psi4Wrapper.compute_energy_and_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_energy_and_charges</span></code></a>([charge_method])</td>
 <td>Calls Psi4 to obtain the self.energy, self.wavefunction, and self.charges on each atom.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.compute_gradient" title="janus.qm_wrapper.Psi4Wrapper.compute_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradient</span></code></a>()</td>
@@ -377,44 +397,47 @@ information. Class inherits from QMWrapper.</p>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.compute_info" title="janus.qm_wrapper.Psi4Wrapper.compute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_info</span></code></a>()</td>
 <td>Calls Psi4 to obtain the energy, Psi4 wavefunction object, and gradient of the QM region and saves as self.energy, self.wavefuction, and self.gradient</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.compute_scf_charges" title="janus.qm_wrapper.Psi4Wrapper.compute_scf_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_scf_charges</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.compute_scf_charges" title="janus.qm_wrapper.Psi4Wrapper.compute_scf_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_scf_charges</span></code></a>([charge_method])</td>
 <td>Calls Psi4 to obtain the self.charges on each atom given and saves it as a numpy array.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_trajectory</span></code>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code>(traj[,&nbsp;…])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code>([traj,&nbsp;geometry,&nbsp;…])</td>
 <td>Gets the energy and gradient from a QM computation of the primary subsystem</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code>()</td>
-<td></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geom_from_trajectory</span></code>([qm_traj])</td>
+<td>Obtains geometry information from an MDtrah trajectory object.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code>()</td>
-<td></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code>()</td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_qm_geometry</span></code>([qm_traj])</td>
-<td>Uses the atoms and positions from a MDtraj trajectory object with just the qm region to obtain the geometry information</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code>()</td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.optimize_geometry" title="janus.qm_wrapper.Psi4Wrapper.optimize_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code></a>()</td>
 <td>Calls Psi4 to obtain a geometry optimized geometry</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code>()</td>
-<td></td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.set_up_psi4" title="janus.qm_wrapper.Psi4Wrapper.set_up_psi4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_psi4</span></code></a>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_qm_geometry</span></code>(geom)</td>
+<td>Sets self.qm_geometry as geom</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qm_wrapper.Psi4Wrapper.set_up_psi4" title="janus.qm_wrapper.Psi4Wrapper.set_up_psi4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_psi4</span></code></a>()</td>
 <td>Sets up a psi4 computation</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code>()</td>
-<td></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code>()</td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code>(force)</td>
-<td></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code>(force)</td>
+<td>Function not implemented for QM wrappers</td>
 </tr>
 </tbody>
 </table>
@@ -444,7 +467,7 @@ and saves as self.energy and self.wavefunction</p>
 
 <dl class="method">
 <dt id="janus.qm_wrapper.Psi4Wrapper.compute_energy_and_charges">
-<code class="descname">compute_energy_and_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.Psi4Wrapper.compute_energy_and_charges" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_energy_and_charges</code><span class="sig-paren">(</span><em>charge_method='MULLIKEN_CHARGES'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.Psi4Wrapper.compute_energy_and_charges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls Psi4 to obtain the self.energy, self.wavefunction,
 and self.charges on each atom. This method for correlated methods.</p>
 <div class="admonition note">
@@ -470,7 +493,7 @@ and self.gradient</p>
 
 <dl class="method">
 <dt id="janus.qm_wrapper.Psi4Wrapper.compute_scf_charges">
-<code class="descname">compute_scf_charges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.Psi4Wrapper.compute_scf_charges" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_scf_charges</code><span class="sig-paren">(</span><em>charge_method='MULLIKEN_CHARGES'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qm_wrapper.Psi4Wrapper.compute_scf_charges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls Psi4 to obtain the self.charges on each atom given and saves it as a numpy array.
 This method works well for SCF wavefunctions. For correlated levels of theory (e.g., MP2),
 it is advised that compute_energy_and_charges() be used instead.</p>

@@ -1,0 +1,81 @@
+{
+"system" : {"system_info" : "NMA.pdb",
+            "system_info_format" : "pdb",
+            "run_md" : false,
+            "run_qmmm":  false,
+            "run_aqmmm": false,
+            "aqmmm_scheme" : "ONIOM-XS",
+            "ll_program" : "OpenMM",
+            "hl_program" : "Psi4",
+            "md_simulation_program" : "OpenMM",
+            "md_restart": false,
+            "md_restart_checkpoint_filename" : true,
+            "md_restart_forces_filename" : true
+            },
+
+"qmmm" : {
+          "embedding_method" : "Mechanical",
+          "qm_atoms" : [0,1,2,3,4,5,6,7,8,9,10,11],
+          "qmmm_scheme" : "subtractive",
+          "boundary_treatment" : "link_atom",
+          "link_atom_element" : "H"},
+
+
+"aqmmm" : {
+            "modified_variant" : false,
+            "partition_scheme" : "distance",
+            "Rmin" : 0.38,
+            "Rmax" : 0.45,
+            "qm_center" : [0]
+            },
+"md" : {
+         "start_qmmm" : 15000,
+         "end_qmmm" : 20000,
+         "step_size" : 0.5,
+         "md_steps" : [50000, 20000],
+         "md_ensemble" : ["NVT", "NVE"],
+         "return_trajectory_interval" : 0,
+         "return_trajectory_filename" : "output.nc" ,
+         "trajectory_format" : "NetCDF",
+         "return_checkpoint_interval" : 0,
+         "return_checkpoint_filename" : "checkpoint.chk",
+         "return_system" : true,
+         "return_system_filename" : "final.pdb",
+         "return_info" : ["potentialEnergy", "kineticEnergy", "totalEnergy", "temperature"],
+         "return_info_interval" : 100,
+         "return_info_filename" : "info.dat",
+         "return_forces_filename" : "forces.pkl",
+         "return_forces_interval" : 0
+             },
+
+
+"ll" : {
+        "fric_coeff" : 1,
+        "temp" : 300,
+        "step_size" : 1,
+        "nonbondedCutoff" : 0.8,
+        "nonbondedMethod" : "OM_app.NoCutoff",
+        "constraints" : "None",
+        "rigid_water" : false,
+        "removeCMMotion" : true,
+        "ignoreExternalBonds" : false,
+        "flexibleConstraints" : false,
+        "residueTemplates" : {},
+        "hydrogenMass" : "None",
+        "switchDistance" : "None"
+        },
+                                                                                                             
+"hl" : {
+        "basis_set" : "STO-3G",
+        "scf_type" : "df",
+        "guess_orbitals" : "sad",
+        "reference" : "rhf",
+        "e_convergence" : 1e-8,
+        "d_convergence" : 1e-8,
+        "method" : "scf",
+        "charge_method" : "MULLIKEN_CHARGES",
+        "charge" : 0,
+        "multiplicity" : 1}
+}
+
+

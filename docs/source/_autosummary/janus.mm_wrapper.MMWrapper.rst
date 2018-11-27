@@ -19,12 +19,13 @@ janus.mm\_wrapper.MMWrapper
       ~MMWrapper.convert_input
       ~MMWrapper.convert_trajectory
       ~MMWrapper.get_energy_and_gradient
+      ~MMWrapper.get_geom_from_trajectory
       ~MMWrapper.get_main_charges
       ~MMWrapper.get_main_info
-      ~MMWrapper.get_qm_geometry
       ~MMWrapper.initialize
       ~MMWrapper.optimize_geometry
       ~MMWrapper.set_external_charges
+      ~MMWrapper.set_qm_geometry
       ~MMWrapper.set_up_reporters
       ~MMWrapper.take_step
    

@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="janus.qmmm.QMMM" href="_autosummary/janus.qmmm.QMMM.html" />
-    <link rel="prev" title="janus.initializer" href="_autosummary/janus.initializer.html" /> 
+    <link rel="prev" title="janus" href="janus.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -163,26 +163,26 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.QMMM</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;ll_wrapper)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM" title="janus.qmmm.QMMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.QMMM</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info)</td>
 <td>QMMM class for QMMM computations</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM" title="janus.qmmm.AQMMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.AQMMM</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;…)</td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM" title="janus.qmmm.AQMMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.AQMMM</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;…)</td>
 <td>AQMMM super class for adaptive QMMM computations.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.OniomXS" title="janus.qmmm.OniomXS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.OniomXS</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;…)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.OniomXS" title="janus.qmmm.OniomXS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.OniomXS</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;…)</td>
+<td>Class for the Oniom-XS adaptive QM/MM method.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.HotSpot" title="janus.qmmm.HotSpot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.HotSpot</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;…)</td>
-<td>Class for the Hot-Spot adaptive QM/MM method.</td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.HotSpot" title="janus.qmmm.HotSpot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.HotSpot</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;…)</td>
+<td>Class for the Hot Spot adaptive QM/MM method.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.PAP" title="janus.qmmm.PAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.PAP</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;…)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.PAP" title="janus.qmmm.PAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.PAP</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info)</td>
+<td>Class for the PAP adaptive QM/MM method.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.SAP" title="janus.qmmm.SAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.SAP</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;…)</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.SAP" title="janus.qmmm.SAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.SAP</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info)</td>
+<td>Class for the SAP adaptive QM/MM method.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.DAS" title="janus.qmmm.DAS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.DAS</span></code></a>(param,&nbsp;hl_wrapper,&nbsp;…)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.DAS" title="janus.qmmm.DAS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">janus.qmmm.DAS</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info)</td>
+<td>Class for the Oniom-XS adaptive QM/MM method.</td>
 </tr>
 </tbody>
 </table>
@@ -190,75 +190,38 @@
 <h2>QMMM<a class="headerlink" href="#qmmm" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qmmm.QMMM">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">QMMM</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">QMMM</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>sys_info_format='pdb'</em>, <em>qm_atoms=[]</em>, <em>qmmm_scheme='subtractive'</em>, <em>embedding_method='Mechanical'</em>, <em>boundary_treatment='link_atom'</em>, <em>link_atom_element='H'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>QMMM class for QMMM computations</p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.compute_gradients" title="janus.qmmm.QMMM.compute_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code></a>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.QMMM.convert_input" title="janus.qmmm.QMMM.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>(fil,&nbsp;form)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.edit_qm_atoms" title="janus.qmmm.QMMM.edit_qm_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code></a>([qm_atoms,&nbsp;solvent])</td>
-<td>Cleans up the qm_atoms.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.QMMM.electrostatic" title="janus.qmmm.QMMM.electrostatic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code></a>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.find_boundary_bonds" title="janus.qmmm.QMMM.find_boundary_bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code></a>([qm_atoms])</td>
-<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.QMMM.get_external_charges" title="janus.qmmm.QMMM.get_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code></a>(system)</td>
-<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.get_forces" title="janus.qmmm.QMMM.get_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code></a>([run_ID])</td>
-<td>Function to return qmmm forces</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.QMMM.get_redistributed_positions" title="janus.qmmm.QMMM.get_redistributed_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code></a>(positions,&nbsp;bonds,&nbsp;mm)</td>
-<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.make_primary_subsys_trajectory" title="janus.qmmm.QMMM.make_primary_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code></a>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.QMMM.make_second_subsys_trajectory" title="janus.qmmm.QMMM.make_second_subsys_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code></a>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.mechanical" title="janus.qmmm.QMMM.mechanical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code></a>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.QMMM.prepare_link_atom" title="janus.qmmm.QMMM.prepare_link_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code></a>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.QMMM.run_qmmm" title="janus.qmmm.QMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
-<td>Updates the positions and topology given in main_info, and determines the QM/MM energy and gradients</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.QMMM.update_traj" title="janus.qmmm.QMMM.update_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code></a>(position,&nbsp;topology)</td>
-<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hl_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass or <a class="reference internal" href="janus_qm_wrapper.html#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMWrapper</span></code></a> subclass) – Wrapper for performing the high-level computation.
+Traditionally QM but user can define MM.</li>
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass) – Wrapper for performing the low-level computation</li>
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+<li><strong>qm_atoms</strong> (<em>list</em>) – Indicies that define the QM region. Only static in traditional QM/MM</li>
+<li><strong>qmmm_scheme</strong> (<em>str</em>) – Scheme for computing QM/MM energies and gradients,
+only substractive available(default)</li>
+<li><strong>embedding_method</strong> (<em>str</em>) – Embedding method to use for QM/MM.
+Mechanical(default) and Electrostatic available</li>
+<li><strong>boundary_treatment</strong> (<em>str</em>) – Method for treating dangling bonds in the QM region,
+link_atom(default), RC, and RCD available</li>
+<li><strong>link_atom_element</strong> – Element to use for link atom, default is H.
+Beware of using others (not all functionality tested)</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-</tbody>
-</table>
-</div></blockquote>
 <dl class="method">
 <dt id="janus.qmmm.QMMM.compute_gradients">
 <code class="descname">compute_gradients</code><span class="sig-paren">(</span><em>system</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.compute_gradients" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the QM/MM gradients
-TODO:RCD gradients need work</p>
+<dd><p>Computes the QM/MM gradients</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">RCD gradients currently not implemented</p>
@@ -267,7 +230,7 @@ TODO:RCD gradients need work</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>system</strong> (<em>System object</em>) – Contains the gradients at  high level and low level</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>system</strong> (<a class="reference internal" href="janus.html#janus.system.System" title="janus.system.System"><code class="xref py py-class docutils literal notranslate"><span class="pre">System</span></code></a>) – The system in which to save qmmm energy and forces</td>
 </tr>
 </tbody>
 </table>
@@ -276,7 +239,27 @@ TODO:RCD gradients need work</p>
 <dl class="method">
 <dt id="janus.qmmm.QMMM.convert_input">
 <code class="descname">convert_input</code><span class="sig-paren">(</span><em>fil</em>, <em>form</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.convert_input" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Converts a set of input files into a MD trajectory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fil</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>form</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">MDtraj object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qmmm.QMMM.edit_qm_atoms">
@@ -306,8 +289,10 @@ Only water supported for now(default)</li>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>atoms = edit_qm_atoms()
-atoms = edit_qm_atoms(qm_atoms=[0,1,2])</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="n">edit_qm_atoms</span><span class="p">()</span>
+<span class="go">atoms = edit_qm_atoms(qm_atoms=[0,1,2])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -327,7 +312,7 @@ a QM/MM energy with a subtractive electrostatic embedding scheme</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>system</strong> (<em>System object</em>) – </li>
+<li><strong>system</strong> (<a class="reference internal" href="janus.html#janus.system.System" title="janus.system.System"><code class="xref py py-class docutils literal notranslate"><span class="pre">System</span></code></a>) – The system in which to save qmmm energy and forces</li>
 <li><strong>main_info</strong> (<em>dict</em>) – contains the energy and forces for the whole system</li>
 </ul>
 </td>
@@ -344,14 +329,16 @@ a QM/MM energy with a subtractive electrostatic embedding scheme</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>qm_atoms</strong> (<em>list</em>) – atom indicies corresponding to the atoms in
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>qm_atoms</strong> (<em>list</em>) – Indicies corresponding to the atoms in
 the primary subsystem. Default is None and uses self.qm_atoms</td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>find_boundary_bonds()
-find_boundary_bonds(qm_atoms=[0,1,2,3])</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_boundary_bonds</span><span class="p">()</span>
+<span class="go">find_boundary_bonds(qm_atoms=[0,1,2,3])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -362,7 +349,7 @@ find_boundary_bonds(qm_atoms=[0,1,2,3])</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>system</strong> (<em>System object</em>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>system</strong> (<a class="reference internal" href="janus.html#janus.system.System" title="janus.system.System"><code class="xref py py-class docutils literal notranslate"><span class="pre">System</span></code></a>) – The system in which to save qmmm energy and forces</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">charges and corresponding positions in angstroms as xyz coordinates</td>
 </tr>
@@ -389,7 +376,9 @@ find_boundary_bonds(qm_atoms=[0,1,2,3])</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>forces = get_forces()</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">forces</span> <span class="o">=</span> <span class="n">get_forces</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -445,8 +434,10 @@ the primary subsystem. Default is None and uses self.qm_atoms</td>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>make_primary_subsys_trajectory([0,1,2])
-make_primary_subsys_trajectory()</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_primary_subsys_trajectory</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="go">make_primary_subsys_trajectory()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -468,8 +459,10 @@ the primary subsystem. Default is None and uses self.qm_atoms</td>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>make_second_subsys_trajectory([0,1,2])
-make_second_subsys_trajectory()</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_second_subsys_trajectory</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="go">make_second_subsys_trajectory()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -484,7 +477,7 @@ using the formula</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>system</strong> (<em>System object</em>) – </li>
+<li><strong>system</strong> (<a class="reference internal" href="janus.html#janus.system.System" title="janus.system.System"><code class="xref py py-class docutils literal notranslate"><span class="pre">System</span></code></a>) – The system in which to save qmmm energy and forces</li>
 <li><strong>main_info</strong> (<em>dict</em>) – contains the energy and forces for the whole system</li>
 </ul>
 </td>
@@ -496,20 +489,27 @@ using the formula</p>
 <dl class="method">
 <dt id="janus.qmmm.QMMM.prepare_link_atom">
 <code class="descname">prepare_link_atom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.prepare_link_atom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary
+<dd><p>Identifies where to put link atom.
+Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary
 and computes the g scaling factor for the link atom.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="janus.qmmm.QMMM.run_qmmm">
-<code class="descname">run_qmmm</code><span class="sig-paren">(</span><em>main_info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.run_qmmm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the positions and topology given in main_info,
+<code class="descname">run_qmmm</code><span class="sig-paren">(</span><em>main_info</em>, <em>wrapper_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.run_qmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drives QM/MM computation.
+Updates the positions and topology given in main_info,
 and determines the QM/MM energy and gradients</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>main_info</strong> (<em>dict</em>) – contains the energy and forces for the whole system</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>main_info</strong> (<em>dict</em>) – Contains the energy, forces, topology, and position information
+for the whole system</li>
+<li><strong>wrapper_type</strong> (<em>str</em>) – Defines the program used to obtain main_info</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -517,7 +517,7 @@ and determines the QM/MM energy and gradients</p>
 
 <dl class="method">
 <dt id="janus.qmmm.QMMM.update_traj">
-<code class="descname">update_traj</code><span class="sig-paren">(</span><em>position</em>, <em>topology</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.update_traj" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_traj</code><span class="sig-paren">(</span><em>position</em>, <em>topology</em>, <em>wrapper_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.update_traj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the positions and topology of self.traj,
 a MDtraj trajectory object</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -527,6 +527,7 @@ a MDtraj trajectory object</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>positions</strong> (<em>list</em>) – positions in nm</li>
 <li><strong>topology</strong> (<em>OpenMM topology object</em>) – If the mm program is  OpenMM</li>
+<li><strong>wrapper_type</strong> (<em>str</em>) – Defines the program used to obtain topology and positions</li>
 </ul>
 </td>
 </tr>
@@ -541,12 +542,16 @@ a MDtraj trajectory object</p>
 <h2>AQMMM<a class="headerlink" href="#aqmmm" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qmmm.AQMMM">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">AQMMM</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">AQMMM</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>sys_info_format</em>, <em>qmmm_param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.qmmm.QMMM</span></code></p>
 <p>AQMMM super class for adaptive QMMM computations.
 Inherits from QMMM class.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
 <blockquote>
-<div><table border="1" class="longtable docutils">
+<div>Since AQMMM is a super class and has abstract methods
+cannot actually instantiate AQMMM object, but only its child objects</div></blockquote>
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
@@ -556,7 +561,7 @@ Inherits from QMMM class.</p>
 <td>Computes the center of mass of a specified group</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
+<td>Computes the QM/MM gradients</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.compute_lamda_i" title="janus.qmmm.AQMMM.compute_lamda_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code></a>(r_i)</td>
 <td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
@@ -565,10 +570,10 @@ Inherits from QMMM class.</p>
 <td>Compute the energy of the isolated groups at their minimum geometry</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
+<td>Converts a set of input files into a MD trajectory</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM.define_buffer_zone" title="janus.qmmm.AQMMM.define_buffer_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code></a>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
+<td>Determines buffer group atoms.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
 <td>Cleans up the qm_atoms.</td>
@@ -589,7 +594,7 @@ Inherits from QMMM class.</p>
 <td>Function to return self.Rmin</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.get_buffer_info" title="janus.qmmm.AQMMM.get_buffer_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code></a>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
+<td>Computes switching function parameters for a particular buffer group.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
 <td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
@@ -613,16 +618,16 @@ Inherits from QMMM class.</p>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.partition" title="janus.qmmm.AQMMM.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>(info)</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
+<td>Identifies where to put link atom.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.run_aqmmm" title="janus.qmmm.AQMMM.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM.run_qmmm" title="janus.qmmm.AQMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM.run_qmmm" title="janus.qmmm.AQMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info,&nbsp;wrapper_type)</td>
+<td>Drives QM/MM computation.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.set_Rmax" title="janus.qmmm.AQMMM.set_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code></a>(Rmax)</td>
 <td>Function to set self.Rmax</td>
@@ -630,7 +635,7 @@ Inherits from QMMM class.</p>
 <tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM.set_Rmin" title="janus.qmmm.AQMMM.set_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code></a>(Rmin)</td>
 <td>Function to set self.Rmin</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology,&nbsp;wrapper_type)</td>
 <td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
 </tr>
 </tbody>
@@ -647,7 +652,7 @@ Inherits from QMMM class.</p>
 </tr>
 </tbody>
 </table>
-</div></blockquote>
+</div>
 <dl class="method">
 <dt id="janus.qmmm.AQMMM.compute_COM">
 <code class="descname">compute_COM</code><span class="sig-paren">(</span><em>atoms</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.compute_COM" title="Permalink to this definition">¶</a></dt>
@@ -675,9 +680,10 @@ the total weight of the group (sum of all atomic weights)</li>
 <code class="descname">compute_lamda_i</code><span class="sig-paren">(</span><em>r_i</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.compute_lamda_i" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the switching function and the derivative
 of the switching function defined as a 5th order spline:</p>
-<p>lamda_i = -6x^5 + 15x^4 - 10x^3 + 1 and
-d_lamda_i = -30x^4 + 60x^3 - 30x^2</p>
-<p>where x is the reduced distance (r_i - rmin)/(rmax - rmin)
+<div class="math">
+<p><span class="math">\lambda_i = -6x^5 + 15x^4 - 10x^3 + 1
+d_{\lambda_i} = -30x^4 + 60x^3 - 30x^2</span></p>
+</div><p>where x is the reduced distance (r_i - rmin)/(rmax - rmin)
 of buffer group i</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -704,8 +710,10 @@ of buffer group i</p>
 <dl class="method">
 <dt id="janus.qmmm.AQMMM.define_buffer_zone">
 <code class="descname">define_buffer_zone</code><span class="sig-paren">(</span><em>qm_center</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.define_buffer_zone" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the buffer groups in the buffer zone based on a distance
-partitioning scheme, saves each buffer group as a Buffer object,
+<dd><p>Determines buffer group atoms.
+Gets the buffer groups in the buffer zone based on a distance
+partitioning scheme, saves each buffer group as a
+<a class="reference internal" href="janus.html#janus.system.Buffer" title="janus.system.Buffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buffer</span></code></a> object,
 and saves all buffer groups in the dictionary self.buffer_groups.
 For water as a solvent, considers the whole water molecule as a buffer group.</p>
 <div class="admonition note">
@@ -771,9 +779,10 @@ For water as a solvent, considers the whole water molecule as a buffer group.</p
 <dl class="method">
 <dt id="janus.qmmm.AQMMM.get_buffer_info">
 <code class="descname">get_buffer_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.get_buffer_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the distance r_i for each buffer group i
+<dd><p>Computes switching function parameters for a particular buffer group.
+Computes the distance r_i for each buffer group i
 between the qm_center and the COM of buffer group i
-and the computes lamda_i and d_lamda_i for that buffer group</p>
+and then computes lamda_i and d_lamda_i for that buffer group</p>
 </dd></dl>
 
 <dl class="method">
@@ -790,17 +799,20 @@ and the computes lamda_i and d_lamda_i for that buffer group</p>
 <dl class="method">
 <dt id="janus.qmmm.AQMMM.partition">
 <code class="descname">partition</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.partition" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function implemented in individual child classes</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qmmm.AQMMM.run_aqmmm">
 <code class="descname">run_aqmmm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.run_aqmmm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Function implemented in individual child classes</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janus.qmmm.AQMMM.run_qmmm">
-<code class="descname">run_qmmm</code><span class="sig-paren">(</span><em>main_info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.run_qmmm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the positions and topology given in main_info,
+<code class="descname">run_qmmm</code><span class="sig-paren">(</span><em>main_info</em>, <em>wrapper_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.run_qmmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drives QM/MM computation.
+Updates the positions and topology given in main_info,
 determines the partitions to be computed, for each partition,
 determines the QM/MM energy and gradients, then interpolates all
 partitions using specified adaptive QM/MM scheme</p>
@@ -808,7 +820,12 @@ partitions using specified adaptive QM/MM scheme</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>main_info</strong> (<em>dictionary</em>) – contains the energy and forces for the whole system</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>main_info</strong> (<em>dict</em>) – Contains the energy, forces, topology, and position information
+for the whole system</li>
+<li><strong>wrapper_type</strong> (<em>str</em>) – Defines the program used to obtain main_info</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -849,114 +866,34 @@ partitions using specified adaptive QM/MM scheme</p>
 <h2>ONIOM-XS<a class="headerlink" href="#oniom-xs" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qmmm.OniomXS">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">OniomXS</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.OniomXS" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">OniomXS</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format='pdb', qm_center=[0], partition_scheme='distance', Rmin=3.8, Rmax=4.5, qmmm_param={}, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.OniomXS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.aqmmm.AQMMM</span></code></p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<p>Class for the Oniom-XS adaptive QM/MM method.
+Inherits from AQMMM class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
-<td>Computes the center of mass of a specified group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code>(r_i)</td>
-<td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code>()</td>
-<td>Compute the energy of the isolated groups at their minimum geometry</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
-<td>Cleans up the qm_atoms.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
-<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code>(qm_center)</td>
-<td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
-<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
-<td>Function to return qmmm forces</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
-<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.OniomXS.get_switching_function" title="janus.qmmm.OniomXS.get_switching_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_switching_function</span></code></a>()</td>
-<td>Averages the individual switching functions of each buffer group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
-<td>Incorporates the zero energy of groups to the total qmmm energy</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.OniomXS.partition" title="janus.qmmm.OniomXS.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
-<td>Finds the partitions as required by the ONIOM-XS method and saves each partition as a system object.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.OniomXS.run_aqmmm" title="janus.qmmm.OniomXS.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
-<td>Interpolates the energy and gradients from each partition according to the ONIOM-XS method</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
-<td>Function to set self.Rmax</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
-<td>Function to set self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
-<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hl_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass or <a class="reference internal" href="janus_qm_wrapper.html#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMWrapper</span></code></a> subclass) – Wrapper for performing the high-level computation.
+Traditionally QM but user can define MM.</li>
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass) – Wrapper for performing the low-level computation</li>
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+<li><strong>qm_center</strong> (<em>list</em>) – Atoms that define the qm center, default is [0].
+If more than one index is given, COM is used as qm_center</li>
+<li><strong>partition_scheme</strong> (<em>str</em>) – Scheme to use to define buffer groups,
+default is distance (only scheme available as of now)</li>
+<li><strong>Rmin</strong> (<em>float</em>) – Inner radius for distance partition in angstroms, default is 3.8</li>
+<li><strong>Rmax</strong> (<em>float</em>) – Outer radius for distance partition in angstroms, default is 4.5</li>
+<li><strong>qmmm_param</strong> – A dictionary with any parameters to pass into the QMMM class.
+See QMMM class for specifics</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
 <dl class="method">
 <dt id="janus.qmmm.OniomXS.get_switching_function">
 <code class="descname">get_switching_function</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.OniomXS.get_switching_function" title="Permalink to this definition">¶</a></dt>
@@ -1004,113 +941,34 @@ according to the ONIOM-XS method</p>
 <h2>Hot Spot<a class="headerlink" href="#hot-spot" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qmmm.HotSpot">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">HotSpot</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.HotSpot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">HotSpot</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format='pdb', qm_center=[0], partition_scheme='distance', Rmin=3.8, Rmax=4.5, qmmm_param={}, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.HotSpot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.aqmmm.AQMMM</span></code></p>
-<p>Class for the Hot-Spot adaptive QM/MM method.
+<p>Class for the Hot Spot adaptive QM/MM method.
 Inherits from AQMMM class</p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
-<td>Computes the center of mass of a specified group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.HotSpot.compute_lamda_i" title="janus.qmmm.HotSpot.compute_lamda_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code></a>(r_i)</td>
-<td>Computes the switching function of the Hot-Spot method and overrides the compute_lamda_i function from the AQMMM class</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code>()</td>
-<td>Compute the energy of the isolated groups at their minimum geometry</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
-<td>Cleans up the qm_atoms.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
-<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code>(qm_center)</td>
-<td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
-<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
-<td>Function to return qmmm forces</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
-<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
-<td>Incorporates the zero energy of groups to the total qmmm energy</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.HotSpot.partition" title="janus.qmmm.HotSpot.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
-<td>Finds the partitions as required by the Hot-Spot method and saves each partition as a system object.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.HotSpot.run_aqmmm" title="janus.qmmm.HotSpot.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
-<td>Interpolates the energy and gradients from each partition according to the Hot-Spot method</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
-<td>Function to set self.Rmax</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
-<td>Function to set self.Rmin</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
-<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hl_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass or <a class="reference internal" href="janus_qm_wrapper.html#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMWrapper</span></code></a> subclass) – Wrapper for performing the high-level computation.
+Traditionally QM but user can define MM.</li>
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass) – Wrapper for performing the low-level computation</li>
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+<li><strong>qm_center</strong> (<em>list</em>) – Atoms that define the qm center, default is [0].
+If more than one index is given, COM is used as qm_center</li>
+<li><strong>partition_scheme</strong> (<em>str</em>) – Scheme to use to define buffer groups,
+default is distance (only scheme available as of now)</li>
+<li><strong>Rmin</strong> (<em>float</em>) – Inner radius for distance partition in angstroms, default is 3.8</li>
+<li><strong>Rmax</strong> (<em>float</em>) – Outer radius for distance partition in angstroms, default is 4.5</li>
+<li><strong>qmmm_param</strong> – A dictionary with any parameters to pass into the QMMM class.
+See QMMM class for specifics</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
 <dl class="method">
 <dt id="janus.qmmm.HotSpot.compute_lamda_i">
 <code class="descname">compute_lamda_i</code><span class="sig-paren">(</span><em>r_i</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.HotSpot.compute_lamda_i" title="Permalink to this definition">¶</a></dt>
@@ -1162,117 +1020,37 @@ according to the Hot-Spot method</p>
 <h2>PAP<a class="headerlink" href="#pap" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qmmm.PAP">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">PAP</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.PAP" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">PAP</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format='pdb', modified_variant=False, qm_center=[0], partition_scheme='distance', Rmin=3.8, Rmax=4.5, qmmm_param={}, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.PAP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.aqmmm.AQMMM</span></code></p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<p>Class for the PAP adaptive QM/MM method.
+Inherits from AQMMM class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
-<td>Computes the center of mass of a specified group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code>(r_i)</td>
-<td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.PAP.compute_sf_gradient" title="janus.qmmm.PAP.compute_sf_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_sf_gradient</span></code></a>()</td>
-<td>Computes forces due to the gradient of the switching function</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code>()</td>
-<td>Compute the energy of the isolated groups at their minimum geometry</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
-<td>Cleans up the qm_atoms.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
-<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code>(qm_center)</td>
-<td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.PAP.get_combos" title="janus.qmmm.PAP.get_combos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_combos</span></code></a>([items])</td>
-<td>Gets all combinations of a given list of indices</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
-<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
-<td>Function to return qmmm forces</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
-<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
-<td>Incorporates the zero energy of groups to the total qmmm energy</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.PAP.partition" title="janus.qmmm.PAP.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
-<td>Finds the partitions as required by the PAP method and saves each partition as a system object.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.PAP.run_aqmmm" title="janus.qmmm.PAP.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
-<td>Interpolates the energy and gradients from each partition according to the PAP method</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
-<td>Function to set self.Rmax</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
-<td>Function to set self.Rmin</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
-<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hl_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass or <a class="reference internal" href="janus_qm_wrapper.html#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMWrapper</span></code></a> subclass) – Wrapper for performing the high-level computation.
+Traditionally QM but user can define MM.</li>
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass) – Wrapper for performing the low-level computation</li>
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+<li><strong>modified_variant</strong> (<em>bool</em>) – Whether to use the modified version mPAP, which disregards
+gradient terms that come from the switching function.
+Default is False.</li>
+<li><strong>qm_center</strong> (<em>list</em>) – Atoms that define the qm center, default is [0].
+If more than one index is given, COM is used as qm_center</li>
+<li><strong>partition_scheme</strong> (<em>str</em>) – Scheme to use to define buffer groups,
+default is distance (only scheme available as of now)</li>
+<li><strong>Rmin</strong> (<em>float</em>) – Inner radius for distance partition in angstroms, default is 3.8</li>
+<li><strong>Rmax</strong> (<em>float</em>) – Outer radius for distance partition in angstroms, default is 4.5</li>
+<li><strong>qmmm_param</strong> – A dictionary with any parameters to pass into the QMMM class.
+See QMMM class for specifics</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
 <dl class="method">
 <dt id="janus.qmmm.PAP.compute_sf_gradient">
 <code class="descname">compute_sf_gradient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.PAP.compute_sf_gradient" title="Permalink to this definition">¶</a></dt>
@@ -1306,9 +1084,11 @@ according to the Hot-Spot method</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>combos = get_combos([1,2])</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">combos</span> <span class="o">=</span> <span class="n">get_combos</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>In this case, combos will return
-[(1), (2), (1,2)]</p>
+&gt;&gt;&gt; [(1), (2), (1,2)]</p>
 </dd></dl>
 
 <dl class="method">
@@ -1341,120 +1121,37 @@ according to the PAP method</p>
 <h2>SAP<a class="headerlink" href="#sap" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qmmm.SAP">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">SAP</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">SAP</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format='pdb', modified_variant=False, qm_center=[0], partition_scheme='distance', Rmin=3.8, Rmax=4.5, qmmm_param={}, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.aqmmm.AQMMM</span></code></p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<p>Class for the SAP adaptive QM/MM method.
+Inherits from AQMMM class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
-<td>Computes the center of mass of a specified group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code>(r_i)</td>
-<td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.SAP.compute_sf_gradient" title="janus.qmmm.SAP.compute_sf_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_sf_gradient</span></code></a>()</td>
-<td>Computes forces due to the gradient of the switching function</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code>()</td>
-<td>Compute the energy of the isolated groups at their minimum geometry</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
-<td>Cleans up the qm_atoms.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
-<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code>(qm_center)</td>
-<td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.SAP.get_combos" title="janus.qmmm.SAP.get_combos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_combos</span></code></a>([items,&nbsp;buffer_distance])</td>
-<td>A given list of indices is sorted by distance and the combinations is found based on distance order.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
-<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
-<td>Function to return qmmm forces</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
-<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.SAP.get_switching_functions" title="janus.qmmm.SAP.get_switching_functions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_switching_functions</span></code></a>()</td>
-<td>Computes switching function for SAP computations and saves to each buffer group object</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
-<td>Incorporates the zero energy of groups to the total qmmm energy</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.SAP.partition" title="janus.qmmm.SAP.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
-<td>Finds the partitions as required by the SAP method and saves each partition as a system object.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.SAP.run_aqmmm" title="janus.qmmm.SAP.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
-<td>Interpolates the energy and gradients from each partition according to the SAP method</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
-<td>Function to set self.Rmax</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
-<td>Function to set self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
-<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hl_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass or <a class="reference internal" href="janus_qm_wrapper.html#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMWrapper</span></code></a> subclass) – Wrapper for performing the high-level computation.
+Traditionally QM but user can define MM.</li>
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass) – Wrapper for performing the low-level computation</li>
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+<li><strong>modified_variant</strong> (<em>bool</em>) – Whether to use the modified version mPAP, which disregards
+gradient terms that come from the switching function.
+Default is False.</li>
+<li><strong>qm_center</strong> (<em>list</em>) – Atoms that define the qm center, default is [0].
+If more than one index is given, COM is used as qm_center</li>
+<li><strong>partition_scheme</strong> (<em>str</em>) – Scheme to use to define buffer groups,
+default is distance (only scheme available as of now)</li>
+<li><strong>Rmin</strong> (<em>float</em>) – Inner radius for distance partition in angstroms, default is 3.8</li>
+<li><strong>Rmax</strong> (<em>float</em>) – Outer radius for distance partition in angstroms, default is 4.5</li>
+<li><strong>qmmm_param</strong> – A dictionary with any parameters to pass into the QMMM class.
+See QMMM class for specifics</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
 <dl class="method">
 <dt id="janus.qmmm.SAP.compute_sf_gradient">
 <code class="descname">compute_sf_gradient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.SAP.compute_sf_gradient" title="Permalink to this definition">¶</a></dt>
@@ -1496,10 +1193,12 @@ See example</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>combos = get_combos([1,2,3])</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">combos</span> <span class="o">=</span> <span class="n">get_combos</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>If 1 was closer to the center than 2, and 2 closer to the center than 3,
 functions returns following:
-[(1), (1,2), (1,2,3)]</p>
+&gt;&gt;&gt; [(1), (1,2), (1,2,3)]</p>
 </dd></dl>
 
 <dl class="method">
@@ -1539,114 +1238,34 @@ according to the SAP method</p>
 <h2>DAS<a class="headerlink" href="#das" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="janus.qmmm.DAS">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">DAS</code><span class="sig-paren">(</span><em>param</em>, <em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>md_simulation_program</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.DAS" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">DAS</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format='pdb', qm_center=[0], partition_scheme='distance', Rmin=3.8, Rmax=4.5, qmmm_param={}, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.DAS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">janus.qmmm.aqmmm.AQMMM</span></code></p>
-<blockquote>
-<div><table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<p>Class for the Oniom-XS adaptive QM/MM method.
+Inherits from AQMMM class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code>(atoms)</td>
-<td>Computes the center of mass of a specified group</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.DAS.compute_lamda_i" title="janus.qmmm.DAS.compute_lamda_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code></a>(r_i)</td>
-<td>Computes the switching function of the DAS method and overrides the compute_lamda_i function from the AQMMM class</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_zero_energy</span></code>()</td>
-<td>Compute the energy of the isolated groups at their minimum geometry</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
-<td>Cleans up the qm_atoms.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_bonds</span></code>([qm_atoms])</td>
-<td>Identified any covalent bonds that the QM/MM boundary cuts across</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_buffer_atoms</span></code>(qm_center)</td>
-<td>Find the buffer groups whose COM falls in between Rmin and Rmax</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmax</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code>()</td>
-<td>Function to return self.Rmin</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.DAS.get_combos" title="janus.qmmm.DAS.get_combos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_combos</span></code></a>([items])</td>
-<td>Gets all combinations of a given list of indices according to the DAS formulation</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
-<td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
-<td>Function to return qmmm forces</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
-<td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code>()</td>
-<td>Incorporates the zero energy of groups to the total qmmm energy</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_primary_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the primary subsystem, and adds in any link atoms</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_second_subsys_trajectory</span></code>([qm_atoms])</td>
-<td>Creates a MDtraj trajectory object with just the secondary subsystem</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">mechanical</span></code>(system,&nbsp;main_info)</td>
-<td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.DAS.partition" title="janus.qmmm.DAS.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([qm_center])</td>
-<td>Finds the partitions as required by the PAP method and saves each partition as a system object.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.DAS.run_aqmmm" title="janus.qmmm.DAS.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
-<td>Interpolates the energy and gradients from each partition according to the PAP method</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code>(main_info)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code>(Rmax)</td>
-<td>Function to set self.Rmax</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmin</span></code>(Rmin)</td>
-<td>Function to set self.Rmin</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_traj</span></code>(position,&nbsp;topology)</td>
-<td>Updates the positions and topology of self.traj, a MDtraj trajectory object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hl_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass or <a class="reference internal" href="janus_qm_wrapper.html#janus.qm_wrapper.QMWrapper" title="janus.qm_wrapper.QMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMWrapper</span></code></a> subclass) – Wrapper for performing the high-level computation.
+Traditionally QM but user can define MM.</li>
+<li><strong>ll_wrapper</strong> (<a class="reference internal" href="janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper" title="janus.mm_wrapper.MMWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">MMWrapper</span></code></a> subclass) – Wrapper for performing the low-level computation</li>
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – Describes what kind of input is contained in sys_info. Default is pdb.</li>
+<li><strong>qm_center</strong> (<em>list</em>) – Atoms that define the qm center, default is [0].
+If more than one index is given, COM is used as qm_center</li>
+<li><strong>partition_scheme</strong> (<em>str</em>) – Scheme to use to define buffer groups,
+default is distance (only scheme available as of now)</li>
+<li><strong>Rmin</strong> (<em>float</em>) – Inner radius for distance partition in angstroms, default is 3.8</li>
+<li><strong>Rmax</strong> (<em>float</em>) – Outer radius for distance partition in angstroms, default is 4.5</li>
+<li><strong>qmmm_param</strong> – A dictionary with any parameters to pass into the QMMM class.
+See QMMM class for specifics</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">nm_to_angstrom</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
 <dl class="method">
 <dt id="janus.qmmm.DAS.compute_lamda_i">
 <code class="descname">compute_lamda_i</code><span class="sig-paren">(</span><em>r_i</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.DAS.compute_lamda_i" title="Permalink to this definition">¶</a></dt>
@@ -1726,7 +1345,7 @@ according to the PAP method</p>
         <a href="_autosummary/janus.qmmm.QMMM.html" class="btn btn-neutral float-right" title="janus.qmmm.QMMM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="_autosummary/janus.initializer.html" class="btn btn-neutral" title="janus.initializer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="janus.html" class="btn btn-neutral" title="janus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

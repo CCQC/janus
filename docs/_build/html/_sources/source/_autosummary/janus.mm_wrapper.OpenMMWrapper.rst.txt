@@ -24,9 +24,9 @@ janus.mm\_wrapper.OpenMMWrapper
       ~OpenMMWrapper.create_openmm_system
       ~OpenMMWrapper.delete_atoms
       ~OpenMMWrapper.get_energy_and_gradient
+      ~OpenMMWrapper.get_geom_from_trajectory
       ~OpenMMWrapper.get_main_charges
       ~OpenMMWrapper.get_main_info
-      ~OpenMMWrapper.get_qm_geometry
       ~OpenMMWrapper.get_state_info
       ~OpenMMWrapper.initialize
       ~OpenMMWrapper.keep_atoms
@@ -35,6 +35,7 @@ janus.mm\_wrapper.OpenMMWrapper
       ~OpenMMWrapper.set_LJ_zero
       ~OpenMMWrapper.set_charge_zero
       ~OpenMMWrapper.set_external_charges
+      ~OpenMMWrapper.set_qm_geometry
       ~OpenMMWrapper.set_up_reporters
       ~OpenMMWrapper.take_step
       ~OpenMMWrapper.take_updated_step

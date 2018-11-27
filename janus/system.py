@@ -4,26 +4,23 @@ from mendeleev import element
 
 class System(object):
     """
-    A system class that stores system information
-    such as energy, forces, and positions for each region 
-    of a system at a particular point
+    A class that stores system information.
+    Holds information such as energy, forces, and positions for 
+    a QM/MM partition.
     Stores qmmm and aqmmm information as well.
+
+    Parameters
+    ----------
+    qm indices : list 
+        indices of the atoms of the QM region
+    run_ID : int 
+        the current step of the MD simulation
+    partition_ID : int 
+        An identifier for the specfic partition in aqmmm computations, default is 'qm'
     """
 
     def __init__(self, qm_indices, qm_residues, run_ID, partition_ID='qm'):
-        """
-        Initializes class
 
-        Parameters
-        ----------
-        qm indices : list 
-            indices of the atoms of the QM region
-        run_ID : int 
-            the current step of the MD simulation
-        partition_ID : int 
-            An identifier for the specfic partition in aqmmm computations, default is 'qm'
-
-        """
         self.qm_atoms = deepcopy(qm_indices)
         self.qm_residues = deepcopy(qm_residues)
         self.run_ID = run_ID
@@ -43,11 +40,12 @@ class System(object):
     def compute_scale_factor_g(qm, mm, link):
         """
         Computes scale factor g for link atom, RC, and RCD schemes. 
-
-        Note
-        ----
-        r given in pmm but don't need to convert because it is a ratio
-        need functionality for link atoms != 'H'
+        The equation used to compute g is:
+        
+        .. math::
+            \frac{R_{qm} + R_{link}}{R_{qm} + R_{mm}}
+        
+        where R is the pyykko covalent radius of an atom.
 
         Parameters
         ----------
@@ -63,6 +61,10 @@ class System(object):
         float
             g, the scaling factor
 
+        Examples
+        --------
+        >>> compute_scale_factor_g('C', 'C', 'H')
+
         """
         
         r_qm = element(qm).covalent_radius_pyykko
@@ -76,18 +78,19 @@ class System(object):
 class Buffer(object):
     """
     A class to store information for buffer groups 
-    from aqmmm computations such as what atoms are contained
+    from aqmmm computations. This includes the atom indicies contained
     in the buffer group, the switching function, COM coordinates, etc.
+
+    Parameters
+    ----------
+    ID : int 
+        the identifer for the buffer group
     """
 
     def __init__(self, ID):
         """
         Initializes buffer class
 
-        Parameters
-        ----------
-        ID : int 
-            the identifer for the buffer group
         
         """
 

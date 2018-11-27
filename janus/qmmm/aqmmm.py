@@ -10,69 +10,31 @@ class AQMMM(ABC, QMMM):
     """
     AQMMM super class for adaptive QMMM computations.
     Inherits from QMMM class.
+
+    Note
+    ----
+    Since AQMMM is a super class and has abstract methods
+    cannot actually instantiate AQMMM object, but only its child objects
     """
 
     nm_to_angstrom = 10.0000000
 
-    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program, class_type):
-        """
-        Initializes AQMMM class with parameters given in param
+    def __init__(self, hl_wrapper, 
+                       ll_wrapper, 
+                       sys_info,
+                       sys_info_format,
+                       qmmm_param,
+                       class_type):
 
-        Parameters
-        ----------
-        param : dict 
-               contains parameters for QM/MM and adaptive QM/MM computations
-               Individual parameters include:
-                - aqmmm_scheme: str of scheme to use for adaptive QM/MM, default is ONIOM-XS. 
-                                Hot-Spot, PAP, SAP also available
-                - partition_scheme: str of scheme to use to define buffer groups,
-                                    default is distance (only scheme available as of now)
-                - Rmin: float of inner radius for distance partition, default is 0.38
-                - Rmax: float of outer radius for distance partition, default is 0.45
-                - qm_center: list of atoms that define the qm center, default is [0]
-                - qmmm_scheme: str of scheme for computing QM/MM energies and gradients, 
-                               only substractive available(default)
-                - embedding_method: str of embedding method to use for QM/MM. 
-                                    Mechanical(default) and Electrostatic available
-                - boundary_treatment: str of method for treating dangling bonds in the QM region,
-                                      link_atom(default), RC, and RCD available
-                - link_atom_element: str of element to use for link atom,
-                                     default is H. Beware of using others (not all functionality tested)
-                - qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations
-                - run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,
-                             default is True. Regular QM/MM run if False
+        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format=sys_info_format, **qmmm_param)
 
-        hl_wrapper : a qm_wrapper or mm_wrapper object, depending on the user input
-        ll_wrapper : a mm_wrapper object only for now
-        md_simulation_program : str
-            The program that performs the MD time step integration
-        class_type : str
-            Which adaptive method class is used
-            
-
-        Note
-        ----
-        Since AQMMM is a super class and has abstract methods
-        cannot actually instantiate AQMMM object, but only its child objects
-        """
-        
-        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program)
         self.class_type = class_type
-
-        self.aqmmm_scheme = param['aqmmm_scheme']
-        self.partition_scheme = param['partition_scheme']
-        self.Rmin = param['Rmin']
-        self.Rmax = param['Rmax']
-        # do not include options of computing the qm center with the program - 
-        # might need this functionality later
-        self.qm_center = param['qm_center']
-
         self.buffer_groups = {}
-
         self.compute_zero_energy()
 
-    def run_qmmm(self, main_info):
+    def run_qmmm(self, main_info, wrapper_type):
         """
+        Drives QM/MM computation.
         Updates the positions and topology given in main_info,
         determines the partitions to be computed, for each partition,
         determines the QM/MM energy and gradients, then interpolates all
@@ -80,15 +42,16 @@ class AQMMM(ABC, QMMM):
 
         Parameters
         ----------
-        main_info : dictionary 
-            contains the energy and forces for the whole system
-
+        main_info : dict 
+            Contains the energy, forces, topology, and position information 
+            for the whole system
+        wrapper_type : str
+            Defines the program used to obtain main_info
         """
 
-        self.update_traj(main_info['positions'], main_info['topology'])
+        self.update_traj(main_info['positions'], main_info['topology'], wrapper_type)
         self.partition()
             
-        print('Running QM/MM partitions')
         counter = 0
         for i, system in self.systems[self.run_ID].items():
             print('Running QM/MM partition {}'.format(counter))
@@ -96,6 +59,7 @@ class AQMMM(ABC, QMMM):
 
             self.qm_atoms = deepcopy(system.qm_atoms)
 
+            print(self.embedding_method)
             if self.embedding_method =='Mechanical':
                 self.mechanical(system, main_info)
             elif self.embedding_method =='Electrostatic':
@@ -122,8 +86,10 @@ class AQMMM(ABC, QMMM):
 
     def define_buffer_zone(self, qm_center):
         """
+        Determines buffer group atoms.
         Gets the buffer groups in the buffer zone based on a distance 
-        partitioning scheme, saves each buffer group as a Buffer object,
+        partitioning scheme, saves each buffer group as a 
+        :class:`~janus.system.Buffer` object,
         and saves all buffer groups in the dictionary self.buffer_groups.
         For water as a solvent, considers the whole water molecule as a buffer group.
 
@@ -198,8 +164,8 @@ class AQMMM(ABC, QMMM):
 
         if self.partition_scheme == 'distance': 
 
-            rmin_atoms = md.compute_neighbors(temp_traj, self.Rmin, qm_center_idx)
-            rmax_atoms = md.compute_neighbors(temp_traj, self.Rmax, qm_center_idx)
+            rmin_atoms = md.compute_neighbors(temp_traj, self.Rmin/10, qm_center_idx)
+            rmax_atoms = md.compute_neighbors(temp_traj, self.Rmax/10, qm_center_idx)
             self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
             print('buffer atoms identified by find_buffer_atom function:')
             print(self.buffer_atoms)
@@ -213,9 +179,10 @@ class AQMMM(ABC, QMMM):
         
     def get_buffer_info(self):
         """
+        Computes switching function parameters for a particular buffer group.
         Computes the distance r_i for each buffer group i
         between the qm_center and the COM of buffer group i
-        and the computes lamda_i and d_lamda_i for that buffer group
+        and then computes lamda_i and d_lamda_i for that buffer group
 
         """
 
@@ -225,7 +192,7 @@ class AQMMM(ABC, QMMM):
 
             xyz, buf.atom_weights, buf.weight_ratio = self.compute_COM(buf.atoms)
             buf.COM_coord = xyz
-            buf.r_i = np.linalg.norm(buf.COM_coord - np.array(self.qm_center_xyz))
+            buf.r_i = np.linalg.norm(buf.COM_coord - np.array(self.qm_center_xyz))*AQMMM.nm_to_angstrom
             self.buffer_distance[i] = buf.r_i
             buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
 
@@ -278,8 +245,9 @@ class AQMMM(ABC, QMMM):
         Computes the switching function and the derivative 
         of the switching function defined as a 5th order spline:
         
-        lamda_i = -6x^5 + 15x^4 - 10x^3 + 1 and 
-        d_lamda_i = -30x^4 + 60x^3 - 30x^2
+        .. math::
+            \lambda_i = -6x^5 + 15x^4 - 10x^3 + 1 
+            d_{\lambda_i} = -30x^4 + 60x^3 - 30x^2
 
         where x is the reduced distance (r_i - rmin)/(rmax - rmin)
         of buffer group i
@@ -299,6 +267,9 @@ class AQMMM(ABC, QMMM):
         """
 
         x_i = float((r_i - self.Rmin) / (self.Rmax - self.Rmin))
+
+        if (x_i < 0 or x_i > 1):
+            raise ValueError("reduced distance x_i has to be between 0 and 1")
 
         lamda_i = -6*((x_i)**5) + 15*((x_i)**4) - 10*((x_i)**3) + 1
 
@@ -403,10 +374,16 @@ class AQMMM(ABC, QMMM):
                     
     @abstractmethod
     def partition(self, info):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def run_aqmmm(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
 

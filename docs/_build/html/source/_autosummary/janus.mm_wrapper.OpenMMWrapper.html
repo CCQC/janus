@@ -160,48 +160,38 @@
 <h1>janus.mm_wrapper.OpenMMWrapper<a class="headerlink" href="#janus-mm-wrapper-openmmwrapper" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="janus.mm_wrapper.OpenMMWrapper">
-<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">OpenMMWrapper</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper class that calls OpenMM
-to obtain molecular mechanics information and
-take steps in a molecular dynamics simulation.
+<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">OpenMMWrapper</code><span class="sig-paren">(</span><em>sys_info=None</em>, <em>sys_info_format='pdb'</em>, <em>mm_forcefield='amber99sb.xml'</em>, <em>mm_water_forcefield='tip3p.xml'</em>, <em>NVE_integrator='Verlet'</em>, <em>NVT_integrator='Langevin'</em>, <em>temp=300</em>, <em>step_size=1</em>, <em>fric_coeff=1</em>, <em>nonbondedCutoff=0.8</em>, <em>md_param={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>A MM wrapper class that calls OpenMM
+to obtain molecular mechanics information.
+Also can be used to take steps in a molecular dynamics simulation.
 Class inherits from MMWrapper.</p>
-<dl class="method">
-<dt id="janus.mm_wrapper.OpenMMWrapper.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes an OpenMM wrapper class with a set of parameters for
-running OpenMM. Creates an OpenMM pdb object using the given pdb_file
-and forcefield object using the given forcefield</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>param</strong> (<em>dict</em>) – <p>Parameters for molecular mechanics computations.
-Individual parameters include:
-- mm_pdb_file : a pdb file that contains the system of interest
-- mm_forcefield : the name of the forcefield to use, default is amber99sb.xml
-- mm_water_forcefield : the name of the forcefield to use for water, default is tip3p.xml
-- step_size : step size to integrate system in picoseconds,</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sys_info</strong> (<em>str</em>) – A string with the filename or a list with multiple filenames
+that contain position and topology information. Default is None.</li>
+<li><strong>sys_info_format</strong> (<em>str</em>) – A str describing what kind of input is contained in sys_info. Default is pdb.
+Possible values also include Amber and Gromacs.</li>
+<li><strong>mm_forcefield</strong> (<em>str</em>) – The name of the forcefield to use, default is amber99sb.xml.</li>
+<li><strong>mm_water_forcefield</strong> (<em>str</em>) – The name of the forcefield to use for water, default is tip3p.xml.</li>
+<li><strong>NVE_integrator</strong> (<em>str</em>) – What type of integrator to use for a NVE ensemble, default is Verlet.</li>
+<li><strong>NVT_integrator</strong> (<em>str</em>) – What type of integrator to use for a NVT ensemble, default is Langevin.</li>
+<li><strong>temp</strong> (<em>Int</em>) – The temperature at which to run a simulation in kelvin, default is 300.</li>
+<li><strong>step_size</strong> (<em>float</em>) – The step size to integrate system in femtoseconds, default is 1.</li>
+<li><strong>fric_coeff</strong> (<em>float</em>) – friction coefficient to couple the system to heat bath in a NVT ensemble in inverse
+picoseconds, default is 1.</li>
+<li><strong>nonbondedCutoff</strong> (<em>float</em>) – The cutoff distance for nonbonded interactions in nanometers,
+default is 1.</li>
+<li><strong>md_param</strong> (<em>dict</em>) – Dictionary of parameters for an MD simulation. For possible keywords consult the
+Molecular Dynamics section of the manual. Default is empty dictionary.</li>
+<li><strong>**kwargs</strong> (<em>dict</em>) – <p>Other parameters for OpenMM, which include:
+- nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff
+- constraints : which bonds and angles implemented with constraints,</p>
 <blockquote>
-<div>default is 0.002*OM_unit.picoseconds</div></blockquote>
-<ul class="simple">
-<li>integrator” : which integrator to use for simulation, default is Langevin</li>
-<li><dl class="first docutils">
-<dt>fric_coeff” <span class="classifier-delimiter">:</span> <span class="classifier">friction coefficient to couple the system to heat bath in inverse</span></dt>
-<dd>picoseconds, default is 1/OM_unit.picosecond</dd>
-</dl>
-</li>
-<li>temp: the temperature at which the simulation runs in kelvin, default is 300*OM_unit.kelvin</li>
-<li>nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff</li>
-<li><dl class="first docutils">
-<dt>nonbondedCutoff <span class="classifier-delimiter">:</span> <span class="classifier">cutoff distance for nonbonded interactions in nanometers,</span></dt>
-<dd>default is “1*OM_unit.nanometer”,</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>constraints <span class="classifier-delimiter">:</span> <span class="classifier">which bonds and angles implemented with constraints,</span></dt>
-<dd>default is OM_app.HBonds</dd>
-</dl>
-</li>
+<div>default is None</div></blockquote>
+<ul>
 <li>rigid_water : whether water is treated as rigid, default is True</li>
 <li>removeCMMotion : whether to include a CMMotionRemover, default is True</li>
 <li><dl class="first docutils">
@@ -230,12 +220,19 @@ Individual parameters include:
 </dl>
 </li>
 </ul>
-<p>For more information about these pararmeters and
+<p>Each pair of key:value in the dictionary is given as a string.
+For more information about these pararmeters and
 other possible parameter values consult docs.openmm.org</p>
+</li>
+</ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="janus.mm_wrapper.OpenMMWrapper.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>sys_info=None</em>, <em>sys_info_format='pdb'</em>, <em>mm_forcefield='amber99sb.xml'</em>, <em>mm_water_forcefield='tip3p.xml'</em>, <em>NVE_integrator='Verlet'</em>, <em>NVT_integrator='Langevin'</em>, <em>temp=300</em>, <em>step_size=1</em>, <em>fric_coeff=1</em>, <em>nonbondedCutoff=0.8</em>, <em>md_param={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -245,22 +242,22 @@ other possible parameter values consult docs.openmm.org</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="janus.mm_wrapper.OpenMMWrapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(param)</td>
-<td>Initializes an OpenMM wrapper class with a set of parameters for running OpenMM.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="janus.mm_wrapper.OpenMMWrapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([sys_info,&nbsp;sys_info_format,&nbsp;…])</td>
+<td>Initialize self.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_qm_param</span></code>()</td>
-<td></td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.compute_info" title="janus.mm_wrapper.OpenMMWrapper.compute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_info</span></code></a>(topology,&nbsp;positions[,&nbsp;…])</td>
-<td>Gets information about a set of molecules as defined in the pdb, including energy, positions, forces</td>
+<td>Gets information about a system.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.convert_input" title="janus.mm_wrapper.OpenMMWrapper.convert_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code></a>()</td>
-<td></td>
+<td>Converts inputs to OpenMM readable topologies and positions.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.convert_trajectory" title="janus.mm_wrapper.OpenMMWrapper.convert_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_trajectory</span></code></a>(traj)</td>
 <td>Converts an OpenMM trajectory to get topology and positions that are compatible with MDtraj</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_modeller" title="janus.mm_wrapper.OpenMMWrapper.create_modeller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_modeller</span></code></a>(qm_atoms[,&nbsp;keep_qm])</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_modeller" title="janus.mm_wrapper.OpenMMWrapper.create_modeller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_modeller</span></code></a>(atoms[,&nbsp;keep_atoms])</td>
 <td>Makes a OpenMM modeller object based on given geometry</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_new_residue_template" title="janus.mm_wrapper.OpenMMWrapper.create_new_residue_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_new_residue_template</span></code></a>(topology)</td>
@@ -270,36 +267,36 @@ other possible parameter values consult docs.openmm.org</p>
 <td>Creates an OpenMM simulation object given an OpenMM system, topology, and positions</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.create_openmm_system" title="janus.mm_wrapper.OpenMMWrapper.create_openmm_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_openmm_system</span></code></a>(topology[,&nbsp;…])</td>
-<td>Calls OpenMM to create an OpenMM System object give a topology, forcefield, and other paramters as given in input TODO: need to put nonbond and nonbond_cutoff back but not doing for now because need non-periodic system.</td>
+<td>Calls OpenMM to create an OpenMM System object give a topology, forcefield, and other parameters specified in the instantiation parameters.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.delete_atoms" title="janus.mm_wrapper.OpenMMWrapper.delete_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_atoms</span></code></a>(atoms)</td>
 <td>Delete specified atoms from an OpenMM Modeller object</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code>(traj[,&nbsp;…])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code>(traj[,&nbsp;geometry,&nbsp;…])</td>
 <td>Gets the energy and gradient from a MM computation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_charges" title="janus.mm_wrapper.OpenMMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geom_from_trajectory</span></code>()</td>
+<td>Function not implemented for MM wrappers</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_charges" title="janus.mm_wrapper.OpenMMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
 <td>Gets the MM point charges for the system of interest</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_info" title="janus.mm_wrapper.OpenMMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
-<td>Gets the information for the system of interest</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_qm_geometry</span></code>()</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_info" title="janus.mm_wrapper.OpenMMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td>Gets the information for the system of interest.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_state_info" title="janus.mm_wrapper.OpenMMWrapper.get_state_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state_info</span></code></a>([main_info,&nbsp;energy,&nbsp;…])</td>
 <td>Gets information like the kinetic and potential energy, positions, forces, and topology from an OpenMM state.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.initialize" title="janus.mm_wrapper.OpenMMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(embedding_method)</td>
-<td>Calls compute_info to get information for the system of interest in its initial state and saves the simulation object and information dictionary returned by compute_info</td>
+<td>Gets information for the system of interest in its initial state.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.keep_atoms" title="janus.mm_wrapper.OpenMMWrapper.keep_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keep_atoms</span></code></a>(atoms)</td>
 <td>Acts on an OpenMM Modeller object to keep the specified atoms in the MM system and deletes everything else</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code>()</td>
-<td></td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.restart" title="janus.mm_wrapper.OpenMMWrapper.restart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart</span></code></a>(embedding_method)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.restart" title="janus.mm_wrapper.OpenMMWrapper.restart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart</span></code></a>(embedding_method,&nbsp;chkpt_file,&nbsp;…)</td>
 <td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_LJ_zero" title="janus.mm_wrapper.OpenMMWrapper.set_LJ_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_LJ_zero</span></code></a>(OM_system)</td>
@@ -309,22 +306,25 @@ other possible parameter values consult docs.openmm.org</p>
 <td>Removes the coulombic forces by setting charges of specified atoms to zero</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_external_charges" title="janus.mm_wrapper.OpenMMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
-<td></td>
+<td>Function not implemented for classes</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_up_reporters" title="janus.mm_wrapper.OpenMMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>(simulation)</td>
-<td></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_qm_geometry</span></code>()</td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.take_step" title="janus.mm_wrapper.OpenMMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(num)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_up_reporters" title="janus.mm_wrapper.OpenMMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>(simulation)</td>
+<td>Sets up reporters according to options specified by arguments in md_param.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.take_step" title="janus.mm_wrapper.OpenMMWrapper.take_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_step</span></code></a>(num)</td>
 <td>Takes a specified num of steps in the MD simulation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.take_updated_step" title="janus.mm_wrapper.OpenMMWrapper.take_updated_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_updated_step</span></code></a>(force)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.take_updated_step" title="janus.mm_wrapper.OpenMMWrapper.take_updated_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_updated_step</span></code></a>(force)</td>
 <td>Updates the system with forces from qmmm and takes a simulation step</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.update_forces" title="janus.mm_wrapper.OpenMMWrapper.update_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_forces</span></code></a>(forces,&nbsp;force_obj,&nbsp;simulation)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.update_forces" title="janus.mm_wrapper.OpenMMWrapper.update_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_forces</span></code></a>(forces,&nbsp;force_obj,&nbsp;simulation)</td>
+<td>Updates a simulation with external forces</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.write_pdb" title="janus.mm_wrapper.OpenMMWrapper.write_pdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_pdb</span></code></a>(info)</td>
-<td>Write a pdb file from an OpenMM modeller</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.write_pdb" title="janus.mm_wrapper.OpenMMWrapper.write_pdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_pdb</span></code></a>(info)</td>
+<td>Write a pdb file</td>
 </tr>
 </tbody>
 </table>

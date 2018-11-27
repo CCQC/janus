@@ -5,20 +5,61 @@ from copy import deepcopy
 import numpy as np
 
 class PAP(AQMMM):
+    """
+    Class for the PAP adaptive QM/MM method.
+    Inherits from AQMMM class
 
-    def __init__(self, param, hl_wrapper, ll_wrapper, md_simulation_program):
-        """
-        Initializes the PAP class object
-    
-        Parameters
-        ----------
-        See parameters for AQMMM class 
+    Parameters
+    ----------
+        hl_wrapper : :class:`~janus.mm_wrapper.MMWrapper` subclass or :class:`~janus.qm_wrapper.QMWrapper` subclass
+            Wrapper for performing the high-level computation. 
+            Traditionally QM but user can define MM.
+        ll_wrapper : :class:`~janus.mm_wrapper.MMWrapper` subclass
+            Wrapper for performing the low-level computation
+        sys_info : str 
+            A string with the filename or a list with multiple filenames 
+            that contain position and topology information. 
+        sys_info_format : str 
+            Describes what kind of input is contained in sys_info. Default is pdb.
+        modified_variant : bool
+            Whether to use the modified version mPAP, which disregards 
+            gradient terms that come from the switching function.
+            Default is False.
+        qm_center: list 
+            Atoms that define the qm center, default is [0].
+            If more than one index is given, COM is used as qm_center
+        partition_scheme: str 
+            Scheme to use to define buffer groups,
+            default is distance (only scheme available as of now)
+        Rmin: float 
+            Inner radius for distance partition in angstroms, default is 3.8
+        Rmax: float 
+            Outer radius for distance partition in angstroms, default is 4.5
+        qmmm_param : dict
+            A dictionary with any parameters to pass into the QMMM class.
+            See QMMM class for specifics
 
-        """
+    """
+
+    def __init__(self, hl_wrapper, 
+                       ll_wrapper, 
+                       sys_info,
+                       sys_info_format='pdb',
+                       modified_variant=False,
+                       qm_center=[0],
+                       partition_scheme='distance',
+                       Rmin=3.8,
+                       Rmax=4.5,
+                       qmmm_param={},
+                       **kwargs):
         
-        super().__init__(param, hl_wrapper, ll_wrapper, md_simulation_program, 'PAP')
-        self.modified_variant = param['modified_variant']
+        self.modified_variant = modified_variant
+        self.qm_center = qm_center
+        self.partition_scheme = partition_scheme
+        self.Rmin = Rmin
+        self.Rmax = Rmax
 
+        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, qmmm_param, 'PAP')
 
     def partition(self, qm_center=None): 
         """
@@ -183,10 +224,10 @@ class PAP(AQMMM):
 
         Examples    
         --------
-        combos = get_combos([1,2])
+        >>> combos = get_combos([1,2])
 
         In this case, combos will return 
-        [(1), (2), (1,2)]
+        >>> [(1), (2), (1,2)]
         """
         
         all_combo = []

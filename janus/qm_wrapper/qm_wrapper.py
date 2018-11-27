@@ -3,38 +3,36 @@ import mendeleev as mdlv
 
 class QMWrapper(ABC):
 
-    def __init__(self, param, program):
+    def __init__(self, class_type):
         """
         QM wrapper super class
 
-        Parameters
-        ----------
-        param : dict 
-            parameters for QM computations
-
-        program : str
-            what program to use for QM computations
-
+        Note
+        ----
+        Since QMWrapper is a super class and has abstract methods
+        the user cannot actually instantiate a QMWrapper object, but only its child objects
         """
-        self.program = program
-        self.param = param
+        self.class_type = class_type
 
         self.qm_param = None
         self.external_charges = None
         self.charges = None
         self.is_open_shelled = False
+        self.qm_geometry = None
 
 
-    def get_energy_and_gradient(self, traj, include_coulomb='all', link_atoms=None, minimize=False, charges=None):
+    def get_energy_and_gradient(self, traj=None, geometry=None, include_coulomb='all', link_atoms=None, minimize=False, charges=None):
         """
         Gets the energy and gradient from a QM computation of the primary subsystem 
 
         Parameters
         ----------
         traj : MDtraj trajectory object
+            A trajectory object from which to extract geometry information if geometry is None
+        geometry : str
+            A string containing geometry information as XYZ coordinates. Default is None.
         include_coulomb : str
             whether to include coulombic interactions. Not applicable for QM programs
-
         link_atoms : list
             indices of link_atoms
         minimize : bool
@@ -49,14 +47,18 @@ class QMWrapper(ABC):
 
         Examples
         --------
-        >>> run_qm(geom, 10)
+        >>> get_energy_and_gradient(traj=mdtraj, geometry=None)
         """
-        self.get_qm_geometry(traj)
+        
+        if (geometry is None and traj is not None):
+            self.get_geom_from_trajectory(traj)
+        elif (geometry is not None and traj is None):
+            self.set_qm_geometry(geometry)
 
         if charges is not None:
             self.external_charges = charges
 
-        if not self.qm_param:
+        if self.qm_param is None:
             self.build_qm_param()
 
         if minimize is True:
@@ -71,22 +73,14 @@ class QMWrapper(ABC):
         return self.info
 
             
-    def get_qm_geometry(self, qm_traj=None):
+    def get_geom_from_trajectory(self, qm_traj=None):
         """
-        Uses the atoms and positions from a MDtraj trajectory object
-        with just the qm region to obtain the geometry information
+        Obtains geometry information from an MDtrah trajectory object.
 
         Parameters
         ----------
         qm_traj : MDtraj object
              describes just the primary subsystem, default is None
-
-        Returns
-        -------
-        str
-        geometry information in angstroms
-        int
-        total number of electrons in the primary subsystem
 
         """
 
@@ -112,38 +106,83 @@ class QMWrapper(ABC):
             if self.total_elec % 2 != 0:
                 self.is_open_shelled = True
 
+    def set_qm_geometry(self, geom):
+        """
+        Sets self.qm_geometry as geom
+        
+        Parameters
+        ----------
+        geom : str
+            A str containing an XYZ coordinate 
+        """
+        self.qm_geometry = geom
+
     @abstractmethod
     def compute_info(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     @abstractmethod
     def build_qm_param(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
+
     @abstractmethod
     def optimize_geometry(self):
+        """
+        Function implemented in individual child classes
+        """
         pass
 
     def get_main_info(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def set_external_charges(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def initialize(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def take_step(self, force):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def get_main_charges(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def convert_trajectory(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def convert_input(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
 
     def set_up_reporters(self):
+        """
+        Function not implemented for QM wrappers
+        """
         raise Exception('method not implemented for class')
     

@@ -27,9 +27,7 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="janus.system" href="janus.system.html" />
-    <link rel="prev" title="janus" href="../janus.html" /> 
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -78,17 +76,11 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../janus.html">janus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
 </ul>
 
             
@@ -134,10 +126,6 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
-        
-          <li><a href="../janus.html">janus</a> &raquo;</li>
-        
       <li>janus.driver</li>
     
     
@@ -168,12 +156,12 @@
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="../janus.html#janus.driver.run_janus" title="janus.driver.run_janus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_janus</span></code></a>([filename])</td>
-<td></td>
+<td>Drives the janus program.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus.html#janus.driver.run_simulation" title="janus.driver.run_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_simulation</span></code></a>(initializer,&nbsp;restart)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus.html#janus.driver.run_simulation" title="janus.driver.run_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_simulation</span></code></a>(md_sim_wrapper,&nbsp;qmmm_wrapper)</td>
 <td>Drives QM/MM with MD time step integration</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus.html#janus.driver.run_single_point" title="janus.driver.run_single_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_single_point</span></code></a>(initializer)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus.html#janus.driver.run_single_point" title="janus.driver.run_single_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_single_point</span></code></a>(ll_wrapper,&nbsp;qmmm_wrapper)</td>
 <td>Drives single QM/MM computation</td>
 </tr>
 </tbody>
@@ -185,15 +173,6 @@
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="janus.system.html" class="btn btn-neutral float-right" title="janus.system" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../janus.html" class="btn btn-neutral" title="janus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
