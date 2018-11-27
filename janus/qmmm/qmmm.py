@@ -6,41 +6,45 @@ from janus.system import System
 class QMMM(object):
     """
     QMMM class for QMMM computations
+
+    Parameters
+    ----------
+        hl_wrapper : :class:`~janus.mm_wrapper.MMWrapper` subclass or :class:`~janus.qm_wrapper.QMWrapper` subclass
+            Wrapper for performing the high-level computation. 
+            Traditionally QM but user can define MM.
+        ll_wrapper : :class:`~janus.mm_wrapper.MMWrapper` subclass
+            Wrapper for performing the low-level computation
+        sys_info : str 
+            A string with the filename or a list with multiple filenames 
+            that contain position and topology information. 
+        sys_info_format : str 
+            Describes what kind of input is contained in sys_info. Default is pdb.
+        qm_atoms : list
+            Indicies that define the QM region. Only static in traditional QM/MM
+        qmmm_scheme : str 
+            Scheme for computing QM/MM energies and gradients, 
+            only substractive available(default)
+        embedding_method : str 
+            Embedding method to use for QM/MM. 
+            Mechanical(default) and Electrostatic available
+        boundary_treatment : str 
+            Method for treating dangling bonds in the QM region,
+            link_atom(default), RC, and RCD available
+        link_atom_element : str 
+            Element to use for link atom, default is H. 
+            Beware of using others (not all functionality tested)
+        
     """
 
     def __init__(self, hl_wrapper, 
                        ll_wrapper, 
                        sys_info,
-                       qm_atoms=[],
                        sys_info_format='pdb',
+                       qm_atoms=[],
                        qmmm_scheme='subtractive', 
                        embedding_method='Mechanical', 
                        boundary_treatment='link_atom',
                        link_atom_element='H'):
-        """
-        Initializes QMMM class with parameters given in param
-
-        Parameters
-        ----------
-        param : dict
-            contains parameters for QM/MM and adaptive QM/MM computations
-            Individual parameters include:
-            - qmmm_scheme: str of scheme for computing QM/MM energies and gradients, 
-                            only substractive available(default)
-            - embedding_method: str of embedding method to use for QM/MM. 
-                                Mechanical(default) and Electrostatic available
-            - boundary_treatment: str of method for treating dangling bonds in the QM region,
-                                    link_atom(default), RC, and RCD available
-            - link_atom_element: str of element to use for link atom,
-                                    default is H. Beware of using others (not all functionality tested)
-            - qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations
-            - run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,
-                            default is True. Regular QM/MM run if False
-
-        hl_wrapper : a qm_wrapper or mm_wrapper object, depending on the user input
-        ll_wrapper : a mm_wrapper object only for now
-
-        """
         
         self.class_type = 'QMMM'
         self.hl_wrapper = hl_wrapper
@@ -62,14 +66,17 @@ class QMMM(object):
 
     def run_qmmm(self, main_info, wrapper_type):
         """
+        Drives QM/MM computation.
         Updates the positions and topology given in main_info,
         and determines the QM/MM energy and gradients
 
         Parameters
         ----------
         main_info : dict 
-            contains the energy and forces for the whole system
-
+            Contains the energy, forces, topology, and position information 
+            for the whole system
+        wrapper_type : str
+            Defines the program used to obtain main_info
         """
 
         self.update_traj(main_info['positions'], main_info['topology'], wrapper_type)
@@ -111,6 +118,8 @@ class QMMM(object):
             positions in nm
         topology : OpenMM topology object
             If the mm program is  OpenMM
+        wrapper_type : str
+            Defines the program used to obtain topology and positions
 
        """ 
         # later can think about saving instead of making new instance
@@ -135,7 +144,8 @@ class QMMM(object):
 
         Parameters
         ----------
-        system : System object
+        system : :class:`~janus.system.System`
+            The system in which to save qmmm energy and forces
         main_info : dict 
             contains the energy and forces for the whole system
 
@@ -177,7 +187,8 @@ class QMMM(object):
 
         Parameters
         ----------
-        system : System object
+        system : :class:`~janus.system.System`
+            The system in which to save qmmm energy and forces
         main_info : dict 
             contains the energy and forces for the whole system
 
@@ -218,7 +229,6 @@ class QMMM(object):
     def compute_gradients(self, system):
         """
         Computes the QM/MM gradients 
-        TODO:RCD gradients need work
 
         Note
         ----
@@ -226,8 +236,8 @@ class QMMM(object):
 
         Parameters
         ----------
-        system : System object 
-            Contains the gradients at  high level and low level  
+        system : :class:`~janus.system.System`
+            The system in which to save qmmm energy and forces
 
         """
         # NEED TO MAKE SURE: am I working with GRADIENTS or FORCES? NEED TO MAKE SURE CONSISTENT!
@@ -286,7 +296,7 @@ class QMMM(object):
         Parameters
         ----------
         qm_atoms : list 
-            atom indicies corresponding to the atoms in
+            Indicies corresponding to the atoms in
             the primary subsystem. Default is None and uses self.qm_atoms
 
         Examples
@@ -380,6 +390,7 @@ class QMMM(object):
 
     def prepare_link_atom(self):
         """
+        Identifies where to put link atom.
         Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary
         and computes the g scaling factor for the link atom.
         """
@@ -542,7 +553,8 @@ class QMMM(object):
 
         Parameters
         ----------
-        system : System object 
+        system : :class:`~janus.system.System`
+            The system in which to save qmmm energy and forces
 
         Returns
         -------
@@ -650,7 +662,23 @@ class QMMM(object):
 
             
     def convert_input(self, fil, form):
+        """
+        Converts a set of input files into a MD trajectory
 
+        Parameters
+        ----------
+        fil : str 
+            A string with the filename or a list with multiple filenames 
+            that contain position and topology information. 
+        form : str 
+            Describes what kind of input is contained in sys_info. Default is pdb.
+
+        Returns
+        -------
+        MDtraj object
+        
+        """
+            
         if form == 'pdb':
             traj = md.load(fil)
 

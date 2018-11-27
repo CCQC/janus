@@ -5,8 +5,8 @@ from mendeleev import element
 class System(object):
     """
     A class that stores system information.
-    Holds information such as energy, forces, and positions for each partition
-    of a system at a particular point.
+    Holds information such as energy, forces, and positions for 
+    a QM/MM partition.
     Stores qmmm and aqmmm information as well.
 
     Parameters
