@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/bzhang25/janus.svg?branch=master)](https://travis-ci.com/bzhang25/janus)
-[![codecov](https://codecov.io/gh/bzhang25/janus/branch/master/graph/badge.svg)](https://codecov.io/gh/bzhang25/janus)
+[![Build Status](https://travis-ci.org/CCQC/janus.svg?branch=master)](https://travis-ci.org/CCQC/janus)
+[![codecov](https://codecov.io/gh/CCQC/janus/branch/master/graph/badge.svg)](https://codecov.io/gh/CCQC/janus)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 # Janus
