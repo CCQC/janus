@@ -20,7 +20,7 @@ wrapper_ala = OpenMMWrapper(sys_info=ala_pdb_file, md_param={'md_ensemble':'NVT'
 
 def test_create_new_residue_template():
 
-    mod = wrapper_ala.create_modeller(keep_qm=False, qm_atoms=[0,1,2,3])
+    mod = wrapper_ala.create_modeller(keep_atoms=False, atoms=[0,1,2,3])
     wrapper_ala.create_new_residue_template(mod.topology)
 
     assert wrapper_ala.forcefield._templates['Modified_ALA'].name == 'Modified_ALA' 
@@ -97,8 +97,8 @@ def test_take_updated_step():
     assert np.allclose(energy2, -0.009, atol=1e-03)
 
 def test_create_modeller():
-    mod1 = wrapper_ala.create_modeller(qm_atoms=[0,1,2,3], keep_qm=True)
-    mod2 = wrapper_ala.create_modeller(qm_atoms=[0,1,2,3], keep_qm=False)
+    mod1 = wrapper_ala.create_modeller(atoms=[0,1,2,3], keep_atoms=True)
+    mod2 = wrapper_ala.create_modeller(atoms=[0,1,2,3], keep_atoms=False)
     atom1 = mod1.topology.getNumAtoms()
     atom2 = mod2.topology.getNumAtoms()
 

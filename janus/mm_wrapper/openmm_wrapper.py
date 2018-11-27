@@ -728,10 +728,10 @@ class OpenMMWrapper(MMWrapper):
         """
 
         modeller = OM_app.Modeller(self.topology, self.pdb.getPositions())
-        if keep_qm is False:
-            OpenMMWrapper.delete_atoms(modeller, qm_atoms)
-        elif keep_qm is True:
-            OpenMMWrapper.keep_atoms(modeller, qm_atoms)
+        if keep_atoms is False:
+            OpenMMWrapper.delete_atoms(modeller, atoms)
+        elif keep_atoms is True:
+            OpenMMWrapper.keep_atoms(modeller, atoms)
         return modeller
 
     def keep_atoms(model, atoms):
@@ -910,5 +910,8 @@ class OpenMMWrapper(MMWrapper):
             potentialEnergy=pot, kineticEnergy=kin, totalEnergy=enrgy, temperature=temp, density=den))
 
 
-
-
+    def set_external_charges(self):
+        """
+        Function not implemented for classes
+        """
+        pass
