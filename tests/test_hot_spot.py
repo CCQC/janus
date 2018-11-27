@@ -16,12 +16,12 @@ hs_0 = qmmm.HotSpot(psi4, openmm, sys_info=water)
 hs_1 = qmmm.HotSpot(psi4, openmm, sys_info=water)
 hs_2 = qmmm.HotSpot(psi4, openmm, sys_info=water)
 
-hs_0.set_Rmin(0.26)
-hs_0.set_Rmax(0.28)
-hs_1.set_Rmin(0.26)
-hs_1.set_Rmax(0.32)
-hs_2.set_Rmin(0.26)
-hs_2.set_Rmax(0.34)
+hs_0.set_Rmin(2.6)
+hs_0.set_Rmax(2.8)
+hs_1.set_Rmin(2.6)
+hs_1.set_Rmax(3.2)
+hs_2.set_Rmin(2.6)
+hs_2.set_Rmax(3.4)
 
 def test_partition():
 
@@ -37,15 +37,15 @@ def test_partition():
 
 def test_compute_lamda_i():
 
-    lamda1 = hs.compute_lamda_i(0.30)
-    lamda2 = hs.compute_lamda_i(0.38)
-    lamda3 = hs.compute_lamda_i(0.40)
-    lamda4 = hs.compute_lamda_i(0.45)
-    lamda5 = hs.compute_lamda_i(0.50)
+    lamda1 = hs.compute_lamda_i(3.0)
+    lamda2 = hs.compute_lamda_i(3.8)
+    lamda3 = hs.compute_lamda_i(4.0)
+    lamda4 = hs.compute_lamda_i(4.5)
+    lamda5 = hs.compute_lamda_i(5.0)
 
     assert lamda1[0] == 1
     assert lamda2[0] == 1
-    assert lamda3[0] == 0.8224337457798975 
+    assert np.allclose(lamda3[0], 0.8224337457798981)
     assert lamda4[0] == 0
     assert lamda5[0] == 0
 
@@ -66,9 +66,9 @@ def test_run_qmmm():
     hs_0.run_qmmm(main_info_m, 'OpenMM')
     hs_1.run_qmmm(main_info_m, 'OpenMM')
 
-    #print(hs_0.systems[0]['qmmm_forces'][0])  
-    #print(hs_1.systems[0]['qmmm_forces'][0])
-    #print(hs_1.systems[0]['qmmm_forces'][3])
+    print(hs_0.systems[0]['qmmm_forces'][0])  
+    print(hs_1.systems[0]['qmmm_forces'][0])
+    print(hs_1.systems[0]['qmmm_forces'][3])
 
     assert np.allclose(hs_0.systems[0]['qmmm_forces'][0], np.array([ 0.01119897, 0.04866929,-0.03788886]))
     assert np.allclose(hs_1.systems[0]['qmmm_forces'][0], np.array([ 0.00984826, 0.04972007,-0.03577803]))

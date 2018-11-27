@@ -15,10 +15,10 @@ main_info_m = openmm.get_main_info()
 pap_1 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
 pap_2 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
 
-pap_1.set_Rmin(0.26)
-pap_1.set_Rmax(0.32)
-pap_2.set_Rmin(0.26)
-pap_2.set_Rmax(0.34)
+pap_1.set_Rmin(2.6)
+pap_1.set_Rmax(3.2)
+pap_2.set_Rmin(2.6)
+pap_2.set_Rmax(3.4)
 
 def test_get_combos():
 
@@ -47,18 +47,17 @@ def test_compute_sf_gradient():
     f1 =  pap_1.compute_sf_gradient()
     f2 = pap_2.compute_sf_gradient()
 
-    force1 = {0: np.array([ 1.97148884,  555.51774573,  630.6267936 ]), 
-              3: np.array([ -1.75086594, -493.35156336, -560.05540221]), 
-              4: np.array([ -0.11031145, -31.08309118, -35.28569569]),
-              5: np.array([ -0.11031145, -31.08309118, -35.28569569])}
-
-    force2 =  {0:  np.array([   39.62584163,   268.0010218 ,  1854.92067971]),
-               3: np.array([  -0.61890873, -174.39347167, -197.9724261 ]),
-               4: np.array([ -0.03899369, -10.98747543, -12.47304241]),
-               5: np.array([ -0.03899369, -10.98747543, -12.47304241]),
-               6: np.array([  -34.57253397,   -63.61642829, -1449.37011926]),
-               7: np.array([ -2.17820578,  -4.00808549, -91.31602477]),
-               8: np.array([ -2.17820578,  -4.00808549, -91.31602477])}
+    force1 = {0: np.array([ 0.01971489,  5.55517746,  6.30626794]), 
+              3: np.array([-0.01750866, -4.93351563, -5.60055402]), 
+              4: np.array([-0.00110311, -0.31083091, -0.35285696]),
+              5: np.array([-0.00110311, -0.31083091, -0.35285696])}
+    force2 = {0: np.array([  0.39625842,   2.68001022,  18.5492068 ]), 
+              3: np.array([-0.00618909, -1.74393472, -1.97972426]),
+              4: np.array([-0.00038994, -0.10987475, -0.12473042]),
+              5: np.array([-0.00038994, -0.10987475, -0.12473042]),
+              6: np.array([ -0.34572534,  -0.63616428, -14.49370119]), 
+              7: np.array([-0.02178206, -0.04008085, -0.91316025]),
+              8: np.array([-0.02178206, -0.04008085, -0.91316025])}
 
     for i, f in f1.items():
         assert np.allclose(f, force1[i])
@@ -82,8 +81,8 @@ def test_run_aqmmm():
 
     assert np.allclose(pap_1.systems[0]['qmmm_energy'], 77.43370419740786) 
     assert np.allclose(pap_2.systems[0]['qmmm_energy'], 95.51933428487493)
-    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([6.03650482,  1420.16491984,  1612.04380529]))
-    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([   18.85488287,  3158.7824764 ,  3852.29366477]))
+    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([1.05036505, 15.19164921, 17.11043806]))
+    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([1.17854883, 32.57782478, 39.51293667]))
     assert np.allclose(pap_1.systems[0]['qmmm_forces'][1], np.ones((3))) 
     assert np.allclose(pap_2.systems[0]['qmmm_forces'][1], np.ones((3))) 
     assert len(pap_1.systems[0]['qmmm_forces']) == 6
@@ -102,10 +101,10 @@ def test_run_qmmm():
     pap_1.run_qmmm(main_info_m, 'OpenMM')
     pap_2.run_qmmm(main_info_m, 'OpenMM')
 
-    assert pap_1.systems[0]['qmmm_energy'] ==  -0.007550404996134019
-    assert pap_2.systems[0]['qmmm_energy'] == -0.007526130891361977
-    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([ 0.01116153, 0.05068185,-0.03557397]))
-    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([ 0.01083984, 0.05331806,-0.03271556]))
+    assert np.allclose(pap_1.systems[0]['qmmm_energy'],  -0.007550404996134019)
+    assert np.allclose(pap_2.systems[0]['qmmm_energy'], -0.007526130891361977)
+    assert np.allclose(pap_1.systems[0]['qmmm_forces'][0], np.array([0.01115458, 0.04872366,-0.03779692] ))
+    assert np.allclose(pap_2.systems[0]['qmmm_forces'][0], np.array([0.01083326, 0.04899138,-0.03727567] ))
     assert len(pap_1.systems[0]['qmmm_forces']) == 6
     assert len(pap_2.systems[0]['qmmm_forces']) == 9
 
