@@ -27,7 +27,8 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="janus.mm_wrapper.MMWrapper" href="janus.mm_wrapper.MMWrapper.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -76,11 +77,17 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -125,6 +132,10 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a> &raquo;</li>
         
       <li>janus.mm_wrapper.OpenMMWrapper</li>
     
@@ -264,35 +275,41 @@ other possible parameter values consult docs.openmm.org</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code>(traj[,&nbsp;geometry,&nbsp;…])</td>
 <td>Gets the energy and gradient from a MM computation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_charges" title="janus.mm_wrapper.OpenMMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
-<td>Gets the MM point charges for the system of interest</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_info" title="janus.mm_wrapper.OpenMMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
-<td>Gets the information for the system of interest.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_state_info" title="janus.mm_wrapper.OpenMMWrapper.get_state_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state_info</span></code></a>([main_info,&nbsp;energy,&nbsp;…])</td>
-<td>Gets information like the kinetic and potential energy, positions, forces, and topology from an OpenMM state.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.initialize" title="janus.mm_wrapper.OpenMMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(embedding_method)</td>
-<td>Gets information for the system of interest in its initial state.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.keep_atoms" title="janus.mm_wrapper.OpenMMWrapper.keep_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keep_atoms</span></code></a>(atoms)</td>
-<td>Acts on an OpenMM Modeller object to keep the specified atoms in the MM system and deletes everything else</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geom_from_trajectory</span></code>()</td>
 <td>Function not implemented for MM wrappers</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.restart" title="janus.mm_wrapper.OpenMMWrapper.restart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart</span></code></a>(embedding_method,&nbsp;chkpt_file,&nbsp;…)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_charges" title="janus.mm_wrapper.OpenMMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
+<td>Gets the MM point charges for the system of interest</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_main_info" title="janus.mm_wrapper.OpenMMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td>Gets the information for the system of interest.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.get_state_info" title="janus.mm_wrapper.OpenMMWrapper.get_state_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state_info</span></code></a>([main_info,&nbsp;energy,&nbsp;…])</td>
+<td>Gets information like the kinetic and potential energy, positions, forces, and topology from an OpenMM state.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.initialize" title="janus.mm_wrapper.OpenMMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(embedding_method)</td>
+<td>Gets information for the system of interest in its initial state.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.keep_atoms" title="janus.mm_wrapper.OpenMMWrapper.keep_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keep_atoms</span></code></a>(atoms)</td>
+<td>Acts on an OpenMM Modeller object to keep the specified atoms in the MM system and deletes everything else</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code>()</td>
+<td>Function not implemented for MM wrappers</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.restart" title="janus.mm_wrapper.OpenMMWrapper.restart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart</span></code></a>(embedding_method,&nbsp;chkpt_file,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_LJ_zero" title="janus.mm_wrapper.OpenMMWrapper.set_LJ_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_LJ_zero</span></code></a>(OM_system)</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_LJ_zero" title="janus.mm_wrapper.OpenMMWrapper.set_LJ_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_LJ_zero</span></code></a>(OM_system)</td>
 <td>Removes the Lennard-Jones (van der Waals) force from the system</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_charge_zero" title="janus.mm_wrapper.OpenMMWrapper.set_charge_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_charge_zero</span></code></a>(OM_system[,&nbsp;link_atoms])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_charge_zero" title="janus.mm_wrapper.OpenMMWrapper.set_charge_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_charge_zero</span></code></a>(OM_system[,&nbsp;link_atoms])</td>
 <td>Removes the coulombic forces by setting charges of specified atoms to zero</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code>()</td>
-<td>Function implemented in individual child classes</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_external_charges" title="janus.mm_wrapper.OpenMMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
+<td>Function not implemented for classes</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_qm_geometry</span></code>()</td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.OpenMMWrapper.set_up_reporters" title="janus.mm_wrapper.OpenMMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>(simulation)</td>
 <td>Sets up reporters according to options specified by arguments in md_param.</td>
@@ -344,6 +361,13 @@ other possible parameter values consult docs.openmm.org</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="janus.mm_wrapper.MMWrapper.html" class="btn btn-neutral" title="janus.mm_wrapper.MMWrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

@@ -207,15 +207,34 @@
 </tbody>
 </table>
 </dd>
-</dl>
-</div>
-</div>
-<div class="section" id="qmmm">
-<h2>QMMM<a class="headerlink" href="#qmmm" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>Required keywords<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<hr class="docutils" />
-<dl class="docutils">
+<dt><strong>run_md</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Whether to run a MD simulation</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Bool</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">False</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>run_qmmm</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies whether to run QM/MM</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Bool</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">False</td>
+</tr>
+</tbody>
+</table>
+</dd>
 <dt><strong>run_aqmmm</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -225,29 +244,27 @@
 </tr>
 <tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Bool</td>
 </tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">False</td>
+</tr>
 </tbody>
 </table>
 </dd>
-<dt><strong>qm_atoms</strong></dt>
+<dt><strong>aqmmm_scheme</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies what atoms to treat with QM (or other high level treatment)</td>
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies what adaptive QM/MM approach to use</td>
 </tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">List</td>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Notes:</th><td class="field-body">If run_aqmmm is true, the qm_atoms is the same as the qm_center</td>
+<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">ONIOM-XS, Hot-Spot, PAP, SAP, DAS</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">ONIOM-XS</td>
 </tr>
 </tbody>
 </table>
 </dd>
-</dl>
-</div>
-<div class="section" id="id2">
-<h3>Optional keywords<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<hr class="docutils" />
-<dl class="docutils">
 <dt><strong>ll_program</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -280,6 +297,93 @@
 </tbody>
 </table>
 </dd>
+<dt><strong>md_simulation_program</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies what program to use for MD simulation</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">OpenMM</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">OpenMM</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>md_restart</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Whether to restart a simulation from saved checkpoints</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Bool</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">False</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>md_restart_checkpoint_filename</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Name of checkpoint file to read for restart</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">checkpoint.chk</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>md_restart_forces_filename</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Name of force file to read for restart</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">forces.pkl</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="qmmm">
+<h2>QMMM<a class="headerlink" href="#qmmm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Required keywords<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<hr class="docutils" />
+<dl class="docutils">
+<dt><strong>qm_atoms</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies what atoms to treat with QM (or other high level treatment)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">List</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Notes:</th><td class="field-body">If run_aqmmm is true, the qm_atoms is the same as the qm_center</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<div class="section" id="id2">
+<h3>Optional keywords<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<hr class="docutils" />
+<dl class="docutils">
 <dt><strong>embedding_method</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -346,11 +450,7 @@
 </dd>
 </dl>
 </div>
-<div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 </div>
-</div>
-<hr class="docutils" />
 <div class="section" id="aqmmm">
 <h2>AQMMM<a class="headerlink" href="#aqmmm" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id3">
@@ -375,22 +475,6 @@
 <h3>Optional keywords<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <hr class="docutils" />
 <dl class="docutils">
-<dt><strong>aqmmm_scheme</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies what adaptive QM/MM approach to use</td>
-</tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">ONIOM-XS, Hot-Spot, PAP, SAP, DAS</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">ONIOM-XS</td>
-</tr>
-</tbody>
-</table>
-</dd>
 <dt><strong>partition_scheme</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -416,7 +500,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Float</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">4.0</td>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">3.8</td>
 </tr>
 </tbody>
 </table>
@@ -451,31 +535,13 @@
 </dd>
 </dl>
 </div>
-<div class="section" id="id5">
-<h3>Examples<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 </div>
-</div>
-<hr class="docutils" />
 <div class="section" id="molecular-dynamics">
 <h2>Molecular Dynamics<a class="headerlink" href="#molecular-dynamics" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>Required keywords<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>Required keywords<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <hr class="docutils" />
 <dl class="docutils">
-<dt><strong>md_simulation_program</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Specifies what program to use for MD simulation</td>
-</tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">OpenMM</td>
-</tr>
-</tbody>
-</table>
-</dd>
 <dt><strong>start_qmmm</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -506,24 +572,10 @@
 </dd>
 </dl>
 </div>
-<div class="section" id="id7">
-<h3>Optional keywords<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>Optional keywords<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <hr class="docutils" />
 <dl class="docutils">
-<dt><strong>run_md</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Whether to run a MD simulation</td>
-</tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">Bool</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">False</td>
-</tr>
-</tbody>
-</table>
-</dd>
 <dt><strong>step_size</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -677,6 +729,20 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 </tbody>
 </table>
 </dd>
+<dt><strong>return_info_filename</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">name of info file to return</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Datatype:</th><td class="field-body">String</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">info.dat</td>
+</tr>
+</tbody>
+</table>
+</dd>
 <dt><strong>return_checkpoint_interval</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -733,34 +799,6 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 </tbody>
 </table>
 </dd>
-<dt><strong>restart_checkpoint_filename</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Name of checkpoint file to read for restart</td>
-</tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">checkpoint.chk</td>
-</tr>
-</tbody>
-</table>
-</dd>
-<dt><strong>restart_forces_filename</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body">Name of force file to read for restart</td>
-</tr>
-<tr class="field-even field"><th class="field-name">DataType:</th><td class="field-body">String</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Default:</th><td class="field-body">forces.pkl</td>
-</tr>
-</tbody>
-</table>
-</dd>
 </dl>
 </div>
 </div>
@@ -769,8 +807,8 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 </div>
 <div class="section" id="low-level">
 <h2>Low Level<a class="headerlink" href="#low-level" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id8">
-<h3>Examples<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <hr class="docutils" />

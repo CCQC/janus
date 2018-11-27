@@ -3,7 +3,6 @@ janus
 
 .. autosummary::
     :toctree: _autosummary
-    
     janus.driver
     janus.system
     janus.initializer

@@ -27,7 +27,9 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="janus.mm_wrapper.OpenMMWrapper" href="janus.mm_wrapper.OpenMMWrapper.html" />
+    <link rel="prev" title="MM_Wrapper Submodule" href="../janus_mm_wrapper.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -76,11 +78,17 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -125,6 +133,10 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a> &raquo;</li>
         
       <li>janus.mm_wrapper.MMWrapper</li>
     
@@ -187,20 +199,26 @@ the user cannot actually instantiate a MMWrapper object, but only its child obje
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_energy_and_gradient" title="janus.mm_wrapper.MMWrapper.get_energy_and_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_energy_and_gradient</span></code></a>(traj[,&nbsp;geometry,&nbsp;…])</td>
 <td>Gets the energy and gradient from a MM computation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_charges" title="janus.mm_wrapper.MMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
-<td>Function implemented in individual child classes</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_info" title="janus.mm_wrapper.MMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
-<td>Function implemented in individual child classes</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.initialize" title="janus.mm_wrapper.MMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>()</td>
-<td>Function implemented in individual child classes</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.optimize_geometry" title="janus.mm_wrapper.MMWrapper.optimize_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_geom_from_trajectory" title="janus.mm_wrapper.MMWrapper.get_geom_from_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geom_from_trajectory</span></code></a>()</td>
 <td>Function not implemented for MM wrappers</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_external_charges" title="janus.mm_wrapper.MMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_charges" title="janus.mm_wrapper.MMWrapper.get_main_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_charges</span></code></a>()</td>
 <td>Function implemented in individual child classes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.get_main_info" title="janus.mm_wrapper.MMWrapper.get_main_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_main_info</span></code></a>()</td>
+<td>Function implemented in individual child classes</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.initialize" title="janus.mm_wrapper.MMWrapper.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>()</td>
+<td>Function implemented in individual child classes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.optimize_geometry" title="janus.mm_wrapper.MMWrapper.optimize_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_geometry</span></code></a>()</td>
+<td>Function not implemented for MM wrappers</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_external_charges" title="janus.mm_wrapper.MMWrapper.set_external_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_external_charges</span></code></a>()</td>
+<td>Function implemented in individual child classes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_qm_geometry" title="janus.mm_wrapper.MMWrapper.set_qm_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_qm_geometry</span></code></a>()</td>
+<td>Function not implemented for MM wrappers</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_mm_wrapper.html#janus.mm_wrapper.MMWrapper.set_up_reporters" title="janus.mm_wrapper.MMWrapper.set_up_reporters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_up_reporters</span></code></a>()</td>
 <td>Function implemented in individual child classes</td>
@@ -243,6 +261,15 @@ the user cannot actually instantiate a MMWrapper object, but only its child obje
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="janus.mm_wrapper.OpenMMWrapper.html" class="btn btn-neutral float-right" title="janus.mm_wrapper.OpenMMWrapper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../janus_mm_wrapper.html" class="btn btn-neutral" title="MM_Wrapper Submodule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

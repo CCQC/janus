@@ -32,27 +32,26 @@ _________________
     :Default: pdb
     :Values: pdb, Amber, Gromacs
     
-QMMM
---------------------------
+**run_md**
+    :Description: Whether to run a MD simulation
+    :DataType: Bool
+    :Default: False
 
-Required keywords
-_________________
-
-----------------------------
+**run_qmmm**
+    :Description: Specifies whether to run QM/MM
+    :DataType: Bool
+    :Default: False
 
 **run_aqmmm**
     :Description: Specifies whether to run adaptive QM/MM
     :DataType: Bool
+    :Default: False
 
-**qm_atoms**
-    :Description: Specifies what atoms to treat with QM (or other high level treatment)
-    :DataType: List
-    :Notes: If run_aqmmm is true, the qm_atoms is the same as the qm_center
-
-Optional keywords
-_________________
-
-----------------------------
+**aqmmm_scheme**
+    :Description: Specifies what adaptive QM/MM approach to use
+    :DataType: String
+    :Values: ONIOM-XS, Hot-Spot, PAP, SAP, DAS
+    :Default: ONIOM-XS
 
 **ll_program**
     :Description: Specifies what program to use for the lower level computation
@@ -65,6 +64,44 @@ _________________
     :DataType: String
     :Values: OpenMM, Psi4
     :Default: Psi4
+
+**md_simulation_program**
+    :Description: Specifies what program to use for MD simulation
+    :DataType: String
+    :Values: OpenMM
+    :Default: OpenMM
+
+**md_restart**
+    :Description: Whether to restart a simulation from saved checkpoints
+    :DataType: Bool
+    :Default: False
+
+**md_restart_checkpoint_filename**
+    :Description: Name of checkpoint file to read for restart
+    :DataType: String
+    :Default: checkpoint.chk
+
+**md_restart_forces_filename**
+    :Description: Name of force file to read for restart
+    :DataType: String
+    :Default: forces.pkl
+QMMM
+--------------------------
+
+Required keywords
+_________________
+
+----------------------------
+
+**qm_atoms**
+    :Description: Specifies what atoms to treat with QM (or other high level treatment)
+    :DataType: List
+    :Notes: If run_aqmmm is true, the qm_atoms is the same as the qm_center
+
+Optional keywords
+_________________
+
+----------------------------
 
 **embedding_method**
     :Description: Specifies what QM/MM embedding method to use
@@ -90,10 +127,6 @@ _________________
     :Values: H
     :Default: H
 
-Examples
-_________________
-
-----------------------------
 
 AQMMM
 --------------------------
@@ -112,12 +145,6 @@ _________________
 
 ----------------------------
 
-**aqmmm_scheme**
-    :Description: Specifies what adaptive QM/MM approach to use
-    :DataType: String
-    :Values: ONIOM-XS, Hot-Spot, PAP, SAP, DAS
-    :Default: ONIOM-XS
-
 **partition_scheme**
     :Description: Specifies how to define the buffer zone atoms
     :DataType: String
@@ -127,7 +154,7 @@ _________________
 **Rmin**
     :Description: Specifies the radius from the qm center to the inner boundary of the buffer zone in distance partitioning in angstroms
     :DataType: Float
-    :Default: 4.0
+    :Default: 3.8
 
 **Rmin**
     :Description: Specifies the radius from the qm center to the outer boundary of the buffer zone in distance partitioning in angstroms
@@ -139,10 +166,6 @@ _________________
     :DataType: Bool
     :Default: False
 
-Examples
-_________________
-
-----------------------------
 
 Molecular Dynamics
 --------------------------
@@ -151,12 +174,6 @@ Required keywords
 _________________
 
 ----------------------------
-
-
-**md_simulation_program**
-    :Description: Specifies what program to use for MD simulation
-    :DataType: String
-    :Values: OpenMM
 
 **start_qmmm**
     :Description: Specifies at which step to start the QM/MM or adaptive QM/MM approach
@@ -172,11 +189,6 @@ Optional keywords
 _________________
 
 ----------------------------
-
-**run_md**
-    :Description: Whether to run a MD simulation
-    :DataType: Bool
-    :Default: False
 
 **step_size**
     :Description: The step size of the MD simulation in femtoseconds
@@ -236,6 +248,11 @@ _________________
     :DataType: Int
     :Default: 0 (info not returned)
 
+**return_info_filename**
+    :Description: name of info file to return
+    :Datatype: String
+    :Default: info.dat
+
 **return_checkpoint_interval**
     :Description: Interval for forces
     :DataType: Int
@@ -256,16 +273,6 @@ _________________
     :DataType: String
     :Default: forces.pkl
 
-
-**restart_checkpoint_filename**
-    :Description: Name of checkpoint file to read for restart
-    :DataType: String
-    :Default: checkpoint.chk
-
-**restart_forces_filename**
-    :Description: Name of force file to read for restart
-    :DataType: String
-    :Default: forces.pkl
 
 High Level 
 --------------------------

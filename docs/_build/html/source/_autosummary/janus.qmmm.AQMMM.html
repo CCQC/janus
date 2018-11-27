@@ -27,7 +27,9 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="janus.qmmm.OniomXS" href="janus.qmmm.OniomXS.html" />
+    <link rel="prev" title="janus.qmmm.QMMM" href="janus.qmmm.QMMM.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -76,11 +78,17 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setting-up-janus.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-janus.html">Running janus</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../janus.html">janus</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../janus_qmmm.html">QMMM Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_qm_wrapper.html">QM_Wrapper Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../janus_mm_wrapper.html">MM_Wrapper Submodule</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -126,6 +134,10 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../modules.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="../janus_qmmm.html">QMMM Submodule</a> &raquo;</li>
+        
       <li>janus.qmmm.AQMMM</li>
     
     
@@ -149,77 +161,18 @@
 <h1>janus.qmmm.AQMMM<a class="headerlink" href="#janus-qmmm-aqmmm" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="janus.qmmm.AQMMM">
-<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">AQMMM</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format, class_type, qm_center=[0], modified_variant=False, partition_scheme='distance', Rmin=0.38, Rmax=0.45, qmmm_param={}</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.qmmm.</code><code class="descname">AQMMM</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>sys_info_format</em>, <em>qmmm_param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM" title="Permalink to this definition">¶</a></dt>
 <dd><p>AQMMM super class for adaptive QMMM computations.
 Inherits from QMMM class.</p>
-<dl class="method">
-<dt id="janus.qmmm.AQMMM.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>hl_wrapper, ll_wrapper, sys_info, sys_info_format, class_type, qm_center=[0], modified_variant=False, partition_scheme='distance', Rmin=0.38, Rmax=0.45, qmmm_param={}</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes AQMMM class with parameters given in param</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>param</strong> (<em>dict</em>) – <p>contains parameters for QM/MM and adaptive QM/MM computations
-Individual parameters include:</p>
-<blockquote>
-<div><ul>
-<li><dl class="first docutils">
-<dt>aqmmm_scheme: str of scheme to use for adaptive QM/MM, default is ONIOM-XS.</dt>
-<dd>Hot-Spot, PAP, SAP also available</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>partition_scheme: str of scheme to use to define buffer groups,</dt>
-<dd>default is distance (only scheme available as of now)</dd>
-</dl>
-</li>
-<li>Rmin: float of inner radius for distance partition, default is 0.38</li>
-<li>Rmax: float of outer radius for distance partition, default is 0.45</li>
-<li>qm_center: list of atoms that define the qm center, default is [0]</li>
-<li><dl class="first docutils">
-<dt>qmmm_scheme: str of scheme for computing QM/MM energies and gradients,</dt>
-<dd>only substractive available(default)</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>embedding_method: str of embedding method to use for QM/MM.</dt>
-<dd>Mechanical(default) and Electrostatic available</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>boundary_treatment: str of method for treating dangling bonds in the QM region,</dt>
-<dd>link_atom(default), RC, and RCD available</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>link_atom_element: str of element to use for link atom,</dt>
-<dd>default is H. Beware of using others (not all functionality tested)</dd>
-</dl>
-</li>
-<li>qm_atoms: list of indices that define the qm_region. This is not static for adaptive QM/MM computations</li>
-<li><dl class="first docutils">
-<dt>run_aqmmm: bool to specify whether adaptive QM/MM wrappers are called,</dt>
-<dd>default is True. Regular QM/MM run if False</dd>
-</dl>
-</li>
-</ul>
-</div></blockquote>
-</li>
-<li><strong>hl_wrapper</strong> (<em>a qm_wrapper</em><em> or </em><em>mm_wrapper object</em><em>, </em><em>depending on the user input</em>) – </li>
-<li><strong>ll_wrapper</strong> (<em>a mm_wrapper object only for now</em>) – </li>
-<li><strong>class_type</strong> (<em>str</em>) – Which adaptive method class is used</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Since AQMMM is a super class and has abstract methods
 cannot actually instantiate AQMMM object, but only its child objects</p>
 </div>
+<dl class="method">
+<dt id="janus.qmmm.AQMMM.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>hl_wrapper</em>, <em>ll_wrapper</em>, <em>sys_info</em>, <em>sys_info_format</em>, <em>qmmm_param</em>, <em>class_type</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -230,13 +183,13 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.__init__" title="janus.qmmm.AQMMM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(hl_wrapper,&nbsp;ll_wrapper,&nbsp;sys_info,&nbsp;…)</td>
-<td>Initializes AQMMM class with parameters given in param</td>
+<td>Initialize self.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.compute_COM" title="janus.qmmm.AQMMM.compute_COM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_COM</span></code></a>(atoms)</td>
 <td>Computes the center of mass of a specified group</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_gradients</span></code>(system)</td>
-<td>Computes the QM/MM gradients TODO:RCD gradients need work</td>
+<td>Computes the QM/MM gradients</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.compute_lamda_i" title="janus.qmmm.AQMMM.compute_lamda_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lamda_i</span></code></a>(r_i)</td>
 <td>Computes the switching function and the derivative of the switching function defined as a 5th order spline:</td>
@@ -245,10 +198,10 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <td>Compute the energy of the isolated groups at their minimum geometry</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_input</span></code>(fil,&nbsp;form)</td>
-<td></td>
+<td>Converts a set of input files into a MD trajectory</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.define_buffer_zone" title="janus.qmmm.AQMMM.define_buffer_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code></a>(qm_center)</td>
-<td>Gets the buffer groups in the buffer zone based on a distance partitioning scheme, saves each buffer group as a Buffer object, and saves all buffer groups in the dictionary self.buffer_groups.</td>
+<td>Determines buffer group atoms.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
 <td>Cleans up the qm_atoms.</td>
@@ -269,7 +222,7 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <td>Function to return self.Rmin</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.get_buffer_info" title="janus.qmmm.AQMMM.get_buffer_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code></a>()</td>
-<td>Computes the distance r_i for each buffer group i between the qm_center and the COM of buffer group i and the computes lamda_i and d_lamda_i for that buffer group</td>
+<td>Computes switching function parameters for a particular buffer group.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
 <td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
@@ -293,16 +246,16 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive mechanical embedding scheme using the formula</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.partition" title="janus.qmmm.AQMMM.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>(info)</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_link_atom</span></code>()</td>
-<td>Saves the qm and mm atom associated with the bond being cut across the QM/MM boundary and computes the g scaling factor for the link atom.</td>
+<td>Identifies where to put link atom.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.run_aqmmm" title="janus.qmmm.AQMMM.run_aqmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_aqmmm</span></code></a>()</td>
-<td></td>
+<td>Function implemented in individual child classes</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.run_qmmm" title="janus.qmmm.AQMMM.run_qmmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_qmmm</span></code></a>(main_info,&nbsp;wrapper_type)</td>
-<td>Updates the positions and topology given in main_info, determines the partitions to be computed, for each partition, determines the QM/MM energy and gradients, then interpolates all partitions using specified adaptive QM/MM scheme</td>
+<td>Drives QM/MM computation.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../janus_qmmm.html#janus.qmmm.AQMMM.set_Rmax" title="janus.qmmm.AQMMM.set_Rmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Rmax</span></code></a>(Rmax)</td>
 <td>Function to set self.Rmax</td>
@@ -336,6 +289,15 @@ cannot actually instantiate AQMMM object, but only its child objects</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="janus.qmmm.OniomXS.html" class="btn btn-neutral float-right" title="janus.qmmm.OniomXS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="janus.qmmm.QMMM.html" class="btn btn-neutral" title="janus.qmmm.QMMM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
