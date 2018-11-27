@@ -266,6 +266,9 @@ class AQMMM(ABC, QMMM):
 
         """
 
+        print(r_i)
+        print(self.Rmin)
+        print(self.Rmax)
         x_i = float((r_i - self.Rmin) / (self.Rmax - self.Rmin))
 
         if (x_i < 0 or x_i > 1):

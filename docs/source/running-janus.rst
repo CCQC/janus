@@ -51,7 +51,7 @@ _________________
     :Description: Specifies what adaptive QM/MM approach to use
     :DataType: String
     :Values: ONIOM-XS, Hot-Spot, PAP, SAP, DAS
-    :Default: ONIOM-XS
+    :Default: None
 
 **ll_program**
     :Description: Specifies what program to use for the lower level computation

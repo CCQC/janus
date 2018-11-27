@@ -43,7 +43,7 @@ def run_simulation(md_sim_wrapper, qmmm_wrapper):
     """
 
     print('Equilibrating with {} steps'.format(md_sim_wrapper.start_qmmm))
-    md_sim_wrapper.take_step(mm_sim_wrapper.start_qmmm)
+    md_sim_wrapper.take_step(md_sim_wrapper.start_qmmm)
 
     for step in range(md_sim_wrapper.qmmm_steps):
 
@@ -53,7 +53,7 @@ def run_simulation(md_sim_wrapper, qmmm_wrapper):
         # get aqmmm forces 
         forces = qmmm_wrapper.get_forces()
 
-        if (step + 1) % md_sim_wrapper.return_forces_interval == 0:
+        if (md_sim_wrapper.return_forces_interval != 0 and (step + 1) % md_sim_wrapper.return_forces_interval == 0):
             with open(md_sim_wrapper.return_forces_filename, 'wb') as f:
                 pickle.dump(forces, f)
 

@@ -104,6 +104,8 @@ class Initializer(object):
         ll_wrapper = self.ll_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, md_param=self.md, **self.ll)
         
         print("qmmm wrapper")
+        if (self.run_aqmmm is True and self.aqmmm_scheme is None):
+            raise Exception("AQMMM specified but no scheme was given")
         if self.aqmmm_scheme is None:
             qmmm_wrapper = QMMM(hl_wrapper, ll_wrapper, self.system_info, sys_info_format=self.system_info_format, **self.qmmm)
         elif self.aqmmm_scheme == 'ONIOM-XS':

@@ -38,7 +38,7 @@ class MMWrapper(ABC):
         self.return_checkpoint_filename = 'checkpoint.chk'                                                      
         self.return_system = True,                                                                               
         self.return_system_filename = 'final.pdb'                                                               
-        self.return_info = ["potentialEnergy", "kineticEnergy", "totalEnergy", "temperature"]
+        self.return_info = []
         self.return_info_interval = 0                                                                         
         self.return_info_filename = 'info.dat'                                                                         
         self.return_forces_filename = 'forces.pkl'                                                              
