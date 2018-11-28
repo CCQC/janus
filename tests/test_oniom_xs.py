@@ -6,7 +6,7 @@ import os
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 psi4 = qm_wrapper.Psi4Wrapper()
-openmm = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water,**{'md_ensemble':'NVT', 'return_info':[]})
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
@@ -36,6 +36,15 @@ def test_set_Rmax():
     assert oxs_1.get_Rmax() == 3.2
     assert oxs_2.get_Rmax() == 3.4
 
+def test_edit_atoms():
+
+    atom1 = oxs.edit_atoms(atoms=[0,1,2,3,4], res_idx=1, remove=True)
+    atom2 = oxs.edit_atoms(atoms=[0,1,2,3,4], res_idx=1, add=True)
+
+    assert np.allclose(np.array([0,1,2]), np.array(atom1))
+    assert np.allclose(np.array([0,1,2,3,4,5]), np.array(atom2))
+
+    
 def test_define_buffer_zone():
     
     oxs.define_buffer_zone([0])
@@ -50,11 +59,25 @@ def test_define_buffer_zone():
     assert (oxs_2.buffer_groups[1].atoms == [3, 4, 5] and oxs_2.buffer_groups[2].atoms == [6, 7, 8])
 
 
+def test_get_residue_info():
+
+    res = oxs.get_residue_info(0)
+    res1 = oxs.get_residue_info(1)
+
+    assert np.allclose(np.array([0,1,2]), np.array(res.atoms))
+    assert np.allclose(0.0655606189723, res.r_i)
+    assert np.allclose(np.array([3,4,5]), np.array(res1.atoms))
+    assert np.allclose(3.10273031189, res1.r_i)
+
 def test_partition():
 
+    print('oxs')
     oxs.partition([0])
+    print('oxs0')
     oxs_0.partition([0])
+    print('oxs1')
     oxs_1.partition([0])
+    print('oxs2')
     oxs_2.partition([0])
 
     assert np.allclose(  oxs.systems[0]['qm'].qm_atoms, np.array([0, 1, 2, 3, 4, 5, 6, 7,8]))
@@ -78,22 +101,6 @@ def test_compute_COM():
     assert ratio == {0: 0.8880932556203164, 1: 0.055953372189841796, 2: 0.055953372189841796}
     assert np.allclose(xyz, com)
 
-def test_get_buffer_info():
-
-    oxs_1.get_buffer_info()
-    oxs_2.get_buffer_info()
-
-    assert np.allclose(oxs_1.buffer_groups[1].s_i  , 0.0329177832296379)   
-    assert np.allclose(oxs_2.buffer_groups[1].s_i  , 0.26960388601830587)
-    assert np.allclose(oxs_2.buffer_groups[2].s_i  , 0.004565031092682581)
-    assert np.allclose(oxs_1.buffer_groups[1].d_s_i, -.297335089104)
-    assert np.allclose(oxs_2.buffer_groups[1].d_s_i, -.659020143551)
-    assert np.allclose(oxs_2.buffer_groups[2].d_s_i, -.0612352511059) 
-
-
-    assert np.allclose(oxs_1.buffer_distance[1], 3.1027303118865379)
-    assert np.allclose(oxs_2.buffer_distance[1], 3.1027303118865379)
-    assert np.allclose(oxs_2.buffer_distance[2], 3.335804762589481 )
 
 def test_get_switching_function():
 

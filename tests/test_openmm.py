@@ -11,8 +11,9 @@ import os
 water_pdb_file = os.path.join(str('tests/files/test_openmm/water.pdb'))
 ala_pdb_file = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 
-wrapper = OpenMMWrapper(sys_info=water_pdb_file, md_param={'md_ensemble':'NVT', 'return_info':[]})
-wrapper_ala = OpenMMWrapper(sys_info=ala_pdb_file, md_param={'md_ensemble':'NVT'})
+wrapper = OpenMMWrapper(sys_info=water_pdb_file, **{'md_ensemble':'NVT', 'return_info':[]})
+wrapper_ala = OpenMMWrapper(sys_info=ala_pdb_file, **{'md_ensemble':'NVT'})
+
 #openmm_mech = openmm_wrapper.OpenMM_wrapper(sys_mech)
 #openmm_elec = openmm_wrapper.OpenMM_wrapper(sys_elec)
 #openmm_ala_link = openmm_wrapper.OpenMM_wrapper(sys_ala_link)
@@ -58,6 +59,8 @@ def test_create_openmm_system():
     assert sys_3.getNumForces() == 2
 
 def test_compute_info():
+    print(wrapper.md_ensemble)
+    print(wrapper.integrator)
     state1 = wrapper.compute_info(wrapper.pdb.topology, wrapper.pdb.positions)
     state2 = wrapper.compute_info(wrapper.pdb.topology, wrapper.pdb.positions, minimize=True)
 

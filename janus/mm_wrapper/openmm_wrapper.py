@@ -101,13 +101,20 @@ class OpenMMWrapper(MMWrapper):
         self.flexibleConstraints=False 
         self.ignoreExternalBonds=True
 
+        openmm_param = ['nonbondMethod', 'constraints', 'hydrogenMass', 'switchDistance',
+                        'residueTemplates', 'rigid_water', 'removeCMMotion', 'flexibleConstraints',
+                        'ignoreExternalBonds']
+
+        for k, v in kwargs.items():
+            if k in openmm_param:
+                setattr(self, k, eval(v))
+            else:
+                setattr(self, k, v)
+
         if self.md_ensemble == 'NVT':
             self.integrator = self.NVT_integrator
         elif self.md_ensemble == 'NVE':
             self.integrator = self.NVE_integrator
-
-        for k, v in kwargs.items():
-            setattr(self, k, eval(v))
 
         self.positions = None
 
