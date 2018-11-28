@@ -52,6 +52,9 @@ class Initializer(object):
         else:
             raise KeyError("system_info needs to be specified")
 
+        if self.md:
+            self.ll.update(self.md)
+
         self.get_wrappers()
     
     def get_wrappers(self):
@@ -101,7 +104,7 @@ class Initializer(object):
         hl_wrapper = self.hl_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, **self.hl)
         # create ll_wrapper object
         print("ll wrapper")
-        ll_wrapper = self.ll_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, md_param=self.md, **self.ll)
+        ll_wrapper = self.ll_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, **self.ll)
         
         print("qmmm wrapper")
         if (self.run_aqmmm is True and self.aqmmm_scheme is None):
@@ -123,7 +126,7 @@ class Initializer(object):
 
         if self.run_md is True:
 
-            md_sim_wrapper = self.md_sim_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, md_param=self.md, **self.ll)
+            md_sim_wrapper = self.md_sim_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, **self.ll)
 
             if self.md_restart is False:
                 # initialize mm_wrapper with information about initial system
