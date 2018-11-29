@@ -80,9 +80,12 @@ class PAP(AQMMM):
         self.define_buffer_zone(qm_center)
 
         qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
+        # qm partition contains the original partition information
+        qm.buffer_groups = self.buffer_groups
 
         self.systems[self.run_ID] = {}
         self.systems[self.run_ID][qm.partition_ID] = qm
+        
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
@@ -97,7 +100,6 @@ class PAP(AQMMM):
                         sys.qm_atoms.append(idx)
                 
                 # each partition has a copy of its buffer groups - 
-                # don't know if this is actually needed
                 sys.buffer_groups = {k: self.buffer_groups[k] for k in part}
                 self.systems[self.run_ID][sys.partition_ID] = sys
 

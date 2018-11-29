@@ -191,6 +191,7 @@ class AQMMM(ABC, QMMM):
             self.buffer_distance[i] = buf.r_i
             buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
 
+
     def get_residue_info(self, idx, qm_center_xyz=None):
         """
         Gets the COM information and distance from the qm_center 
