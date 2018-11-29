@@ -84,6 +84,7 @@ class DAS(AQMMM):
         if self.buffer_groups:
 
             self.partitions, sigmas = self.get_combos(list(self.buffer_groups))
+            print('partitions', self.partitions)
 
             for i, part in enumerate(self.partitions):
                 sys = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID=i)
@@ -186,7 +187,7 @@ class DAS(AQMMM):
         """
         
         all_combo = []
-        edited_combo = []
+        edited_combos = []
         sigmas = []
 
         for i in range(1, len(items) +1):
@@ -207,13 +208,17 @@ class DAS(AQMMM):
                     qm_lamda = np.insert(qm_lamda, 0, self.buffer_groups[group].s_i)
                 else:
                     mm_lamda = np.insert(mm_lamda, 0, 1-self.buffer_groups[group].s_i)
+            
+            # makes sure there are elements in mm_lamda
+            if not mm_lamda:
+                mm_lamda = np.insert(mm_lamda, 0, 0)
 
             min_mm_lamda = 1 - logsumexp(k*mm_lamda)/k
             max_qm_lamda = logsumexp(k*qm_lamda)/k
             sigma = logsumexp(k*np.array([min_mm_lamda - max_qm_lamda,0]))/k
 
             if sigma > thresh:
-                edited_combos.append(sigma)
+                edited_combos.append(combo)
                 sigmas.append(sigma)
 
         return edited_combos, sigmas
