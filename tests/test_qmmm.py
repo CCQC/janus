@@ -9,15 +9,15 @@ ala = os.path.join(str('tests/files/test_openmm/ala_ala_ala.pdb'))
 psi4 = qm_wrapper.Psi4Wrapper()
 psi4_ala = qm_wrapper.Psi4Wrapper(charge=1)
 
-om_m = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
+om_m = mm_wrapper.OpenMMWrapper(sys_info=water,**{'md_ensemble':'NVT', 'return_info':[]})
 om_m.initialize('Mechanical')
 main_info_m = om_m.get_main_info()
 
-om_e = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
+om_e = mm_wrapper.OpenMMWrapper(sys_info=water,**{'md_ensemble':'NVT', 'return_info':[]})
 om_e.initialize('Electrostatic')
 main_info_e = om_e.get_main_info()
 
-om_ala = mm_wrapper.OpenMMWrapper(sys_info=ala, md_param={'md_ensemble':'NVT', 'return_info':[]})
+om_ala = mm_wrapper.OpenMMWrapper(sys_info=ala, **{'md_ensemble':'NVT', 'return_info':[]})
 om_ala.initialize('Electrostatic')
 main_info_ala = om_ala.get_main_info()
 
@@ -39,27 +39,12 @@ sys_ala_link.entire_sys = main_info_ala
 sys_ala_RC.entire_sys = main_info_ala
 sys_ala_RCD.entire_sys = main_info_ala
 
-def test_edit_qm_atoms():
-
-    a = np.array([0,1,2])
-    b = np.array([3,4,5])
-    c = np.array([0,1,2,3,4,5])
-
-    assert np.allclose(np.array(mech.edit_qm_atoms(qm_atoms=[0,1,2])), a)
-    assert np.allclose(np.array(mech.edit_qm_atoms(qm_atoms=[2,3])), b)
-    assert np.allclose(np.array(mech.edit_qm_atoms(qm_atoms=[0,1,2,3])), c)
-    assert np.allclose(np.array(mech.edit_qm_atoms(qm_atoms=[0,1,2,3,4])), c)
-    assert np.allclose(np.array(mech.edit_qm_atoms(qm_atoms=[0,1,2,4,5])), a)
-    assert np.allclose(np.array(mech.edit_qm_atoms(qm_atoms=[0,1,2,5])), a)
-
 def test_find_boundary_bonds():
 
-    mech.find_boundary_bonds(qm_atoms=[1,2,3,4])
     ala_link.find_boundary_bonds(qm_atoms=[0,1,2,3])
     ala_RC.find_boundary_bonds(qm_atoms=[0,1,2,3,4,5])
     ala_RCD.find_boundary_bonds(qm_atoms=[0])
 
-    assert len(mech.qmmm_boundary_bonds) == 0
     assert len(ala_link.qmmm_boundary_bonds) == 1 
     assert len(ala_RC.qmmm_boundary_bonds) == 2
     assert len(ala_RCD.qmmm_boundary_bonds) == 4

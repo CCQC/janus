@@ -18,8 +18,7 @@ class MMWrapper(ABC):
 
     def __init__(self, class_type,
                        sys_info=None, 
-                       sys_info_format=None, 
-                       **kwargs):
+                       sys_info_format=None):
         self.system_info = sys_info
         self.system_info_format = sys_info_format
         self.class_type = class_type
@@ -38,14 +37,11 @@ class MMWrapper(ABC):
         self.return_checkpoint_filename = 'checkpoint.chk'                                                      
         self.return_system = True,                                                                               
         self.return_system_filename = 'final.pdb'                                                               
-        self.return_info = ["potentialEnergy", "kineticEnergy", "totalEnergy", "temperature"]
+        self.return_info = []
         self.return_info_interval = 0                                                                         
         self.return_info_filename = 'info.dat'                                                                         
         self.return_forces_filename = 'forces.pkl'                                                              
         self.return_forces_interval = 0                                                                         
-
-        for k, v in kwargs.items():
-            setattr(self, k, v)
 
         self.qmmm_steps = self.end_qmmm - self.start_qmmm
 

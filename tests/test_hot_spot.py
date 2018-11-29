@@ -6,7 +6,7 @@ import os
 water = os.path.join(str('tests/files/test_openmm/water.pdb'))
 
 psi4 = qm_wrapper.Psi4Wrapper()
-openmm = mm_wrapper.OpenMMWrapper(sys_info=water,md_param={'md_ensemble':'NVT', 'return_info':[]})
+openmm = mm_wrapper.OpenMMWrapper(sys_info=water,**{'md_ensemble':'NVT', 'return_info':[]})
 
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()

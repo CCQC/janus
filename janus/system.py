@@ -100,6 +100,7 @@ class Buffer(object):
         self.atom_weights = None
         self.weight_ratio = None
         self.dist_from_center = None
+        self.r_i = None
         self.s_i = None
         self.d_s_i = None
 

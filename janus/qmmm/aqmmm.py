@@ -84,6 +84,48 @@ class AQMMM(ABC, QMMM):
         if self.run_ID > 1:
             del self.systems[self.run_ID - 2]
 
+    def edit_atoms(self, atoms, res_idx, remove=False, add=False):
+        """
+        Edits a given list of atoms based on give parameters.
+
+        Parameters
+        ----------
+        atoms : list 
+            List of atom indicies to performed the desired action on
+        res_idx : int
+            Index of the residue 
+        remove : bool
+            Whether to remove the atoms of residue res_idx from atoms.
+            Default is False.
+        add : bool
+            Whether to add the atoms of residue res_idx to atoms
+            Default is False.
+
+        Returns
+        -------
+        list
+            List of edited atoms
+
+        Examples
+        --------
+        >>> atoms = edit_qm_atoms(atoms=[0,1,2], res_idx=0, remove=True)
+        """
+
+        top = self.topology
+
+        if (remove is True and add is False):
+            for a in top.residue(res_idx).atoms:
+                if a.index in atoms:
+                    atoms.remove(a.index)
+
+        if (remove is False and add is True):
+            for a in top.residue(res_idx).atoms:
+                if a.index not in atoms:
+                    atoms.append(a.index)
+
+        atoms.sort()
+        return atoms
+
     def define_buffer_zone(self, qm_center):
         """
         Determines buffer group atoms.
@@ -95,7 +137,8 @@ class AQMMM(ABC, QMMM):
 
         Note
         ----
-        Not generalized for all solvents
+        Currently only worked with explicit solvent based systems. 
+        Cannot treat buffer atoms that are part of large molecular structures (e.g., proteins).
 
         Parameters
         ----------
@@ -104,34 +147,81 @@ class AQMMM(ABC, QMMM):
 
         """
 
-        self.find_buffer_atoms(qm_center)
-        
-        self.edit_qm_atoms()
-        print('edited qm atoms:')
-        print(self.qm_atoms)
-
-        # for adding identifying water buffer groups
+        self.qm_residues = []
+        self.buffer_groups = {}
+        residue_tracker = [] 
         top = self.topology
 
-        self.buffer_groups = {}
-        print('buffer atoms',self.buffer_atoms)
-        for i in self.buffer_atoms:
-            print('processing buffer atom {}'.format(i))
-            # since if a hydrogen is in buffer zone with link atoms the qm would be the same as qm_bz, and the center 
-             # of mass would not be in the buffer zone
-            # only if oxygen in buffer zone
-            if (top.atom(i).residue.is_water and top.atom(i).element.symbol == 'O'):
-                print('{} is O, adding to buffer groups'.format(i))
-                idx = top.atom(i).residue.index
-                if idx not in self.buffer_groups.keys():
-                    buf = Buffer(ID=idx)
-                    for a in top.residue(idx).atoms:
-                        if a.index not in buf.atoms:
-                            buf.atoms.append(a.index)
-                    self.buffer_groups[idx] = buf
+        self.find_buffer_atoms(qm_center)
 
-        if self.buffer_groups:
-            self.get_buffer_info()
+        for i in self.buffer_atoms:
+            idx = top.atom(i).residue.index
+
+            if idx not in residue_tracker:
+                residue_tracker.append(idx)
+                buf = self.get_residue_info(idx)
+            
+                if buf.r_i <= self.Rmin:
+                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                    
+                elif buf.r_i >= self.Rmax:
+                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+
+                elif (buf.r_i > self.Rmin and buf.r_i < self.Rmax):
+                    self.buffer_groups[idx] = buf
+                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+
+
+        qm_atoms = deepcopy(self.qm_atoms)
+        # tracking qm_residues and cleaning up qm
+        for i in qm_atoms:
+            idx = top.atom(i).residue.index
+            if idx not in self.qm_residues:
+                res = self.get_residue_info(idx)
+
+                if res.r_i >= self.Rmax:
+                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+                elif res.r_i <= self.Rmin:
+                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                    self.qm_residues.append(idx)
+
+        # getting information for buffer groups
+        self.buffer_distance = {}
+        for i, buf in self.buffer_groups.items():
+            self.buffer_distance[i] = buf.r_i
+            buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
+
+    def get_residue_info(self, idx, qm_center_xyz=None):
+        """
+        Gets the COM information and distance from the qm_center 
+        for a give residue. Saves the information in a 
+        :class:`~janus.system.Buffer` object.
+
+        Parameters
+        ----------
+        idx : int
+            index of the residue
+        qm_center_xyz : list
+            XYZ coordinates of the qm_center as a list
+
+        Returns
+        ------- 
+        :class:`~janus.system.Buffer` 
+        
+        """
+
+        if qm_center_xyz is None:
+            qm_center_xyz = self.qm_center_xyz
+
+        buf = Buffer(ID=idx)
+
+        for a in self.topology.residue(idx).atoms:
+            buf.atoms.append(a.index)
+
+        buf.COM_coord, buf.atom_weights, buf.weight_ratio = self.compute_COM(buf.atoms)
+        buf.r_i = np.linalg.norm(buf.COM_coord - np.array(qm_center_xyz))*AQMMM.nm_to_angstrom
+
+        return buf
 
     def find_buffer_atoms(self, qm_center):
         """
@@ -177,25 +267,6 @@ class AQMMM(ABC, QMMM):
             print('qm_atoms identified by the find_buffer_atom function: ' )
             print(self.qm_atoms)
         
-    def get_buffer_info(self):
-        """
-        Computes switching function parameters for a particular buffer group.
-        Computes the distance r_i for each buffer group i
-        between the qm_center and the COM of buffer group i
-        and then computes lamda_i and d_lamda_i for that buffer group
-
-        """
-
-        self.buffer_distance = {}
-
-        for i, buf in self.buffer_groups.items():
-
-            xyz, buf.atom_weights, buf.weight_ratio = self.compute_COM(buf.atoms)
-            buf.COM_coord = xyz
-            buf.r_i = np.linalg.norm(buf.COM_coord - np.array(self.qm_center_xyz))*AQMMM.nm_to_angstrom
-            self.buffer_distance[i] = buf.r_i
-            buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
-
     def compute_COM(self, atoms):
         """
         Computes the center of mass of a specified group

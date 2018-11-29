@@ -40,9 +40,6 @@ class OpenMMWrapper(MMWrapper):
     nonbondedCutoff : float 
         The cutoff distance for nonbonded interactions in nanometers,
         default is 1.
-    md_param : dict
-        Dictionary of parameters for an MD simulation. For possible keywords consult the 
-        Molecular Dynamics section of the manual. Default is empty dictionary.
     **kwargs : dict
         Other parameters for OpenMM, which include:
         - nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff
@@ -60,6 +57,8 @@ class OpenMMWrapper(MMWrapper):
                             default is empty dict {}
         - switchDistance : the distance to turn on potential energy switching function for 
                             Lennard-Jones interactions. Default is None
+        - keywords for MD simulation parameters.
+            For possible keywords consult the Molecular Dynamics section of the manual. 
 
         Each pair of key:value in the dictionary is given as a string.
         For more information about these pararmeters and 
@@ -77,13 +76,11 @@ class OpenMMWrapper(MMWrapper):
                        step_size = 1,
                        fric_coeff = 1,
                        nonbondedCutoff=0.8,
-                       md_param={},
                        **kwargs):
 
         super().__init__(class_type="OpenMM",
                          sys_info=sys_info,
-                         sys_info_format=sys_info_format,
-                         **md_param)
+                         sys_info_format=sys_info_format)
 
         self.ff = mm_forcefield
         self.ff_water = mm_water_forcefield
@@ -104,13 +101,20 @@ class OpenMMWrapper(MMWrapper):
         self.flexibleConstraints=False 
         self.ignoreExternalBonds=True
 
+        openmm_param = ['nonbondMethod', 'constraints', 'hydrogenMass', 'switchDistance',
+                        'residueTemplates', 'rigid_water', 'removeCMMotion', 'flexibleConstraints',
+                        'ignoreExternalBonds']
+
+        for k, v in kwargs.items():
+            if k in openmm_param:
+                setattr(self, k, eval(v))
+            else:
+                setattr(self, k, v)
+
         if self.md_ensemble == 'NVT':
             self.integrator = self.NVT_integrator
         elif self.md_ensemble == 'NVE':
             self.integrator = self.NVE_integrator
-
-        for k, v in kwargs.items():
-            setattr(self, k, eval(v))
 
         self.positions = None
 

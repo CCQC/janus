@@ -1,12 +1,29 @@
 Running janus
 =================================
 
+To run janus, simply type the following in the command line:
 .. code-block:: python
 
     janus input.json
 
 Structure of an input file
 --------------------------
+Janus uses a JSON style input file, with separate dictionary definitions for six sections.
+
+These are: 
+
+==================   ============
+Section title         Description
+==================   ============
+system                parameters for specifying what type of computation is desired
+qmmm                  QM/MM related parameters
+aqmmm                 adaptive QM/MM related parameters
+md                    parameters related to molecular dynamics simulations
+hl                    parameters for the high-level computation
+ll                    parameters for the low-level computation
+==================   ============
+
+The following section details the possible keywords for each section.
 
 System
 --------------------------
@@ -51,7 +68,7 @@ _________________
     :Description: Specifies what adaptive QM/MM approach to use
     :DataType: String
     :Values: ONIOM-XS, Hot-Spot, PAP, SAP, DAS
-    :Default: ONIOM-XS
+    :Default: None
 
 **ll_program**
     :Description: Specifies what program to use for the lower level computation
@@ -281,9 +298,33 @@ Low Level
 --------------------------
 
 Examples
-_________________
-
 ----------------------------
+A input file might look like the following:
+
+.. code-block:: python
+
+    {
+    "system" : {
+                "system_info" : "water.pdb",
+                "run_aqmmm" : true,
+                "run_md" : true,
+                "aqmmm_scheme" : "ONIOM-XS",
+                "ll_program" : "OpenMM",
+                "hl_program" : "Psi4",
+                "md_simulation_program" : "OpenMM"
+            },
+
+    "aqmmm"  : {
+                "qm_center" : [0,1,2]
+            },
+
+    "md"     : {
+                "start_qmmm" : 10000,
+                "end_qmmm" : 12000,
+                "md_ensemble" : "NVE"
+            }
+
+    }
 
 
 Supported codes

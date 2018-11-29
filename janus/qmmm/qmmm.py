@@ -308,8 +308,6 @@ class QMMM(object):
         if qm_atoms is None:
             qm_atoms = self.qm_atoms
 
-        qm_atoms = self.edit_qm_atoms(qm_atoms)
-
         self.qmmm_boundary_bonds = []
         # determining if there are bonds that need to be cut
         for bond in self.topology.bonds:
@@ -328,65 +326,6 @@ class QMMM(object):
                         mm_atom = bond[0]
                     self.qmmm_boundary_bonds.append((qm_atom, mm_atom))
 
-    def edit_qm_atoms(self, qm_atoms=None, solvent='water'):
-        """
-        Cleans up the qm_atoms. If the definition of the primary subsystem 
-        cuts across a solvent molecule, will move the whole molecule in the qm_atoms 
-        if COM of solvent molecule in qm_atoms already, or delete parts of the solvent
-        molecule from qm_atoms if COM of solvent molecule not in qm_atoms already
-
-        Parameters
-        ----------
-        qm_atoms : list 
-            atom indicies corresponding to the atoms in
-            the primary subsystem. Default is None and uses self.qm_atoms
-
-        solvent : str 
-            identifies what solvent needs to be edited.
-            Only water supported for now(default)
-
-        Returns
-        -------
-        list
-            edited qm_atoms
-
-        Examples
-        --------
-        >>> atoms = edit_qm_atoms()
-        atoms = edit_qm_atoms(qm_atoms=[0,1,2])
-        """
-
-        if qm_atoms is None:
-            qm_atoms = self.qm_atoms
-        
-        top = self.topology
-        residue_tracker = [] 
-        self.qm_residues = [] 
-        qm_atoms_copy = deepcopy(qm_atoms)
-        for i in qm_atoms_copy:
-            idx = top.atom(i).residue.index
-            # make sure just go through each residues once
-            if idx not in residue_tracker:
-                residue_tracker.append(idx)
-                self.qm_residues.append(idx)
-                res = top.residue(idx)
-                if res.is_water:
-                ## add any hydrogens that have oxygen inside of qm region 
-                    if top.atom(i).element.symbol == 'O':
-                        for a in res.atoms:
-                            if (a.element.symbol =='H' and a.index not in qm_atoms):
-                                qm_atoms.append(a.index)
-                ## remove any hydrogens that have oxygen outside of qm region from qm region
-                    elif top.atom(i).element.symbol == 'H':
-                        for a in res.atoms:
-                            if (a.element.symbol =='O' and a.index not in qm_atoms):
-                                self.qm_residues.remove(idx)
-                                for a1 in res.atoms:
-                                    if (a1.element.symbol =='H' and a1.index in qm_atoms):
-                                        qm_atoms.remove(a1.index)
-
-        qm_atoms.sort()
-        return qm_atoms
 
     def prepare_link_atom(self):
         """
