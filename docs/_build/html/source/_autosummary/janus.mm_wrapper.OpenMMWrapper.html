@@ -160,7 +160,7 @@
 <h1>janus.mm_wrapper.OpenMMWrapper<a class="headerlink" href="#janus-mm-wrapper-openmmwrapper" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="janus.mm_wrapper.OpenMMWrapper">
-<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">OpenMMWrapper</code><span class="sig-paren">(</span><em>sys_info=None</em>, <em>sys_info_format='pdb'</em>, <em>mm_forcefield='amber99sb.xml'</em>, <em>mm_water_forcefield='tip3p.xml'</em>, <em>NVE_integrator='Verlet'</em>, <em>NVT_integrator='Langevin'</em>, <em>temp=300</em>, <em>step_size=1</em>, <em>fric_coeff=1</em>, <em>nonbondedCutoff=0.8</em>, <em>md_param={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">janus.mm_wrapper.</code><code class="descname">OpenMMWrapper</code><span class="sig-paren">(</span><em>sys_info=None</em>, <em>sys_info_format='pdb'</em>, <em>mm_forcefield='amber99sb.xml'</em>, <em>mm_water_forcefield='tip3p.xml'</em>, <em>NVE_integrator='Verlet'</em>, <em>NVT_integrator='Langevin'</em>, <em>temp=300</em>, <em>step_size=1</em>, <em>fric_coeff=1</em>, <em>nonbondedCutoff=0.8</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>A MM wrapper class that calls OpenMM
 to obtain molecular mechanics information.
 Also can be used to take steps in a molecular dynamics simulation.
@@ -184,8 +184,6 @@ Possible values also include Amber and Gromacs.</li>
 picoseconds, default is 1.</li>
 <li><strong>nonbondedCutoff</strong> (<em>float</em>) – The cutoff distance for nonbonded interactions in nanometers,
 default is 1.</li>
-<li><strong>md_param</strong> (<em>dict</em>) – Dictionary of parameters for an MD simulation. For possible keywords consult the
-Molecular Dynamics section of the manual. Default is empty dictionary.</li>
 <li><strong>**kwargs</strong> (<em>dict</em>) – <p>Other parameters for OpenMM, which include:
 - nonbondedMethod : method for nonbonded interactions, default is OM_app.NoCutoff
 - constraints : which bonds and angles implemented with constraints,</p>
@@ -219,6 +217,11 @@ Molecular Dynamics section of the manual. Default is empty dictionary.</li>
 <dd>Lennard-Jones interactions. Default is None</dd>
 </dl>
 </li>
+<li><dl class="first docutils">
+<dt>keywords for MD simulation parameters.</dt>
+<dd>For possible keywords consult the Molecular Dynamics section of the manual.</dd>
+</dl>
+</li>
 </ul>
 <p>Each pair of key:value in the dictionary is given as a string.
 For more information about these pararmeters and
@@ -231,7 +234,7 @@ other possible parameter values consult docs.openmm.org</p>
 </table>
 <dl class="method">
 <dt id="janus.mm_wrapper.OpenMMWrapper.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>sys_info=None</em>, <em>sys_info_format='pdb'</em>, <em>mm_forcefield='amber99sb.xml'</em>, <em>mm_water_forcefield='tip3p.xml'</em>, <em>NVE_integrator='Verlet'</em>, <em>NVT_integrator='Langevin'</em>, <em>temp=300</em>, <em>step_size=1</em>, <em>fric_coeff=1</em>, <em>nonbondedCutoff=0.8</em>, <em>md_param={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>sys_info=None</em>, <em>sys_info_format='pdb'</em>, <em>mm_forcefield='amber99sb.xml'</em>, <em>mm_water_forcefield='tip3p.xml'</em>, <em>NVE_integrator='Verlet'</em>, <em>NVT_integrator='Langevin'</em>, <em>temp=300</em>, <em>step_size=1</em>, <em>fric_coeff=1</em>, <em>nonbondedCutoff=0.8</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.mm_wrapper.OpenMMWrapper.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 

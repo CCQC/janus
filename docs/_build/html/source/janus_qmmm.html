@@ -262,40 +262,6 @@ that contain position and topology information.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="janus.qmmm.QMMM.edit_qm_atoms">
-<code class="descname">edit_qm_atoms</code><span class="sig-paren">(</span><em>qm_atoms=None</em>, <em>solvent='water'</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.edit_qm_atoms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cleans up the qm_atoms. If the definition of the primary subsystem
-cuts across a solvent molecule, will move the whole molecule in the qm_atoms
-if COM of solvent molecule in qm_atoms already, or delete parts of the solvent
-molecule from qm_atoms if COM of solvent molecule not in qm_atoms already</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>qm_atoms</strong> (<em>list</em>) – atom indicies corresponding to the atoms in
-the primary subsystem. Default is None and uses self.qm_atoms</li>
-<li><strong>solvent</strong> (<em>str</em>) – identifies what solvent needs to be edited.
-Only water supported for now(default)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">edited qm_atoms</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="n">edit_qm_atoms</span><span class="p">()</span>
-<span class="go">atoms = edit_qm_atoms(qm_atoms=[0,1,2])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
 <dt id="janus.qmmm.QMMM.electrostatic">
 <code class="descname">electrostatic</code><span class="sig-paren">(</span><em>system</em>, <em>main_info</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.QMMM.electrostatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets energies of needed components and computes
@@ -575,8 +541,8 @@ cannot actually instantiate AQMMM object, but only its child objects</div></bloc
 <tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM.define_buffer_zone" title="janus.qmmm.AQMMM.define_buffer_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_buffer_zone</span></code></a>(qm_center)</td>
 <td>Determines buffer group atoms.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_qm_atoms</span></code>([qm_atoms,&nbsp;solvent])</td>
-<td>Cleans up the qm_atoms.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.edit_atoms" title="janus.qmmm.AQMMM.edit_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_atoms</span></code></a>(atoms,&nbsp;res_idx[,&nbsp;remove,&nbsp;add])</td>
+<td>Edits a given list of atoms based on give parameters.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">electrostatic</span></code>(system,&nbsp;main_info)</td>
 <td>Gets energies of needed components and computes a QM/MM energy with a subtractive electrostatic embedding scheme</td>
@@ -593,17 +559,17 @@ cannot actually instantiate AQMMM object, but only its child objects</div></bloc
 <tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM.get_Rmin" title="janus.qmmm.AQMMM.get_Rmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Rmin</span></code></a>()</td>
 <td>Function to return self.Rmin</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.get_buffer_info" title="janus.qmmm.AQMMM.get_buffer_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer_info</span></code></a>()</td>
-<td>Computes switching function parameters for a particular buffer group.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_charges</span></code>(system)</td>
 <td>Gets the point charges of atoms from secondary subsystem for electrostatic embedding</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forces</span></code>([run_ID])</td>
 <td>Function to return qmmm forces</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_redistributed_positions</span></code>(positions,&nbsp;bonds,&nbsp;mm)</td>
 <td>Gets the positions for the redistributed point charges in the RC and RCD schemes</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#janus.qmmm.AQMMM.get_residue_info" title="janus.qmmm.AQMMM.get_residue_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_residue_info</span></code></a>(idx[,&nbsp;qm_center_xyz])</td>
+<td>Gets the COM information and distance from the qm_center for a give residue.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#janus.qmmm.AQMMM.get_zero_energy" title="janus.qmmm.AQMMM.get_zero_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zero_energy</span></code></a>()</td>
 <td>Incorporates the zero energy of groups to the total qmmm energy</td>
@@ -718,7 +684,8 @@ and saves all buffer groups in the dictionary self.buffer_groups.
 For water as a solvent, considers the whole water molecule as a buffer group.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Not generalized for all solvents</p>
+<p class="last">Currently only worked with explicit solvent based systems.
+Cannot treat buffer atoms that are part of large molecular structures (e.g., proteins).</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -728,6 +695,38 @@ For water as a solvent, considers the whole water molecule as a buffer group.</p
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="janus.qmmm.AQMMM.edit_atoms">
+<code class="descname">edit_atoms</code><span class="sig-paren">(</span><em>atoms</em>, <em>res_idx</em>, <em>remove=False</em>, <em>add=False</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.edit_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edits a given list of atoms based on give parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>atoms</strong> (<em>list</em>) – List of atom indicies to performed the desired action on</li>
+<li><strong>res_idx</strong> (<em>int</em>) – Index of the residue</li>
+<li><strong>remove</strong> (<em>bool</em>) – Whether to remove the atoms of residue res_idx from atoms.
+Default is False.</li>
+<li><strong>add</strong> (<em>bool</em>) – Whether to add the atoms of residue res_idx to atoms
+Default is False.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of edited atoms</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="n">edit_qm_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="n">res_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -777,12 +776,29 @@ For water as a solvent, considers the whole water molecule as a buffer group.</p
 </dd></dl>
 
 <dl class="method">
-<dt id="janus.qmmm.AQMMM.get_buffer_info">
-<code class="descname">get_buffer_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.get_buffer_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes switching function parameters for a particular buffer group.
-Computes the distance r_i for each buffer group i
-between the qm_center and the COM of buffer group i
-and then computes lamda_i and d_lamda_i for that buffer group</p>
+<dt id="janus.qmmm.AQMMM.get_residue_info">
+<code class="descname">get_residue_info</code><span class="sig-paren">(</span><em>idx</em>, <em>qm_center_xyz=None</em><span class="sig-paren">)</span><a class="headerlink" href="#janus.qmmm.AQMMM.get_residue_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the COM information and distance from the qm_center
+for a give residue. Saves the information in a
+<a class="reference internal" href="janus.html#janus.system.Buffer" title="janus.system.Buffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buffer</span></code></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>idx</strong> (<em>int</em>) – index of the residue</li>
+<li><strong>qm_center_xyz</strong> (<em>list</em>) – XYZ coordinates of the qm_center as a list</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="janus.html#janus.system.Buffer" title="janus.system.Buffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buffer</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">

@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#molecular-dynamics">Molecular Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#high-level">High Level</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#low-level">Low Level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#supported-codes">Supported codes</a></li>
 </ul>
 </li>
@@ -159,11 +160,46 @@
             
   <div class="section" id="running-janus">
 <h1>Running janus<a class="headerlink" href="#running-janus" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">janus</span> <span class="nb">input</span><span class="o">.</span><span class="n">json</span>
-</pre></div>
-</div>
+<p>To run janus, simply type the following in the command line:
+.. code-block:: python</p>
+<blockquote>
+<div>janus input.json</div></blockquote>
 <div class="section" id="structure-of-an-input-file">
 <h2>Structure of an input file<a class="headerlink" href="#structure-of-an-input-file" title="Permalink to this headline">¶</a></h2>
+<p>Janus uses a JSON style input file, with separate dictionary definitions for six sections.</p>
+<p>These are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Section title</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>system</td>
+<td>parameters for specifying what type of computation is desired</td>
+</tr>
+<tr class="row-odd"><td>qmmm</td>
+<td>QM/MM related parameters</td>
+</tr>
+<tr class="row-even"><td>aqmmm</td>
+<td>adaptive QM/MM related parameters</td>
+</tr>
+<tr class="row-odd"><td>md</td>
+<td>parameters related to molecular dynamics simulations</td>
+</tr>
+<tr class="row-even"><td>hl</td>
+<td>parameters for the high-level computation</td>
+</tr>
+<tr class="row-odd"><td>ll</td>
+<td>parameters for the low-level computation</td>
+</tr>
+</tbody>
+</table>
+<p>The following section details the possible keywords for each section.</p>
 </div>
 <div class="section" id="system">
 <h2>System<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h2>
@@ -260,7 +296,7 @@
 </tr>
 <tr class="field-odd field"><th class="field-name">Values:</th><td class="field-body">ONIOM-XS, Hot-Spot, PAP, SAP, DAS</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">ONIOM-XS</td>
+<tr class="field-even field"><th class="field-name">Default:</th><td class="field-body">None</td>
 </tr>
 </tbody>
 </table>
@@ -807,11 +843,35 @@ with start_qmmm will be taken as the step number of the last ensemble specified 
 </div>
 <div class="section" id="low-level">
 <h2>Low Level<a class="headerlink" href="#low-level" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>A input file might look like the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="s2">&quot;system&quot;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;system_info&quot;</span> <span class="p">:</span> <span class="s2">&quot;water.pdb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;run_aqmmm&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+            <span class="s2">&quot;run_md&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+            <span class="s2">&quot;aqmmm_scheme&quot;</span> <span class="p">:</span> <span class="s2">&quot;ONIOM-XS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ll_program&quot;</span> <span class="p">:</span> <span class="s2">&quot;OpenMM&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;hl_program&quot;</span> <span class="p">:</span> <span class="s2">&quot;Psi4&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;md_simulation_program&quot;</span> <span class="p">:</span> <span class="s2">&quot;OpenMM&quot;</span>
+        <span class="p">},</span>
+
+<span class="s2">&quot;aqmmm&quot;</span>  <span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;qm_center&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="p">},</span>
+
+<span class="s2">&quot;md&quot;</span>     <span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;start_qmmm&quot;</span> <span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+            <span class="s2">&quot;end_qmmm&quot;</span> <span class="p">:</span> <span class="mi">12000</span><span class="p">,</span>
+            <span class="s2">&quot;md_ensemble&quot;</span> <span class="p">:</span> <span class="s2">&quot;NVE&quot;</span>
+        <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
 </div>
 </div>
-<hr class="docutils" />
 <div class="section" id="supported-codes">
 <h2>Supported codes<a class="headerlink" href="#supported-codes" title="Permalink to this headline">¶</a></h2>
 <p>Janus only supports Psi4 for quantum mechanics computations and
