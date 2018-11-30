@@ -55,7 +55,7 @@ class OniomXS(AQMMM):
         if qm_center is None:
             qm_center = self.qm_center
 
-        self.define_buffer_zone(qm_center)
+        self.buffer_wrapper.define_buffer_zone(qm_center)
 
         qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
         qm.buffer_groups = self.buffer_groups

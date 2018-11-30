@@ -2,6 +2,7 @@ from abc import abc, abstractmethod
 from copy import deepcopy
 import mdtraj as md
 import numpy as np
+from janus.partition import DistancePartition
 from janus.qmmm import QMMM
 
 class AQMMM(ABC, QMMM):
@@ -31,12 +32,13 @@ class AQMMM(ABC, QMMM):
         super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format=sys_info_format, **qmmm_param)
 
         self.qm_center = qm_center
-        self.partition_scheme = partition_scheme
         self.Rmin = Rmin
         self.Rmax = Rmax
         self.class_type = class_type
         self.buffer_groups = {}
         self.compute_zero_energy()
+
+        self.buffer_wrapper =  self.get_buffer_wrapper(partition_scheme)
 
     def run_qmmm(self, main_info, wrapper_type):
         """
@@ -184,6 +186,17 @@ TODO
 
             # maybe I should save a separate copy of qmmm energy somewhere
             sys.qmmm_energy -= sys.zero_energy
+
+    def get_buffer_wrapper(self, partition_scheme):
+
+        if partition_scheme == 'distance':
+            wrapper = PartitionDistance(self.traj, self.topology, self.Rmin, self.Rmax)
+
+        else:
+            raise ValueError("{} partition not implemented at this time".format(partition_scheme))
+
+        return wrapper
+        
                     
     @abstractmethod
     def partition(self, info):
