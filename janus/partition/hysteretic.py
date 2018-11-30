@@ -3,16 +3,18 @@ from copy import deepcopy
 import mdtraj as md
 from janus.partition import Partition
 
-class DistancePartition(Partition):
+class HystereticPartition(Partition):
 
-    def __init__(self, trajectory, topology, Rmin, Rmax):
+    def __init__(self, trajectory, topology, Rmin_qm, Rmax_qm, Rmin_bf, Rmax_bf):
 
-        self.Rmin = Rmin
-        self.Rmax = Rmax
+        self.Rmin_qm = Rmin_qm  
+        self.Rmax_qm = Rmax_qm
+        self.Rmin_bf = Rmin_bf 
+        self.Rmax_bf = Rmax_bf
 
         super().__init__(trajectory, topology, 'distance')
 
-    def define_buffer_zone(self, qm_center):
+    def define_buffer_zone(self, qm_center, prev_qm, prev_bf):
         """
         Determines buffer group atoms.
         Gets the buffer groups in the buffer zone based on a distance 
@@ -46,18 +48,41 @@ class DistancePartition(Partition):
             if idx not in residue_tracker:
                 residue_tracker.append(idx)
                 buf = self.get_residue_info(idx)
-            
-                if buf.r_i < self.Rmin:
-                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
-                    
-                elif buf.r_i >= self.Rmax:
-                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
 
-                elif (buf.r_i >= self.Rmin and buf.r_i < self.Rmax):
+                # all within Rmin_qm considered QM
+                if buf.r_i < self.Rmin_qm:
+                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+
+                # Between Rmin_qm and Rmax_qm, only considered QM if previously QM
+                if (buf.r_i >= self.Rmin_qm and buf.r_i < self.Rmax_qm):
+
+                    if (buf.ID in prev_qm and buf.ID not in prev_bf):
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                    elif (buf.ID not in prev_qm and buf.ID in prev_bf):
+                        self.buffer_groups[idx] = buf
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+                    else:
+                        raise Exception('Inconsistent group definition. Group was both QM and BZ atom')
+
+                # Between Rmax_qm and Rmin_bf considered buffer
+                if (buf.r_i >= self.Rmax_qm and buf.r_i < self.Rmin_bf):
                     self.buffer_groups[idx] = buf
                     self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
 
+                # Between Rmin_bf and Rmax_bf only considered as BZ atom if previously BZ atom
+                if (buf.r_i >= self.Rmin_bf and buf.r_i < self.Rmax_bf):
+                    if (buf.ID not in prev_qm and buf.ID not in prev_bf):
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+                    elif (buf.ID not in prev_qm and buf.ID in prev_bf):
+                        self.buffer_groups[idx] = buf
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+                    else:
+                        raise Exception('Inconsistent group definition.')
 
+                # Beyond Rmax_bf not buffer atom
+                if buf.r_i >= self.Rmax_bf:
+                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+                    
         qm_atoms = deepcopy(self.qm_atoms)
         # tracking qm_residues and cleaning up qm
         for i in qm_atoms:
@@ -65,6 +90,7 @@ class DistancePartition(Partition):
             if idx not in self.qm_residues:
                 res = self.get_residue_info(idx)
 
+                # Cleaning up additional qm residues not catched previously
                 if res.r_i >= self.Rmax:
                     self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
                 elif res.r_i < self.Rmin:
@@ -82,8 +108,10 @@ class DistancePartition(Partition):
 
         """
 
-        rmin_atoms = md.compute_neighbors(temp_traj, self.Rmin/10, qm_center_idx)
-        rmax_atoms = md.compute_neighbors(temp_traj, self.Rmax/10, qm_center_idx)
+        temp_traj = self.compute_qm_center_info(qm_center)
+
+        rmin_atoms = md.compute_neighbors(temp_traj, self.Rmin_qm/10, qm_center_idx)
+        rmax_atoms = md.compute_neighbors(temp_traj, self.Rmax_bf/10, qm_center_idx)
         self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
         print('buffer atoms identified by find_buffer_atom function:')
         print(self.buffer_atoms)

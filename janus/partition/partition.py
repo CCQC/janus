@@ -132,6 +132,27 @@ class Partition(ABC):
 
         return buf
 
+    def compute_qm_center_info(self, qm_center):
+
+        if len(qm_center) == 1:
+            self.COM_as_qm_center = False
+            self.qm_center_xyz = self.traj.xyz[0][qm_center[0]]
+            qm_center_idx = qm_center
+            temp_traj = self.traj
+            self.qm_center_weight_ratio = {qm_center[0] : 1}
+        else:
+            self.COM_as_qm_center = True
+            self.qm_center_xyz, self.qm_center_atom_weights, self.qm_center_weight_ratio = self.compute_COM(qm_center)
+            t = deepcopy(self.traj)
+            t.topology.add_atom('DUM', md.element.Element.getBySymbol('H'), t.topology.atom(0).residue, 1)
+            for atom in t.topology.atoms:
+                if atom.name == 'DUM':
+                    qm_center_idx = [atom.index]
+            t.xyz = np.append(t.xyz[0], [self.qm_center_xyz], axis=0)
+            temp_traj = t
+
+        return temp_traj
+
     def get_qm_atoms(self):
 
         return self.qm_atoms
