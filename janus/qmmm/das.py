@@ -38,24 +38,10 @@ class DAS(AQMMM):
             See QMMM class for specifics
 
     """
+    def __init__(self, *args, **kwargs):
 
-    def __init__(self, hl_wrapper, 
-                       ll_wrapper, 
-                       sys_info,
-                       sys_info_format='pdb',
-                       qm_center=[0],
-                       partition_scheme='distance',
-                       Rmin=3.8,
-                       Rmax=4.5,
-                       qmmm_param={},
-                       **kwargs):
+        super().__init__('Oniom-XS', *args, **kwargs)
 
-        self.qm_center = qm_center
-        self.partition_scheme = partition_scheme
-        self.Rmin = Rmin
-        self.Rmax = Rmax
-
-        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, qmmm_param, 'DAS')
 
     def partition(self, qm_center=None): 
         """

@@ -22,7 +22,7 @@ class SAP(AQMMM):
         sys_info_format : str 
             Describes what kind of input is contained in sys_info. Default is pdb.
         modified_variant : bool
-            Whether to use the modified version mPAP, which disregards 
+            Whether to use the modified version mSAP, which disregards 
             gradient terms that come from the switching function.
             Default is False.
         qm_center: list 
@@ -41,25 +41,9 @@ class SAP(AQMMM):
 
     """
 
-    def __init__(self, hl_wrapper, 
-                       ll_wrapper, 
-                       sys_info,
-                       sys_info_format='pdb',
-                       modified_variant=False,
-                       qm_center=[0],
-                       partition_scheme='distance',
-                       Rmin=3.8,
-                       Rmax=4.5,
-                       qmmm_param={},
-                       **kwargs):
-        
-        self.modified_variant = modified_variant
-        self.qm_center = qm_center
-        self.partition_scheme = partition_scheme
-        self.Rmin = Rmin
-        self.Rmax = Rmax
+    def __init__(self, modified_variant=False, *args, **kwargs):
 
-        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, qmmm_param, 'SAP')
+        super().__init__('SAP', *args, **kwargs)
 
     def partition(self, qm_center=None): 
         """
