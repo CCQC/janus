@@ -43,9 +43,10 @@ class PAP(AQMMM):
     def __init__(self, modified_variant=False, *args, **kwargs):
 
         super().__init__('PAP', *args, **kwargs)
+        self.modified_variant = modified_variant
 
 
-    def partition(self, qm_center=None): 
+    def find_configurations(self): 
         """
         Finds the partitions as required by the PAP method 
         and saves each partition as a system object.
@@ -58,11 +59,6 @@ class PAP(AQMMM):
 
         """
     
-        if qm_center is None:
-            qm_center = self.qm_center
-
-        self.buffer_wrapper.define_buffer_zone(qm_center)
-
         qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
         # qm partition contains the original partition information
         qm.buffer_groups = self.buffer_groups

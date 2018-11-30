@@ -11,24 +11,22 @@ openmm = mm_wrapper.OpenMMWrapper(sys_info=water,**{'md_ensemble':'NVT', 'return
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-hs =   qmmm.HotSpot(psi4, openmm, sys_info=water)
-hs_0 = qmmm.HotSpot(psi4, openmm, sys_info=water)
-hs_1 = qmmm.HotSpot(psi4, openmm, sys_info=water)
-hs_2 = qmmm.HotSpot(psi4, openmm, sys_info=water)
+hs =   qmmm.HotSpot(psi4, openmm, sys_info=water, Rmin=3.8, Rmax=4.5)
+hs_0 = qmmm.HotSpot(psi4, openmm, sys_info=water, Rmin=2.6, Rmax=2.8)
+hs_1 = qmmm.HotSpot(psi4, openmm, sys_info=water, Rmin=2.6, Rmax=3.2)
+hs_2 = qmmm.HotSpot(psi4, openmm, sys_info=water, Rmin=2.6, Rmax=3.4)
 
-hs_0.set_Rmin(2.6)
-hs_0.set_Rmax(2.8)
-hs_1.set_Rmin(2.6)
-hs_1.set_Rmax(3.2)
-hs_2.set_Rmin(2.6)
-hs_2.set_Rmax(3.4)
+def test_find_configurations():
 
-def test_partition():
+    hs.find_buffer_zone()
+    hs_0.find_buffer_zone()
+    hs_1.find_buffer_zone()
+    hs_2.find_buffer_zone()
 
-    hs.partition([0])
-    hs_0.partition([0])
-    hs_1.partition([0])
-    hs_2.partition([0])
+    hs.find_configurations()
+    hs_0.find_configurations()
+    hs_1.find_configurations()
+    hs_2.find_configurations()
 
     assert np.allclose(hs.systems[0]['qm'].qm_atoms, np.array([0, 1, 2, 3, 4, 5, 6, 7, 8]))
     assert np.allclose(hs_0.systems[0]['qm'].qm_atoms, np.array([0, 1, 2]))

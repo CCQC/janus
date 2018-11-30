@@ -1,4 +1,4 @@
-from abc import abc, abstractmethod
+from abc import ABC, abstractmethod
 from copy import deepcopy
 import mdtraj as md
 import numpy as np
@@ -58,7 +58,9 @@ class AQMMM(ABC, QMMM):
         """
 
         self.update_traj(main_info['positions'], main_info['topology'], wrapper_type)
-        self.partition()
+        self.find_buffer_zone()
+        self.find_configurations()
+
             
         counter = 0
         for i, system in self.systems[self.run_ID].items():
@@ -92,18 +94,7 @@ class AQMMM(ABC, QMMM):
         if self.run_ID > 1:
             del self.systems[self.run_ID - 2]
 
-
-"""
-TODO
-
-        # getting information for buffer groups
-        self.buffer_distance = {}
-        for i, buf in self.buffer_groups.items():
-            self.buffer_distance[i] = buf.r_i
-            buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
-"""
         
-
     def compute_lamda_i(self, r_i):
         """
         Computes the switching function and the derivative 
@@ -190,7 +181,7 @@ TODO
     def get_buffer_wrapper(self, partition_scheme):
 
         if partition_scheme == 'distance':
-            wrapper = PartitionDistance(self.traj, self.topology, self.Rmin, self.Rmax)
+            wrapper = DistancePartition(self.traj, self.topology, self.Rmin, self.Rmax)
 
         else:
             raise ValueError("{} partition not implemented at this time".format(partition_scheme))
@@ -198,8 +189,23 @@ TODO
         return wrapper
         
                     
+    def find_buffer_zone(self):
+
+        self.buffer_wrapper.define_buffer_zone(self.qm_center)
+
+        self.qm_atoms = self.buffer_wrapper.get_qm_atoms()
+        self.qm_residues = self.buffer_wrapper.get_qm_residues()
+        self.qm_center_weight_ratio = self.buffer_wrapper.get_qm_center_info() 
+        self.buffer_groups = self.buffer_wrapper.get_buffer_groups()
+
+        # getting information for buffer groups
+        self.buffer_distance = {}
+        for i, buf in self.buffer_groups.items():
+            self.buffer_distance[i] = buf.r_i
+            buf.s_i, buf.d_s_i = self.compute_lamda_i(buf.r_i)
+
     @abstractmethod
-    def partition(self, info):
+    def find_configurations(self, info):
         """
         Function implemented in individual child classes
         """
@@ -211,5 +217,6 @@ TODO
         Function implemented in individual child classes
         """
         pass
+
 
 

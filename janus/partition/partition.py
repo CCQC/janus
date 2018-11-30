@@ -1,6 +1,4 @@
-from abc import abc, abstractmethod
-from copy import deepcopy
-import mdtraj as md
+from abc import ABC, abstractmethod
 import numpy as np
 from janus.system import Buffer
 import mendeleev as mdlv
@@ -9,11 +7,11 @@ class Partition(ABC):
 
     nm_to_angstrom = 10.0000000
 
-    def __init(self, trajectory, topology, class_type):
+    def __init__(self, trajectory, topology, class_type):
 
         self.traj = trajectory
         self.topology = topology
-        self.class_type = classtype
+        self.class_type = class_type
     
 
     def compute_COM(self, atoms):
@@ -133,6 +131,21 @@ class Partition(ABC):
         buf.r_i = np.linalg.norm(buf.COM_coord - np.array(qm_center_xyz))*Partition.nm_to_angstrom
 
         return buf
+
+    def get_qm_atoms(self):
+
+        return self.qm_atoms
+
+    def get_qm_residues(self):
+
+        return self.qm_residues
+        
+    def get_qm_center_info(self):
+        return self.qm_center_weight_ratio
+
+    def get_buffer_groups(self):
+        
+        return self.buffer_groups
 
     @abstractmethod
     def define_buffer_zone(self):

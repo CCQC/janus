@@ -1,3 +1,6 @@
+import numpy as np
+from copy import deepcopy
+import mdtraj as md
 from janus.partition import Partition
 
 class DistancePartition(Partition):
@@ -160,3 +163,4 @@ class DistancePartition(Partition):
         
         """
         self.Rmax = Rmax
+
