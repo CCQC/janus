@@ -255,7 +255,7 @@ class QMMM(object):
             for i, atom in enumerate(system.qm_atoms):
 
                 # compute the qmmm gradient for the qm atoms: 
-                # mm_entire - mm_primary - qm
+                # mm_entire - mm_primary + qm
                 qmmm_force[atom] = np.zeros(3)
                 # these are in units of au_bohr, convert to openmm units in openmm wrapper
                 qmmm_force[atom] += -1 * (- ps_mm_grad[i] + qm_grad[i])

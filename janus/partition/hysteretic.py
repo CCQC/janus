@@ -123,54 +123,27 @@ class HystereticPartition(Partition):
         print('qm_atoms identified by the find_buffer_atom function: ' )
         print(self.qm_atoms)
 
+    def get_Rmin_qm(self):
+        return self.Rmin_qm
 
-    def get_Rmin(self):
-        """
-        Function to return self.Rmin
+    def get_Rmin_bf(self):
+        return self.Rmin_bf
 
-        Returns
-        -------
-        float
-            the distance from qm center to inner limit of buffer zone in angstroms
+    def get_Rmax_qm(self):
+        return self.Rmax_qm
 
-        """
-        return self.Rmin
+    def get_Rmax_bf(self):
+        return self.Rmax_bf
 
-    def get_Rmax(self):
-        """
-        Function to return self.Rmin
+    def set_Rmin_qm(self, Rmin):
+        self.Rmin_qm = Rmin
 
-        Returns
-        -------
-        float
-            the distance from qm center to outer limit of buffer zone in angstroms
+    def set_Rmin_bf(self, Rmin):
+        self.Rmin_bf = Rmin
 
-        """
+    def set_Rmax_qm(self, Rmax):
+        self.Rmax_qm = Rmax
 
-        return self.Rmax
-
-    def set_Rmin(self, Rmin):
-        """
-        Function to set self.Rmin
-        
-        Parameters
-        ----------
-        Rmin : float 
-            the distance from qm center to inner limit of buffer zone in angstroms
-        
-        """
-
-        self.Rmin = Rmin
-
-    def set_Rmax(self, Rmax):
-        """
-        Function to set self.Rmax
-        
-        Parameters
-        ----------
-        Rmax : float 
-            the distance from qm center to outer limit of buffer zone in angstroms
-        
-        """
-        self.Rmax = Rmax
+    def set_Rmax_bf(self):
+        self.Rmax_bf = Rmax
 

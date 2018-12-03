@@ -26,6 +26,8 @@ class AQMMM(ABC, QMMM):
                        partition_scheme='distance',
                        Rmin=3.8,
                        Rmax=4.5,
+                       Rmin_bf=4.0,
+                       Rmax_bf=4.7,
                        qmmm_param={}):
 
 
@@ -34,6 +36,8 @@ class AQMMM(ABC, QMMM):
         self.qm_center = qm_center
         self.Rmin = Rmin
         self.Rmax = Rmax
+        self.Rmin_bf = Rmin_bf  
+        self.Rmax_bf = Rmax_bf
         self.class_type = class_type
         self.buffer_groups = {}
         self.compute_zero_energy()
@@ -61,7 +65,6 @@ class AQMMM(ABC, QMMM):
         self.find_buffer_zone()
         self.find_configurations()
 
-            
         counter = 0
         for i, system in self.systems[self.run_ID].items():
             print('Running QM/MM partition {}'.format(counter))
@@ -182,6 +185,9 @@ class AQMMM(ABC, QMMM):
 
         if partition_scheme == 'distance':
             wrapper = DistancePartition(self.traj, self.topology, self.Rmin, self.Rmax)
+
+        if partition_scheme == 'hysteretic':
+            wrapper = HystereticPartition(self.traj, self.topology, self.Rmin, self.Rmax, self.Rmin_bf, self.Rmax_bf)
 
         else:
             raise ValueError("{} partition not implemented at this time".format(partition_scheme))
