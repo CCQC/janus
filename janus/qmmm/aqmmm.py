@@ -36,8 +36,8 @@ class AQMMM(ABC, QMMM):
         self.qm_center = qm_center
         self.Rmin = Rmin
         self.Rmax = Rmax
-        self.Rmin_bf = Rmin_bf  
-        self.Rmax_bf = Rmax_bf
+        self.Rmin_qm = Rmin_qm
+        self.Rmin_bf = Rmin_bf
         self.class_type = class_type
         self.buffer_groups = {}
         self.compute_zero_energy()
@@ -185,10 +185,8 @@ class AQMMM(ABC, QMMM):
 
         if partition_scheme == 'distance':
             wrapper = DistancePartition(self.traj, self.topology, self.Rmin, self.Rmax)
-
-        if partition_scheme == 'hysteretic':
+        elif partition_scheme == 'hysteretic':
             wrapper = HystereticPartition(self.traj, self.topology, self.Rmin_qm, self.Rmin, self.Rmin_bf, self.Rmax)
-
         else:
             raise ValueError("{} partition not implemented at this time".format(partition_scheme))
 

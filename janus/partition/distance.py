@@ -81,6 +81,7 @@ class DistancePartition(Partition):
             the indicies that make up the qm center
 
         """
+        temp_traj, qm_center_idx = self.compute_qm_center_info(qm_center)
 
         rmin_atoms = md.compute_neighbors(temp_traj, self.Rmin/10, qm_center_idx)
         rmax_atoms = md.compute_neighbors(temp_traj, self.Rmax/10, qm_center_idx)

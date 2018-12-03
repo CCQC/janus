@@ -151,7 +151,7 @@ class Partition(ABC):
             t.xyz = np.append(t.xyz[0], [self.qm_center_xyz], axis=0)
             temp_traj = t
 
-        return temp_traj
+        return temp_traj, qm_center_idx
 
     def get_qm_atoms(self):
 
