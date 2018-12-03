@@ -26,8 +26,8 @@ class AQMMM(ABC, QMMM):
                        partition_scheme='distance',
                        Rmin=3.8,
                        Rmax=4.5,
-                       Rmin_bf=4.0,
-                       Rmax_bf=4.7,
+                       Rmin_qm=3.6,
+                       Rmin_bf=4.3,
                        qmmm_param={}):
 
 
@@ -187,7 +187,7 @@ class AQMMM(ABC, QMMM):
             wrapper = DistancePartition(self.traj, self.topology, self.Rmin, self.Rmax)
 
         if partition_scheme == 'hysteretic':
-            wrapper = HystereticPartition(self.traj, self.topology, self.Rmin, self.Rmax, self.Rmin_bf, self.Rmax_bf)
+            wrapper = HystereticPartition(self.traj, self.topology, self.Rmin_qm, self.Rmin, self.Rmin_bf, self.Rmax)
 
         else:
             raise ValueError("{} partition not implemented at this time".format(partition_scheme))
