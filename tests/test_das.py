@@ -12,19 +12,15 @@ openmm = mm_wrapper.OpenMMWrapper(sys_info=water,**{'md_ensemble':'NVT', 'return
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-das_1 = qmmm.DAS(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
-das_2 = qmmm.DAS(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
-das_1.set_Rmin(2.6)
-das_1.set_Rmax(3.2)
-das_2.set_Rmin(2.6)
-das_2.set_Rmax(3.4)
+das_1 = qmmm.DAS(hl_wrapper=psi4, ll_wrapper=openmm, sys_info=water, qmmm_param={'embedding_method' : 'Mechanical'}, Rmin=2.6, Rmax=3.2)
+das_2 = qmmm.DAS(hl_wrapper=psi4, ll_wrapper=openmm, sys_info=water, qmmm_param={'embedding_method' : 'Mechanical'}, Rmin=2.6, Rmax=3.4)
 
 def test_get_combos():
 
     b1 = [1]
     b2 = [1,2]
-    das_1.define_buffer_zone([0])
-    das_2.define_buffer_zone([0])
+    das_1.find_buffer_zone()
+    das_2.find_buffer_zone()
     das_1.qm_residues = [0]
     das_2.qm_residues = [0]
     combo1, sigma1 = das_1.get_combos(b1)
@@ -42,10 +38,10 @@ def test_compute_lamda_i():
     assert np.allclose(0.7407407407407413, l)
     assert d is None
 
-def test_partition():
+def test_find_configurations():
 
-    das_1.partition([0])
-    das_2.partition([0])
+    das_1.find_configurations()
+    das_2.find_configurations()
 
     print(len(das_1.systems[0])) 
     print(len(das_2.systems[0]))

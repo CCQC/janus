@@ -12,13 +12,8 @@ openmm = mm_wrapper.OpenMMWrapper(sys_info=water, **{'md_ensemble':'NVT', 'retur
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-pap_1 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
-pap_2 = qmmm.PAP(psi4, openmm, sys_info=water, aqmmm_param={'qmmm_param' : {'embedding_method' : 'Mechanical'}})
-
-pap_1.set_Rmin(2.6)
-pap_1.set_Rmax(3.2)
-pap_2.set_Rmin(2.6)
-pap_2.set_Rmax(3.4)
+pap_1 = qmmm.PAP(hl_wrapper=psi4, ll_wrapper=openmm, sys_info=water, qmmm_param={'embedding_method' : 'Mechanical'}, Rmin=2.6, Rmax=3.2)
+pap_2 = qmmm.PAP(hl_wrapper=psi4, ll_wrapper=openmm, sys_info=water, qmmm_param={'embedding_method' : 'Mechanical'}, Rmin=2.6, Rmax=3.4)
 
 def test_get_combos():
 
@@ -34,10 +29,13 @@ def test_get_combos():
     assert(len(combo2)) == 2**len(buffers2) - 1
 
 
-def test_partition():
+def test_find_configurations():
 
-    pap_1.partition([0])
-    pap_2.partition([0])
+    pap_1.find_buffer_zone()
+    pap_2.find_buffer_zone()
+
+    pap_1.find_configurations()
+    pap_2.find_configurations()
 
     assert len(pap_1.systems[0]) == 2
     assert len(pap_2.systems[0]) == 4

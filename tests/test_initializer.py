@@ -38,7 +38,7 @@ def test_initialize_wrappers():
     mm2, qmmm2 = init2.initialize_wrappers()
     mm3, qmmm3 = init3.initialize_wrappers()
 
-    assert qmmm1.class_type == 'ONIOM-XS'
+    assert qmmm1.class_type == 'Oniom-XS'
     assert qmmm2.class_type == 'Hot-Spot'
     assert mm1.class_type == 'OpenMM' 
     assert mm2.class_type == 'OpenMM' 

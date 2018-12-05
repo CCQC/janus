@@ -11,74 +11,29 @@ openmm = mm_wrapper.OpenMMWrapper(sys_info=water,**{'md_ensemble':'NVT', 'return
 openmm.initialize('Mechanical')
 main_info_m = openmm.get_main_info()
 
-oxs =   qmmm.OniomXS(psi4, openmm, sys_info=water)
-oxs_0 = qmmm.OniomXS(psi4, openmm, sys_info=water)
-oxs_1 = qmmm.OniomXS(psi4, openmm, sys_info=water)
-oxs_2 = qmmm.OniomXS(psi4, openmm, sys_info=water)
+oxs =   qmmm.OniomXS(psi4, openmm, sys_info=water, Rmin=3.8, Rmax=4.5)
+oxs_0 = qmmm.OniomXS(psi4, openmm, sys_info=water, Rmin=2.6, Rmax=2.8)
+oxs_1 = qmmm.OniomXS(psi4, openmm, sys_info=water, Rmin=2.6, Rmax=3.2)
+oxs_2 = qmmm.OniomXS(psi4, openmm, sys_info=water, Rmin=2.6, Rmax=3.4)
 
-def test_set_Rmin():
+def test_find_buffer_zone():
 
-    oxs_0.set_Rmin(2.6)
-    oxs_1.set_Rmin(2.6)
-    oxs_2.set_Rmin(2.6)
-    assert oxs.get_Rmin() == 3.8
-    assert oxs_0.get_Rmin() == 2.6
-    assert oxs_1.get_Rmin() == 2.6
-    assert oxs_2.get_Rmin() == 2.6
-
-def test_set_Rmax():
-
-    oxs_0.set_Rmax(2.8)
-    oxs_1.set_Rmax(3.2)
-    oxs_2.set_Rmax(3.4)
-    assert oxs.get_Rmax() == 4.5
-    assert oxs_0.get_Rmax() == 2.8
-    assert oxs_1.get_Rmax() == 3.2
-    assert oxs_2.get_Rmax() == 3.4
-
-def test_edit_atoms():
-
-    atom1 = oxs.edit_atoms(atoms=[0,1,2,3,4], res_idx=1, remove=True)
-    atom2 = oxs.edit_atoms(atoms=[0,1,2,3,4], res_idx=1, add=True)
-
-    assert np.allclose(np.array([0,1,2]), np.array(atom1))
-    assert np.allclose(np.array([0,1,2,3,4,5]), np.array(atom2))
-
+    oxs.find_buffer_zone()
+    oxs_0.find_buffer_zone()
+    oxs_1.find_buffer_zone()
+    oxs_2.find_buffer_zone()
     
-def test_define_buffer_zone():
-    
-    oxs.define_buffer_zone([0])
-    oxs_0.define_buffer_zone([0])
-    oxs_1.define_buffer_zone([0])
-    oxs_2.define_buffer_zone([0])
-    
-    assert (oxs.buffer_atoms == [8] and not oxs.buffer_groups)
-    assert (not oxs_0.buffer_atoms and not oxs_0.buffer_groups)
-    assert (oxs_1.buffer_atoms == [3] and oxs_1.buffer_groups[1].atoms == [3, 4, 5])
-    assert np.allclose(oxs_2.buffer_atoms, np.array([3, 5, 6]))
+    assert not oxs.buffer_groups
+    assert not oxs_0.buffer_groups
+    assert oxs_1.buffer_groups[1].atoms == [3, 4, 5]
     assert (oxs_2.buffer_groups[1].atoms == [3, 4, 5] and oxs_2.buffer_groups[2].atoms == [6, 7, 8])
 
+def test_find_configurations():
 
-def test_get_residue_info():
-
-    res = oxs.get_residue_info(0)
-    res1 = oxs.get_residue_info(1)
-
-    assert np.allclose(np.array([0,1,2]), np.array(res.atoms))
-    assert np.allclose(0.0655606189723, res.r_i)
-    assert np.allclose(np.array([3,4,5]), np.array(res1.atoms))
-    assert np.allclose(3.10273031189, res1.r_i)
-
-def test_partition():
-
-    print('oxs')
-    oxs.partition([0])
-    print('oxs0')
-    oxs_0.partition([0])
-    print('oxs1')
-    oxs_1.partition([0])
-    print('oxs2')
-    oxs_2.partition([0])
+    oxs.find_configurations()
+    oxs_0.find_configurations()
+    oxs_1.find_configurations()
+    oxs_2.find_configurations()
 
     assert np.allclose(  oxs.systems[0]['qm'].qm_atoms, np.array([0, 1, 2, 3, 4, 5, 6, 7,8]))
     assert np.allclose(oxs_0.systems[0]['qm'].qm_atoms, np.array([0, 1, 2]))
@@ -87,20 +42,11 @@ def test_partition():
     assert np.allclose(oxs_2.systems[0]['qm'].qm_atoms, np.array([0, 1, 2]))
     assert np.allclose(oxs_2.systems[0]['qm_bz'].qm_atoms, np.array([0, 1, 2, 3, 4, 5, 6, 7, 8]))
 
+
 def test_compute_lamda_i():
 
     s, d = oxs_1.compute_lamda_i(3.0)
     assert (np.allclose(s, 0.20987654320987748) and np.allclose(d, -.8230452674897127))
-
-def test_compute_COM():
-
-    xyz, weight, ratio = oxs_1.compute_COM(atoms=[0,1,2])
-    com = np.array([0.011130575, .354230624, .588089475])
-    
-    assert weight == {0: 15.999, 1: 1.008, 2: 1.008}
-    assert ratio == {0: 0.8880932556203164, 1: 0.055953372189841796, 2: 0.055953372189841796}
-    assert np.allclose(xyz, com)
-
 
 def test_get_switching_function():
 

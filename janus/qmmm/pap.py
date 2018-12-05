@@ -40,28 +40,13 @@ class PAP(AQMMM):
             See QMMM class for specifics
 
     """
+    def __init__(self, modified_variant=False, *args, **kwargs):
 
-    def __init__(self, hl_wrapper, 
-                       ll_wrapper, 
-                       sys_info,
-                       sys_info_format='pdb',
-                       modified_variant=False,
-                       qm_center=[0],
-                       partition_scheme='distance',
-                       Rmin=3.8,
-                       Rmax=4.5,
-                       qmmm_param={},
-                       **kwargs):
-        
+        super().__init__('PAP', *args, **kwargs)
         self.modified_variant = modified_variant
-        self.qm_center = qm_center
-        self.partition_scheme = partition_scheme
-        self.Rmin = Rmin
-        self.Rmax = Rmax
 
-        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, qmmm_param, 'PAP')
 
-    def partition(self, qm_center=None): 
+    def find_configurations(self): 
         """
         Finds the partitions as required by the PAP method 
         and saves each partition as a system object.
@@ -74,15 +59,13 @@ class PAP(AQMMM):
 
         """
     
-        if qm_center is None:
-            qm_center = self.qm_center
-
-        self.define_buffer_zone(qm_center)
-
         qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
+        # qm partition contains the original partition information
+        qm.buffer_groups = self.buffer_groups
 
         self.systems[self.run_ID] = {}
         self.systems[self.run_ID][qm.partition_ID] = qm
+        
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
@@ -97,7 +80,6 @@ class PAP(AQMMM):
                         sys.qm_atoms.append(idx)
                 
                 # each partition has a copy of its buffer groups - 
-                # don't know if this is actually needed
                 sys.buffer_groups = {k: self.buffer_groups[k] for k in part}
                 self.systems[self.run_ID][sys.partition_ID] = sys
 

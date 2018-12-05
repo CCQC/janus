@@ -35,26 +35,11 @@ class HotSpot(AQMMM):
             See QMMM class for specifics
 
     """
+    def __init__(self, *args, **kwargs):
 
-    def __init__(self, hl_wrapper, 
-                       ll_wrapper, 
-                       sys_info,
-                       sys_info_format='pdb',
-                       qm_center=[0],
-                       partition_scheme='distance',
-                       Rmin=3.8,
-                       Rmax=4.5,
-                       qmmm_param={},
-                       **kwargs):
+        super().__init__('Hot-Spot', *args, **kwargs)
 
-        self.qm_center = qm_center
-        self.partition_scheme = partition_scheme
-        self.Rmin = Rmin
-        self.Rmax = Rmax
-
-        super().__init__(hl_wrapper, ll_wrapper, sys_info, sys_info_format, qmmm_param, 'Hot-Spot')
-
-    def partition(self, qm_center=None): 
+    def find_configurations(self): 
         """
         Finds the partitions as required by the Hot-Spot method 
         and saves each partition as a system object.
@@ -67,12 +52,8 @@ class HotSpot(AQMMM):
 
         """
     
-        if qm_center is None:
-            qm_center = self.qm_center
-
-        self.define_buffer_zone(qm_center)
-
         qm = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID='qm')
+        qm.buffer_groups = self.buffer_groups
 
         # the following only runs if there are groups in the buffer zone
         if self.buffer_groups:
