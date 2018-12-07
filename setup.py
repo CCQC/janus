@@ -34,12 +34,12 @@ if __name__ == "__main__":
             'pytest-pep8',
             'tox',
         ],
-        data_files=[('janus/default_input/', ['janus/default_input/qmmm.json',
-                                               'janus/default_input/aqmmm.json',
-                                               'janus/default_input/psi4.json',
-                                               'janus/default_input/md.json',
-                                               'janus/default_input/system.json',
-                                               'janus/default_input/openmm.json'])],
+      #  data_files=[('janus/default_input/', ['janus/default_input/qmmm.json',
+      #                                         'janus/default_input/aqmmm.json',
+      #                                         'janus/default_input/psi4.json',
+      #                                         'janus/default_input/md.json',
+      #                                         'janus/default_input/system.json',
+      #                                         'janus/default_input/openmm.json'])],
 
         entry_points={
             'console_scripts': [

@@ -43,21 +43,6 @@ class MMWrapper(ABC):
         self.return_forces_filename = 'forces.pkl'                                                              
         self.return_forces_interval = 0                                                                         
 
-        self.qmmm_steps = self.end_qmmm - self.start_qmmm
-
-        if (type(self.md_steps) is list and type(self.md_ensemble) is list):
-            self.md_ensemble = self.md_ensemble[-1]
-            self.other_md_ensembles = self.md_ensemble[0:-1]
-            self.other_ensemble_steps = self.md_steps[0:-1]
-        elif (type(self.md_steps) is int and type(self.md_ensemble) is str):
-            self.other_md_ensembles = None
-            self.other_ensemble_steps = None
-
-        if type(self.md_steps) is int:
-            self.end_steps = self.md_steps - self.end_qmmm
-        elif type(self.md_steps) is list:
-            self.end_steps = self.md_steps[-1] - self.end_qmmm
-
         super().__init__()
 
     def get_energy_and_gradient(self, traj, geometry=None, include_coulomb='all', link_atoms=None, minimize=False, charges=None):
@@ -100,6 +85,22 @@ class MMWrapper(ABC):
 
         return info
 
+    def post_processing_input(self):
+
+        self.qmmm_steps = self.end_qmmm - self.start_qmmm
+
+        if (type(self.md_steps) is list and type(self.md_ensemble) is list):
+            self.other_md_ensembles = self.md_ensemble[0:-1]
+            self.other_ensemble_steps = self.md_steps[0:-1]
+            self.md_ensemble = self.md_ensemble[-1]
+        elif (type(self.md_steps) is int and type(self.md_ensemble) is str):
+            self.other_md_ensembles = None
+            self.other_ensemble_steps = None
+
+        if type(self.md_steps) is int:
+            self.end_steps = self.md_steps - self.end_qmmm
+        elif type(self.md_steps) is list:
+            self.end_steps = self.md_steps[-1] - self.end_qmmm
 
     @abstractmethod
     def compute_info(self):

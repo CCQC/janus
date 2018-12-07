@@ -621,4 +621,15 @@ class QMMM(object):
         if form == 'pdb':
             traj = md.load(fil)
 
+        if form == 'Amber':
+
+            print(fil)
+            for f in fil:
+                if 'prmtop' in f:
+                    top_fil = f
+                elif 'inpcrd' in f:
+                    crd_fil = f
+                
+            traj = md.load(crd_fil, top=top_fil)
+
         return traj
