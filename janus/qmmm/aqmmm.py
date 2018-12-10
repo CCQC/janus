@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import mdtraj as md
 import numpy as np
-from janus.partition import DistancePartition
+from janus.partition import DistancePartition, HystereticParition
 from janus.qmmm import QMMM
 
 class AQMMM(ABC, QMMM):
