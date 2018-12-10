@@ -142,8 +142,6 @@ class OpenMMWrapper(MMWrapper):
             print(self.other_md_ensembles)
             for i, ensemble in enumerate(self.other_md_ensembles):
                 print('running equilibrating ensemble {} for {} steps'.format(ensemble,self.other_ensemble_steps[i]))
-                print('problem here')
-                print(ensemble)
                 
                 if ensemble == 'NVT':
                     integrator = self.NVT_integrator
@@ -151,7 +149,7 @@ class OpenMMWrapper(MMWrapper):
                     integrator = self.NVE_integrator
 
                 OM_system = self.create_openmm_system(self.topology)
-                simulation, integrator_obj = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, integrator, return_integrator=True)
+                simulation, integrator_obj = self.create_openmm_simulation(OM_system, self.topology, self.positions, integrator, return_integrator=True)
                 simulation.minimizeEnergy()
 
                 #simulation.reporters.append(NetCDFReporter('output_nvt.nc', 50))
@@ -166,7 +164,7 @@ class OpenMMWrapper(MMWrapper):
                 # not sure if should save this
                 del simulation, state, OM_system, integrator_obj
         else:
-            pos = self.pdb.positions
+            pos = self.positions
 
         print('starting main simulation')
         if embedding_method == 'Mechanical':
@@ -192,7 +190,7 @@ class OpenMMWrapper(MMWrapper):
 
         print(self.integrator)
         # Create an OpenMM simulation from the openmm system, topology, and positions.
-        self.main_simulation = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, self.integrator)
+        self.main_simulation = self.create_openmm_simulation(OM_system, self.topology, self.positions, self.integrator)
 
         with open(chkpt_file, 'rb') as f:
             self.main_simulation.context.loadCheckpoint(f.read())
@@ -340,6 +338,8 @@ class OpenMMWrapper(MMWrapper):
         # ensure every computation has same periodic box vector parameters
         topology.setPeriodicBoxVectors(self.PeriodicBoxVector)
         # Create an OpenMM system from an object's topology
+        print('topology going into system')
+        print(topology.getNumAtoms())
         OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=initialize)
 
         print(self.integrator)
@@ -408,7 +408,7 @@ class OpenMMWrapper(MMWrapper):
         """
 
         # check to see if there are unmatched residues in pdb, create residue templates if there are
-        if self.system_info_format == 'pdb':
+        if (self.system_info_format == 'pdb' or self.use_pdb is True):
             unmatched = self.forcefield.getUnmatchedResidues(topology)
             if unmatched:
                 self.create_new_residue_template(topology)
@@ -425,17 +425,26 @@ class OpenMMWrapper(MMWrapper):
                                             flexibleConstraints=self.flexibleConstraints,
                                             ignoreExternalBonds=self.ignoreExternalBonds)
 
-        if self.system_info_format == 'Amber':
+        elif (self.system_info_format == 'Amber' and self.use_pdb is False):
 
-            openmm_system = self.forcefield.createSystem(nonbondedMethod=self.nonbondedMethod,
+            if topology.getNumAtoms() != self.topology.getNumAtoms():
+                print('reading topology not the same')
+                forcefield = deepcopy(self.forcefield)
+                forcefield.topology = topology
+                print(forcefield.topology.getNumAtoms())
+            else:
+                print('reading topology same')
+                forcefield = self.forcefield
+
+            openmm_system = forcefield.createSystem(nonbondedMethod=self.nonbondedMethod,
                                             constraints=self.constraints,
                                             hydrogenMass=self.hydrogenMass,
                                             switchDistance=self.switchDistance,
                                             nonbondedCutoff=self.nonbondedCutoff,
                                             rigidWater=self.rigid_water,
                                             removeCMMotion=self.removeCMMotion)
-            
-        
+            print('new system particles')
+            print(openmm_system.getNumParticles())
 
         if initialize is True:                                             # this is for the initialization of the entire system
             self.qmmm_force = OM.CustomExternalForce("-x*fx-y*fy-z*fz")    # define a custom force for adding qmmm gradients
@@ -615,7 +624,6 @@ class OpenMMWrapper(MMWrapper):
             integrator_obj = OM.VerletIntegrator(self.step_size)
         else:
             print('only Langevin integrator supported currently')
-
 
         simulation = OM_app.Simulation(topology, openmm_system, integrator_obj)
         simulation.context.setPositions(positions)
@@ -872,12 +880,19 @@ class OpenMMWrapper(MMWrapper):
 
         elif self.system_info_format == 'Amber':
             for fil in self.system_info:
-                if 'prmtop' in fil:
+                if fil.endswith('prmtop'):
                     self.forcefield = OM_app.AmberPrmtopFile(fil)
                     self.topology = self.forcefield.topology
-                elif 'inpcrd' in fil:
-                    self.pdb = OM_app.AmberInpcrdFile(fil)
-                    self.PeriodicBoxVector = self.pdb.boxVectors
+                    self.use_pdb = False
+                if fil.endswith('pdb'):
+                    self.pdb = OM_app.PDBFile(fil)
+                    self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
+                    self.topology = self.pdb.topology
+                    self.use_pdb = True
+                if fil.endswith('inpcrd'):
+                    self.inpcrd = OM_app.AmberInpcrdFile(fil)
+                    self.positions = self.inpcrd.positions
+                    self.PeriodicBoxVector = self.inpcrd.boxVectors
 
         elif self.system_info_format == 'Gromacs':
             for fil in self.system_info:
