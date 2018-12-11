@@ -12,7 +12,7 @@ class DistancePartition(Partition):
 
         super().__init__(trajectory, topology, 'distance')
 
-    def define_buffer_zone(self, qm_center):
+    def define_buffer_zone(self, qm_center, prev_qm=None, prev_bf=None):
         """
         Determines buffer group atoms.
         Gets the buffer groups in the buffer zone based on a distance 

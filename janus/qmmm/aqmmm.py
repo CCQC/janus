@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import mdtraj as md
 import numpy as np
-from janus.partition import DistancePartition, HystereticParition
+from janus.partition import DistancePartition, HystereticPartition
 from janus.qmmm import QMMM
 
 class AQMMM(ABC, QMMM):
@@ -195,7 +195,14 @@ class AQMMM(ABC, QMMM):
                     
     def find_buffer_zone(self):
 
-        self.buffer_wrapper.define_buffer_zone(self.qm_center)
+        if (self.run_ID == 0 or self.buffer_wrapper.class_type == 'distance'):
+            qm = {}
+            bf = {}
+        else:
+            qm =  self.systems[self.run_ID-1]['qm'].qm_residues
+            bf =  self.systems[self.run_ID-1]['qm'].buffer_groups
+
+        self.buffer_wrapper.define_buffer_zone(self.qm_center, prev_qm=qm, prev_bf=bf)
 
         self.qm_atoms = self.buffer_wrapper.get_qm_atoms()
         self.qm_residues = self.buffer_wrapper.get_qm_residues()

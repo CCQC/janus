@@ -342,7 +342,6 @@ class OpenMMWrapper(MMWrapper):
         print(topology.getNumAtoms())
         OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=initialize)
 
-        print(self.integrator)
         # Create an OpenMM simulation from the openmm system, topology, and positions.
         simulation = self.create_openmm_simulation(OM_system, topology, positions, self.integrator)
 

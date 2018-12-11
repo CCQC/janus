@@ -12,7 +12,7 @@ class HystereticPartition(Partition):
         self.Rmin_bf = Rmin_bf 
         self.Rmax_bf = Rmax_bf
 
-        super().__init__(trajectory, topology, 'distance')
+        super().__init__(trajectory, topology, 'hysteretic')
 
     def define_buffer_zone(self, qm_center, prev_qm, prev_bf):
         """
