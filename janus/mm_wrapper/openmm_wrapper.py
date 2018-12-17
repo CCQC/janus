@@ -874,7 +874,7 @@ class OpenMMWrapper(MMWrapper):
             # instantiate OpenMM forcefield object
             self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
             self.topology = self.pdb.topology
-            
+            self.positions = self.pdb.positions
             self.PeriodicBoxVector = self.topology.getPeriodicBoxVectors()
 
         elif self.system_info_format == 'Amber':
