@@ -43,8 +43,9 @@ class SAP(AQMMM):
 
     def __init__(self, modified_variant=False, *args, **kwargs):
 
-        super().__init__('SAP', *args, **kwargs)
         self.modified_variant = modified_variant
+        print(self.modified_variant)
+        super().__init__('SAP', *args, **kwargs)
 
     def find_configurations(self): 
         """
@@ -69,6 +70,7 @@ class SAP(AQMMM):
         if self.buffer_groups:
 
             self.partitions = self.get_combos(list(self.buffer_groups))
+            print('partitions', self.partitions)
 
             for i, part in enumerate(self.partitions):
                 sys = System(qm_indices=self.qm_atoms, qm_residues=self.qm_residues, run_ID=self.run_ID, partition_ID=i)
@@ -101,6 +103,7 @@ class SAP(AQMMM):
             # getting first term of ap energy and forces (w/o gradient of switching function)
             qm.aqmmm_energy = deepcopy(qm.qmmm_energy)
             qm.aqmmm_forces = deepcopy(qm.qmmm_forces)
+            print('qm aqmmm energy', qm.aqmmm_energy)
 
             for i, buf in self.buffer_groups.items():
                 qm.aqmmm_energy *= (1 - buf.phi_i)
@@ -148,6 +151,8 @@ class SAP(AQMMM):
 
             self.systems[self.run_ID]['qmmm_energy'] = energy
             self.systems[self.run_ID]['qmmm_forces'] = qmmm_forces
+            print('forces')
+            print(qmmm_forces)
             
     def compute_sf_gradient(self):
         """

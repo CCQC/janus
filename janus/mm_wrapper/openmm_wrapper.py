@@ -615,7 +615,7 @@ class OpenMMWrapper(MMWrapper):
         create_open_simulation(openmm_sys, pdb.topology. pdb.positions)
         """
 
-        print('using {} integrator'.format(integrator))
+        #print('using {} integrator'.format(integrator))
         if integrator == 'Langevin':
             integrator_obj = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
             integrator_obj.setRandomNumberSeed(seed)

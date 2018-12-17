@@ -154,6 +154,7 @@ class QMMM(object):
         if self.qmmm_scheme == 'subtractive':
             # Get MM energy on whole system
             system.entire_sys = deepcopy(main_info)
+            print('entire', system.entire_sys['energy'])
 
             #print(system.entire_sys['energy'])
             # Get MM energy on QM region
@@ -162,10 +163,12 @@ class QMMM(object):
             system.primary_subsys['trajectory'] = traj_ps
             print('getting mm energy and gradient of qm region')
             system.primary_subsys['ll'] = self.ll_wrapper.get_energy_and_gradient(traj_ps, include_coulomb='no_link', link_atoms=link_indices)
+            print('ll', system.primary_subsys['ll']['energy'])
 
             # Get QM energy
             print('getting qm energy and gradient of qm region')
             system.primary_subsys['hl'] = self.hl_wrapper.get_energy_and_gradient(traj_ps)
+            print('hl', system.primary_subsys['hl']['energy'])
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -618,6 +621,7 @@ class QMMM(object):
         
         """
             
+        print(form)
         if form == 'pdb':
             traj = md.load(fil)
 
@@ -632,7 +636,8 @@ class QMMM(object):
                     use_pdb = True
                 if f.endswith('inpcrd'):
                     crd_fil = f
-                
+            print('loading') 
+            print(pdb_fil)
             if use_pdb is True:
                 traj = md.load(pdb_fil)
             else:

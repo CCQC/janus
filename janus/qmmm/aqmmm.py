@@ -72,7 +72,6 @@ class AQMMM(ABC, QMMM):
 
             self.qm_atoms = deepcopy(system.qm_atoms)
 
-            print(self.embedding_method)
             if self.embedding_method =='Mechanical':
                 self.mechanical(system, main_info)
             elif self.embedding_method =='Electrostatic':
@@ -171,12 +170,17 @@ class AQMMM(ABC, QMMM):
         Incorporates the zero energy of groups to the total qmmm energy
         """
 
+        print('step', self.run_ID)
         for i, sys in self.systems[self.run_ID].items():
+            print(sys.qm_residues)
+            print(sys.qm_atoms)
+            print(sys.qmmm_energy)
             for res in self.topology.residues:
                 if res.index in sys.qm_residues:
                     sys.zero_energy += self.qm_zero_energies[res.name]
                 else:
                     sys.zero_energy += self.mm_zero_energies[res.name]
+            print(sys.zero_energy)
 
             # maybe I should save a separate copy of qmmm energy somewhere
             sys.qmmm_energy -= sys.zero_energy

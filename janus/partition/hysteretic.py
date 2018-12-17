@@ -122,15 +122,11 @@ class HystereticPartition(Partition):
         rmin_atoms = md.compute_neighbors(temp_traj, self.Rmin_qm/10, qm_center_idx)
         rmax_atoms = md.compute_neighbors(temp_traj, self.Rmax_bf/10, qm_center_idx)
         self.buffer_atoms = np.setdiff1d(rmax_atoms, rmin_atoms)
-        print('buffer atoms identified by find_buffer_atom function:')
-        print(self.buffer_atoms)
         self.qm_atoms = rmin_atoms[0].tolist()
 
         if self.COM_as_qm_center is False:
             self.qm_atoms.append(qm_center[0])
 
-        print('qm_atoms identified by the find_buffer_atom function: ' )
-        print(self.qm_atoms)
 
     def get_Rmin_qm(self):
         return self.Rmin_qm
