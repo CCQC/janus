@@ -12,7 +12,7 @@ class DistancePartition(Partition):
 
         super().__init__(trajectory, topology, 'distance')
 
-    def define_buffer_zone(self, qm_center, prev_qm=None, prev_bf=None):
+    def define_buffer_zone(self, qm_center, qm_center_residues, prev_qm=None, prev_bf=None):
         """
         Determines buffer group atoms.
         Gets the buffer groups in the buffer zone based on a distance 
@@ -43,12 +43,13 @@ class DistancePartition(Partition):
         for i in self.buffer_atoms:
             idx = top.atom(i).residue.index
 
-            if idx not in residue_tracker:
+            if (idx not in residue_tracker and idx not in qm_center_residues):
                 residue_tracker.append(idx)
                 buf = self.get_residue_info(idx)
             
                 if buf.r_i < self.Rmin:
                     self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                    self.qm_residues.append(idx)
                     
                 elif buf.r_i >= self.Rmax:
                     self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
@@ -63,13 +64,16 @@ class DistancePartition(Partition):
         for i in qm_atoms:
             idx = top.atom(i).residue.index
             if idx not in self.qm_residues:
-                res = self.get_residue_info(idx)
-
-                if res.r_i >= self.Rmax:
-                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
-                elif res.r_i < self.Rmin:
+                if idx in qm_center_residues:
                     self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
                     self.qm_residues.append(idx)
+                else:
+                    res = self.get_residue_info(idx)
+                    if res.r_i >= self.Rmax:
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+                    elif res.r_i < self.Rmin:
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                        self.qm_residues.append(idx)
 
     def find_buffer_atoms(self, qm_center):
         """

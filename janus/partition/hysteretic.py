@@ -14,7 +14,7 @@ class HystereticPartition(Partition):
 
         super().__init__(trajectory, topology, 'hysteretic')
 
-    def define_buffer_zone(self, qm_center, prev_qm={}, prev_bf={}):
+    def define_buffer_zone(self, qm_center, qm_center_residues, prev_qm={}, prev_bf={}):
         """
         Determines buffer group atoms.
         Gets the buffer groups in the buffer zone based on a distance 
@@ -45,13 +45,14 @@ class HystereticPartition(Partition):
         for i in self.buffer_atoms:
             idx = top.atom(i).residue.index
 
-            if idx not in residue_tracker:
+            if (idx not in residue_tracker and idx not in qm_center_residues):
                 residue_tracker.append(idx)
                 buf = self.get_residue_info(idx)
 
                 # all within Rmin_qm considered QM
                 if buf.r_i < self.Rmin_qm:
                     self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                    self.qm_residues.append(idx)
 
                 # Between Rmin_qm and Rmax_qm, only considered QM if previously QM
                 # or add to qm at first step
@@ -59,11 +60,13 @@ class HystereticPartition(Partition):
 
                     if (buf.ID in prev_qm and buf.ID not in prev_bf):
                         self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                        self.qm_residues.append(idx)
                     elif (buf.ID not in prev_qm and buf.ID in prev_bf):
                         self.buffer_groups[idx] = buf
                         self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
                     elif (not prev_qm and not prev_bf):
                         self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                        self.qm_residues.append(idx)
                     else:
                         raise Exception('Inconsistent group definition. Group was both QM and BZ atom')
 
@@ -94,16 +97,19 @@ class HystereticPartition(Partition):
         for i in qm_atoms:
             idx = top.atom(i).residue.index
             if idx not in self.qm_residues:
-                res = self.get_residue_info(idx)
-
-                # Cleaning up additional qm residues not catched previously
-                if res.r_i >= self.Rmax_bf:
-                    self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
-                elif res.r_i < self.Rmin_qm:
+                if idx in qm_center_residues:
                     self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
                     self.qm_residues.append(idx)
+
                 else:
-                    self.qm_residues.append(idx)
+                    res = self.get_residue_info(idx)
+
+                    # Cleaning up additional qm residues not catched previously
+                    if res.r_i >= self.Rmax_bf:
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, remove=True)
+                    elif res.r_i < self.Rmin_qm:
+                        self.edit_atoms(atoms=self.qm_atoms, res_idx=idx, add=True)
+                        self.qm_residues.append(idx)
 
 
     def find_buffer_atoms(self, qm_center):
