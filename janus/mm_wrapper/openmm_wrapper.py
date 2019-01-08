@@ -256,9 +256,13 @@ class OpenMMWrapper(MMWrapper):
         
         """
 
-
+        current = OpenMMWrapper.get_state_info(self.main_simulation,
+                                                energy=False,
+                                                positions=False,
+                                                forces=True)
         for f, coord in forces.items():
             coord *= MMWrapper.au_bohr_to_kjmol_nm             # convert this back to openmm units
+            coord -= current['forces'][f]
             force_obj.setParticleParameters(f, f, coord)  # need to figure out if the first 2 parameters always the same or not
 
         force_obj.updateParametersInContext(simulation.context)  # update forces with qmmm force

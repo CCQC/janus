@@ -94,7 +94,8 @@ class QMMM(object):
         self.systems[self.run_ID][system.partition_ID] = system
         self.systems[self.run_ID]['qmmm_forces'] = system.qmmm_forces 
         self.systems[self.run_ID]['qmmm_energy'] = system.qmmm_energy 
-        self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
+        #self.systems[self.run_ID]['kinetic_energy'] = main_info['kinetic']
+        self.systems[self.run_ID]['kinetic_energy'] = system.entire_sys['kinetic']
 
         #if self.run_ID % 10 == 0:
         print('!', self.run_ID, self.systems[self.run_ID]['qmmm_energy'] + self.systems[self.run_ID]['kinetic_energy'])
@@ -153,7 +154,7 @@ class QMMM(object):
 
         if self.qmmm_scheme == 'subtractive':
             # Get MM energy on whole system
-            system.entire_sys = deepcopy(main_info)
+            system.entire_sys = self.ll_wrapper.get_energy_and_gradient(self.traj)
             print('entire', system.entire_sys['energy'])
 
             #print(system.entire_sys['energy'])
@@ -200,8 +201,8 @@ class QMMM(object):
         if self.qmmm_scheme == 'subtractive':
 
             # Get MM energy on whole system
-            system.entire_sys = deepcopy(main_info)
-            #print(system.entire_sys['energy'])
+            system.entire_sys = self.ll_wrapper.get_energy_and_gradient(self.traj)
+            print('entire', system.entire_sys['energy'])
 
             # Get MM energy on QM region
             traj_ps, link_indices = self.make_primary_subsys_trajectory(qm_atoms=system.qm_atoms)
@@ -248,6 +249,7 @@ class QMMM(object):
 
         if self.qmmm_scheme == 'subtractive':
 
+            entire_grad = system.entire_sys['gradients']
             ps_mm_grad, qm_grad = system.primary_subsys['ll']['gradients'], system.primary_subsys['hl']['gradients']
             #print('ps_mm', ps_mm_grad)
             #print('qm', qm_grad)
@@ -259,9 +261,9 @@ class QMMM(object):
 
                 # compute the qmmm gradient for the qm atoms: 
                 # mm_entire - mm_primary + qm
-                qmmm_force[atom] = np.zeros(3)
+                # multiply by -1 to get from gradients to forces
                 # these are in units of au_bohr, convert to openmm units in openmm wrapper
-                qmmm_force[atom] += -1 * (- ps_mm_grad[i] + qm_grad[i])
+                qmmm_force[atom] = -1 * (entire_grad[atom] - ps_mm_grad[i] + qm_grad[i])
                 
                 # treating gradients for link atoms
                 if self.qmmm_boundary_bonds:
@@ -283,6 +285,10 @@ class QMMM(object):
                             #     qmmm_force[atom] += -(1 - g) * ps_mm_grad[-1] + (1 - g) * qm_grad[-1]
                             #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
+            # MM atoms
+            for a in range(len(entire_grad)):
+                if a not in system.qm_atoms:
+                    qmmm_force[a] = -1 * entire_grad[a]
 
             if 'll' in system.second_subsys:
                 # iterate over list of mm atoms
