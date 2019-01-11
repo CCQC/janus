@@ -10,11 +10,11 @@ class MMWrapper(ABC):
     the user cannot actually instantiate a MMWrapper object, but only its child objects
     """
 
-    kjmol_to_au = 1/2625.5002 
+    kjmol_to_au = 0.0003808798034
     nm_to_angstrom = 10.0000000
-    nm_to_bohr = 0.052917999999 
-    kjmol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
-    au_bohr_to_kjmol_nm = 1/kjmol_nm_to_au_bohr
+    nm_to_bohr = 18.897161646321
+    kjmol_nm_to_au_bohr = kjmol_to_au/nm_to_bohr 
+    au_bohr_to_kjmol_nm = nm_to_bohr/kjmol_to_au
 
     def __init__(self, class_type,
                        sys_info=None, 

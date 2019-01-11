@@ -86,12 +86,21 @@ class Psi4Wrapper(QMWrapper):
         gradient of the QM region and saves as self.energy, self.wavefuction,
         and self.gradient
         """
-        self.set_up_psi4()
-        self.energy, self.wavefunction = psi4.energy(self.method,
-                                                       return_wfn=True)
+        try:
+            self.set_up_psi4()
+            self.energy, self.wavefunction = psi4.energy(self.method,
+                                                        return_wfn=True)
 
-        G = psi4.gradient(self.method)
-        self.gradient = np.asarray(G)
+            G = psi4.gradient(self.method)
+            self.gradient = np.asarray(G)
+        except:
+            self.set_up_psi4(be_quiet=False)
+            self.energy, self.wavefunction = psi4.energy(self.method,
+                                                        return_wfn=True)
+
+            G = psi4.gradient(self.method)
+            self.gradient = np.asarray(G)
+            
         #deriv = psi4.core.Deriv(self.wavefunction)
         #deriv.compute()
         #self.gradient = np.asarray(self.wavefunction.gradient())
@@ -110,7 +119,7 @@ class Psi4Wrapper(QMWrapper):
         self.energy, self.wavefunction = psi4.opt(self.method, return_wfn=True)
         return np.array(self.wavefunction.molecule().geometry())
 
-    def set_up_psi4(self):
+    def set_up_psi4(self, be_quiet=True):
         """
         Sets up a psi4 computation
         """
@@ -120,7 +129,8 @@ class Psi4Wrapper(QMWrapper):
         psi4.core.EXTERN = None 
         
         # Supress print out
-        psi4.core.be_quiet()
+        if be_quiet is True:
+            psi4.core.be_quiet()
         
         psi4.set_options(self.qm_param)
 

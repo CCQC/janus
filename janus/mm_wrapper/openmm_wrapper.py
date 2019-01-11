@@ -260,12 +260,28 @@ class OpenMMWrapper(MMWrapper):
                                                 energy=False,
                                                 positions=False,
                                                 forces=True)
+        #for f in range(len(current['forces'])):
+        #    print(f, current['forces'][f])
+
         for f, coord in forces.items():
             coord *= MMWrapper.au_bohr_to_kjmol_nm             # convert this back to openmm units
-            coord -= current['forces'][f]
+            #print('fed in forces')
+            #print(f, coord)
+            #print('forces from before')
+            #print(current['forces'][f])
+            #coord -= current['forces'][f]
+            #print('new forces')
+            #print(coord)
             force_obj.setParticleParameters(f, f, coord)  # need to figure out if the first 2 parameters always the same or not
+            
 
         force_obj.updateParametersInContext(simulation.context)  # update forces with qmmm force
+        #current2 = OpenMMWrapper.get_state_info(self.main_simulation,
+        #                                        energy=False,
+        #                                        positions=False,
+        #                                        forces=True)
+        #for f in range(len(current2['forces'])):
+        #    print(f, current2['forces'][f])
 
     def take_step(self, num):
         """

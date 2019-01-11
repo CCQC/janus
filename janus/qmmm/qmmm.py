@@ -170,6 +170,7 @@ class QMMM(object):
             print('getting qm energy and gradient of qm region')
             system.primary_subsys['hl'] = self.hl_wrapper.get_energy_and_gradient(traj_ps)
             print('hl', system.primary_subsys['hl']['energy'])
+            print('hl', system.primary_subsys['hl']['gradients'])
 
             # Compute the total QM/MM energy based on
             # subtractive Mechanical embedding
@@ -263,7 +264,11 @@ class QMMM(object):
                 # mm_entire - mm_primary + qm
                 # multiply by -1 to get from gradients to forces
                 # these are in units of au_bohr, convert to openmm units in openmm wrapper
-                qmmm_force[atom] = -1 * (entire_grad[atom] - ps_mm_grad[i] + qm_grad[i])
+                #qmmm_force[atom] = -1 * (entire_grad[atom] - ps_mm_grad[i] + qm_grad[i])
+                print(atom, 'mm ps', -1*ps_mm_grad[i]*self.ll_wrapper.au_bohr_to_kjmol_nm)
+                print(atom, 'qm ps', -1*qm_grad[i]*self.ll_wrapper.au_bohr_to_kjmol_nm)
+                print(atom, 'entire', -1*entire_grad[atom]*self.ll_wrapper.au_bohr_to_kjmol_nm)
+                qmmm_force[atom] = -1 * (- ps_mm_grad[i] + qm_grad[i])
                 
                 # treating gradients for link atoms
                 if self.qmmm_boundary_bonds:
@@ -286,9 +291,10 @@ class QMMM(object):
                             #     qmmm_force[m1] += -g * ps_mm_grad[-1] + g * qm_grad[-1]
 
             # MM atoms
-            for a in range(len(entire_grad)):
-                if a not in system.qm_atoms:
-                    qmmm_force[a] = -1 * entire_grad[a]
+           # for a in range(len(entire_grad)):
+           #     if a not in system.qm_atoms:
+           #         qmmm_force[a] = -1 * entire_grad[a]
+
 
             if 'll' in system.second_subsys:
                 # iterate over list of mm atoms
