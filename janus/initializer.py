@@ -2,7 +2,7 @@ import json
 import os
 from janus.qm_wrapper import Psi4Wrapper 
 from janus.mm_wrapper import OpenMMWrapper 
-from janus.qmmm import QMMM, OniomXS, HotSpot, PAP, SAP
+from janus.qmmm import QMMM, OniomXS, HotSpot, PAP, SAP, DAS
 
 class Initializer(object):
     """
