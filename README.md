@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/CCQC/janus/branch/master/graph/badge.svg)](https://codecov.io/gh/CCQC/janus)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-# Janus ![alt text](https://github.com/bzhang25/janus/blob/master/images/janus_logo_final.pdf) 
+# Janus ![alt text](https://github.com/bzhang25/janus/blob/master/images/janus_logo_final.png) 
 A Python library for adaptive QM/MM methods <br/>
 Documentation can be found [here](https://ccqc.github.io/janus/)
 
