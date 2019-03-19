@@ -105,7 +105,7 @@ class BufferedForce(AQMMM):
             charges = self.get_external_charges(system)
             system.primary_subsys['hl'] = self.hl_wrapper.get_energy_and_gradient(traj_ps, charges=charges)
 
-    def run_aqmmm(system)
+    def run_aqmmm(system):
 
         qm_grad = system.primary_subsys['hl']['gradients']
         qmmm_force = {}

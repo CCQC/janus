@@ -60,11 +60,11 @@ def test_compute_zero_energy():
     oxs_2.compute_zero_energy()
 
     assert np.allclose(oxs_0.qm_zero_energies['HOH'], -74.96598998934344 ) 
-    assert np.allclose(oxs_0.mm_zero_energies['HOH'], 3.5887724974514855e-08)
+    assert np.allclose(oxs_0.mm_zero_energies['HOH'], 2.294265421796016e-08)
     assert np.allclose(oxs_1.qm_zero_energies['HOH'], -74.96598998934344 )
-    assert np.allclose(oxs_1.mm_zero_energies['HOH'], 3.5887724974514855e-08)
+    assert np.allclose(oxs_1.mm_zero_energies['HOH'], 2.294265421796016e-08)
     assert np.allclose(oxs_2.qm_zero_energies['HOH'], -74.96598998934344 )
-    assert np.allclose(oxs_2.mm_zero_energies['HOH'], 3.5887724974514855e-08)
+    assert np.allclose(oxs_2.mm_zero_energies['HOH'], 2.294265421796016e-08)
     
 def test_get_zero_energy():
 

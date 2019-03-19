@@ -43,10 +43,10 @@ def test_edit_atoms():
     
 def test_define_buffer_zone():
     
-    dis.define_buffer_zone([0])
-    dis_0.define_buffer_zone([0])
-    dis_1.define_buffer_zone([0])
-    dis_2.define_buffer_zone([0])
+    dis.define_buffer_zone([0], [0])
+    dis_0.define_buffer_zone([0], [0])
+    dis_1.define_buffer_zone([0], [0])
+    dis_2.define_buffer_zone([0], [0])
     
     assert (dis.buffer_atoms == [8] and not dis.buffer_groups)
     assert (not dis_0.buffer_atoms and not dis_0.buffer_groups)

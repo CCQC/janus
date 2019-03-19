@@ -2,7 +2,7 @@ import json
 import os
 from janus.qm_wrapper import Psi4Wrapper 
 from janus.mm_wrapper import OpenMMWrapper 
-from janus.qmmm import QMMM, OniomXS, HotSpot, PAP, SAP
+from janus.qmmm import QMMM, OniomXS, HotSpot, PAP, SAP, DAS
 
 class Initializer(object):
     """
@@ -103,10 +103,8 @@ class Initializer(object):
         # create hl_wrapper object
         hl_wrapper = self.hl_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, **self.hl)
         # create ll_wrapper object
-        print("ll wrapper")
         ll_wrapper = self.ll_wrapper(sys_info=self.system_info, sys_info_format=self.system_info_format, **self.ll)
         
-        print("qmmm wrapper")
         if (self.run_aqmmm is True and self.aqmmm_scheme is None):
             raise Exception("AQMMM specified but no scheme was given")
         if self.aqmmm_scheme is None:
@@ -116,11 +114,11 @@ class Initializer(object):
         elif self.aqmmm_scheme == 'Hot-Spot':
             qmmm_wrapper = HotSpot(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.aqmmm)
         elif self.aqmmm_scheme == 'PAP':
-            qmmm_wrapper = PAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.aqmmm)
+            qmmm_wrapper = PAP(hl_wrapper=hl_wrapper, ll_wrapper=ll_wrapper, sys_info=self.system_info, sys_info_format=self.system_info_format, **self.aqmmm)
         elif self.aqmmm_scheme == 'SAP':
-            qmmm_wrapper = SAP(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.aqmmm)
+            qmmm_wrapper = SAP(hl_wrapper=hl_wrapper, ll_wrapper=ll_wrapper, sys_info=self.system_info, sys_info_format=self.system_info_format, **self.aqmmm)
         elif self.aqmmm_scheme == 'DAS':
-            qmmm_wrapper = DAS(hl_wrapper, ll_wrapper, self.system_info, self.system_info_format, **self.aqmmm)
+            qmmm_wrapper = DAS(hl_wrapper=hl_wrapper, ll_wrapper=ll_wrapper, sys_info=self.system_info, sys_info_format=self.system_info_format, **self.aqmmm)
         else:
             raise ValueError("{} not recognized as a currently implemented method".format(self.aqmmm_param['aqmmm_scheme']))
 

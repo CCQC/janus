@@ -10,11 +10,11 @@ class MMWrapper(ABC):
     the user cannot actually instantiate a MMWrapper object, but only its child objects
     """
 
-    kjmol_to_au = 1/2625.5002 
+    kjmol_to_au = 0.0003808798034
     nm_to_angstrom = 10.0000000
-    nm_to_bohr = 0.052917999999 
-    kjmol_nm_to_au_bohr = kjmol_to_au*nm_to_bohr 
-    au_bohr_to_kjmol_nm = 1/kjmol_nm_to_au_bohr
+    nm_to_bohr = 18.897161646321
+    kjmol_nm_to_au_bohr = kjmol_to_au/nm_to_bohr 
+    au_bohr_to_kjmol_nm = nm_to_bohr/kjmol_to_au
 
     def __init__(self, class_type,
                        sys_info=None, 
@@ -42,21 +42,6 @@ class MMWrapper(ABC):
         self.return_info_filename = 'info.dat'                                                                         
         self.return_forces_filename = 'forces.pkl'                                                              
         self.return_forces_interval = 0                                                                         
-
-        self.qmmm_steps = self.end_qmmm - self.start_qmmm
-
-        if (type(self.md_steps) is list and type(self.md_ensemble) is list):
-            self.md_ensemble = self.md_ensemble[-1]
-            self.other_md_ensembles = self.md_ensemble[0:-1]
-            self.other_ensemble_steps = self.md_steps[0:-1]
-        elif (type(self.md_steps) is int and type(self.md_ensemble) is str):
-            self.other_md_ensembles = None
-            self.other_ensemble_steps = None
-
-        if type(self.md_steps) is int:
-            self.end_steps = self.md_steps - self.end_qmmm
-        elif type(self.md_steps) is list:
-            self.end_steps = self.md_steps[-1] - self.end_qmmm
 
         super().__init__()
 
@@ -100,6 +85,22 @@ class MMWrapper(ABC):
 
         return info
 
+    def post_processing_input(self):
+
+        self.qmmm_steps = self.end_qmmm - self.start_qmmm
+
+        if (type(self.md_steps) is list and type(self.md_ensemble) is list):
+            self.other_md_ensembles = self.md_ensemble[0:-1]
+            self.other_ensemble_steps = self.md_steps[0:-1]
+            self.md_ensemble = self.md_ensemble[-1]
+        elif (type(self.md_steps) is int and type(self.md_ensemble) is str):
+            self.other_md_ensembles = None
+            self.other_ensemble_steps = None
+
+        if type(self.md_steps) is int:
+            self.end_steps = self.md_steps - self.end_qmmm
+        elif type(self.md_steps) is list:
+            self.end_steps = self.md_steps[-1] - self.end_qmmm
 
     @abstractmethod
     def compute_info(self):

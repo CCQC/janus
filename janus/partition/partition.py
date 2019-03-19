@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from janus.system import Buffer
+from copy import deepcopy
+import mdtraj as md
 import mendeleev as mdlv
 
 class Partition(ABC):

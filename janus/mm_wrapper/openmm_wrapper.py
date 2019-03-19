@@ -91,7 +91,7 @@ class OpenMMWrapper(MMWrapper):
         self.fric_coeff = fric_coeff/OM_unit.picosecond
         self.nonbondedCutoff=nonbondedCutoff*OM_unit.nanometer
 
-        self.nonbondMethod = OM_app.NoCutoff
+        self.nonbondedMethod = OM_app.NoCutoff
         self.constraints = None
         self.hydrogenMass = None
         self.switchDistance = None
@@ -101,15 +101,15 @@ class OpenMMWrapper(MMWrapper):
         self.flexibleConstraints=False 
         self.ignoreExternalBonds=True
 
-        openmm_param = ['nonbondMethod', 'constraints', 'hydrogenMass', 'switchDistance',
-                        'residueTemplates', 'rigid_water', 'removeCMMotion', 'flexibleConstraints',
-                        'ignoreExternalBonds']
+        openmm_param = ['nonbondedMethod', 'constraints', 'hydrogenMass', 'switchDistance', 'residueTemplates']
 
         for k, v in kwargs.items():
             if k in openmm_param:
                 setattr(self, k, eval(v))
             else:
                 setattr(self, k, v)
+
+        self.post_processing_input()
 
         if self.md_ensemble == 'NVT':
             self.integrator = self.NVT_integrator
@@ -138,6 +138,8 @@ class OpenMMWrapper(MMWrapper):
         # should I minimize energy here? If so, need to return new positions
 
         if (self.other_md_ensembles is not None and self.other_ensemble_steps is not None):
+            print('other ensembles')
+            print(self.other_md_ensembles)
             for i, ensemble in enumerate(self.other_md_ensembles):
                 print('running equilibrating ensemble {} for {} steps'.format(ensemble,self.other_ensemble_steps[i]))
                 
@@ -147,7 +149,7 @@ class OpenMMWrapper(MMWrapper):
                     integrator = self.NVE_integrator
 
                 OM_system = self.create_openmm_system(self.topology)
-                simulation, integrator_obj = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, integrator, return_integrator=True)
+                simulation, integrator_obj = self.create_openmm_simulation(OM_system, self.topology, self.positions, integrator, return_integrator=True)
                 simulation.minimizeEnergy()
 
                 #simulation.reporters.append(NetCDFReporter('output_nvt.nc', 50))
@@ -162,7 +164,7 @@ class OpenMMWrapper(MMWrapper):
                 # not sure if should save this
                 del simulation, state, OM_system, integrator_obj
         else:
-            pos = self.pdb.positions
+            pos = self.positions
 
         print('starting main simulation')
         if embedding_method == 'Mechanical':
@@ -186,8 +188,9 @@ class OpenMMWrapper(MMWrapper):
         elif embedding_method == 'Electrostatic':
             OM_system = self.create_openmm_system(self.topology, include_coulomb=None, initialize=True)
 
+        print(self.integrator)
         # Create an OpenMM simulation from the openmm system, topology, and positions.
-        self.main_simulation = self.create_openmm_simulation(OM_system, self.topology, self.pdb.positions, self.integrator)
+        self.main_simulation = self.create_openmm_simulation(OM_system, self.topology, self.positions, self.integrator)
 
         with open(chkpt_file, 'rb') as f:
             self.main_simulation.context.loadCheckpoint(f.read())
@@ -253,12 +256,32 @@ class OpenMMWrapper(MMWrapper):
         
         """
 
+        current = OpenMMWrapper.get_state_info(self.main_simulation,
+                                                energy=False,
+                                                positions=False,
+                                                forces=True)
+        #for f in range(len(current['forces'])):
+        #    print(f, current['forces'][f])
 
         for f, coord in forces.items():
             coord *= MMWrapper.au_bohr_to_kjmol_nm             # convert this back to openmm units
+            #print('fed in forces')
+            #print(f, coord)
+            #print('forces from before')
+            #print(current['forces'][f])
+            #coord -= current['forces'][f]
+            #print('new forces')
+            #print(coord)
             force_obj.setParticleParameters(f, f, coord)  # need to figure out if the first 2 parameters always the same or not
+            
 
         force_obj.updateParametersInContext(simulation.context)  # update forces with qmmm force
+        #current2 = OpenMMWrapper.get_state_info(self.main_simulation,
+        #                                        energy=False,
+        #                                        positions=False,
+        #                                        forces=True)
+        #for f in range(len(current2['forces'])):
+        #    print(f, current2['forces'][f])
 
     def take_step(self, num):
         """
@@ -335,6 +358,8 @@ class OpenMMWrapper(MMWrapper):
         # ensure every computation has same periodic box vector parameters
         topology.setPeriodicBoxVectors(self.PeriodicBoxVector)
         # Create an OpenMM system from an object's topology
+        print('topology going into system')
+        print(topology.getNumAtoms())
         OM_system = self.create_openmm_system(topology, include_coulomb, link_atoms,initialize=initialize)
 
         # Create an OpenMM simulation from the openmm system, topology, and positions.
@@ -402,22 +427,43 @@ class OpenMMWrapper(MMWrapper):
         """
 
         # check to see if there are unmatched residues in pdb, create residue templates if there are
-        unmatched = self.forcefield.getUnmatchedResidues(topology)
-        if unmatched:
-            self.create_new_residue_template(topology)
+        if (self.system_info_format == 'pdb' or self.use_pdb is True):
+            unmatched = self.forcefield.getUnmatchedResidues(topology)
+            if unmatched:
+                self.create_new_residue_template(topology)
 
-        print(self.ignoreExternalBonds)
-        openmm_system = self.forcefield.createSystem(topology,
-                                        nonbondedMethod=self.nonbondMethod,
-                                        constraints=self.constraints,
-                                        hydrogenMass=self.hydrogenMass,
-                                        switchDistance=self.switchDistance,
-                                        residueTemplates=self.residueTemplates,
-                                        nonbondedCutoff=self.nonbondedCutoff,
-                                        rigidWater=self.rigid_water,
-                                        removeCMMotion=self.removeCMMotion,
-                                        flexibleConstraints=self.flexibleConstraints,
-                                        ignoreExternalBonds=self.ignoreExternalBonds)
+            openmm_system = self.forcefield.createSystem(topology,
+                                            nonbondedMethod=self.nonbondedMethod,
+                                            constraints=self.constraints,
+                                            hydrogenMass=self.hydrogenMass,
+                                            switchDistance=self.switchDistance,
+                                            residueTemplates=self.residueTemplates,
+                                            nonbondedCutoff=self.nonbondedCutoff,
+                                            rigidWater=self.rigid_water,
+                                            removeCMMotion=self.removeCMMotion,
+                                            flexibleConstraints=self.flexibleConstraints,
+                                            ignoreExternalBonds=self.ignoreExternalBonds)
+
+        elif (self.system_info_format == 'Amber' and self.use_pdb is False):
+
+            if topology.getNumAtoms() != self.topology.getNumAtoms():
+                print('reading topology not the same')
+                forcefield = deepcopy(self.forcefield)
+                forcefield.topology = topology
+                print(forcefield.topology.getNumAtoms())
+            else:
+                print('reading topology same')
+                forcefield = self.forcefield
+
+            openmm_system = forcefield.createSystem(nonbondedMethod=self.nonbondedMethod,
+                                            constraints=self.constraints,
+                                            hydrogenMass=self.hydrogenMass,
+                                            switchDistance=self.switchDistance,
+                                            nonbondedCutoff=self.nonbondedCutoff,
+                                            rigidWater=self.rigid_water,
+                                            removeCMMotion=self.removeCMMotion)
+            print('new system particles')
+            print(openmm_system.getNumParticles())
 
         if initialize is True:                                             # this is for the initialization of the entire system
             self.qmmm_force = OM.CustomExternalForce("-x*fx-y*fy-z*fz")    # define a custom force for adding qmmm gradients
@@ -589,7 +635,7 @@ class OpenMMWrapper(MMWrapper):
         create_open_simulation(openmm_sys, pdb.topology. pdb.positions)
         """
 
-        print('using {} integrator'.format(integrator))
+        #print('using {} integrator'.format(integrator))
         if integrator == 'Langevin':
             integrator_obj = OM.LangevinIntegrator(self.temp, self.fric_coeff, self.step_size)
             integrator_obj.setRandomNumberSeed(seed)
@@ -597,7 +643,6 @@ class OpenMMWrapper(MMWrapper):
             integrator_obj = OM.VerletIntegrator(self.step_size)
         else:
             print('only Langevin integrator supported currently')
-
 
         simulation = OM_app.Simulation(topology, openmm_system, integrator_obj)
         simulation.context.setPositions(positions)
@@ -849,17 +894,24 @@ class OpenMMWrapper(MMWrapper):
             # instantiate OpenMM forcefield object
             self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
             self.topology = self.pdb.topology
-            
+            self.positions = self.pdb.positions
             self.PeriodicBoxVector = self.topology.getPeriodicBoxVectors()
 
         elif self.system_info_format == 'Amber':
             for fil in self.system_info:
-                if 'prmtop' in fil:
+                if fil.endswith('prmtop'):
                     self.forcefield = OM_app.AmberPrmtopFile(fil)
                     self.topology = self.forcefield.topology
-                elif 'inpcrd' in fil:
-                    self.pdb = OM_app.AmberInpcrdFile(fil)
-                    self.boxVectors = self.pdb.boxVectors
+                    self.use_pdb = False
+                if fil.endswith('pdb'):
+                    self.pdb = OM_app.PDBFile(fil)
+                    self.forcefield = OM_app.ForceField(self.ff, self.ff_water)
+                    self.topology = self.pdb.topology
+                    self.use_pdb = True
+                if fil.endswith('inpcrd'):
+                    self.inpcrd = OM_app.AmberInpcrdFile(fil)
+                    self.positions = self.inpcrd.positions
+                    self.PeriodicBoxVector = self.inpcrd.boxVectors
 
         elif self.system_info_format == 'Gromacs':
             for fil in self.system_info:

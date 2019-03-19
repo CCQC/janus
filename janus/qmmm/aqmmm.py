@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import mdtraj as md
 import numpy as np
-from janus.partition import DistancePartition
+from janus.partition import DistancePartition, HystereticPartition
 from janus.qmmm import QMMM
 
 class AQMMM(ABC, QMMM):
@@ -40,6 +40,7 @@ class AQMMM(ABC, QMMM):
         self.Rmin_bf = Rmin_bf
         self.class_type = class_type
         self.buffer_groups = {}
+        self.get_qm_center_residues()
         self.compute_zero_energy()
 
         self.buffer_wrapper =  self.get_buffer_wrapper(partition_scheme)
@@ -72,7 +73,6 @@ class AQMMM(ABC, QMMM):
 
             self.qm_atoms = deepcopy(system.qm_atoms)
 
-            print(self.embedding_method)
             if self.embedding_method =='Mechanical':
                 self.mechanical(system, main_info)
             elif self.embedding_method =='Electrostatic':
@@ -147,17 +147,22 @@ class AQMMM(ABC, QMMM):
         # this is only functional for explicitly solvated systems
         
         # get all the unique groups 
-        residues = {}
+        
+        residues = {'qm_center' : []}
         for res in self.topology.residues:
-            if res.name not in residues:
-                residues[res.name] = []
+            if res.index in self.qm_center_residues:
                 for atom in res.atoms:
-                    residues[res.name].append(atom.index)
+                    residues['qm_center'].append(atom.index)
+            else:
+                if res.name not in residues:
+                    residues[res.name] = []
+                    for atom in res.atoms:
+                        residues[res.name].append(atom.index)
 
         self.qm_zero_energies = {}
         self.mm_zero_energies = {}
-        for res in residues:
 
+        for res in residues:
             traj = self.traj.atom_slice((residues[res]))
 
             mm = self.ll_wrapper.get_energy_and_gradient(traj, minimize=True)
@@ -165,18 +170,32 @@ class AQMMM(ABC, QMMM):
 
             qm = self.hl_wrapper.get_energy_and_gradient(traj, minimize=True)
             self.qm_zero_energies[res] = qm['energy']
+
+    def get_qm_center_residues(self):
+        residues = []
+        for atom in self.qm_center:
+            res = self.topology.atom(atom).residue
+            if res not in residues:
+                residues.append(res.index)
+        self.qm_center_residues = residues
     
     def get_zero_energy(self):
         """
         Incorporates the zero energy of groups to the total qmmm energy
         """
 
+        print('step', self.run_ID)
         for i, sys in self.systems[self.run_ID].items():
+            print(sys.qm_residues)
+            print(sys.qm_atoms)
+            print(sys.qmmm_energy)
+            sys.zero_energy += self.qm_zero_energies['qm_center']
             for res in self.topology.residues:
-                if res.index in sys.qm_residues:
+                if (res.index in sys.qm_residues and res.index not in self.qm_center_residues):
                     sys.zero_energy += self.qm_zero_energies[res.name]
-                else:
+                elif (res.index not in sys.qm_residues and res.index not in self.qm_center_residues):
                     sys.zero_energy += self.mm_zero_energies[res.name]
+            print(sys.zero_energy)
 
             # maybe I should save a separate copy of qmmm energy somewhere
             sys.qmmm_energy -= sys.zero_energy
@@ -195,7 +214,14 @@ class AQMMM(ABC, QMMM):
                     
     def find_buffer_zone(self):
 
-        self.buffer_wrapper.define_buffer_zone(self.qm_center)
+        if (self.run_ID == 0 or self.buffer_wrapper.class_type == 'distance'):
+            qm = {}
+            bf = {}
+        else:
+            qm =  self.systems[self.run_ID-1]['qm'].qm_residues
+            bf =  self.systems[self.run_ID-1]['qm'].buffer_groups
+
+        self.buffer_wrapper.define_buffer_zone(self.qm_center, self.qm_center_residues, prev_qm=qm, prev_bf=bf)
 
         self.qm_atoms = self.buffer_wrapper.get_qm_atoms()
         self.qm_residues = self.buffer_wrapper.get_qm_residues()
