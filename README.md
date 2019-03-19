@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/CCQC/janus.svg?branch=master)](https://travis-ci.org/CCQC/janus)
 [![codecov](https://codecov.io/gh/CCQC/janus/branch/master/graph/badge.svg)](https://codecov.io/gh/CCQC/janus)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+![GitHub Logo](/images/janus_logo_final.pdf)
 
 # Janus
 A Python library for adaptive QM/MM methods <br/>
