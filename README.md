@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 # Janus
-A Python library for adaptive QM/MM methods 
+A Python library for adaptive QM/MM methods <br/>
 Documentation can be found [here](https://ccqc.github.io/janus/)
 
 ## Set up steps: 
